@@ -48,6 +48,15 @@ Caller ──► Twilio number ──► this server (FastAPI) ◄──► Open
 
 7. **Call the number.** The terminal shows what the caller and the assistant say, and every knowledge base search.
 
+## Deploy to Railway
+
+1. In Railway, create a project from the GitHub repo. The `Dockerfile` tells Railway how to build and start it.
+2. In the service's **Variables**, add `OPENAI_API_KEY`, `TWILIO_AUTH_TOKEN`, `VECTOR_STORE_ID`, and optionally `OPENAI_REALTIME_MODEL`, `OPENAI_VOICE`, `BUSINESS_NAME` and `GREETING`. `PUBLIC_BASE_URL` isn't needed.
+3. In **Settings → Networking**, click **Generate Domain**. You get an address like `https://zar-del-fitness-production.up.railway.app`.
+4. In the Twilio Console, set the number's webhook to that address plus `/incoming-call`.
+
+Every push to `main` redeploys the server.
+
 ## Test without calling
 
 1. Start the server: `.venv/bin/python main.py` (ngrok isn't needed for this).
