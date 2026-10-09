@@ -61,7 +61,7 @@ It connects to the server the same way Twilio does, so it tests everything excep
 
 **Transfers.** When the caller asks for a person, the front desk or Ronald, the assistant says it's transferring them to one of the front desk advisors, then the call is forwarded to `FRONT_DESK_PHONE` (+54 9 11 2733-6258), which sees the caller's number. Twilio only calls the countries enabled in the Twilio Console under *Voice → Settings → Geo permissions*: Argentina has to be on. Each transfer is also an outgoing call that Twilio bills.
 
-**Booking emails.** When the assistant books a visit, the server emails it, in Spanish, to `BOOKINGS_EMAIL_TO` (zardelfitnessgym@gmail.com): name, day, time, reason and the caller's number. It sends through [Resend](https://resend.com), because Railway blocks regular email (SMTP) on its Hobby plan.
+**Booking emails.** When the assistant books a visit, the server emails it, in Spanish, to `BOOKINGS_EMAIL_TO` (zardelfitnessgym@gmail.com): name, day, time, reason, the caller's language, and the phone number they confirmed during the call (plus the number they called from, if it's a different one). It sends through [Resend](https://resend.com), because Railway blocks regular email (SMTP) on its Hobby plan.
 
 1. In Resend, add a domain under *Domains* and add the DNS records it shows. Without a verified domain, Resend only delivers to the Resend account's own address.
 2. Set `BOOKINGS_EMAIL_FROM` to an address on that domain. It's `asistente@edumorales.dev` by default.

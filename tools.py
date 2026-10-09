@@ -1,6 +1,7 @@
 """Functions the assistant can call during a phone call."""
 
 import asyncio
+import datetime
 import functools
 import json
 import logging
@@ -18,9 +19,9 @@ TRANSFER_TO_FRONT_DESK = {
     "type": "function",
     "name": "transfer_to_front_desk",
     "description": (
-        "Transfer the call to one of the gym's front desk advisors. Use it when the caller asks to talk to a "
-        "person, the front desk or Ronald, or accepts your offer to transfer them. Tell the caller you're "
-        "transferring them to a front desk advisor before calling it."
+        "Pasa la llamada a uno de los asesores de recepción del gimnasio. Usala cuando la persona pide hablar con "
+        "alguien, con recepción o con Ronald, o acepta tu ofrecimiento de pasarle la llamada. Antes de usarla, "
+        "decile que la pasás con un asesor de recepción."
     ),
     "parameters": {"type": "object", "properties": {}},
 }
@@ -29,26 +30,43 @@ SCHEDULE_VISIT = {
     "type": "function",
     "name": "schedule_visit",
     "description": (
-        "Book a first visit or an appointment at the gym. Before calling it, ask for the caller's name "
-        "and availability, and agree on a day and time with them."
+        "Agenda una primera visita o un turno en el gimnasio. Antes de usarla, preguntale a la persona su nombre "
+        "y disponibilidad, acordá con ella un día y una hora, y confirmá su número de teléfono."
     ),
     "parameters": {
         "type": "object",
         "properties": {
-            "name": {"type": "string", "description": "The caller's name."},
-            "date": {"type": "string", "description": "Day of the visit, in Spanish, e.g. 'martes 13 de octubre'."},
-            "time": {"type": "string", "description": "Time of the visit, e.g. '18:30'."},
+            "name": {"type": "string", "description": "Nombre de la persona."},
+            "date": {"type": "string", "description": "Día de la visita, en formato AAAA-MM-DD."},
+            "time": {"type": "string", "description": "Hora de la visita, en formato 24 horas, por ejemplo '18:30'."},
             "reason": {
                 "type": "string",
-                "description": "What the visit is for, in Spanish, e.g. 'primera visita' or 'evaluación'.",
+                "description": "Para qué es la visita, en español, por ejemplo 'primera visita' o 'evaluación'.",
+            },
+            "phone": {
+                "type": "string",
+                "description": (
+                    "Solo si la persona te dictó un número para contactarla: ese número, tal como lo dijo, por "
+                    "ejemplo '11 5555 1234'. Si confirmó el número desde el que llama, dejalo vacío."
+                ),
+            },
+            "language": {
+                "type": "string",
+                "description": "Idioma en el que te habla la persona, en español, por ejemplo 'español' o 'inglés'.",
             },
         },
-        "required": ["name", "date", "time"],
+        "required": ["name", "date", "time", "language"],
     },
 }
 
 # Tools offered to the model.
 TOOLS = [TRANSFER_TO_FRONT_DESK, SCHEDULE_VISIT]
+
+SPANISH_WEEKDAYS = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
+SPANISH_MONTHS = [
+    "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+]
 
 # Tasks still running after their tool has answered. asyncio keeps only weak references to tasks.
 background_tasks: set[asyncio.Task] = set()
@@ -58,7 +76,8 @@ async def run_tool(name: str, arguments: str, caller_number: str) -> str:
     args = json.loads(arguments or "{}")
     if name == "transfer_to_front_desk":
         # main.py transfers the call once the caller has heard the assistant's reply.
-        return "Transferring the call to a front desk advisor now."
+        # Results are data, not sentences: a Spanish sentence pulls the model into Spanish with other callers.
+        return json.dumps({"transferencia": "en curso"})
     if name == "schedule_visit":
         # Not connected to a calendar yet: any time is accepted, the booking is logged and emailed.
         log.info("Visit booked: %s", args)
@@ -67,8 +86,14 @@ async def run_tool(name: str, arguments: str, caller_number: str) -> str:
             task = asyncio.create_task(send_booking_email(args, caller_number))
             background_tasks.add(task)
             task.add_done_callback(background_tasks.discard)
-        return f"Booked: {args.get('name')}, {args.get('date')} at {args.get('time')}."
-    return f"Unknown tool: {name}"
+        # Naming the caller's language keeps the model from switching to Spanish after the booking.
+        return json.dumps({
+            "turno_agendado": True,
+            "fecha": args.get("date"),
+            "hora": args.get("time"),
+            "responder_en": args.get("language") or "el idioma de la persona",
+        }, ensure_ascii=False)
+    return f"Herramienta desconocida: {name}"
 
 
 @functools.cache
@@ -89,20 +114,40 @@ async def transfer_call(call_sid: str) -> bool:
         return False
 
 
+def spanish_date(iso_date: str) -> str:
+    """'2026-10-12' -> 'lunes 12 de octubre'. Anything else is returned as the model wrote it."""
+    try:
+        day = datetime.date.fromisoformat(iso_date)
+    except ValueError:
+        return iso_date
+    return f"{SPANISH_WEEKDAYS[day.weekday()]} {day.day} de {SPANISH_MONTHS[day.month - 1]}"
+
+
+def digits(phone: str) -> str:
+    return "".join(char for char in phone if char.isdigit())
+
+
 async def send_booking_email(booking: dict, caller_number: str):
     """Emails the booking confirmation, in Spanish, to BOOKINGS_EMAIL_TO."""
     name = booking.get("name") or "sin nombre"
-    date = booking.get("date") or "sin día"
+    date = spanish_date(booking.get("date") or "sin día")
     time = booking.get("time") or "sin hora"
     reason = booking.get("reason") or "sin especificar"
-    phone = caller_number or "desconocido"
+    # Empty when they confirmed the number they're calling from.
+    phone = booking.get("phone") or caller_number or "desconocido"
+    language = booking.get("language") or "desconocido"
+    # The number they called from too, in case the one they dictated was misheard.
+    called_from = ""
+    if caller_number and digits(caller_number) != digits(phone):
+        called_from = f"\nLlamó desde: {caller_number}"
     email = {
         "from": config.BOOKINGS_EMAIL_FROM,
         "to": [config.BOOKINGS_EMAIL_TO],
         "subject": f"Nueva visita: {name}, {date} a las {time}",
         "text": (
             f"Visita confirmada en {config.BUSINESS_NAME}\n\n"
-            f"Nombre: {name}\nDía: {date}\nHora: {time}\nMotivo: {reason}\nTeléfono: {phone}\n\n"
+            f"Nombre: {name}\nDía: {date}\nHora: {time}\nMotivo: {reason}\nTeléfono: {phone}{called_from}\n"
+            f"Idioma: {language}\n\n"
             "Agendada por el asistente telefónico."
         ),
     }

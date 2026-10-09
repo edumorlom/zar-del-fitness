@@ -45,10 +45,13 @@ STREAM_URL = config.PUBLIC_BASE_URL.replace("https://", "wss://").replace("http:
 KNOWLEDGE = "\n\n".join(
     path.read_text() for path in sorted((Path(__file__).parent / "knowledge").iterdir()) if path.suffix in (".md", ".txt")
 )
+# What Twilio puts in "From" when the caller hides their number: ANONYMOUS, RESTRICTED, BLOCKED, UNKNOWN on a keypad.
+HIDDEN_CALLER_IDS = {"+266696687", "+7378742833", "+2562533", "+8656696"}
 INSTRUCTIONS = (
     (Path(__file__).parent / "instructions.md").read_text()
     .replace("{{BUSINESS_NAME}}", config.BUSINESS_NAME)
     .replace("{{KNOWLEDGE}}", KNOWLEDGE)
+    .rstrip()
 )
 
 app = FastAPI()
@@ -82,7 +85,8 @@ async def incoming_call(request: Request):
     connect = Connect()
     stream = connect.stream(url=STREAM_URL)
     stream.parameter(name="token", value=stream_token(call_sid))
-    stream.parameter(name="caller", value=params.get("From", ""))
+    caller_number = params.get("From", "")
+    stream.parameter(name="caller", value="" if caller_number in HIDDEN_CALLER_IDS else caller_number)
     response.append(connect)
     return Response(content=str(response), media_type="application/xml")
 
@@ -151,7 +155,7 @@ class CallSession:
         await self.configure_session()
         await self.send_openai({
             "type": "response.create",
-            "response": {"instructions": f"Greet the caller by saying exactly: {config.GREETING}"},
+            "response": {"instructions": f"Saludá a la persona diciendo exactamente: {config.GREETING}"},
         })
 
         tasks = [asyncio.create_task(self.from_twilio()), asyncio.create_task(self.from_openai())]
@@ -169,11 +173,16 @@ class CallSession:
             log.info("Call %s ended%s", self.call_sid, " (assistant hung up)" if self.ending else "")
 
     async def configure_session(self):
+        now = datetime.now(BUENOS_AIRES)
         session = {
             "type": "realtime",
             "model": config.OPENAI_REALTIME_MODEL,
             "output_modalities": ["audio"],
-            "instructions": INSTRUCTIONS + f"\n\n# Current date\nIt is {datetime.now(BUENOS_AIRES):%A %d %B %Y, %H:%M} in Buenos Aires.",
+            "instructions": INSTRUCTIONS
+            + "\n\n# Quién llama\n"
+            + (f"Llama desde el {self.caller_number}." if self.caller_number else "Su número está oculto.")
+            + "\n\n# Fecha y hora\n"
+            + f"Hoy es {tools.spanish_date(now.date().isoformat())} de {now.year}, son las {now:%H:%M} en Buenos Aires.",
             "audio": {
                 "input": {
                     # Phone audio is 8kHz G.711 μ-law, which OpenAI accepts and returns as-is.
