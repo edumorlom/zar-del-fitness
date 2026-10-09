@@ -11,7 +11,7 @@ Caller ──► Twilio number ──► this server (FastAPI) ◄──► Open
 | `instructions.md` | How the assistant behaves: tone, language, rules. Edit freely. |
 | `knowledge/` | The gym's information (hours, prices, classes…), in Markdown or text files. The assistant gets all of it in its instructions at the start of every call, so it answers without looking anything up. |
 | `main.py` | The server that connects phone calls to OpenAI. |
-| `tools.py` | Functions the assistant can call: book a visit (sent by WhatsApp), transfer to the front desk. |
+| `tools.py` | Functions the assistant can call: book a visit (emailed to the gym), transfer to the front desk. |
 | `test_call.py` | Talk to the assistant through your microphone, without calling. |
 
 ## Setup
@@ -44,7 +44,7 @@ Caller ──► Twilio number ──► this server (FastAPI) ◄──► Open
 ## Deploy to Railway
 
 1. In Railway, create a project from the GitHub repo. The `Dockerfile` tells Railway how to build and start it.
-2. In the service's **Variables**, add `OPENAI_API_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_FROM`, and optionally `TWILIO_WHATSAPP_TEMPLATE_SID`, `FRONT_DESK_PHONE`, `BOOKINGS_WHATSAPP_TO`, `OPENAI_REALTIME_MODEL`, `OPENAI_VOICE`, `BUSINESS_NAME` and `GREETING`. `PUBLIC_BASE_URL` isn't needed.
+2. In the service's **Variables**, add `OPENAI_API_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `RESEND_API_KEY`, and optionally `FRONT_DESK_PHONE`, `BOOKINGS_EMAIL_TO`, `BOOKINGS_EMAIL_FROM`, `OPENAI_REALTIME_MODEL`, `OPENAI_VOICE`, `BUSINESS_NAME` and `GREETING`. `PUBLIC_BASE_URL` isn't needed.
 3. In **Settings → Networking**, click **Generate Domain**. You get an address like `https://zar-del-fitness-production.up.railway.app`.
 4. In the Twilio Console, set the number's webhook to that address plus `/incoming-call`.
 
@@ -57,31 +57,17 @@ Every push to `main` redeploys the server.
 
 It connects to the server the same way Twilio does, so it tests everything except the phone network. The server's terminal shows what you and the assistant say. Use headphones; with your computer's speakers run `test_call.py --speakers`, which mutes your microphone while the assistant talks. The first time, macOS asks to let your terminal use the microphone.
 
-## Transfers and WhatsApp
+## Transfers and booking emails
 
-**Transfers.** When the caller asks for a person, the front desk or Ronald, the assistant says it's transferring them to one of the front desk advisors, then the call is forwarded to `FRONT_DESK_PHONE` (+1 786 715 4286), which sees the caller's number. Twilio blocks calls to most countries outside the US by default: to transfer to another country, such as an Argentine number, enable that country in the Twilio Console under *Voice → Settings → Geo permissions*. Each transfer is also an outgoing call that Twilio bills.
+**Transfers.** When the caller asks for a person, the front desk or Ronald, the assistant says it's transferring them to one of the front desk advisors, then the call is forwarded to `FRONT_DESK_PHONE` (+54 9 11 2733-6258), which sees the caller's number. Twilio only calls the countries enabled in the Twilio Console under *Voice → Settings → Geo permissions*: Argentina has to be on. Each transfer is also an outgoing call that Twilio bills.
 
-**Booking confirmations.** When the assistant books a visit, the server sends it by WhatsApp, in Spanish, to `BOOKINGS_WHATSAPP_TO` (+1 786 715 4286): name, day, time, reason and the caller's number. To try it with Twilio's sandbox:
+**Booking emails.** When the assistant books a visit, the server emails it, in Spanish, to `BOOKINGS_EMAIL_TO` (zardelfitnessgym@gmail.com): name, day, time, reason and the caller's number. It sends through [Resend](https://resend.com), because Railway blocks regular email (SMTP) on its Hobby plan.
 
-1. In the Twilio Console, open *Messaging → Try it out → Send a WhatsApp message*.
-2. From the phone at `BOOKINGS_WHATSAPP_TO`, send the `join …` code shown there to +1 415 523 8886.
-3. Set `TWILIO_WHATSAPP_FROM=+14155238886`.
+1. In Resend, add a domain under *Domains* and add the DNS records it shows. Without a verified domain, Resend only delivers to the Resend account's own address.
+2. Set `BOOKINGS_EMAIL_FROM` to an address on that domain. It's `asistente@edumorales.dev` by default.
+3. In Resend, open *API Keys*, create one and put it in `RESEND_API_KEY`.
 
-WhatsApp only lets businesses send free-form messages within 24 hours of the person's last message to them, so with the sandbox, messages stop arriving after a day of silence from that phone. For regular use, register your own WhatsApp sender in Twilio, create a template under *Messaging → Content Template Builder* with this text, get it approved, and put its Content SID in `TWILIO_WHATSAPP_TEMPLATE_SID`:
-
-```
-✅ Visita confirmada en Zar del Fitness
-
-Nombre: {{1}}
-Día: {{2}}
-Hora: {{3}}
-Motivo: {{4}}
-Teléfono: {{5}}
-
-Agendada por el asistente telefónico.
-```
-
-The server log says when a message was sent. If it doesn't arrive, Twilio's *Monitor → Logs → Messaging* shows why.
+The server log says when an email was sent, or why it failed.
 
 ## Languages
 

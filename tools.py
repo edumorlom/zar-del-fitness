@@ -4,6 +4,8 @@ import asyncio
 import functools
 import json
 import logging
+import urllib.error
+import urllib.request
 
 from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse
@@ -58,11 +60,11 @@ async def run_tool(name: str, arguments: str, caller_number: str) -> str:
         # main.py transfers the call once the caller has heard the assistant's reply.
         return "Transferring the call to a front desk advisor now."
     if name == "schedule_visit":
-        # Not connected to a calendar yet: any time is accepted, the booking is logged and sent by WhatsApp.
+        # Not connected to a calendar yet: any time is accepted, the booking is logged and emailed.
         log.info("Visit booked: %s", args)
-        if config.TWILIO_ACCOUNT_SID and config.TWILIO_WHATSAPP_FROM:
-            # In the background, so the caller doesn't wait for WhatsApp.
-            task = asyncio.create_task(send_booking_whatsapp(args, caller_number))
+        if config.RESEND_API_KEY:
+            # In the background, so the caller doesn't wait for the email.
+            task = asyncio.create_task(send_booking_email(args, caller_number))
             background_tasks.add(task)
             task.add_done_callback(background_tasks.discard)
         return f"Booked: {args.get('name')}, {args.get('date')} at {args.get('time')}."
@@ -87,32 +89,42 @@ async def transfer_call(call_sid: str) -> bool:
         return False
 
 
-async def send_booking_whatsapp(booking: dict, caller_number: str):
-    """Sends the booking confirmation, in Spanish, to BOOKINGS_WHATSAPP_TO."""
-    # The same text as the WhatsApp template in the README, whose variables are {{1}} to {{5}}.
-    fields = [
-        booking.get("name") or "sin nombre",
-        booking.get("date") or "sin día",
-        booking.get("time") or "sin hora",
-        booking.get("reason") or "sin especificar",
-        caller_number or "desconocido",
-    ]
-    message = {
-        "from_": f"whatsapp:{config.TWILIO_WHATSAPP_FROM}",
-        "to": f"whatsapp:{config.BOOKINGS_WHATSAPP_TO}",
-    }
-    if config.TWILIO_WHATSAPP_TEMPLATE_SID:
-        message["content_sid"] = config.TWILIO_WHATSAPP_TEMPLATE_SID
-        message["content_variables"] = json.dumps({str(i): value for i, value in enumerate(fields, start=1)})
-    else:
-        name, date, time, reason, phone = fields
-        message["body"] = (
-            f"✅ Visita confirmada en {config.BUSINESS_NAME}\n\n"
+async def send_booking_email(booking: dict, caller_number: str):
+    """Emails the booking confirmation, in Spanish, to BOOKINGS_EMAIL_TO."""
+    name = booking.get("name") or "sin nombre"
+    date = booking.get("date") or "sin día"
+    time = booking.get("time") or "sin hora"
+    reason = booking.get("reason") or "sin especificar"
+    phone = caller_number or "desconocido"
+    email = {
+        "from": config.BOOKINGS_EMAIL_FROM,
+        "to": [config.BOOKINGS_EMAIL_TO],
+        "subject": f"Nueva visita: {name}, {date} a las {time}",
+        "text": (
+            f"Visita confirmada en {config.BUSINESS_NAME}\n\n"
             f"Nombre: {name}\nDía: {date}\nHora: {time}\nMotivo: {reason}\nTeléfono: {phone}\n\n"
             "Agendada por el asistente telefónico."
-        )
+        ),
+    }
+    request = urllib.request.Request(
+        "https://api.resend.com/emails",
+        data=json.dumps(email).encode(),
+        headers={
+            "Authorization": f"Bearer {config.RESEND_API_KEY}",
+            "Content-Type": "application/json",
+            # Resend rejects requests with Python's default User-Agent.
+            "User-Agent": "zar-del-fitness-assistant",
+        },
+    )
+
+    def send() -> str:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            return json.load(response)["id"]
+
     try:
-        sent = await asyncio.to_thread(twilio_client().messages.create, **message)
-        log.info("Booking sent by WhatsApp to %s (%s)", config.BOOKINGS_WHATSAPP_TO, sent.sid)
+        email_id = await asyncio.to_thread(send)
+        log.info("Booking emailed to %s (%s)", config.BOOKINGS_EMAIL_TO, email_id)
+    except urllib.error.HTTPError as error:
+        log.error("Couldn't email the booking: %s %s", error.code, error.read().decode(errors="replace"))
     except Exception:
-        log.exception("Couldn't send the booking by WhatsApp")
+        log.exception("Couldn't email the booking")

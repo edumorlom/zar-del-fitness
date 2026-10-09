@@ -34,9 +34,9 @@ for name in ("OPENAI_API_KEY", "TWILIO_AUTH_TOKEN", "PUBLIC_BASE_URL"):
     if not getattr(config, name):
         raise RuntimeError(f"{name} is not set. Copy .env.example to .env and fill it in.")
 if not config.TWILIO_ACCOUNT_SID:
-    log.warning("TWILIO_ACCOUNT_SID is not set: calls can't be transferred and bookings aren't sent by WhatsApp.")
-elif not config.TWILIO_WHATSAPP_FROM:
-    log.warning("TWILIO_WHATSAPP_FROM is not set: bookings aren't sent by WhatsApp.")
+    log.warning("TWILIO_ACCOUNT_SID is not set: calls can't be transferred.")
+if not config.RESEND_API_KEY:
+    log.warning("RESEND_API_KEY is not set: bookings aren't sent by email.")
 
 BUENOS_AIRES = ZoneInfo("America/Argentina/Buenos_Aires")
 OPENAI_REALTIME_URL = f"wss://api.openai.com/v1/realtime?model={config.OPENAI_REALTIME_MODEL}"

@@ -19,14 +19,14 @@ PUBLIC_BASE_URL = (
     os.getenv("PUBLIC_BASE_URL") or (f"https://{RAILWAY_PUBLIC_DOMAIN}" if RAILWAY_PUBLIC_DOMAIN else "")
 ).rstrip("/")
 
-# WhatsApp number that sends booking confirmations, e.g. Twilio's sandbox +14155238886.
-TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM", "")
-# Optional: an approved WhatsApp template (Content SID, HX...). Needed outside the sandbox.
-TWILIO_WHATSAPP_TEMPLATE_SID = os.getenv("TWILIO_WHATSAPP_TEMPLATE_SID", "")
-# Where booking confirmations are sent by WhatsApp.
-BOOKINGS_WHATSAPP_TO = os.getenv("BOOKINGS_WHATSAPP_TO") or "+17867154286"
 # Where calls are transferred: the front desk advisors.
-FRONT_DESK_PHONE = os.getenv("FRONT_DESK_PHONE") or "+17867154286"
+FRONT_DESK_PHONE = os.getenv("FRONT_DESK_PHONE") or "+5491127336258"
+
+# Booking confirmations are emailed through Resend (resend.com).
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+BOOKINGS_EMAIL_TO = os.getenv("BOOKINGS_EMAIL_TO") or "zardelfitnessgym@gmail.com"
+# Any address on a domain verified in Resend.
+BOOKINGS_EMAIL_FROM = os.getenv("BOOKINGS_EMAIL_FROM") or "Asistente Zar del Fitness <asistente@edumorales.dev>"
 
 BUSINESS_NAME = os.getenv("BUSINESS_NAME") or "Zar del Fitness"
 GREETING = os.getenv("GREETING") or f"¡Hola! Gracias por llamar a {BUSINESS_NAME}. ¿En qué te puedo ayudar?"
