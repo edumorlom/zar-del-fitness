@@ -33,6 +33,10 @@ for name in ("OPENAI_API_KEY", "TWILIO_AUTH_TOKEN", "PUBLIC_BASE_URL"):
         raise RuntimeError(f"{name} is not set. Copy .env.example to .env and fill it in.")
 if not config.VECTOR_STORE_ID:
     log.warning("VECTOR_STORE_ID is not set: the assistant has no knowledge base. Run upload_knowledge.py.")
+if not config.TWILIO_ACCOUNT_SID:
+    log.warning("TWILIO_ACCOUNT_SID is not set: calls can't be transferred and bookings aren't sent by WhatsApp.")
+elif not config.TWILIO_WHATSAPP_FROM:
+    log.warning("TWILIO_WHATSAPP_FROM is not set: bookings aren't sent by WhatsApp.")
 
 BUENOS_AIRES = ZoneInfo("America/Argentina/Buenos_Aires")
 OPENAI_REALTIME_URL = f"wss://api.openai.com/v1/realtime?model={config.OPENAI_REALTIME_MODEL}"
@@ -72,6 +76,7 @@ async def incoming_call(request: Request):
     connect = Connect()
     stream = connect.stream(url=STREAM_URL)
     stream.parameter(name="token", value=stream_token(call_sid))
+    stream.parameter(name="caller", value=params.get("From", ""))
     response.append(connect)
     return Response(content=str(response), media_type="application/xml")
 
@@ -91,12 +96,13 @@ async def media_stream(twilio_ws: WebSocket):
     headers = {"Authorization": f"Bearer {config.OPENAI_API_KEY}"}
     try:
         async with websocket_connect(OPENAI_REALTIME_URL, additional_headers=headers) as openai_ws:
-            await CallSession(twilio_ws, openai_ws, start["streamSid"], start["callSid"]).run()
+            caller_number = start["customParameters"].get("caller", "")
+            await CallSession(twilio_ws, openai_ws, start["streamSid"], start["callSid"], caller_number).run()
     except Exception:
         log.exception("Call %s failed", start["callSid"])
     finally:
-        # Closing the stream makes Twilio hang up, e.g. if the OpenAI connection dropped.
-        # After a normal hang-up Twilio has already closed it.
+        # Closing the stream makes Twilio hang up, e.g. if the OpenAI connection dropped, unless the
+        # call was transferred. After a normal hang-up Twilio has already closed it.
         with contextlib.suppress(WebSocketDisconnect, RuntimeError):
             await twilio_ws.close()
 
@@ -117,11 +123,12 @@ async def wait_for_start(twilio_ws: WebSocket) -> dict | None:
 class CallSession:
     """Relays audio for one phone call between Twilio and OpenAI."""
 
-    def __init__(self, twilio_ws: WebSocket, openai_ws, stream_sid: str, call_sid: str):
+    def __init__(self, twilio_ws: WebSocket, openai_ws, stream_sid: str, call_sid: str, caller_number: str):
         self.twilio_ws = twilio_ws
         self.openai_ws = openai_ws
         self.stream_sid = stream_sid
         self.call_sid = call_sid
+        self.caller_number = caller_number
         # Twilio's clock: milliseconds of caller audio received so far.
         self.latest_media_ts = 0
         # The assistant reply currently playing, when it started, and how many chunks are still queued.
@@ -131,6 +138,8 @@ class CallSession:
         # When the call should end: we hang up once the caller has heard the assistant's last reply.
         self.end_after_next_reply = False
         self.ending = False
+        # Whether to transfer the call to Ronald instead of hanging up when it ends.
+        self.transferring = False
 
     async def run(self):
         await self.configure_session()
@@ -146,7 +155,12 @@ class CallSession:
         for task in done:
             if error := task.exception():
                 log.error("Call %s: %r", self.call_sid, error)
-        log.info("Call %s ended%s", self.call_sid, " (assistant hung up)" if self.ending else "")
+        # Only if the caller is still on the line and has heard they're being transferred.
+        # If the transfer fails, the call ends.
+        if self.transferring and self.done_talking() and await tools.transfer_call(self.call_sid):
+            log.info("Call %s transferred to Ronald", self.call_sid)
+        else:
+            log.info("Call %s ended%s", self.call_sid, " (assistant hung up)" if self.ending else "")
 
     async def configure_session(self):
         session = {
@@ -238,13 +252,14 @@ class CallSession:
         if not calls or response.get("status") != "completed":
             return
         for call in calls:
-            output = await tools.run_tool(call["name"], call["arguments"])
+            output = await tools.run_tool(call["name"], call["arguments"], self.caller_number)
             await self.send_openai({
                 "type": "conversation.item.create",
                 "item": {"type": "function_call_output", "call_id": call["call_id"], "output": output},
             })
         if any(call["name"] == "transfer_to_ronald" for call in calls):
-            # Transfers aren't set up yet: hang up once the caller has heard they're being transferred.
+            # Transfer once the caller has heard they're being transferred.
+            self.transferring = True
             if any(item.get("type") == "message" for item in response["output"]):
                 self.ending = True
                 return
