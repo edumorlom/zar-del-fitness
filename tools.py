@@ -98,4 +98,4 @@ async def search_knowledge_base(query: str) -> str:
     chunks = ["\n".join(part.text for part in result.content) for result in results.data]
     if not chunks:
         return "No matching information found in the knowledge base."
-    return "\n\n---\n\n".join(chunks)
+    return "Gym information (in Spanish; answer in the caller's language):\n\n" + "\n\n---\n\n".join(chunks)

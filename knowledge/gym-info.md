@@ -1,6 +1,6 @@
 # Zar del Fitness: información del negocio
 
-Fuentes: descripciones oficiales de los planes de Zar del Fitness (octubre de 2026) y el sitio web zardelfitness.com.ar. Si algo no está acá o hay dudas, el canal oficial es el WhatsApp 11 2733-6258 (+54 9 11 2733-6258).
+Fuentes: descripciones oficiales de los planes de Zar del Fitness (octubre de 2026) y el sitio web zardelfitness.com.ar. Si algo no está acá, Ronald Medina puede dar más información (se puede transferir la llamada a Ronald), o se puede escribir por WhatsApp al 11 2733-6258 (+54 9 11 2733-6258).
 
 ## Qué es Zar del Fitness
 
@@ -8,10 +8,12 @@ Zar del Fitness es un servicio de entrenamiento personal en Colegiales, Ciudad A
 
 ## Planes y precios de Zar del Fitness (resumen)
 
-- Sistema Premium Reto de los 25 días (presencial, el plan más completo): ARS 420.000, o 300 USD.
-- Sistema General Dirigido (presencial, con los asistentes de Zar del Fitness): ARS 170.000. Se paga con débito, crédito o transferencia.
-- Lipo Entrenamiento (20 días, 4 fases): ARS 180.000 por los 20 días completos. Se paga por transferencia al alias Medinaronald.bna.
-- Reto de los 25 días online: $100.000 ARS, en hasta 12 cuotas con Mercado Pago. Para personas fuera de Argentina, 100 USD.
+Todos los precios son mensuales (por mes).
+
+- Sistema Premium Reto de los 25 días (presencial, el plan más completo): ARS 420.000 por mes, o 300 USD por mes.
+- Sistema General Dirigido (presencial, con los asistentes de Zar del Fitness): ARS 170.000 por mes. Se paga con débito, crédito o transferencia.
+- Lipo Entrenamiento (20 días, 4 fases): ARS 180.000 por mes, por los 20 días completos. Se paga por transferencia al alias Medinaronald.bna.
+- Reto de los 25 días online: $100.000 ARS por mes, en hasta 12 cuotas con Mercado Pago. Para personas fuera de Argentina, 100 USD por mes.
 
 ## Dirección, horarios y contacto de Zar del Fitness
 
@@ -28,7 +30,7 @@ Zar del Fitness es un servicio de entrenamiento personal en Colegiales, Ciudad A
 
 Es el plan presencial más completo y exclusivo, de 25 días. Su objetivo es dar más observación, más exclusividad, dinámicas de entrenamiento más individuales y un acompañamiento más cercano de la mano del Zardelfitness y dos asistentes premium.
 
-Precio: ARS 420.000. El costo del sistema también se indica como 300 USD.
+Precio: ARS 420.000 por mes. El costo del sistema también se indica como 300 USD por mes.
 
 Incluye:
 1. Consulta antropométrica: una evaluación completa con preguntas sobre tus objetivos y tu evolución física, para optimizar el entrenamiento de manera constante.
@@ -47,7 +49,7 @@ Horario: de lunes a viernes, de 8:00 a 12:00 (último ingreso a las 11:00) y de 
 
 ## Sistema General Dirigido (presencial)
 
-Precio: ARS 170.000. Formas de pago: débito, crédito o transferencia.
+Precio: ARS 170.000 por mes. Formas de pago: débito, crédito o transferencia.
 
 Incluye:
 - Una consulta, una sola vez, para determinar tu porcentaje de grasa, peso y estatura. Los controles posteriores son con cita previa el último viernes de cada mes, según disponibilidad; los alumnos premium tienen prioridad.
@@ -65,7 +67,7 @@ Horario: de lunes a viernes, de 8:00 a 12:00 (último ingreso a las 11:00) y de 
 
 "20 días. 4 fases. Impacto visible." Un sistema corto para verse mejor en poco tiempo: "Lipo Entrenamiento no es para cambiar tu cuerpo para siempre. Es para verte mejor cuando lo necesitás."
 
-Precio: $180.000 ARS por los 20 días completos. Pago por transferencia al alias Medinaronald.bna. Cupos limitados para garantizar el seguimiento.
+Precio: $180.000 ARS por mes, por los 20 días completos. Pago por transferencia al alias Medinaronald.bna. Cupos limitados para garantizar el seguimiento.
 
 Para quién es: personas que tienen un evento próximo (boda, viaje, fiesta, sesión de fotos), quieren verse mejor en poco tiempo, buscan desinflamar, tonificar y mejorar su apariencia, y necesitan un plan claro, dirigido y sin improvisación. No es un programa de transformación extrema ni a largo plazo.
 
@@ -90,7 +92,7 @@ Horario de los entrenamientos: de lunes a viernes, de 8:00 a 12:00 (último ingr
 
 Programa 100% online de 25 días, creado por Ronald Medina.
 
-Precio: $100.000 ARS. Se puede pagar con Mercado Pago, en hasta 12 cuotas sin tarjeta (crédito sujeto a aprobación). Para personas fuera de Argentina, el precio es de 100 USD (con opción de PayPal); conviene confirmarlo por WhatsApp.
+Precio: $100.000 ARS por mes. Se puede pagar con Mercado Pago, en hasta 12 cuotas sin tarjeta (crédito sujeto a aprobación). Para personas fuera de Argentina, el precio es de 100 USD por mes (con opción de PayPal); conviene confirmarlo por WhatsApp.
 
 Cómo funciona:
 - Al inscribirte completás un cuestionario a distancia sobre tus objetivos. Con eso te preparan los planes.
@@ -109,7 +111,7 @@ Inscripción: en la tienda online (zardelfitness.com.ar/tienda), o con dudas por
 - ¿Es para cualquier persona? Sí. Quien tenga una condición médica debe tener primero la autorización de su médico para entrenar.
 - ¿Los entrenadores están certificados? Sí, son profesionales certificados en entrenamiento personal.
 - ¿La rutina es muy exigente? No. El entrenamiento es progresivo e individual.
-- ¿Qué diferencia hay entre el plan premium y el general? El Sistema Premium (ARS 420.000) tiene seguimiento cercano del Zardelfitness y dos asistentes premium, acceso con huella, traumatólogo, bebidas premium, pausa de hasta una semana y un amigo gratis por mes. El Sistema General Dirigido (ARS 170.000) es supervisado por los asistentes, compartido con las demás personas que entrenan, con acceso por clave y sin pausas.
+- ¿Qué diferencia hay entre el plan premium y el general? El Sistema Premium (ARS 420.000 por mes) tiene seguimiento cercano del Zardelfitness y dos asistentes premium, acceso con huella, traumatólogo, bebidas premium, pausa de hasta una semana y un amigo gratis por mes. El Sistema General Dirigido (ARS 170.000 por mes) es supervisado por los asistentes, compartido con las demás personas que entrenan, con acceso por clave y sin pausas.
 
 ## Entrenadores de Zar del Fitness
 
@@ -127,4 +129,4 @@ Inscripción: en la tienda online (zardelfitness.com.ar/tienda), o con dudas por
 
 ## Información que no tenemos
 
-No tenemos información sobre: qué período cubre el precio del Sistema General Dirigido (si es mensual), los medios de pago del Sistema Premium, la política de cancelación o reembolso, la edad mínima para entrenar en forma presencial, ni estacionamiento. Para estas consultas, la persona debe escribir por WhatsApp al 11 2733-6258 o al email contacto@zardelfitness.com.ar.
+No tenemos información sobre: los medios de pago del Sistema Premium, la política de cancelación o reembolso, la edad mínima para entrenar en forma presencial, ni estacionamiento. Para estas consultas, se puede transferir la llamada a Ronald para que dé más información, o escribir por WhatsApp al 11 2733-6258 o al email contacto@zardelfitness.com.ar.
