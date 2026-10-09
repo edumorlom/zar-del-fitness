@@ -4,17 +4,14 @@ Answers phone calls with an AI voice assistant that knows the gym's information 
 
 ```
 Caller ──► Twilio number ──► this server (FastAPI) ◄──► OpenAI Realtime API (listens and speaks)
-                                    │
-                                    └──► OpenAI vector store (the gym's documents)
 ```
 
 | File | What it is |
 |---|---|
 | `instructions.md` | How the assistant behaves: tone, language, rules. Edit freely. |
-| `knowledge/` | The gym's information (hours, prices, classes…). Markdown, text, PDF or Word. |
-| `upload_knowledge.py` | Uploads `knowledge/` to OpenAI so the assistant can search it. |
+| `knowledge/` | The gym's information (hours, prices, classes…), in Markdown or text files. The assistant gets all of it in its instructions at the start of every call, so it answers without looking anything up. |
 | `main.py` | The server that connects phone calls to OpenAI. |
-| `tools.py` | Functions the assistant can call: search the knowledge base, book a visit (sent by WhatsApp), transfer to Ronald. |
+| `tools.py` | Functions the assistant can call: book a visit (sent by WhatsApp), transfer to the front desk. |
 | `test_call.py` | Talk to the assistant through your microphone, without calling. |
 
 ## Setup
@@ -27,11 +24,7 @@ Caller ──► Twilio number ──► this server (FastAPI) ◄──► Open
 
 2. **Configure:** `cp .env.example .env` and fill in `OPENAI_API_KEY`, `TWILIO_ACCOUNT_SID` and `TWILIO_AUTH_TOKEN`.
 
-3. **Add the gym's information:** fill in `knowledge/gym-info.md` and add any other documents to `knowledge/`. Then upload them:
-   ```sh
-   .venv/bin/python upload_knowledge.py
-   ```
-   The first run prints a `VECTOR_STORE_ID`: put it in `.env`. Run the script again after every change to `knowledge/`.
+3. **Add the gym's information:** fill in `knowledge/gym-info.md`, and add any other `.md` or `.txt` files to `knowledge/`. The server reads them when it starts: restart it after a change (on Railway, push). Keep them to what a receptionist would know: every call sends all of it to OpenAI.
 
 4. **Expose your computer to the internet** (Twilio needs to reach it):
    ```sh
@@ -46,12 +39,12 @@ Caller ──► Twilio number ──► this server (FastAPI) ◄──► Open
 
 6. **Connect the phone number:** in the Twilio Console, open your number → *Voice Configuration* → *A call comes in* → Webhook `https://….ngrok-free.app/incoming-call`, method `HTTP POST`.
 
-7. **Call the number.** The terminal shows what the caller and the assistant say, and every knowledge base search.
+7. **Call the number.** The terminal shows what the caller and the assistant say.
 
 ## Deploy to Railway
 
 1. In Railway, create a project from the GitHub repo. The `Dockerfile` tells Railway how to build and start it.
-2. In the service's **Variables**, add `OPENAI_API_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `VECTOR_STORE_ID`, `TWILIO_WHATSAPP_FROM`, and optionally `TWILIO_WHATSAPP_TEMPLATE_SID`, `RONALD_PHONE`, `BOOKINGS_WHATSAPP_TO`, `OPENAI_REALTIME_MODEL`, `OPENAI_VOICE`, `BUSINESS_NAME` and `GREETING`. `PUBLIC_BASE_URL` isn't needed.
+2. In the service's **Variables**, add `OPENAI_API_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_FROM`, and optionally `TWILIO_WHATSAPP_TEMPLATE_SID`, `FRONT_DESK_PHONE`, `BOOKINGS_WHATSAPP_TO`, `OPENAI_REALTIME_MODEL`, `OPENAI_VOICE`, `BUSINESS_NAME` and `GREETING`. `PUBLIC_BASE_URL` isn't needed.
 3. In **Settings → Networking**, click **Generate Domain**. You get an address like `https://zar-del-fitness-production.up.railway.app`.
 4. In the Twilio Console, set the number's webhook to that address plus `/incoming-call`.
 
@@ -66,7 +59,7 @@ It connects to the server the same way Twilio does, so it tests everything excep
 
 ## Transfers and WhatsApp
 
-**Transfers.** When the caller asks for Ronald, the assistant says it's transferring them, then the call is forwarded to `RONALD_PHONE` (+1 786 715 4286). Ronald sees the caller's number. Twilio blocks calls to most countries outside the US by default: to transfer to another country, such as an Argentine number, enable that country in the Twilio Console under *Voice → Settings → Geo permissions*. Each transfer is also an outgoing call that Twilio bills.
+**Transfers.** When the caller asks for a person, the front desk or Ronald, the assistant says it's transferring them to one of the front desk advisors, then the call is forwarded to `FRONT_DESK_PHONE` (+1 786 715 4286), which sees the caller's number. Twilio blocks calls to most countries outside the US by default: to transfer to another country, such as an Argentine number, enable that country in the Twilio Console under *Voice → Settings → Geo permissions*. Each transfer is also an outgoing call that Twilio bills.
 
 **Booking confirmations.** When the assistant books a visit, the server sends it by WhatsApp, in Spanish, to `BOOKINGS_WHATSAPP_TO` (+1 786 715 4286): name, day, time, reason and the caller's number. To try it with Twilio's sandbox:
 

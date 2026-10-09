@@ -7,10 +7,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-OPENAI_REALTIME_MODEL = os.getenv("OPENAI_REALTIME_MODEL") or "gpt-realtime-2.1"
-OPENAI_VOICE = os.getenv("OPENAI_VOICE") or "marin"
+OPENAI_REALTIME_MODEL = os.getenv("OPENAI_REALTIME_MODEL") or "gpt-realtime-2.1-mini"
+OPENAI_VOICE = os.getenv("OPENAI_VOICE") or "cedar"
 OPENAI_REASONING_EFFORT = os.getenv("OPENAI_REASONING_EFFORT", "")
-VECTOR_STORE_ID = os.getenv("VECTOR_STORE_ID", "")
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
@@ -26,8 +25,8 @@ TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM", "")
 TWILIO_WHATSAPP_TEMPLATE_SID = os.getenv("TWILIO_WHATSAPP_TEMPLATE_SID", "")
 # Where booking confirmations are sent by WhatsApp.
 BOOKINGS_WHATSAPP_TO = os.getenv("BOOKINGS_WHATSAPP_TO") or "+17867154286"
-# Where calls are transferred when the caller asks for Ronald.
-RONALD_PHONE = os.getenv("RONALD_PHONE") or "+17867154286"
+# Where calls are transferred: the front desk advisors.
+FRONT_DESK_PHONE = os.getenv("FRONT_DESK_PHONE") or "+17867154286"
 
 BUSINESS_NAME = os.getenv("BUSINESS_NAME") or "Zar del Fitness"
 GREETING = os.getenv("GREETING") or f"¡Hola! Gracias por llamar a {BUSINESS_NAME}. ¿En qué te puedo ayudar?"

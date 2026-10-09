@@ -27,12 +27,12 @@ import tools
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("assistant")
+# The Twilio library logs every API request with its headers.
+logging.getLogger("twilio.http_client").setLevel(logging.WARNING)
 
 for name in ("OPENAI_API_KEY", "TWILIO_AUTH_TOKEN", "PUBLIC_BASE_URL"):
     if not getattr(config, name):
         raise RuntimeError(f"{name} is not set. Copy .env.example to .env and fill it in.")
-if not config.VECTOR_STORE_ID:
-    log.warning("VECTOR_STORE_ID is not set: the assistant has no knowledge base. Run upload_knowledge.py.")
 if not config.TWILIO_ACCOUNT_SID:
     log.warning("TWILIO_ACCOUNT_SID is not set: calls can't be transferred and bookings aren't sent by WhatsApp.")
 elif not config.TWILIO_WHATSAPP_FROM:
@@ -41,8 +41,14 @@ elif not config.TWILIO_WHATSAPP_FROM:
 BUENOS_AIRES = ZoneInfo("America/Argentina/Buenos_Aires")
 OPENAI_REALTIME_URL = f"wss://api.openai.com/v1/realtime?model={config.OPENAI_REALTIME_MODEL}"
 STREAM_URL = config.PUBLIC_BASE_URL.replace("https://", "wss://").replace("http://", "ws://") + "/media-stream"
+# The gym's information goes in the instructions, so the assistant answers without looking anything up.
+KNOWLEDGE = "\n\n".join(
+    path.read_text() for path in sorted((Path(__file__).parent / "knowledge").iterdir()) if path.suffix in (".md", ".txt")
+)
 INSTRUCTIONS = (
-    (Path(__file__).parent / "instructions.md").read_text().replace("{{BUSINESS_NAME}}", config.BUSINESS_NAME)
+    (Path(__file__).parent / "instructions.md").read_text()
+    .replace("{{BUSINESS_NAME}}", config.BUSINESS_NAME)
+    .replace("{{KNOWLEDGE}}", KNOWLEDGE)
 )
 
 app = FastAPI()
@@ -138,7 +144,7 @@ class CallSession:
         # When the call should end: we hang up once the caller has heard the assistant's last reply.
         self.end_after_next_reply = False
         self.ending = False
-        # Whether to transfer the call to Ronald instead of hanging up when it ends.
+        # Whether to transfer the call to the front desk instead of hanging up when it ends.
         self.transferring = False
 
     async def run(self):
@@ -158,7 +164,7 @@ class CallSession:
         # Only if the caller is still on the line and has heard they're being transferred.
         # If the transfer fails, the call ends.
         if self.transferring and self.done_talking() and await tools.transfer_call(self.call_sid):
-            log.info("Call %s transferred to Ronald", self.call_sid)
+            log.info("Call %s transferred to the front desk", self.call_sid)
         else:
             log.info("Call %s ended%s", self.call_sid, " (assistant hung up)" if self.ending else "")
 
@@ -257,7 +263,7 @@ class CallSession:
                 "type": "conversation.item.create",
                 "item": {"type": "function_call_output", "call_id": call["call_id"], "output": output},
             })
-        if any(call["name"] == "transfer_to_ronald" for call in calls):
+        if any(call["name"] == "transfer_to_front_desk" for call in calls):
             # Transfer once the caller has heard they're being transferred.
             self.transferring = True
             if any(item.get("type") == "message" for item in response["output"]):

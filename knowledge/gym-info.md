@@ -1,6 +1,6 @@
 # Zar del Fitness: información del negocio
 
-Fuentes: descripciones oficiales de los planes de Zar del Fitness (octubre de 2026) y el sitio web zardelfitness.com.ar. Si algo no está acá, Ronald Medina puede dar más información (se puede transferir la llamada a Ronald), o se puede escribir por WhatsApp al 11 2733-6258 (+54 9 11 2733-6258).
+Fuentes: descripciones oficiales de los planes de Zar del Fitness (octubre de 2026) y el sitio web zardelfitness.com.ar. Si algo no está acá, uno de nuestros asesores de recepción puede dar más información (se puede transferir la llamada a recepción), o se puede escribir por WhatsApp al 11 2733-6258 (+54 9 11 2733-6258).
 
 ## Qué es Zar del Fitness
 
@@ -129,4 +129,4 @@ Inscripción: en la tienda online (zardelfitness.com.ar/tienda), o con dudas por
 
 ## Información que no tenemos
 
-No tenemos información sobre: los medios de pago del Sistema Premium, la política de cancelación o reembolso, la edad mínima para entrenar en forma presencial, ni estacionamiento. Para estas consultas, se puede transferir la llamada a Ronald para que dé más información, o escribir por WhatsApp al 11 2733-6258 o al email contacto@zardelfitness.com.ar.
+No tenemos información sobre: los medios de pago del Sistema Premium, la política de cancelación o reembolso, la edad mínima para entrenar en forma presencial, ni estacionamiento. Para estas consultas, se puede transferir la llamada a uno de nuestros asesores de recepción para que dé más información, o escribir por WhatsApp al 11 2733-6258 o al email contacto@zardelfitness.com.ar.
