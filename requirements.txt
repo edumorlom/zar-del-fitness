@@ -1,0 +1,11 @@
+fastapi>=0.143
+uvicorn[standard]>=0.54
+python-multipart>=0.0.20
+websockets>=17.0
+openai>=3.26
+twilio>=9.11
+python-dotenv>=1.1
+tzdata>=2024.1
+# Only for test_call.py (talking to the assistant through your microphone)
+sounddevice>=0.5
+audioop-lts>=0.2; python_version >= "3.13"
