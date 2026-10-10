@@ -64,7 +64,8 @@
 
 /* El número es un contador CSS animado: corre aunque el JS todavía no haya cargado */
 .num {
-  counter-reset: pl var(--pl-count);
+  /* calc() redondea: Safari interpola --pl-count con decimales y counter-reset sólo acepta enteros */
+  counter-reset: pl calc(var(--pl-count));
   animation: count 1.5s 0.6s var(--ease-in-out) both;
 }
 .num::after {
