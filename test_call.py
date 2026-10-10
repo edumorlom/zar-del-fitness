@@ -15,6 +15,7 @@ import base64
 import collections
 import json
 import threading
+import time
 import uuid
 
 import sounddevice as sd
@@ -36,15 +37,19 @@ class Speaker:
         self.on_mark = on_mark
         self.queue = collections.deque()  # audio (bytearray) and mark names (str), in playback order
         self.lock = threading.Lock()
+        # When the assistant's audio last had speech in it. It streams nonstop, silence included.
+        self.last_speech_at = 0.0
         self.stream = sd.RawOutputStream(
             samplerate=SAMPLE_RATE, channels=1, dtype="int16", blocksize=CHUNK_SAMPLES, callback=self._play
         )
 
     @property
-    def playing(self) -> bool:
-        return bool(self.queue)
+    def talking(self) -> bool:
+        return time.monotonic() - self.last_speech_at < 0.5
 
     def add_audio(self, pcm: bytes):
+        if audioop.rms(pcm, 2) > 200:
+            self.last_speech_at = time.monotonic()
         with self.lock:
             self.queue.append(bytearray(pcm))
 
@@ -105,7 +110,7 @@ async def call(url: str, mute_while_assistant_talks: bool):
                     await ws.send(json.dumps({"event": "mark", "streamSid": stream_sid, "mark": {"name": data}}))
                     continue
                 timestamp += 20
-                audio = SILENCE if mute_while_assistant_talks and speaker.playing else audioop.lin2ulaw(data, 2)
+                audio = SILENCE if mute_while_assistant_talks and speaker.talking else audioop.lin2ulaw(data, 2)
                 await ws.send(json.dumps({
                     "event": "media",
                     "streamSid": stream_sid,

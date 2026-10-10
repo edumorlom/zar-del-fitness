@@ -1,4 +1,4 @@
-"""Functions the assistant can call during a phone call."""
+"""Functions the backend model calls during a phone call, when the voice model delegates a task to it."""
 
 import asyncio
 import datetime
@@ -15,13 +15,24 @@ import config
 
 log = logging.getLogger("assistant")
 
+# Instructions for the backend model. Those for the voice model, including when to delegate, are in instructions.md.
+BACKEND_INSTRUCTIONS = """## Voice conversation context
+Sos el backend del asistente telefónico de {business_name}. El asistente de voz te delega transferir la llamada o agendar una visita. Las transcripciones pueden tener errores, frases a medias y correcciones: usá lo último que confirmó la persona.
+
+## Task instructions
+- Hoy es {date}, son las {time} en Buenos Aires. Convertí días como "el martes" a su fecha.
+- Si la persona quiere hablar con alguien, usá transfer_to_front_desk.
+- Si la persona confirmó día, hora y teléfono de una visita, usá schedule_visit. Si falta un dato obligatorio, no lo inventes: decí cuál falta.
+
+## Return the result
+Respondé en una frase corta con el resultado y el próximo paso. Decí que algo está hecho solo si la herramienta lo confirmó."""
+
 TRANSFER_TO_FRONT_DESK = {
     "type": "function",
     "name": "transfer_to_front_desk",
     "description": (
         "Pasa la llamada a uno de los asesores de recepción del gimnasio. Usala cuando la persona pide hablar con "
-        "alguien, con recepción o con Ronald, o acepta tu ofrecimiento de pasarle la llamada. Antes de usarla, "
-        "decile que la pasás con un asesor de recepción."
+        "alguien, con recepción o con Ronald, o acepta que le pasen la llamada."
     ),
     "parameters": {"type": "object", "properties": {}},
 }
@@ -30,8 +41,8 @@ SCHEDULE_VISIT = {
     "type": "function",
     "name": "schedule_visit",
     "description": (
-        "Agenda una primera visita o un turno en el gimnasio. Antes de usarla, preguntale a la persona su nombre "
-        "y disponibilidad, acordá con ella un día y una hora, y confirmá su número de teléfono."
+        "Agenda una primera visita o un turno en el gimnasio. Usala solo cuando la persona ya dio su nombre y "
+        "confirmó el día, la hora y su número de teléfono."
     ),
     "parameters": {
         "type": "object",
@@ -59,7 +70,7 @@ SCHEDULE_VISIT = {
     },
 }
 
-# Tools offered to the model.
+# Tools offered to the backend model.
 TOOLS = [TRANSFER_TO_FRONT_DESK, SCHEDULE_VISIT]
 
 SPANISH_WEEKDAYS = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
@@ -75,7 +86,7 @@ background_tasks: set[asyncio.Task] = set()
 async def run_tool(name: str, arguments: str, caller_number: str) -> str:
     args = json.loads(arguments or "{}")
     if name == "transfer_to_front_desk":
-        # main.py transfers the call once the caller has heard the assistant's reply.
+        # main.py transfers the call once the caller has heard they're being transferred.
         # Results are data, not sentences: a Spanish sentence pulls the model into Spanish with other callers.
         return json.dumps({"transferencia": "en curso"})
     if name == "schedule_visit":

@@ -1,16 +1,19 @@
-"""Phone voice assistant: connects Twilio phone calls to the OpenAI Realtime API.
+"""Phone voice assistant: connects Twilio phone calls to OpenAI's GPT-Live voice model.
 
 Twilio calls POST /incoming-call when someone dials the number. We answer with TwiML that
 streams the call audio to the /media-stream WebSocket, which relays it to OpenAI and plays
-OpenAI's spoken replies back to the caller.
+OpenAI's spoken replies back to the caller. The voice model hands transfers and bookings
+to a backend model, which calls the functions in tools.py.
 """
 
 import asyncio
+import base64
 import contextlib
 import hashlib
 import hmac
 import json
 import logging
+import time
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -39,7 +42,7 @@ if not config.RESEND_API_KEY:
     log.warning("RESEND_API_KEY is not set: bookings aren't sent by email.")
 
 BUENOS_AIRES = ZoneInfo("America/Argentina/Buenos_Aires")
-OPENAI_REALTIME_URL = f"wss://api.openai.com/v1/realtime?model={config.OPENAI_REALTIME_MODEL}"
+OPENAI_LIVE_URL = "wss://api.openai.com/v1/live/sessions"
 STREAM_URL = config.PUBLIC_BASE_URL.replace("https://", "wss://").replace("http://", "ws://") + "/media-stream"
 # The gym's information goes in the instructions, so the assistant answers without looking anything up.
 KNOWLEDGE = "\n\n".join(
@@ -105,7 +108,7 @@ async def media_stream(twilio_ws: WebSocket):
 
     headers = {"Authorization": f"Bearer {config.OPENAI_API_KEY}"}
     try:
-        async with websocket_connect(OPENAI_REALTIME_URL, additional_headers=headers) as openai_ws:
+        async with websocket_connect(OPENAI_LIVE_URL, additional_headers=headers) as openai_ws:
             caller_number = start["customParameters"].get("caller", "")
             await CallSession(twilio_ws, openai_ws, start["streamSid"], start["callSid"], caller_number).run()
     except Exception:
@@ -130,8 +133,23 @@ async def wait_for_start(twilio_ws: WebSocket) -> dict | None:
     return None
 
 
+def ulaw_magnitude(byte: int) -> int:
+    """How loud one G.711 μ-law sample is, from 0 to 32124."""
+    byte = ~byte & 0xFF
+    return ((((byte & 0x0F) << 3) + 0x84) << ((byte >> 4) & 0x07)) - 0x84
+
+
+ULAW_MAGNITUDES = [ulaw_magnitude(byte) for byte in range(256)]
+# Average loudness above which the assistant's audio counts as speech. Its audio streams nonstop, silence included.
+SPEECH_LEVEL = 150
+
+
 class CallSession:
-    """Relays audio for one phone call between Twilio and OpenAI."""
+    """Relays audio for one phone call between Twilio and OpenAI.
+
+    GPT-Live listens while it talks and stops by itself when the caller interrupts. Its audio arrives at playback
+    speed, so Twilio never has much of it queued and there's nothing to clear.
+    """
 
     def __init__(self, twilio_ws: WebSocket, openai_ws, stream_sid: str, call_sid: str, caller_number: str):
         self.twilio_ws = twilio_ws
@@ -139,80 +157,92 @@ class CallSession:
         self.stream_sid = stream_sid
         self.call_sid = call_sid
         self.caller_number = caller_number
-        # Twilio's clock: milliseconds of caller audio received so far.
-        self.latest_media_ts = 0
-        # The assistant reply currently playing, when it started, and how many chunks are still queued.
-        self.playing_item = None
-        self.playing_since_ts = 0
-        self.queued_chunks = 0
-        # When the call should end: we hang up once the caller has heard the assistant's last reply.
-        self.end_after_next_reply = False
-        self.ending = False
-        # Whether to transfer the call to the front desk instead of hanging up when it ends.
-        self.transferring = False
+        # What each side is saying, logged once the other side speaks, and when they last spoke (ms into the call).
+        self.transcript = {"Caller": "", "Assistant": ""}
+        self.transcript_end_ms = {"Caller": 0, "Assistant": 0}
+        # When the assistant's current stretch of speech started and when it last spoke (time.monotonic()).
+        self.speech_started_at = 0.0
+        self.last_speech_at = 0.0
+        # Results of the backend's function calls, sent back once its response is complete.
+        self.function_outputs = []
+        # The backend started a transfer, and then replied to the voice model with the result.
+        self.transfer_requested = False
+        self.transfer_confirmed = asyncio.Event()
+        # Twilio echoed the mark sent before transferring: the caller has heard everything before it.
+        self.mark_played = asyncio.Event()
+        self.session_closed = False
 
     async def run(self):
-        await self.configure_session()
-        await self.send_openai({
-            "type": "response.create",
-            "response": {"instructions": f"Saludá a la persona diciendo exactamente: {config.GREETING}"},
-        })
+        await self.start_session()
 
-        tasks = [asyncio.create_task(self.from_twilio()), asyncio.create_task(self.from_openai())]
+        transfer = asyncio.create_task(self.wait_to_transfer())
+        tasks = [asyncio.create_task(self.from_twilio()), asyncio.create_task(self.from_openai()), transfer]
+        # Commentary is spoken right away; an instruction to greet takes a couple of seconds longer.
+        await self.send_openai({"type": "session.commentary.append", "delegation_id": None, "content": config.GREETING})
         done, pending = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
         for task in pending:
             task.cancel()
+        # Let them stop before close_session() reads from OpenAI.
+        await asyncio.gather(*pending, return_exceptions=True)
         for task in done:
             if error := task.exception():
                 log.error("Call %s: %r", self.call_sid, error)
+        self.log_transcript("Caller")
+        self.log_transcript("Assistant")
         # Only if the caller is still on the line and has heard they're being transferred.
         # If the transfer fails, the call ends.
-        if self.transferring and self.done_talking() and await tools.transfer_call(self.call_sid):
+        if transfer in done and not transfer.exception() and await tools.transfer_call(self.call_sid):
             log.info("Call %s transferred to the front desk", self.call_sid)
         else:
-            log.info("Call %s ended%s", self.call_sid, " (assistant hung up)" if self.ending else "")
+            log.info("Call %s ended", self.call_sid)
+        await self.close_session()
 
-    async def configure_session(self):
+    async def start_session(self):
         now = datetime.now(BUENOS_AIRES)
-        session = {
-            "type": "realtime",
-            "model": config.OPENAI_REALTIME_MODEL,
-            "output_modalities": ["audio"],
-            "instructions": INSTRUCTIONS
-            + "\n\n# Quién llama\n"
-            + (f"Llama desde el {self.caller_number}." if self.caller_number else "Su número está oculto.")
-            + "\n\n# Fecha y hora\n"
-            + f"Hoy es {tools.spanish_date(now.date().isoformat())} de {now.year}, son las {now:%H:%M} en Buenos Aires.",
-            "audio": {
-                "input": {
-                    # Phone audio is 8kHz G.711 μ-law, which OpenAI accepts and returns as-is.
-                    "format": {"type": "audio/pcmu"},
-                    "noise_reduction": {"type": "near_field"},
-                    "turn_detection": {"type": "server_vad"},
-                    # Transcribes what the caller says, for the logs. No language is set so it auto-detects.
-                    "transcription": {"model": "gpt-4o-mini-transcribe"},
-                },
-                "output": {"format": {"type": "audio/pcmu"}, "voice": config.OPENAI_VOICE},
-            },
+        today = f"{tools.spanish_date(now.date().isoformat())} de {now.year}"
+        backend = {
+            "model": config.OPENAI_BACKEND_MODEL,
+            "instructions": tools.BACKEND_INSTRUCTIONS.format(
+                business_name=config.BUSINESS_NAME, date=f"{today} ({now.date().isoformat()})", time=f"{now:%H:%M}"
+            ),
             "tools": tools.TOOLS,
             "tool_choice": "auto",
+            "parallel_tool_calls": False,
         }
         if config.OPENAI_REASONING_EFFORT:
-            session["reasoning"] = {"effort": config.OPENAI_REASONING_EFFORT}
-        await self.send_openai({"type": "session.update", "session": session})
+            backend["reasoning"] = {"effort": config.OPENAI_REASONING_EFFORT}
+        session = {
+            "model": config.OPENAI_LIVE_MODEL,
+            "instructions": INSTRUCTIONS
+            + "\n\n# Quién llama\n"
+            + (
+                f"Llama desde el {self.caller_number}, que termina en {self.caller_number[-4:]}."
+                if self.caller_number
+                else "Su número está oculto."
+            )
+            + "\n\n# Fecha y hora\n"
+            + f"Hoy es {today}, son las {now:%H:%M} en Buenos Aires.",
+            "audio": {
+                # Phone audio is 8kHz G.711 μ-law, which OpenAI accepts and returns as-is.
+                "format": {"type": "audio/pcmu", "rate": 8000},
+                "output": {"voice": config.OPENAI_VOICE},
+            },
+            # The voice model delegates transfers and bookings to the backend model, which calls our functions.
+            "delegation": {"type": "responses", "responses": backend},
+        }
+        await self.send_openai({"type": "session.start", "session": session})
+        event = json.loads(await self.openai_ws.recv())
+        if event["type"] != "session.started":
+            raise RuntimeError(f"OpenAI didn't start the session: {event}")
 
     async def from_twilio(self):
         async for message in self.twilio_ws.iter_text():
             data = json.loads(message)
             match data["event"]:
                 case "media":
-                    self.latest_media_ts = int(data["media"]["timestamp"])
-                    await self.send_openai({"type": "input_audio_buffer.append", "audio": data["media"]["payload"]})
+                    await self.send_openai({"type": "session.input_audio.append", "audio": data["media"]["payload"]})
                 case "mark":
-                    if data["mark"]["name"] == self.playing_item:
-                        self.queued_chunks -= 1
-                    if self.done_talking():
-                        return
+                    self.mark_played.set()
                 case "stop":
                     return
 
@@ -220,71 +250,97 @@ class CallSession:
         async for message in self.openai_ws:
             event = json.loads(message)
             match event["type"]:
-                case "response.output_audio.delta":
-                    await self.play_audio(event["item_id"], event["delta"])
-                case "input_audio_buffer.speech_started":
-                    await self.stop_playback()
-                case "response.done":
-                    await self.handle_response_done(event["response"])
-                    if self.done_talking():
-                        return
-                case "conversation.item.input_audio_transcription.completed":
-                    log.info("[%s] Caller: %s", self.call_sid, event["transcript"])
-                case "response.output_audio_transcript.done":
-                    log.info("[%s] Assistant: %s", self.call_sid, event["transcript"])
+                case "session.output_audio.delta":
+                    await self.play_audio(event["delta"])
+                case "session.input_transcript.delta":
+                    self.add_transcript("Caller", event)
+                case "session.output_transcript.delta":
+                    self.add_transcript("Assistant", event)
+                case "response.event":
+                    await self.handle_backend_event(event["event"])
+                case "session.closed":
+                    self.session_closed = True
+                    log.info("[%s] OpenAI closed the session (%s)", self.call_sid, event["reason"])
+                    return
                 case "error":
                     log.error("[%s] OpenAI error: %s", self.call_sid, event["error"])
 
-    async def play_audio(self, item_id: str, audio: str):
-        if item_id != self.playing_item:
-            self.playing_item = item_id
-            self.playing_since_ts = self.latest_media_ts
-            self.queued_chunks = 0
+    async def play_audio(self, audio: str):
+        chunk = base64.b64decode(audio)
+        if sum(ULAW_MAGNITUDES[byte] for byte in chunk) > SPEECH_LEVEL * len(chunk):
+            now = time.monotonic()
+            if now - self.last_speech_at > 0.3:
+                self.speech_started_at = now
+            self.last_speech_at = now
         await self.twilio_ws.send_json({"event": "media", "streamSid": self.stream_sid, "media": {"payload": audio}})
-        # Twilio echoes the mark back once the chunk before it has played, so we know what the caller heard.
-        await self.twilio_ws.send_json({"event": "mark", "streamSid": self.stream_sid, "mark": {"name": item_id}})
-        self.queued_chunks += 1
 
-    async def stop_playback(self):
-        """The caller started talking: stop the assistant mid-sentence."""
-        if self.playing_item and self.queued_chunks > 0:
-            # Tell OpenAI how much of its reply was actually heard, so the conversation history matches.
-            await self.send_openai({
-                "type": "conversation.item.truncate",
-                "item_id": self.playing_item,
-                "content_index": 0,
-                "audio_end_ms": max(0, self.latest_media_ts - self.playing_since_ts),
-            })
-            await self.twilio_ws.send_json({"event": "clear", "streamSid": self.stream_sid})
-        self.playing_item = None
-        self.queued_chunks = 0
+    async def handle_backend_event(self, event: dict):
+        """Runs the backend's function calls and sends it the results, so it can report back to the voice model."""
+        match event["type"]:
+            case "response.output_item.done" if event["item"]["type"] == "function_call":
+                call = event["item"]
+                output = await tools.run_tool(call["name"], call["arguments"], self.caller_number)
+                item = {"type": "function_call_output", "call_id": call["call_id"], "output": output}
+                self.function_outputs.append(item)
+                if call["name"] == "transfer_to_front_desk":
+                    self.transfer_requested = True
+            case "response.completed" | "response.failed" | "response.incomplete":
+                if event["type"] != "response.completed":
+                    log.error("[%s] Backend response %s: %s", self.call_sid, event["type"], event.get("response"))
+                if self.function_outputs:
+                    for item in self.function_outputs:
+                        await self.send_openai({"type": "response.item.create", "item": item})
+                    self.function_outputs = []
+                    await self.send_openai({"type": "response.create"})
+                elif self.transfer_requested:
+                    self.transfer_confirmed.set()
+            case "error":
+                log.error("[%s] Backend error: %s", self.call_sid, event.get("error"))
 
-    async def handle_response_done(self, response: dict):
-        if self.end_after_next_reply:
-            self.ending = True
+    async def wait_to_transfer(self):
+        """Returns once the caller has heard they're being transferred."""
+        await self.transfer_confirmed.wait()
+        confirmed_at = time.monotonic()
+        # The assistant tells the caller a second or two after the backend confirms. Wait until it has said it,
+        # or go ahead if it doesn't.
+        while True:
+            await asyncio.sleep(0.1)
+            now = time.monotonic()
+            if self.speech_started_at > confirmed_at:
+                if now - self.last_speech_at > 1 or now - confirmed_at > 20:
+                    break
+            elif now - confirmed_at > 5:
+                break
+        # Twilio echoes the mark once the audio before it has played.
+        await self.twilio_ws.send_json({"event": "mark", "streamSid": self.stream_sid, "mark": {"name": "transfer"}})
+        with contextlib.suppress(TimeoutError):
+            await asyncio.wait_for(self.mark_played.wait(), timeout=3)
+
+    def add_transcript(self, speaker: str, event: dict):
+        other = "Assistant" if speaker == "Caller" else "Caller"
+        # Both can talk at once; the other side's line is complete once they've stopped.
+        if event["start_ms"] >= self.transcript_end_ms[other]:
+            self.log_transcript(other)
+        self.transcript[speaker] += event["delta"]
+        self.transcript_end_ms[speaker] = event["end_ms"]
+
+    def log_transcript(self, speaker: str):
+        if text := self.transcript[speaker].strip():
+            log.info("[%s] %s: %s", self.call_sid, speaker, text)
+        self.transcript[speaker] = ""
+
+    async def close_session(self):
+        """Ends the OpenAI session cleanly, which reports how long it was billed for."""
+        if self.session_closed:
             return
-        calls = [item for item in response.get("output", []) if item.get("type") == "function_call"]
-        if not calls or response.get("status") != "completed":
-            return
-        for call in calls:
-            output = await tools.run_tool(call["name"], call["arguments"], self.caller_number)
-            await self.send_openai({
-                "type": "conversation.item.create",
-                "item": {"type": "function_call_output", "call_id": call["call_id"], "output": output},
-            })
-        if any(call["name"] == "transfer_to_front_desk" for call in calls):
-            # Transfer once the caller has heard they're being transferred.
-            self.transferring = True
-            if any(item.get("type") == "message" for item in response["output"]):
-                self.ending = True
-                return
-            # The assistant hasn't said anything yet, so let it speak first.
-            self.end_after_next_reply = True
-        await self.send_openai({"type": "response.create"})
-
-    def done_talking(self) -> bool:
-        """True when the call is ending and the assistant's last reply has finished playing."""
-        return self.ending and self.queued_chunks == 0
+        with contextlib.suppress(Exception):
+            await self.send_openai({"type": "session.close"})
+            async with asyncio.timeout(5):
+                async for message in self.openai_ws:
+                    event = json.loads(message)
+                    if event["type"] == "session.closed":
+                        log.info("[%s] OpenAI session lasted %s seconds", self.call_sid, event["usage"]["seconds"])
+                        return
 
     async def send_openai(self, event: dict):
         await self.openai_ws.send(json.dumps(event))

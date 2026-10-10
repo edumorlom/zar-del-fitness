@@ -7,8 +7,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-OPENAI_REALTIME_MODEL = os.getenv("OPENAI_REALTIME_MODEL") or "gpt-realtime-2.1-mini"
+# The voice model, which talks with the caller.
+OPENAI_LIVE_MODEL = os.getenv("OPENAI_LIVE_MODEL") or "gpt-live-1"
 OPENAI_VOICE = os.getenv("OPENAI_VOICE") or "cedar"
+# The backend model, which transfers calls and books visits when the voice model delegates them.
+OPENAI_BACKEND_MODEL = os.getenv("OPENAI_BACKEND_MODEL") or "gpt-6-luna"
 OPENAI_REASONING_EFFORT = os.getenv("OPENAI_REASONING_EFFORT", "")
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
