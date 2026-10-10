@@ -5,7 +5,11 @@
   z-index: 10000;
   display: grid;
   place-items: center;
-  background: radial-gradient(60% 60% at 50% 45%, #131313 0%, #000 70%);
+  /* El brillo dorado detrás del logo va en el fondo y no como filter en la imagen:
+     Safari/iOS a veces pinta un <img> con filter (drop-shadow, blur) como un rectángulo blanco. */
+  background:
+    radial-gradient(200px 130px at 50% calc(50% - 52px), rgba(214, 166, 29, 0.16), transparent),
+    radial-gradient(60% 60% at 50% 45%, #131313 0%, #000 70%);
   clip-path: inset(0% 0% 0% 0%);
   /* Fallback si el JS no llega a tiempo: se oculta solo poco después de la intro */
   animation: hide 0.4s 3.5s forwards;
@@ -21,7 +25,6 @@
 .logo {
   width: 100%;
   height: auto;
-  filter: drop-shadow(0 10px 40px rgba(214, 166, 29, 0.25));
   animation: logo-in 1s var(--ease-out) both;
 }
 @media (max-width: 640px) {
@@ -104,12 +107,6 @@
   from {
     opacity: 0;
     transform: scale(0.92);
-    filter: blur(10px) drop-shadow(0 10px 40px rgba(214, 166, 29, 0.25));
-  }
-  to {
-    opacity: 1;
-    transform: none;
-    filter: blur(0) drop-shadow(0 10px 40px rgba(214, 166, 29, 0.25));
   }
 }
 
