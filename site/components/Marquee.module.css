@@ -1,0 +1,50 @@
+.band {
+  position: relative;
+  padding-block: clamp(32px, 5vw, 64px);
+  overflow: hidden;
+  border-block: 1px solid var(--line);
+  background: var(--ink);
+}
+
+.row {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.track {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(20px, 3vw, 44px);
+  padding-right: clamp(20px, 3vw, 44px);
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 7vw, 6.4rem);
+  line-height: 1.15;
+  text-transform: uppercase;
+  will-change: transform;
+}
+
+.outline {
+  color: transparent;
+  -webkit-text-stroke: 1.2px var(--gold);
+}
+
+.spark {
+  width: 0.42em;
+  height: 0.42em;
+  color: var(--gold-bright);
+  flex: none;
+}
+
+.gold {
+  margin-top: clamp(16px, 2vw, 28px);
+  padding-block: 14px;
+  background: var(--grad-gold-flat);
+  color: var(--black);
+  transform: rotate(-1.6deg) scale(1.04);
+}
+.gold .track {
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+}
+.gold .spark {
+  color: var(--black);
+}

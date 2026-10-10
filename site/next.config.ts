@@ -1,9 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Static export to `out/` for plain hosting (cPanel/Apache)
+  output: "export",
+  trailingSlash: true,
+  images: { unoptimized: true },
+  // cacheComponents / partialPrefetching (PPR) are not allowed with `output: "export"`
 };
 
 export default nextConfig;

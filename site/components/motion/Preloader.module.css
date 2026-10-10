@@ -1,0 +1,81 @@
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(60% 60% at 50% 45%, #131313 0%, #000 70%);
+  clip-path: inset(0% 0% 0% 0%);
+  /* Fallback sin JS: se oculta solo a los 6s */
+  animation: hide 0.4s 6s forwards;
+}
+
+.inner {
+  display: grid;
+  justify-items: center;
+  gap: 28px;
+  width: min(320px, 72vw);
+}
+
+.logo {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 40px rgba(214, 166, 29, 0.25));
+}
+
+.meta {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.label {
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  padding-bottom: 10px;
+}
+
+.count {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 4.2rem;
+  line-height: 1;
+  background: var(--grad-gold);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+.count small {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.5rem;
+}
+
+.bar {
+  width: 100%;
+  height: 1px;
+  background: var(--line);
+  overflow: hidden;
+}
+.bar i {
+  display: block;
+  height: 100%;
+  background: var(--grad-gold-flat);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+@keyframes hide {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

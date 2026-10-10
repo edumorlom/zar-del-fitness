@@ -1,0 +1,90 @@
+.benefits {
+  background: var(--black);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 0.7fr 1.3fr;
+  gap: clamp(40px, 6vw, 100px);
+}
+
+.aside {
+  position: sticky;
+  top: 140px;
+  align-self: start;
+}
+.logo {
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  filter: drop-shadow(0 20px 50px rgba(214, 166, 29, 0.2));
+}
+
+.list {
+  border-top: 1px solid var(--line);
+}
+.list li {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: clamp(16px, 3vw, 40px);
+  padding: clamp(20px, 3vw, 34px) 8px;
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.5s var(--ease-out), padding 0.5s var(--ease-out);
+}
+/* Relleno dorado que barre la fila al hover */
+.list li::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--grad-gold-flat);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.55s var(--ease-out);
+}
+.list li:hover::before {
+  transform: scaleY(1);
+}
+.list li:hover {
+  color: var(--black);
+  padding-left: 24px;
+}
+.list li:hover .num,
+.list li:hover em {
+  color: var(--black);
+}
+
+.num {
+  flex: none;
+  color: var(--gold);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  transition: color 0.4s;
+}
+.text {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.8vw, 3.4rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+.text em {
+  color: var(--gold-light);
+  font-size: 1.05em;
+  transition: color 0.4s;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .aside {
+    position: static;
+  }
+  .logo {
+    max-width: 240px;
+  }
+}

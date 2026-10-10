@@ -1,0 +1,100 @@
+.faq {
+  background: var(--ink);
+  border-top: 1px solid var(--line);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: clamp(40px, 6vw, 100px);
+  align-items: start;
+}
+
+.head {
+  position: sticky;
+  top: 130px;
+}
+
+.item {
+  border-bottom: 1px solid var(--line);
+}
+.item:first-child {
+  border-top: 1px solid var(--line);
+}
+
+.q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+  padding: 26px 0;
+  text-align: left;
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  transition: color 0.3s;
+}
+.q:hover,
+.item[data-open="true"] .q {
+  color: var(--gold-light);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  transition: transform 0.5s var(--ease-out), background 0.3s, border-color 0.3s, color 0.3s;
+}
+.icon svg {
+  width: 18px;
+  height: 18px;
+}
+.item[data-open="true"] .icon {
+  transform: rotate(135deg);
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+  color: var(--black);
+}
+
+/* Alto animado con grid-template-rows 0fr → 1fr */
+.a {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.55s var(--ease-out);
+}
+.a > div {
+  overflow: hidden;
+}
+.a p {
+  padding: 0 60px 26px 0;
+  color: var(--muted);
+  font-size: 1rem;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.4s, transform 0.5s var(--ease-out);
+}
+.item[data-open="true"] .a {
+  grid-template-rows: 1fr;
+}
+.item[data-open="true"] .a p {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.1s;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .head {
+    position: static;
+  }
+  .a p {
+    padding-right: 0;
+  }
+}
