@@ -31,9 +31,17 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
+// Siempre arrancar arriba: sin restaurar el scroll anterior ni saltar al #ancla de la URL.
+// Corre en el <head>, antes de que se parsee el body y el navegador intente scrollear.
+const scrollTopScript =
+  'history.scrollRestoration="manual";if(location.hash)history.replaceState(null,"",location.pathname+location.search)';
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es-AR" className={`${anton.variable} ${instrument.variable} ${manrope.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: scrollTopScript }} />
+      </head>
       <body>
         <a className="skip-link" href="#main">
           Ir al contenido
