@@ -1,0 +1,51 @@
+name: Despliegue por FTP
+
+# Next.js exporta el sitio estático en out/ (output: "export"), junto con
+# public/ (incluido el .htaccess). Node sólo se usa durante el build.
+#
+# Las credenciales viven en GitHub → Settings → Secrets and variables →
+# Actions, nunca en este archivo.
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}   # permite lanzarlo a mano desde la pestaña Actions
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    # FTP_SERVER / FTP_USERNAME / FTP_PASSWORD viven en este entorno, no como
+    # secrets del repositorio: sin declarar el entorno acá, el job no los ve
+    # y la acción de FTP falla con "Input required and not supplied".
+    environment: "CPanel Variables"
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v7
+
+      - name: Preparar Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Verificar y construir el sitio
+        run: npm run check
+
+      - name: Subir por FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # cPanel sirve el dominio principal (zardelfitness.com.ar) desde
+          # public_html/, así que ese es el valor por defecto. Si la cuenta
+          # FTP ya nace encerrada ahí adentro (se elige un "Directory" al
+          # crearla en cPanel → FTP Accounts), creá el secret FTP_SERVER_DIR
+          # con "./" para no terminar subiendo a public_html/public_html/.
+          # Si es un dominio adicional, poné su carpeta (p. ej.
+          # "zardelfitness.com.ar/").
+          server-dir: ${{ secrets.FTP_SERVER_DIR || 'public_html/' }}
+          local-dir: out/
