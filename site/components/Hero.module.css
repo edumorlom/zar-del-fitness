@@ -257,12 +257,12 @@
 }
 .tag span {
   display: block;
-  margin-top: 2px;
-  color: var(--muted);
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 0.95rem;
-  line-height: 1.25;
+  margin-top: 4px;
+  color: var(--gold-light);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.45;
 }
 
 /* Footer del hero */

@@ -123,7 +123,7 @@ export function About() {
             </dd>
           </div>
           <div className={styles.stat}>
-            <dt>Emmy Winner · Detrás del espejo</dt>
+            <dt>Emmy Winner</dt>
             <dd>
               <span data-count="2024" data-from="2000">
                 2024
