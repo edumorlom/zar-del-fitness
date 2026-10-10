@@ -23,6 +23,7 @@ Sos el backend del asistente telefónico de {business_name}. El asistente de voz
 - Hoy es {date}, son las {time} en Buenos Aires. Convertí días como "el martes" a su fecha.
 - Si la persona quiere hablar con alguien, usá transfer_to_front_desk.
 - Si la persona confirmó día, hora y teléfono de una visita, usá schedule_visit. Si falta un dato obligatorio, no lo inventes: decí cuál falta.
+- schedule_visit solo agenda dentro del horario del gimnasio. Si responde que la visita está fuera del horario, decí que no se agendó y cuál es el horario.
 
 ## Return the result
 Respondé en una frase corta con el resultado y el próximo paso. Decí que algo está hecho solo si la herramienta lo confirmó."""
@@ -42,7 +43,8 @@ SCHEDULE_VISIT = {
     "name": "schedule_visit",
     "description": (
         "Agenda una primera visita o un turno en el gimnasio. Usala solo cuando la persona ya dio su nombre y "
-        "confirmó el día, la hora y su número de teléfono."
+        "confirmó el día, la hora y su número de teléfono. Solo agenda de lunes a viernes, empezando entre las 8:00 "
+        "y las 11:00 o entre las 14:30 y las 20:00."
     ),
     "parameters": {
         "type": "object",
@@ -73,6 +75,10 @@ SCHEDULE_VISIT = {
 # Tools offered to the backend model.
 TOOLS = [TRANSFER_TO_FRONT_DESK, SCHEDULE_VISIT]
 
+# When a visit can start, as in knowledge/gym-info.md: Monday to Friday, from opening to each shift's last entry.
+OPEN_WEEKDAYS = range(5)
+VISIT_START_HOURS = [(datetime.time(8, 0), datetime.time(11, 0)), (datetime.time(14, 30), datetime.time(20, 0))]
+
 SPANISH_WEEKDAYS = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
 SPANISH_MONTHS = [
     "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -90,7 +96,24 @@ async def run_tool(name: str, arguments: str, caller_number: str) -> str:
         # Results are data, not sentences: a Spanish sentence pulls the model into Spanish with other callers.
         return json.dumps({"transferencia": "en curso"})
     if name == "schedule_visit":
-        # Not connected to a calendar yet: any time is accepted, the booking is logged and emailed.
+        try:
+            day = datetime.date.fromisoformat(args.get("date") or "")
+            # The model sometimes writes "8:00" for "08:00".
+            start = datetime.time.fromisoformat((args.get("time") or "").zfill(5))
+        except ValueError:
+            return json.dumps({"turno_agendado": False, "error": "fecha u hora inválida: usá AAAA-MM-DD y HH:MM"})
+        if day.weekday() not in OPEN_WEEKDAYS or not any(
+            opens <= start <= last_entry for opens, last_entry in VISIT_START_HOURS
+        ):
+            log.info("Visit outside opening hours, not booked: %s", args)
+            return json.dumps({
+                "turno_agendado": False,
+                "motivo": "fuera del horario del gimnasio",
+                "dias": "lunes a viernes, no feriados",
+                "horas_de_inicio": ["08:00 a 11:00", "14:30 a 20:00"],
+                "responder_en": args.get("language") or "el idioma de la persona",
+            }, ensure_ascii=False)
+        # Not connected to a calendar yet: any time within opening hours is accepted, the booking is logged and emailed.
         log.info("Visit booked: %s", args)
         if config.RESEND_API_KEY:
             # In the background, so the caller doesn't wait for the email.
