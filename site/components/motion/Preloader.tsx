@@ -6,6 +6,8 @@ import { gsap, useGSAP, reducedMotion } from "@/lib/gsap";
 import { scroll } from "@/lib/scroll";
 import styles from "./Preloader.module.css";
 
+const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
 export function Preloader({ onDone }: { onDone: () => void }) {
   const root = useRef<HTMLDivElement>(null);
   const [gone, setGone] = useState(false);
@@ -13,13 +15,14 @@ export function Preloader({ onDone }: { onDone: () => void }) {
   useGSAP(
     () => {
       const el = root.current!;
-      el.style.animation = "none"; // desactiva el fallback CSS: JS toma el control
 
-      if (reducedMotion()) {
+      // Sin animaciones, o el JS llegó tarde y el fallback CSS ya lo está ocultando: no volver a mostrarlo.
+      if (reducedMotion() || getComputedStyle(el).opacity !== "1") {
         setGone(true);
         onDone();
         return;
       }
+      el.style.animation = "none"; // desactiva el fallback CSS: JS toma el control de la salida
 
       let locked = true;
       let cancelled = false;
@@ -28,40 +31,30 @@ export function Preloader({ onDone }: { onDone: () => void }) {
         locked = false;
       };
       scroll.lock();
-      const count = el.querySelector<HTMLElement>("[data-pl-count]")!;
-      const counter = { v: 0 };
+
+      // La intro (logo, contador, barra) es CSS y ya viene corriendo desde el primer pintado.
+      // Se espera a que termine y a las fuentes, ambas con tope para no quedar nunca colgados.
+      const bar = el.querySelector<HTMLElement>(`.${styles.bar} i`)!;
+      const introDone = Promise.all((bar.getAnimations?.() ?? []).map((a) => a.finished.catch(() => {})));
       const fontsReady = document.fonts?.ready ?? Promise.resolve();
 
-      const intro = gsap.timeline();
-      intro
-        .from(`.${styles.logo}`, { autoAlpha: 0, scale: 0.92, filter: "blur(10px)", duration: 1, ease: "power3.out" })
-        .from(`.${styles.meta}`, { autoAlpha: 0, y: 16, duration: 0.6, ease: "power3.out" }, "-=0.6")
-        .to(counter, {
-          v: 25,
-          duration: 1.5,
-          ease: "power2.inOut",
-          onUpdate: () => {
-            count.textContent = String(Math.round(counter.v)).padStart(2, "0");
-          },
-        }, "-=0.4")
-        .to(`.${styles.bar} i`, { scaleX: 1, duration: 1.5, ease: "power2.inOut" }, "<");
-
-      // Sale cuando terminó la intro y las fuentes están listas.
-      Promise.all([intro.then(), fontsReady]).then(() => {
-        if (cancelled) return;
-        gsap
-          .timeline({
-            onComplete: () => {
-              setGone(true);
-            },
-          })
-          .to(`.${styles.inner}`, { y: -40, autoAlpha: 0, duration: 0.5, ease: "power2.in" })
-          .to(el, { clipPath: "inset(0% 0% 100% 0%)", duration: 1, ease: "expo.inOut" }, "-=0.1")
-          .add(() => {
-            release();
-            onDone();
-          }, "-=0.55");
-      });
+      Promise.race([introDone, wait(2500)])
+        .then(() => Promise.race([fontsReady, wait(1000)]))
+        .then(() => {
+          if (cancelled) return;
+          gsap
+            .timeline({
+              onComplete: () => {
+                setGone(true);
+              },
+            })
+            .to(`.${styles.inner}`, { y: -40, autoAlpha: 0, duration: 0.5, ease: "power2.in" })
+            .to(el, { clipPath: "inset(0% 0% 100% 0%)", duration: 1, ease: "expo.inOut" }, "-=0.1")
+            .add(() => {
+              release();
+              onDone();
+            }, "-=0.55");
+        });
 
       // StrictMode/HMR: si se desmonta antes de terminar, liberar el scroll.
       return () => {
@@ -81,7 +74,7 @@ export function Preloader({ onDone }: { onDone: () => void }) {
         <div className={styles.meta}>
           <span className={styles.label}>Reto de los</span>
           <span className={styles.count}>
-            <span data-pl-count>00</span>
+            <span className={styles.num} />
             <small>días</small>
           </span>
         </div>

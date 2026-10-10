@@ -1,4 +1,5 @@
 .preloader {
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   position: fixed;
   inset: 0;
   z-index: 10000;
@@ -6,8 +7,8 @@
   place-items: center;
   background: radial-gradient(60% 60% at 50% 45%, #131313 0%, #000 70%);
   clip-path: inset(0% 0% 0% 0%);
-  /* Fallback sin JS: se oculta solo a los 6s */
-  animation: hide 0.4s 6s forwards;
+  /* Fallback si el JS no llega a tiempo: se oculta solo poco después de la intro */
+  animation: hide 0.4s 3.5s forwards;
 }
 
 .inner {
@@ -21,6 +22,7 @@
   width: 100%;
   height: auto;
   filter: drop-shadow(0 10px 40px rgba(214, 166, 29, 0.25));
+  animation: logo-in 1s var(--ease-out) both;
 }
 
 .meta {
@@ -28,6 +30,7 @@
   align-items: flex-end;
   justify-content: space-between;
   width: 100%;
+  animation: meta-in 0.6s 0.4s var(--ease-out) both;
 }
 
 .label {
@@ -59,6 +62,15 @@
   font-size: 1.5rem;
 }
 
+/* El número es un contador CSS animado: corre aunque el JS todavía no haya cargado */
+.num {
+  counter-reset: pl var(--pl-count);
+  animation: count 1.5s 0.6s var(--ease-in-out) both;
+}
+.num::after {
+  content: counter(pl, decimal-leading-zero);
+}
+
 .bar {
   width: 100%;
   height: 1px;
@@ -71,6 +83,50 @@
   background: var(--grad-gold-flat);
   transform: scaleX(0);
   transform-origin: left;
+  animation: fill 1.5s 0.6s var(--ease-in-out) both;
+}
+
+/* Intro en CSS pura: arranca con el primer pintado, sin esperar al bundle de JS.
+   El JS sólo espera a que termine (ver Preloader.tsx) para hacer la salida. */
+@property --pl-count {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes logo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(10px) drop-shadow(0 10px 40px rgba(214, 166, 29, 0.25));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0) drop-shadow(0 10px 40px rgba(214, 166, 29, 0.25));
+  }
+}
+
+@keyframes meta-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@keyframes count {
+  from {
+    --pl-count: 0;
+  }
+  to {
+    --pl-count: 25;
+  }
+}
+
+@keyframes fill {
+  to {
+    transform: scaleX(1);
+  }
 }
 
 @keyframes hide {

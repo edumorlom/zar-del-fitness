@@ -156,16 +156,16 @@ function Seal({ id }: { id: string }) {
       </text>
       {sparkle(CX - 153)}
       {sparkle(CX + 153)}
-      <text x={CX + 3} y={196} fontSize="22" letterSpacing="6" textAnchor="middle" fill={INK} className={styles.sans}>
+      <text x={CX + 3} y={198} fontSize="20" letterSpacing="6" textAnchor="middle" fill={INK} className={styles.sans}>
         DE LOS
       </text>
-      <text x={CX} y={306} fontSize="128" textAnchor="middle" fill={INK} className={styles.display}>
+      <text x={CX} y={314} fontSize="104" textAnchor="middle" fill={INK} className={styles.display}>
         25
       </text>
-      <text x={CX + 3} y={342} fontSize="24" letterSpacing="6" textAnchor="middle" fill={INK} className={styles.sans}>
+      <text x={CX + 3} y={350} fontSize="22" letterSpacing="6" textAnchor="middle" fill={INK} className={styles.sans}>
         DÍAS
       </text>
-      <path d={`M${CX - 92} 334h40M${CX + 52} 334h40`} stroke={INK} strokeWidth="3" strokeLinecap="round" />
+      <path d={`M${CX - 88} 342h36M${CX + 52} 342h36`} stroke={INK} strokeWidth="3" strokeLinecap="round" />
     </>
   );
 }
