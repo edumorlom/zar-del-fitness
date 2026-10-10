@@ -14,7 +14,7 @@ export const links = {
     "https://www.google.com/maps/dir/?api=1&destination=Alvarez+Thomas+847,+Colegiales,+CABA",
   mapEmbed:
     "https://www.google.com/maps?q=Alvarez+Thomas+847,+Colegiales,+Buenos+Aires&output=embed",
-  waInfo: wa("Hola! Quiero info sobre el Reto de los 25 días"),
+  waInfo: wa("Hola! Quiero información sobre los sistemas de entrenamiento del Zar."),
   waPresencial: wa("Hola! Quiero consultar sobre el Entrenamiento Presencial"),
   waInternacional: wa("Hola! Quiero el Reto de los 25 días online internacional"),
   waDudas: wa("Hola! Tengo una duda sobre el reto"),
