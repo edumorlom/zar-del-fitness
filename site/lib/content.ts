@@ -50,6 +50,8 @@ export const videos = {
   historia: "eZF-MLaF45g",
 };
 
+export type ProgramArtVariant = "online" | "premium" | "general" | "reto";
+
 export type Program = {
   tag: string;
   title: string;
@@ -58,7 +60,7 @@ export type Program = {
   suffix?: string;
   desc: string;
   features: string[];
-  image: { src: string; alt: string; w: number; h: number; contain?: boolean };
+  art: { variant: ProgramArtVariant; label: string };
   cta: { label: string; href: string };
   featured?: boolean;
 };
@@ -79,7 +81,7 @@ export const programs: Program[] = [
       "Controles cada 15 días",
       "Asistencia permanente por WhatsApp",
     ],
-    image: { src: "/img/sistema-online.webp", alt: "Sistema online de entrenamiento", w: 1024, h: 683 },
+    art: { variant: "online", label: "Sistema Online de entrenamiento" },
     cta: { label: "Inscribirme", href: links.retoOnline },
   },
   {
@@ -97,7 +99,7 @@ export const programs: Program[] = [
       "Médico traumatólogo exclusivo",
       "Traé un amigo una vez al mes",
     ],
-    image: { src: "/img/sistema-premium.webp", alt: "Sistema premium de entrenamiento by Zar del Fitness", w: 1024, h: 683 },
+    art: { variant: "premium", label: "Sistema Premium de entrenamiento" },
     cta: { label: "Inscribirme", href: links.presencialCheckout },
     featured: true,
   },
@@ -116,7 +118,7 @@ export const programs: Program[] = [
       "Gimnasio The VIP incluido",
       "Lunes a viernes, clases de 1\u00a0h\u00a020\u00a0min",
     ],
-    image: { src: "/img/sistema-general.webp", alt: "Sistema General Dirigido by Zar del Fitness", w: 1024, h: 640 },
+    art: { variant: "general", label: "Sistema General Dirigido" },
     cta: { label: "Inscribirme", href: links.generalCheckout },
   },
   {
@@ -132,7 +134,7 @@ export const programs: Program[] = [
       "Controles día 1, 15 y 25",
       "Suplementación deportiva (si se requiere)",
     ],
-    image: { src: "/img/reto-seal.webp", alt: "Sello: comienza el reto de los 25 días by Ronald Medina", w: 800, h: 800, contain: true },
+    art: { variant: "reto", label: "Sello: comienza el reto de los 25 días, internacional" },
     cta: { label: "Quiero empezar", href: links.waInternacional },
   },
 ];

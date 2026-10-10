@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { Icon } from "./Icon";
+import { ProgramArt } from "./ProgramArt";
 import { TiltCard } from "./TiltCard";
 import { programs } from "@/lib/content";
 import styles from "./Programs.module.css";
@@ -33,8 +33,8 @@ export function Programs() {
               <TiltCard className={`${styles.card} ${p.featured ? styles.featured : ""}`}>
                 <div className={styles.glow} aria-hidden="true" />
                 {p.featured && <span className={styles.ribbon}>Experiencia exclusiva</span>}
-                <div className={`${styles.media} ${p.image.contain ? styles.contain : ""}`}>
-                  <Image src={p.image.src} alt={p.image.alt} width={p.image.w} height={p.image.h} sizes="(max-width: 700px) 90vw, (max-width: 1240px) 45vw, 25vw" />
+                <div className={styles.media}>
+                  <ProgramArt variant={p.art.variant} label={p.art.label} />
                 </div>
                 <div className={styles.body}>
                   <p className="tag">{p.tag}</p>
