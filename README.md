@@ -9,7 +9,7 @@ Quien llama ──► número de Twilio ──► este servidor (FastAPI) ◄─
                                                      modelo backend (transfiere y agenda, con tools.py)
 ```
 
-El modelo de voz, `gpt-live-1`, conversa con quien llama y responde con la información del gimnasio. Cuando hay que pasar la llamada o agendar una visita, le delega la tarea a un modelo backend (`gpt-6.1-sol`, con reasoning effort `low`), que usa las funciones de `tools.py` y le devuelve el resultado para que se lo diga a la persona.
+El modelo de voz, `gpt-live-1`, conversa con quien llama y responde con la información del gimnasio. Cuando hay que pasar la llamada o agendar una visita, le delega la tarea a un modelo backend (`gpt-6.1-sol`), que usa las funciones de `tools.py` y le devuelve el resultado para que se lo diga a la persona.
 
 | Archivo | Qué es |
 |---|---|
