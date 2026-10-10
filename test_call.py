@@ -21,8 +21,8 @@ import uuid
 import sounddevice as sd
 from websockets.asyncio.client import connect
 
-import config
-from main import stream_token
+from assistant import config
+from assistant.server import stream_token
 
 # Phone audio, like Twilio sends: 8 kHz, 16-bit samples encoded as μ-law, in 20 ms chunks.
 SAMPLE_RATE = 8000

@@ -1,10 +1,13 @@
 """Settings, read from the .env file (see .env.example)."""
 
+import logging
 import os
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+log = logging.getLogger(__name__)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 # The voice model, which talks with the caller.
@@ -36,3 +39,19 @@ BUSINESS_NAME = os.getenv("BUSINESS_NAME") or "Zar del Fitness"
 GREETING = os.getenv("GREETING") or f"¡Hola! Gracias por llamar a {BUSINESS_NAME}. ¿En qué te puedo ayudar?"
 
 PORT = int(os.getenv("PORT") or 8000)
+
+
+def check():
+    """Stops the server from starting without the settings it needs, and warns about features that are off."""
+    required = {
+        "OPENAI_API_KEY": OPENAI_API_KEY,
+        "TWILIO_AUTH_TOKEN": TWILIO_AUTH_TOKEN,
+        "PUBLIC_BASE_URL": PUBLIC_BASE_URL,
+    }
+    for name, value in required.items():
+        if not value:
+            raise RuntimeError(f"{name} is not set. Copy .env.example to .env and fill it in.")
+    if not TWILIO_ACCOUNT_SID:
+        log.warning("TWILIO_ACCOUNT_SID is not set: calls can't be transferred.")
+    if not RESEND_API_KEY:
+        log.warning("RESEND_API_KEY is not set: bookings aren't sent by email.")

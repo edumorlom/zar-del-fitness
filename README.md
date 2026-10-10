@@ -6,18 +6,32 @@ Atiende las llamadas con un asistente de voz con IA que conoce la información d
 Quien llama ──► número de Twilio ──► este servidor (FastAPI) ◄──► OpenAI GPT-Live (escucha y habla)
                                                                        │ delega
                                                                        ▼
-                                                     modelo backend (transfiere y agenda, con tools.py)
+                                                     modelo backend (transfiere y agenda)
 ```
 
-El modelo de voz, `gpt-live-1`, conversa con quien llama y responde con la información del gimnasio. Cuando hay que pasar la llamada o agendar una visita, le delega la tarea a un modelo backend (`gpt-6.1-sol`), que usa las funciones de `tools.py` y le devuelve el resultado para que se lo diga a la persona.
+El modelo de voz, `gpt-live-1`, conversa con quien llama y responde con la información del gimnasio. Cuando hay que pasar la llamada o agendar una visita, le delega la tarea a un modelo backend (`gpt-6.1-sol`), que usa las funciones de `assistant/transfer.py` y `assistant/visits.py` y le devuelve el resultado para que se lo diga a la persona.
 
 | Archivo | Qué es |
 |---|---|
 | `instructions.md` | Cómo se comporta el asistente: tono, idioma, reglas y cuándo delegar tareas al backend ("Delegation policy"). Se puede editar libremente. |
 | `knowledge/` | La información del gimnasio (horarios, precios, clases…), en archivos Markdown o de texto. El asistente la recibe completa en sus instrucciones al empezar cada llamada, así que responde sin buscar nada. |
-| `main.py` | El servidor que conecta las llamadas con OpenAI. |
-| `tools.py` | Las instrucciones del modelo backend y sus funciones: agendar una visita (que se envía por email al gimnasio) y pasar la llamada a recepción. |
+| `main.py` | Arranca el servidor. |
+| `assistant/` | El código del servidor (ver abajo). |
 | `test_call.py` | Para hablar con el asistente desde el micrófono, sin llamar. |
+
+En `assistant/`, en el orden en que pasa una llamada:
+
+| Archivo | Qué hace |
+|---|---|
+| `server.py` | Atiende a Twilio: responde cada llamada nueva y recibe su audio. |
+| `call_session.py` | Una llamada: pasa el audio entre Twilio y OpenAI, ejecuta las funciones que pide el backend y transfiere la llamada. |
+| `live_session.py` | Configura el modelo de voz: `instructions.md`, `knowledge/`, la voz, y quién llama y cuándo. |
+| `backend.py` | El modelo backend: sus instrucciones, sus funciones y cómo se ejecutan. |
+| `transfer.py` | Función del backend: pasar la llamada a recepción. |
+| `visits.py` | Función del backend: agendar una visita dentro del horario y enviarla por email al gimnasio. |
+| `emails.py` | Envía emails con Resend. |
+| `speech.py`, `transcript.py`, `spanish.py` | Detectar cuándo habla el asistente, mostrar la conversación en el log y escribir fechas en español. |
+| `config.py` | La configuración, leída de `.env`. |
 
 ## Instalación
 
