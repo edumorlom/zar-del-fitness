@@ -24,6 +24,11 @@
   filter: drop-shadow(0 10px 40px rgba(214, 166, 29, 0.25));
   animation: logo-in 1s var(--ease-out) both;
 }
+@media (max-width: 640px) {
+  .logo {
+    width: 80%;
+  }
+}
 
 .meta {
   display: flex;
