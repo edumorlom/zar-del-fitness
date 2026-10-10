@@ -18,6 +18,7 @@ export const links = {
   waPresencial: wa("Hola! Quiero consultar sobre el Entrenamiento Presencial"),
   waInternacional: wa("Hola! Quiero el Reto de los 25 días online internacional"),
   waDudas: wa("Hola! Tengo una duda sobre el reto"),
+  emmy: "https://youtu.be/g-ENoAJHebQ",
 };
 
 export const contact = {
@@ -207,7 +208,7 @@ export const schedule = {
 };
 
 export const press = [
-  { src: "Emmy 2024", title: "Detrás del espejo: el lado oscuro del fitness", kind: "Premio", href: "https://youtu.be/g-ENoAJHebQ", preview: "/img/press-emmy.webp" },
+  { src: "Emmy 2024", title: "Detrás del espejo: el lado oscuro del fitness", kind: "Premio", href: links.emmy, preview: "/img/press-emmy.webp" },
   { src: "TN", title: "La historia del entrenador de los famosos", kind: "Entrevista", href: "https://tn.com.ar/show/basicas/la-dura-historia-de-ronald-medina-el-entrenador-de-los-famosos-que-se-fue-de-venezuela-despues-de_866544/", preview: "/img/ronald-portrait.webp" },
   { src: "Olé", title: "Fitness con el Zar", kind: "Entrevista", href: "https://www.ole.com.ar/running/fitness_0_SvUQ4lGRR.html", preview: "/img/ronald-white.webp" },
   { src: "Pronto", title: "El cambio de Rodrigo Noya en 25 días", kind: "Transformación", href: "https://www.pronto.com.ar/articulo/famosos/antes-despues-tremendo-cambio-fisico-rodrigo-noya-25-dias/20180922160638298499.html", preview: "/img/t09.webp" },

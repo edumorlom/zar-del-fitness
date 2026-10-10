@@ -219,17 +219,35 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 18px 12px 14px;
+  max-width: 300px;
+  padding: 12px 16px 12px 14px;
   border-radius: 16px;
   background: rgba(19, 19, 19, 0.7);
   border: 1px solid var(--line-gold);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.3s, background-color 0.3s;
+}
+.tag:hover {
+  border-color: var(--gold-light);
+  background: rgba(19, 19, 19, 0.85);
 }
 .tag > svg {
+  flex: none;
   width: 26px;
   height: 26px;
   color: var(--gold-light);
+}
+.tag > .tagArrow {
+  width: 16px;
+  height: 16px;
+  align-self: flex-start;
+  transition: transform 0.3s var(--ease-out);
+}
+.tag:hover .tagArrow {
+  transform: translate(2px, -2px);
 }
 .tag strong {
   display: block;
@@ -239,10 +257,12 @@
 }
 .tag span {
   display: block;
+  margin-top: 2px;
   color: var(--muted);
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 0.95rem;
+  line-height: 1.25;
 }
 
 /* Footer del hero */

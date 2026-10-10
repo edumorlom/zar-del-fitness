@@ -135,13 +135,14 @@ export function Hero() {
           </div>
 
           <div className={styles.tagWrap} data-depth="22">
-            <div className={styles.tag} data-hero-fade>
+            <a className={styles.tag} href={links.emmy} target="_blank" rel="noopener noreferrer" data-cursor="Play" data-hero-fade>
               <Icon name="spark" />
               <div>
                 <strong>Emmy Winner 2024</strong>
-                <span>Detrás del espejo</span>
+                <span>DETRÁS DEL ESPEJO: EL LADO OSCURO DEL FITNESS</span>
               </div>
-            </div>
+              <Icon name="arrow-ur" className={styles.tagArrow} />
+            </a>
           </div>
         </div>
       </div>
