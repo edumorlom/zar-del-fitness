@@ -11,8 +11,9 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 OPENAI_LIVE_MODEL = os.getenv("OPENAI_LIVE_MODEL") or "gpt-live-1"
 OPENAI_VOICE = os.getenv("OPENAI_VOICE") or "cedar"
 # The backend model, which transfers calls and books visits when the voice model delegates them.
-OPENAI_BACKEND_MODEL = os.getenv("OPENAI_BACKEND_MODEL") or "gpt-6-luna"
-OPENAI_REASONING_EFFORT = os.getenv("OPENAI_REASONING_EFFORT", "")
+OPENAI_BACKEND_MODEL = os.getenv("OPENAI_BACKEND_MODEL") or "gpt-6.1-sol"
+# The backend model's reasoning effort. Lower is faster; "low" is the lowest gpt-6.1-sol accepts.
+OPENAI_REASONING_EFFORT = os.getenv("OPENAI_REASONING_EFFORT") or "low"
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")

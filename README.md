@@ -9,7 +9,7 @@ Quien llama ──► número de Twilio ──► este servidor (FastAPI) ◄─
                                                      modelo backend (transfiere y agenda, con tools.py)
 ```
 
-El modelo de voz, `gpt-live-1`, conversa con quien llama y responde con la información del gimnasio. Cuando hay que pasar la llamada o agendar una visita, le delega la tarea a un modelo backend (`gpt-6-luna`), que usa las funciones de `tools.py` y le devuelve el resultado para que se lo diga a la persona.
+El modelo de voz, `gpt-live-1`, conversa con quien llama y responde con la información del gimnasio. Cuando hay que pasar la llamada o agendar una visita, le delega la tarea a un modelo backend (`gpt-6.1-sol`, con reasoning effort `low`), que usa las funciones de `tools.py` y le devuelve el resultado para que se lo diga a la persona.
 
 | Archivo | Qué es |
 |---|---|
@@ -48,7 +48,7 @@ El modelo de voz, `gpt-live-1`, conversa con quien llama y responde con la infor
 ## Publicar en Railway
 
 1. En Railway, crear un proyecto a partir del repositorio de GitHub. El `Dockerfile` le indica a Railway cómo construirlo y arrancarlo.
-2. En las **Variables** del servicio, agregar `OPENAI_API_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `RESEND_API_KEY` y, si hace falta, `FRONT_DESK_PHONE`, `BOOKINGS_EMAIL_TO`, `BOOKINGS_EMAIL_FROM`, `OPENAI_LIVE_MODEL`, `OPENAI_BACKEND_MODEL`, `OPENAI_VOICE`, `BUSINESS_NAME` y `GREETING`. `PUBLIC_BASE_URL` no hace falta.
+2. En las **Variables** del servicio, agregar `OPENAI_API_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `RESEND_API_KEY` y, si hace falta, `FRONT_DESK_PHONE`, `BOOKINGS_EMAIL_TO`, `BOOKINGS_EMAIL_FROM`, `OPENAI_LIVE_MODEL`, `OPENAI_BACKEND_MODEL`, `OPENAI_REASONING_EFFORT`, `OPENAI_VOICE`, `BUSINESS_NAME` y `GREETING`. `PUBLIC_BASE_URL` no hace falta.
 3. En **Settings → Networking**, hacer clic en **Generate Domain**. Se obtiene una dirección como `https://zar-del-fitness-production.up.railway.app`.
 4. En la consola de Twilio, poner como webhook del número esa dirección más `/incoming-call`.
 
