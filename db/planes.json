@@ -30,7 +30,9 @@
       { "titulo": "Acceso con huella dactilar", "texto": "Entrás al gimnasio sin llaves ni tarjetas." },
       { "titulo": "Pausá tu sistema", "texto": "Hasta una semana, en caso de viaje o eventualidades de fuerza mayor." },
       { "titulo": "Médico traumatólogo", "texto": "Exclusivo para alumnos premium." },
-      { "titulo": "Traé un amigo", "texto": "Invitá a un amigo a un día de prueba sin costo, una vez al mes." }
+      { "titulo": "Traé un amigo", "texto": "Invitá a un amigo a un día de prueba sin costo, una vez al mes." },
+      { "titulo": "Prueba", "texto": "cambios cada 15 dias." }
+      
     ]
   },
   {
