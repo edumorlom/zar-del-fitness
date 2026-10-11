@@ -1,6 +1,8 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
+import { scroll } from "@/lib/scroll";
 import { Preloader } from "./Preloader";
 import { SmoothScroll } from "./SmoothScroll";
 import { Cursor } from "./Cursor";
@@ -17,18 +19,38 @@ const MotionContext = createContext<MotionState>({ ready: true, openVideo: () =>
 
 export const useMotion = () => useContext(MotionContext);
 
+declare global {
+  interface Window {
+    /** El #ancla con la que se abrió la página (ver app/layout.tsx). */
+    __zarHash?: string;
+  }
+}
+
 export function MotionProvider({ children }: { children: React.ReactNode }) {
-  const [ready, setReady] = useState(false);
+  // El preloader es la intro del inicio: las otras páginas arrancan directo.
+  const [intro] = useState(usePathname() === "/");
+  const [ready, setReady] = useState(!intro);
   const [video, setVideo] = useState<string | null>(null);
 
   const onPreloaderDone = useCallback(() => setReady(true), []);
   const closeVideo = useCallback(() => setVideo(null), []);
   const value = useMemo(() => ({ ready, openVideo: setVideo }), [ready]);
 
+  // Se abrió con un #ancla (p. ej. "/#programas" desde el blog): scrollear hasta la sección una vez listo todo.
+  useEffect(() => {
+    const hash = window.__zarHash;
+    if (!ready || !hash) return;
+    delete window.__zarHash;
+    const target = document.getElementById(decodeURIComponent(hash.slice(1)));
+    if (!target) return;
+    const t = setTimeout(() => scroll.to(target), 120);
+    return () => clearTimeout(t);
+  }, [ready]);
+
   return (
     <MotionContext.Provider value={value}>
       <SmoothScroll />
-      <Preloader onDone={onPreloaderDone} />
+      {intro && <Preloader onDone={onPreloaderDone} />}
       <Cursor />
       <ScrollProgress />
       {children}

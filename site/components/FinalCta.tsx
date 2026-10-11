@@ -10,7 +10,7 @@ export function FinalCta() {
         <h2 className={styles.title} data-lines>
           <span className="ln">
             <span>Tu cuerpo</span>
-          </span>
+          </span>{" "}
           <span className="ln">
             <span className="gold-text">puede cambiar.</span>
           </span>

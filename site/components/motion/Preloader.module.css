@@ -138,3 +138,8 @@
     visibility: hidden;
   }
 }
+
+/* Se llegó con un #ancla (un link a "/#programas" desde otra página): directo a la sección, sin intro. */
+:global(html[data-skip-intro]) .preloader {
+  display: none;
+}

@@ -1,0 +1,137 @@
+.hero {
+  position: relative;
+  padding-top: calc(var(--header-h) + 36px + clamp(40px, 7vw, 96px));
+  padding-bottom: clamp(56px, 8vw, 112px);
+  overflow: hidden;
+  isolation: isolate;
+  border-bottom: 1px solid var(--line);
+}
+
+.glow {
+  position: absolute;
+  z-index: -1;
+  right: -15%;
+  top: -10%;
+  width: 70vw;
+  height: 70vw;
+  max-width: 900px;
+  max-height: 900px;
+  background: radial-gradient(circle, rgba(152, 136, 88, 0.26) 0%, rgba(167, 137, 47, 0.07) 35%, transparent 65%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+.grid {
+  display: grid;
+  gap: clamp(40px, 6vw, 80px);
+  align-items: center;
+}
+.withImage .grid {
+  grid-template-columns: 1.25fr 0.75fr;
+}
+
+/* Entrada: cada parte sube y aparece, escalonada. */
+.copy > *,
+.media {
+  animation: rise 1s var(--ease-out) both;
+}
+.copy > :nth-child(2) {
+  animation-delay: 0.06s;
+}
+.copy > :nth-child(3) {
+  animation-delay: 0.12s;
+}
+.copy > :nth-child(4) {
+  animation-delay: 0.2s;
+}
+.copy > :nth-child(5) {
+  animation-delay: 0.28s;
+}
+.media {
+  animation-duration: 1.4s;
+  animation-delay: 0.1s;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+}
+
+.crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 28px;
+  color: var(--muted-2);
+  font-size: 0.8rem;
+}
+.crumbs li:not(:last-child)::after {
+  content: "›";
+  margin-left: 6px;
+  color: var(--gold);
+}
+.crumbs a {
+  color: var(--muted);
+  transition: color 0.3s;
+}
+.crumbs a:hover {
+  color: var(--gold-light);
+}
+.crumbs [aria-current] {
+  color: var(--silver);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.9rem, 7.4vw, 7.2rem);
+  line-height: 0.92;
+  text-transform: uppercase;
+  letter-spacing: 0.005em;
+}
+.title .serif {
+  font-size: 1.04em;
+  line-height: 1;
+}
+
+.lead {
+  margin-top: 28px;
+  max-width: 620px;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+.lead p + p {
+  margin-top: 12px;
+}
+.lead strong {
+  color: var(--white);
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+  margin-top: 36px;
+}
+
+.media {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line-gold);
+}
+.media img {
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 900px) {
+  .withImage .grid {
+    grid-template-columns: 1fr;
+  }
+  .media {
+    max-width: 440px;
+  }
+}

@@ -15,10 +15,19 @@ import { FinalCta } from "@/components/FinalCta";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { Reveals } from "@/components/motion/Reveals";
+import { JsonLd } from "@/components/JsonLd";
+import { faqLd, pageMetadata, webPageLd } from "@/lib/seo";
+
+const title = "Zar del Fitness: entrenamiento personal en Colegiales y online";
+const description =
+  "Entrená con Ronald Medina, el Zar del Fitness: entrenamiento personal en The VIP, Colegiales (CABA), y el Reto de los 25 días online, para Argentina y el mundo.";
+
+export const metadata = pageMetadata({ title, description, path: "/", absoluteTitle: true });
 
 export default function Home() {
   return (
     <>
+      <JsonLd data={[webPageLd({ path: "/", name: title, description, about: "business" }), faqLd()]} />
       <Header />
       <main id="main">
         <Hero />
@@ -28,11 +37,11 @@ export default function Home() {
         <Method />
         <Benefits />
         <Results />
-        <Vip />
+        <Vip num="05" />
         <Visit />
-        <Press />
+        <Press num="06" />
         <Team />
-        <Faq />
+        <Faq num="07" />
         <FinalCta />
       </main>
       <Footer />

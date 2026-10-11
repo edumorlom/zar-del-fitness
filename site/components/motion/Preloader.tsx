@@ -16,8 +16,10 @@ export function Preloader({ onDone }: { onDone: () => void }) {
     () => {
       const el = root.current!;
 
-      // Sin animaciones, o el JS llegó tarde y el fallback CSS ya lo está ocultando: no volver a mostrarlo.
-      if (reducedMotion() || getComputedStyle(el).opacity !== "1") {
+      // Sin animaciones, se llegó con un #ancla (ver app/layout.tsx), o el JS llegó tarde y el fallback CSS
+      // ya lo está ocultando: no volver a mostrarlo.
+      const skip = document.documentElement.hasAttribute("data-skip-intro");
+      if (reducedMotion() || skip || getComputedStyle(el).opacity !== "1") {
         setGone(true);
         onDone();
         return;
