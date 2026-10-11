@@ -20,7 +20,7 @@ import { faqLd, pageMetadata, webPageLd } from "@/lib/seo";
 
 const title = "Zar del Fitness: entrenamiento personal en Colegiales y online";
 const description =
-  "Entrená con Ronald Medina, el Zar del Fitness: entrenamiento personal en The VIP, Colegiales (CABA), y el Reto de los 25 días online, para Argentina y el mundo.";
+  "Entrená con Ronald Medina, el Zar del Fitness: entrenamiento personal en The VIP, Colegiales (CABA), y el Reto de los 25 días online, desde cualquier país.";
 
 export const metadata = pageMetadata({ title, description, path: "/", absoluteTitle: true });
 

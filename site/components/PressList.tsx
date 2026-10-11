@@ -80,7 +80,7 @@ export function PressList() {
       </ul>
       <div className={styles.preview} ref={preview} aria-hidden="true">
         {/* eslint-disable-next-line @next/next/no-img-element -- src cambia en hover */}
-        <img ref={img} alt="" src={press[0].preview} />
+        <img ref={img} alt="Ronald Medina en los medios" src={press[0].preview} />
       </div>
     </div>
   );

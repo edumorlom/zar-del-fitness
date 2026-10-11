@@ -20,7 +20,7 @@ export function FinalCta() {
         </p>
         <div className={styles.ctas} data-reveal>
           <a className="btn btn--gold btn--lg" href={links.retoOnline} data-magnetic>
-            <span>Empezar el reto</span>
+            <span>Comenzá el reto</span>
             <Icon name="arrow" />
           </a>
           <a className="btn btn--ghost btn--lg" href={links.waInfo} data-magnetic>

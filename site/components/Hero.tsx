@@ -156,7 +156,7 @@ export function Hero() {
         <ul className={styles.chips}>
           {heroChips.map((c) => (
             <li key={c.label}>
-              {c.label} <b>{c.value}</b>
+              {c.label} <span>{c.value}</span>
             </li>
           ))}
         </ul>
