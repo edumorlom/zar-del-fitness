@@ -1,13 +1,18 @@
-name: Despliegue por FTP
+name: Despliegue del sitio por FTP
 
-# Next.js exporta el sitio estático en out/ (output: "export"), junto con
-# public/ (incluido el .htaccess). Node sólo se usa durante el build.
+# El sitio vive en site/. Next.js exporta el sitio estático en site/out/
+# (output: "export"), junto con public/ (incluido el .htaccess). Node sólo se
+# usa durante el build. El asistente (assistant/) lo publica Railway, no esto.
 #
 # Las credenciales viven en GitHub → Settings → Secrets and variables →
 # Actions, nunca en este archivo.
 on:
   push:
     branches: [ main ]
+    # Sólo cuando cambia el sitio (o este workflow), no el asistente.
+    paths:
+      - "site/**"
+      - ".github/workflows/ftp-deploy.yml"
   workflow_dispatch: {}   # permite lanzarlo a mano desde la pestaña Actions
 
 jobs:
@@ -18,6 +23,9 @@ jobs:
     # secrets del repositorio: sin declarar el entorno acá, el job no los ve
     # y la acción de FTP falla con "Input required and not supplied".
     environment: "CPanel Variables"
+    defaults:
+      run:
+        working-directory: site
     steps:
       - name: Descargar el repositorio
         uses: actions/checkout@v7
@@ -25,8 +33,9 @@ jobs:
       - name: Preparar Node
         uses: actions/setup-node@v7
         with:
-          node-version-file: .nvmrc
+          node-version-file: site/.nvmrc
           cache: npm
+          cache-dependency-path: site/package-lock.json
 
       - name: Instalar dependencias
         run: npm ci
@@ -48,4 +57,4 @@ jobs:
           # Si es un dominio adicional, poné su carpeta (p. ej.
           # "zardelfitness.com.ar/").
           server-dir: ${{ secrets.FTP_SERVER_DIR || 'public_html/' }}
-          local-dir: out/
+          local-dir: site/out/
