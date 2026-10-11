@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Icon } from "./Icon";
 import { Year } from "./Year";
-import { contact, links, socials } from "@/lib/content";
+import { contact, links, socials, texts } from "@/lib/content";
 import styles from "./Footer.module.css";
 
 export function Footer() {
@@ -10,7 +10,7 @@ export function Footer() {
       <div className={`container ${styles.grid}`}>
         <div className={styles.brand}>
           <Image src="/img/logo.webp" alt="Zar del Fitness" width={666} height={361} sizes="200px" />
-          <p>Tu cuerpo puede cambiar, y nosotros estamos para ayudarte.</p>
+          <p>{texts.motto}</p>
           <div className="socials">
             {socials.map((s) => (
               <a key={s.label} href={s.href} aria-label={s.label}>

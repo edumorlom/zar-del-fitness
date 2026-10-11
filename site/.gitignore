@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# images: copied from db/img/ before dev and build (scripts/copy-images.mjs)
+/public/img/
+
 # next.js
 /.next/
 /out/

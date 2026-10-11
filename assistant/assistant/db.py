@@ -23,6 +23,8 @@ SCHEDULE = load("horarios")
 PLANS = load("planes")
 FAQS = load("preguntas")
 TEAM = load("equipo")
+TEXTS = load("textos")
+CAREER = load("trayectoria")
 
 
 def join(items: list[str], last: str = "y") -> str:
@@ -43,6 +45,11 @@ def minutes(time: str) -> int:
 def plural(day: str) -> str:
     """'sábado' → 'sábados'; 'lunes' stays 'lunes'."""
     return day if day.endswith("s") else f"{day}s"
+
+
+def plain(text: str) -> str:
+    """The text without the website's *italics* and **bold**."""
+    return re.sub(r"\*+([^*]+)\*+", r"\1", text)
 
 
 def money(price: dict) -> str:
@@ -139,6 +146,15 @@ def person(member: dict) -> str:
     return f"- {name} ({member['rol']}): {about}"
 
 
+def career() -> str:
+    """Ronald's awards and press."""
+    awards = [f"- {award['fecha']}: {award['titulo']}. {award['texto']}" for award in CAREER["premios"]]
+    press = [
+        f"- {item.get('destacadoEnInicio') or item['medio']} ({item['tipo']}): {item['titulo']}" for item in CAREER["prensa"]
+    ]
+    return "\n".join(["Premios y reconocimientos:", *awards, "", "En los medios:", *press])
+
+
 def placeholders() -> dict[str, str]:
     address = GYM["direccion"]
     ronald = next((member for member in TEAM if member["id"] == "ronald"), {})
@@ -162,7 +178,13 @@ def placeholders() -> dict[str, str]:
         "{{INSTAGRAM_DEL_GIMNASIO}}": GYM["instagram"],
         "{{INSTAGRAM_DE_RONALD}}": ronald.get("instagram", ""),
         "{{OTRAS_REDES}}": join([social["red"] for social in GYM["redes"] if social["red"] != "Instagram"]),
-        "{{PERSONAS_EVALUADAS}}": f"{GYM['personasEvaluadas']:,}".replace(",", "."),
+        "{{DESCRIPCION}}": plain(TEXTS["inicio"]["descripcion"]),
+        "{{LEMA}}": TEXTS["lema"],
+        "{{INTRODUCCION_EQUIPO}}": TEXTS["equipo"]["introduccion"],
+        "{{SOBRE_RONALD}}": "\n".join(
+            [*(f"- {plain(paragraph)}" for paragraph in TEXTS["elZar"]["parrafos"]), f'- En sus palabras: "{TEXTS["elZar"]["cita"]}"']
+        ),
+        "{{TRAYECTORIA}}": career(),
         "{{PLANES_RESUMEN}}": "\n".join(f"- {plan['nombre']} ({plan['etiqueta']}): {plan_prices(plan)}." for plan in PLANS),
         "{{PLANES}}": "\n\n".join(plan_section(plan) for plan in PLANS),
         "{{PREGUNTAS}}": "\n".join(f"- {faq['pregunta']} {faq['respuesta']}" for faq in FAQS),

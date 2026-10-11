@@ -4,7 +4,7 @@ Fuentes: descripciones oficiales de los planes de Zar del Fitness (octubre de 20
 
 ## Qué es Zar del Fitness
 
-Zar del Fitness es un servicio de entrenamiento personal en {{BARRIO}}, Ciudad Autónoma de Buenos Aires (CABA). Lo fundó Ronald Medina, entrenador venezolano radicado en Argentina, conocido como "El Zar del Fitness" y creador del "Reto de los 25 días". Entrena en su gimnasio exclusivo "{{GIMNASIO}}" y también ofrece programas online para Argentina y otros países. Su lema es "Tú podés cambiar tu cuerpo, y nosotros estamos para ayudarte". Para Zar del Fitness, el acompañamiento es el valor fundamental del servicio.
+Zar del Fitness es un servicio de entrenamiento personal en {{BARRIO}}, Ciudad Autónoma de Buenos Aires (CABA). Lo fundó Ronald Medina, entrenador venezolano radicado en Argentina, conocido como "El Zar del Fitness" y creador del "Reto de los 25 días". Entrena en su gimnasio exclusivo "{{GIMNASIO}}" y también ofrece programas online para Argentina y otros países. {{DESCRIPCION}} Su lema es: "{{LEMA}}" {{INTRODUCCION_EQUIPO}}
 
 ## Planes y precios de Zar del Fitness (resumen)
 
@@ -36,11 +36,10 @@ Todos los precios son mensuales (por mes).
 
 ## Sobre Ronald Medina
 
-- Venezolano, radicado en Buenos Aires. Cuenta que en sus inicios él también tenía sobrepeso.
-- Evaluó a cerca de {{PERSONAS_EVALUADAS}} personas en los últimos años, con entrenamiento presencial en Buenos Aires y online en Latinoamérica y otros países.
-- Conocido como "celebrity trainer" por su trabajo con figuras del espectáculo. Por ejemplo, la revista Pronto publicó la transformación de Rodrigo Noya con él.
-- Premios: Premio Chiquinquirá (Maracaibo, 2014) como personal trainer más prestigioso, y OCCAMY Internacional como instructor deportivo (2017).
-- Medios: columnista de la Revista Cuerpo y Mente, tapa de Funcional Magazine, apariciones en televisión (Crónicas de Lirio en C5N, La tarde con vos, Quedate con Georgina) y entrevistas en TN y Olé. Fue orador motivacional para Remax y parte del staff de "super entrenadores" de la plataforma Befit.
+{{SOBRE_RONALD}}
+- Fue parte del staff de "super entrenadores" de la plataforma Befit.
+
+{{TRAYECTORIA}}
 
 ## Información que no tenemos
 

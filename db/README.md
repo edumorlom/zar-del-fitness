@@ -9,6 +9,9 @@ Lo que puede cambiar, en un solo lugar: lo usan el sitio (`site/lib/content.ts`)
 | `gimnasio.json` | Dirección, WhatsApp, email, redes y la cantidad de personas evaluadas. |
 | `preguntas.json` | Las preguntas frecuentes. |
 | `equipo.json` | Los entrenadores. |
+| `textos.json` | Los párrafos del sitio: la descripción y los destacados del inicio, el lema, la historia y la cita de Ronald, los pasos del método y las introducciones de Programas, Equipo y Preguntas. |
+| `trayectoria.json` | La prensa (medio, título, tipo, link e imagen) y los premios (fecha, título y texto). |
+| `img/` | Las imágenes del sitio. En los JSON se nombran como `/img/archivo.webp`. |
 
 ## Planes (`planes.json`)
 
@@ -28,10 +31,21 @@ Lo que puede cambiar, en un solo lugar: lo usan el sitio (`site/lib/content.ts`)
 
 El sitio muestra los planes `reto-online`, `premium`, `general` y `reto-internacional`. Para mostrar uno nuevo, agregarlo en `site/lib/content.ts` (con su ilustración y su botón).
 
+## Textos (`textos.json`) y trayectoria (`trayectoria.json`)
+
+- Los párrafos pueden tener `*cursiva*` y `**negrita**`, como en Markdown.
+- Cada destacado del inicio (`inicio.destacados`, como "Online $100.000") tiene un `titulo` y, o bien `precioDelPlan` con el `id` de un plan (muestra su precio), o bien un `texto`.
+- En la prensa, `link` es opcional. La `imagen` es la que aparece al pasar el mouse, y va en `db/img/`.
+- La nota con `destacadoEnInicio` aparece también en el inicio, con ese texto ("Emmy Winner 2024"). Si ninguna lo tiene, no se muestra.
+- El asistente usa todo menos los pasos del método, las introducciones de Programas y Preguntas, los destacados del inicio, los links y las imágenes.
+
 ## Cosas a tener en cuenta
 
 - Los horarios van en formato de 24 horas, con dos dígitos: `"08:00"`, `"14:30"`.
 - Los días van en minúscula y con tilde: `"miércoles"`, `"sábado"`.
-- Una persona nueva en `equipo.json` necesita su foto en `site/public/img/` y en `site/lib/content.ts`; si falta, el sitio no se construye y avisa.
+- Una persona nueva en `equipo.json` necesita su foto en `db/img/` y en `site/lib/content.ts`; si falta, el sitio no se construye y avisa.
 - Una red nueva en `gimnasio.json` necesita su ícono en `site/lib/content.ts`; si falta, el sitio no se construye y avisa.
-- Hay textos que repiten un dato a mano, como el destacado "Lunes a viernes, clases de 1 h 20 min" del Sistema General Dirigido: revisarlos si cambia el horario.
+- Hay textos que repiten un dato a mano: revisarlos si cambia ese dato.
+  - El destacado "Lunes a viernes, clases de 1 h 20 min" del Sistema General Dirigido (`planes.json`) repite el horario.
+  - El destacado "Presencial: Colegiales, CABA" del inicio (`textos.json`) repite el barrio.
+  - El párrafo de Ronald dice "casi dos mil personas", y el contador del sitio usa `personasEvaluadas` (`gimnasio.json`).
