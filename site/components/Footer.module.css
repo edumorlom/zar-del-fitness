@@ -81,6 +81,8 @@
   -webkit-background-clip: text;
   background-clip: text;
   user-select: none;
+  /* Las letras gigantes sobresalen por arriba de su caja y tapaban "Volver arriba": que no reciban clics. */
+  pointer-events: none;
 }
 
 @media (max-width: 1000px) {
