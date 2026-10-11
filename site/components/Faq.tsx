@@ -5,7 +5,8 @@ import { Icon } from "./Icon";
 import { faqs, links, texts } from "@/lib/content";
 import styles from "./Faq.module.css";
 
-export function Faq() {
+/** `num`: el número de la sección en el inicio; las otras páginas la muestran sin número. */
+export function Faq({ num }: { num?: string }) {
   const [open, setOpen] = useState<number | null>(0);
   const id = useId();
 
@@ -14,12 +15,12 @@ export function Faq() {
       <div className={`container ${styles.grid}`}>
         <header className={styles.head}>
           <p className="eyebrow" data-reveal>
-            <span className="num">07</span> Preguntas frecuentes
+            {num && <span className="num">{num}</span>} Preguntas frecuentes
           </p>
           <h2 className="h2" data-lines>
             <span className="ln">
               <span>¿Dudas?</span>
-            </span>
+            </span>{" "}
             <span className="ln">
               <span>
                 <em className="serif gold-text">Las resolvemos.</em>

@@ -1,0 +1,30 @@
+.wrap {
+  min-height: 80svh;
+  display: flex;
+  align-items: center;
+  padding-top: calc(var(--header-h) + 36px + 64px);
+  padding-bottom: 96px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3rem, 9vw, 8rem);
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+.lead {
+  margin-top: 24px;
+  max-width: 560px;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px 32px;
+  margin-top: 40px;
+}

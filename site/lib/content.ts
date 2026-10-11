@@ -23,8 +23,21 @@ const thousands = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".")
 const list = (items: string[]) =>
   items.length > 1 ? `${items.slice(0, -1).join(", ")} y ${items[items.length - 1]}` : items[0];
 
-const { calle, barrio, ciudad } = gimnasio.direccion;
+const { calle, barrio, ciudad, codigoPostal } = gimnasio.direccion;
 const mapsQuery = encodeURIComponent(`${calle}, ${barrio}, Buenos Aires`);
+
+// "https://zardelfitness.com.ar", de db/gimnasio.json.
+export const siteUrl = `https://${gimnasio.sitioWeb}`;
+
+// Las páginas del sitio. Las de los programas y la de Ronald usan las mismas URLs que el sitio anterior,
+// para no perder lo que Google ya tenía indexado.
+export const pages = {
+  online: "/entrenamiento-online/",
+  presencial: "/entrenamiento-presencial/",
+  general: "/sistema-general-dirigido/",
+  ronald: "/sobre-ronald/",
+  blog: "/blog/",
+};
 
 export const links = {
   retoOnline: wa("Hola! Quiero inscribirme en el Reto de los 25 días online"),
@@ -47,6 +60,20 @@ export const contact = {
   gym: `${gimnasio.gimnasio} · Exclusive Gym`,
 };
 
+// Los datos del negocio para Google (datos estructurados), de db/gimnasio.json.
+export const business = {
+  name: gimnasio.nombre,
+  gym: gimnasio.gimnasio,
+  phone: `+${WA_NUMBER}`,
+  street: calle,
+  area: barrio,
+  city: ciudad,
+  postalCode: codigoPostal,
+  lat: gimnasio.coordenadas.latitud,
+  lng: gimnasio.coordenadas.longitud,
+  maps: `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`,
+};
+
 // El ícono de cada red de db/gimnasio.json.
 const socialIcons: Record<string, IconName> = {
   Instagram: "ig",
@@ -67,13 +94,15 @@ export const stats = {
   peopleEvaluatedText: thousands(gimnasio.personasEvaluadas),
 };
 
+// Con "/" adelante para que también funcionen desde las otras páginas.
 export const nav = [
-  { href: "#programas", label: "Programas" },
-  { href: "#metodo", label: "Método" },
-  { href: "#resultados", label: "Resultados" },
-  { href: "#zar", label: "El Zar" },
-  { href: "#gym", label: "The VIP" },
-  { href: "#faq", label: "FAQ" },
+  { href: "/#programas", label: "Programas" },
+  { href: "/#metodo", label: "Método" },
+  { href: "/#resultados", label: "Resultados" },
+  { href: "/#zar", label: "El Zar" },
+  { href: "/#gym", label: "The VIP" },
+  { href: "/#faq", label: "FAQ" },
+  { href: pages.blog, label: "Blog" },
 ];
 
 export const videos = {
@@ -93,6 +122,8 @@ export type Program = {
   features: string[];
   art: { variant: ProgramArtVariant; label: string };
   cta: { label: string; href: string };
+  /** La página del programa, con todos los detalles. */
+  page: string;
   featured?: boolean;
 };
 
@@ -122,32 +153,35 @@ function plan(id: string) {
 
 /** El precio principal de un plan, como "$100.000" o "USD 100". */
 export function price(id: string) {
-  const { monto, moneda } = plan(id).precios[0];
-  return `${moneda === "ARS" ? "$" : `${moneda} `}${thousands(monto)}`;
+  return money(plan(id).precios[0]);
 }
 
 // Las tarjetas de "Programas", en orden. Los datos de cada plan están en db/planes.json.
-const cards: { id: string; art: Program["art"]; cta: Program["cta"]; featured?: boolean }[] = [
+const cards: { id: string; art: Program["art"]; cta: Program["cta"]; page: string; featured?: boolean }[] = [
   {
     id: "reto-online",
     art: { variant: "online", label: "Sistema Online de entrenamiento" },
     cta: { label: "Inscribirme", href: links.retoOnline },
+    page: pages.online,
   },
   {
     id: "premium",
     art: { variant: "premium", label: "Sistema Premium de entrenamiento" },
     cta: { label: "Inscribirme", href: links.presencialCheckout },
+    page: pages.presencial,
     featured: true,
   },
   {
     id: "general",
     art: { variant: "general", label: "Sistema General Dirigido" },
     cta: { label: "Inscribirme", href: links.generalCheckout },
+    page: pages.general,
   },
   {
     id: "reto-internacional",
     art: { variant: "reto", label: "Sello: comienza el reto de los 25 días, internacional" },
     cta: { label: "Quiero empezar", href: links.waInternacional },
+    page: `${pages.online}#internacional`,
   },
 ];
 
@@ -165,6 +199,27 @@ export const programs: Program[] = cards.map(({ id, ...card }) => {
     ...card,
   };
 });
+
+const money = ({ monto, moneda }: { monto: number; moneda: string }) =>
+  `${moneda === "ARS" ? "$" : `${moneda} `}${thousands(monto)}`;
+
+/** Todo lo de un plan de db/planes.json, para su página. */
+export function planInfo(id: string) {
+  const p = plan(id);
+  return {
+    name: p.nombre,
+    fullName: p.nombreCompleto ?? p.nombre,
+    tag: p.etiqueta,
+    prices: p.precios.map((pr) => ({ amount: pr.monto, currency: pr.moneda, text: money(pr) })),
+    period: p.periodo,
+    payment: p.formasDePago,
+    summary: p.resumen,
+    description: p.descripcion,
+    highlights: p.destacados ?? [],
+    includes: (p.incluye ?? []).map(({ titulo, texto }) => ({ title: titulo, text: texto })),
+    details: (p.detalles ?? []).map(({ titulo, puntos }) => ({ title: titulo, points: puntos })),
+  };
+}
 
 export const steps = textos.metodo.pasos.map(({ numero, titulo, texto }) => ({ n: numero, title: titulo, text: texto }));
 
@@ -240,12 +295,16 @@ const slots = horarios.turnos.map((t) => ({
   closes: clock(t.cierra),
   lastEntry: clock(t.ultimoIngreso),
   label: `${clock(t.abre)} – ${clock(t.cierra)}`,
+  // Como en db/horarios.json ("08:00"), para Google.
+  opens24: t.abre,
+  closes24: t.cierra,
 }));
 
 // Horario del gimnasio (hora de Buenos Aires), de db/horarios.json. Horas en decimal: 14.5 = 14:30.
 export const schedule = {
   timeZone: horarios.zonaHoraria,
   days: horarios.dias.map((d) => WEEKDAYS.indexOf(d)),
+  dayNames: horarios.dias,
   daysLabel: daysLabel(horarios.dias),
   slots,
   // "11:00 por la mañana y 20:00 por la tarde"
@@ -286,6 +345,9 @@ export const team = equipo.map((m) => {
   const img = teamPhotos[m.id];
   if (!img) throw new Error(`Falta la foto de ${m.nombre} (db/equipo.json) en site/lib/content.ts`);
   return {
+    id: m.id,
+    nickname: m.apodo,
+    certifications: m.certificaciones,
     role: m.rol,
     name: m.nombre,
     bio: m.bio,

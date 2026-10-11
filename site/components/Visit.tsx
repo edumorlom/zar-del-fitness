@@ -18,7 +18,7 @@ export function Visit() {
           <h2 className="h2 h2--sm" data-lines>
             <span className="ln">
               <span>{schedule.daysLabel},</span>
-            </span>
+            </span>{" "}
             <span className="ln">
               <span>
                 <em className="serif gold-text">a tu medida.</em>

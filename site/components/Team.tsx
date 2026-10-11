@@ -14,7 +14,7 @@ export function Team() {
           <h2 className="h2 h2--sm" data-lines>
             <span className="ln">
               <span>Entrenadores</span>
-            </span>
+            </span>{" "}
             <span className="ln">
               <span>
                 <em className="serif gold-text">by Zar del Fitness.</em>

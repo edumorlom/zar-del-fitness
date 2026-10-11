@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Anton, Instrument_Serif, Manrope } from "next/font/google";
 import { MotionProvider } from "@/components/motion/MotionProvider";
+import { JsonLd } from "@/components/JsonLd";
+import { business, siteUrl } from "@/lib/content";
+import { siteGraph } from "@/lib/seo";
 import "./globals.css";
 
 const anton = Anton({ weight: "400", subsets: ["latin"], variable: "--font-anton" });
@@ -12,18 +15,20 @@ const instrument = Instrument_Serif({
 });
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
 
+// Lo común a todas las páginas. El título, la descripción y la URL canónica de cada una van en su page.tsx
+// (con pageMetadata() de lib/seo.ts), y la imagen para compartir en su opengraph-image.tsx.
 export const metadata: Metadata = {
-  metadataBase: new URL("https://zardelfitness.com.ar"),
-  title: "Zar del Fitness · Reto de los 25 días by Ronald Medina",
-  description:
-    "Entrená con Ronald Medina, el Zar del Fitness. Reto de los 25 días online, Sistema Premium presencial en The VIP (Colegiales, CABA) y entrenamiento online internacional.",
-  openGraph: {
-    title: "Zar del Fitness · Reto de los 25 días",
-    description: "Transformá tu cuerpo con el método de Ronald Medina. Resultados cada 25 días.",
-    images: ["/img/ronald-portrait.webp"],
-    locale: "es_AR",
-    type: "website",
-  },
+  metadataBase: new URL(siteUrl),
+  title: { default: business.name, template: `%s | ${business.name}` },
+  applicationName: business.name,
+  authors: [{ name: "Ronald Medina" }],
+  creator: business.name,
+  publisher: business.name,
+  category: "fitness",
+  // Que Google pueda mostrar imágenes grandes (Discover) y fragmentos completos. Sin index/follow: son lo
+  // predeterminado, y así no chocan con el noindex que Next.js pone en la página 404.
+  robots: { "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
+  formatDetection: { telephone: false, address: false, email: false },
 };
 
 export const viewport: Viewport = {
@@ -33,16 +38,20 @@ export const viewport: Viewport = {
 
 // Siempre arrancar arriba: sin restaurar el scroll anterior ni saltar al #ancla de la URL.
 // Corre en el <head>, antes de que se parsee el body y el navegador intente scrollear.
+// Si la URL trae un #ancla (un link a "/#programas" desde otra página), se guarda: MotionProvider scrollea hasta ahí
+// cuando todo está listo, y el preloader no se muestra (data-skip-intro).
 const scrollTopScript =
-  'history.scrollRestoration="manual";if(location.hash)history.replaceState(null,"",location.pathname+location.search)';
+  'history.scrollRestoration="manual";if(location.hash){window.__zarHash=location.hash;document.documentElement.setAttribute("data-skip-intro","");history.replaceState(null,"",location.pathname+location.search)}';
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es-AR" className={`${anton.variable} ${instrument.variable} ${manrope.variable}`}>
+    // suppressHydrationWarning: el script del <head> puede agregar data-skip-intro antes de hidratar.
+    <html lang="es-AR" className={`${anton.variable} ${instrument.variable} ${manrope.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: scrollTopScript }} />
       </head>
       <body>
+        <JsonLd data={siteGraph()} />
         <a className="skip-link" href="#main">
           Ir al contenido
         </a>

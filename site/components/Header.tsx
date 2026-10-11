@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Icon } from "./Icon";
 import { links, nav, price, socials } from "@/lib/content";
 import { scroll } from "@/lib/scroll";
@@ -11,6 +12,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
+  const home = usePathname() === "/";
 
   useEffect(() => {
     let last = window.scrollY;
@@ -66,7 +68,7 @@ export function Header() {
         </a>
 
         <div className={`container ${styles.bar}`}>
-          <a className={styles.logo} href="#top" aria-label="Zar del Fitness, inicio" onClick={closeMenu}>
+          <a className={styles.logo} href={home ? "#top" : "/"} aria-label="Zar del Fitness, inicio" onClick={closeMenu}>
             <Image src="/img/logo.webp" alt="Zar del Fitness" width={666} height={361} sizes="120px" preload />
           </a>
 
@@ -78,7 +80,7 @@ export function Header() {
             ))}
           </nav>
 
-          <a className={`btn btn--gold btn--sm ${styles.cta}`} href="#programas" data-magnetic>
+          <a className={`btn btn--gold btn--sm ${styles.cta}`} href="/#programas" data-magnetic>
             <span>Empezá el reto</span>
           </a>
 

@@ -15,7 +15,7 @@ export function Programs() {
           <h2 className="h2" data-lines>
             <span className="ln">
               <span>Cuatro protocolos,</span>
-            </span>
+            </span>{" "}
             <span className="ln">
               <span>
                 <em className="serif gold-text">un solo objetivo: el tuyo.</em>
@@ -57,6 +57,9 @@ export function Programs() {
                     <a className={`btn ${p.featured ? "btn--gold" : "btn--outline"}`} href={p.cta.href} data-magnetic={p.featured || undefined}>
                       <span>{p.cta.label}</span>
                       <Icon name="arrow" />
+                    </a>
+                    <a className="link-sm" href={p.page}>
+                      Ver detalles<span className="sr-only"> de {p.title}</span>
                     </a>
                   </div>
                 </div>

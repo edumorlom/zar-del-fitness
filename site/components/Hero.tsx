@@ -74,10 +74,10 @@ export function Hero() {
           <h1 className={styles.title}>
             <span className="ln">
               <span>Comenzá el</span>
-            </span>
+            </span>{" "}
             <span className="ln">
               <span>reto de los</span>
-            </span>
+            </span>{" "}
             <span className="ln">
               <span className="gold-text">25 días</span>
             </span>

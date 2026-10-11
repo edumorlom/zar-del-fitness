@@ -19,12 +19,15 @@ export function SmoothScroll() {
       gsap.ticker.lagSmoothing(0);
     }
 
-    // Anclas internas (#seccion) con scroll suave y offset del header.
+    // Anclas internas (#seccion) con scroll suave y offset del header. Las del menú son "/#seccion" para que
+    // también funcionen desde otras páginas: en el inicio se tratan igual que "#seccion".
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey) return;
-      const a = (e.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
+      const a = (e.target as Element).closest<HTMLAnchorElement>('a[href^="#"], a[href^="/#"]');
       if (!a) return;
-      const hash = a.getAttribute("href")!;
+      const href = a.getAttribute("href")!;
+      if (href.startsWith("/") && location.pathname !== "/") return;
+      const hash = href.replace(/^\//, "");
       const target = hash === "#top" || hash === "#" ? 0 : document.querySelector<HTMLElement>(hash);
       if (target === null) return;
       e.preventDefault();

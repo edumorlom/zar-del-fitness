@@ -1,0 +1,70 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 24px;
+}
+
+.card {
+  border-radius: var(--radius);
+  background: var(--ink);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  transition: border-color 0.4s var(--ease-out), transform 0.4s var(--ease-out);
+}
+.card:hover {
+  border-color: var(--line-gold);
+  transform: translateY(-4px);
+}
+
+.link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.img {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--ink-2);
+}
+.img img {
+  object-fit: cover;
+  transition: transform 0.8s var(--ease-out);
+}
+.card:hover .img img {
+  transform: scale(1.04);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 26px 28px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.6rem;
+  line-height: 1.05;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.card:hover .title {
+  color: var(--gold-light);
+}
+
+.desc {
+  color: var(--muted);
+  font-size: 0.95rem;
+}

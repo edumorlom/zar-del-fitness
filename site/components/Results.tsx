@@ -43,7 +43,7 @@ export function Results() {
           <h2 className="h2" data-lines>
             <span className="ln">
               <span>Ellos también</span>
-            </span>
+            </span>{" "}
             <span className="ln">
               <span>
                 <em className="serif gold-text">lo lograron.</em>

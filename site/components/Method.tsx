@@ -81,7 +81,7 @@ export function Method() {
             <h2 className="h2" data-lines>
               <span className="ln">
                 <span>25 días.</span>
-              </span>
+              </span>{" "}
               <span className="ln">
                 <span>
                   <em className="serif gold-text">Un antes y un después.</em>
