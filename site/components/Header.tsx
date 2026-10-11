@@ -25,7 +25,7 @@ export function Header({ home, nav, socials, announce, cta, waInfo, labels, lang
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
-  // usePathname() no trae la barra final: "/english".
+  // usePathname() no trae la barra final: "/en".
   const isHome = `${usePathname().replace(/\/$/, "")}/` === home;
 
   useEffect(() => {

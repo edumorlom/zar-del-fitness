@@ -30,15 +30,18 @@ type PageMeta = {
   alternates?: Alternates;
   /** El título tal cual, sin " | Zar del Fitness" (para el inicio). */
   absoluteTitle?: boolean;
+  /** Las búsquedas a las que apunta la página (<meta name="keywords">; Google no lo usa, Bing y otros sí). */
+  keywords?: string[];
   article?: { publishedTime: string; authors: string[]; section?: string };
 };
 
 /** Título, descripción, URL canónica y cómo se ve al compartir. La imagen sale del opengraph-image.tsx de cada página. */
-export function pageMetadata({ lang, title, description, path, alternates, absoluteTitle, article }: PageMeta): Metadata {
+export function pageMetadata({ lang, title, description, path, alternates, absoluteTitle, keywords, article }: PageMeta): Metadata {
   const fullTitle = absoluteTitle ? title : `${title} | ${business.name}`;
   return {
     title: absoluteTitle ? { absolute: title } : title,
     description,
+    keywords,
     alternates: { canonical: path, ...(alternates && { languages: languages(alternates) }) },
     openGraph: {
       title: fullTitle,
@@ -99,6 +102,15 @@ export function siteGraph(lang: Lang) {
       name: business.name,
       alternateName: [business.gym, ...LANGS.map((l) => content(l).t.seo.otroNombre)],
       description: bilingual((l) => content(l).t.seo.negocio),
+      slogan: bilingual((l) => content(l).t.lema),
+      // Las búsquedas a las que apunta (db/textos.json, seo.palabrasClave), en los dos idiomas.
+      keywords: LANGS.flatMap((l) => content(l).t.seo.palabrasClave).join(", "),
+      // Presencial en Buenos Aires, y online (el Reto) en cualquier país.
+      areaServed: [
+        { "@type": "City", name: "Buenos Aires" },
+        { "@type": "Country", name: "Argentina" },
+        { "@type": "Place", name: "Worldwide" },
+      ],
       knowsLanguage: "es",
       url: abs(pages.home),
       logo: { "@type": "ImageObject", url: abs("/img/logo.webp"), width: 666, height: 361 },
@@ -163,7 +175,7 @@ export function siteGraph(lang: Lang) {
 }
 
 /** La página en sí. CollectionPage para el blog. */
-export function webPageLd({ lang, path, name, description, type = "WebPage", about }: {
+export function webPageLd({ lang, path, name, description, type = "WebPage", about, keywords }: {
   lang: Lang;
   path: string;
   name: string;
@@ -171,6 +183,7 @@ export function webPageLd({ lang, path, name, description, type = "WebPage", abo
   type?: "WebPage" | "CollectionPage";
   /** De qué trata: el gimnasio (en el inicio). */
   about?: "business";
+  keywords?: string[];
 }) {
   return {
     "@type": type,
@@ -178,6 +191,7 @@ export function webPageLd({ lang, path, name, description, type = "WebPage", abo
     url: abs(path),
     name,
     description,
+    ...(keywords && { keywords: keywords.join(", ") }),
     inLanguage: locales[lang].html,
     isPartOf: { "@id": ids.website },
     ...(about && { about: { "@id": ids.business } }),

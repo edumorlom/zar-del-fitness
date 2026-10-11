@@ -16,7 +16,7 @@ export function blogMetadata(lang: Lang) {
   return pageMetadata({ lang, title: t.seo.blog.titulo, description: t.seo.blog.descripcion, path: pages.blog, alternates });
 }
 
-/** La lista de notas del blog en un idioma (/blog/ y /english/blog/). */
+/** La lista de notas del blog en un idioma (/blog/ y /en/blog/). */
 export function BlogIndex({ lang }: { lang: Lang }) {
   const { t, pages } = content(lang);
   const path = pages.blog;

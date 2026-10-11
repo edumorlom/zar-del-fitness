@@ -20,7 +20,7 @@ export function SmoothScroll() {
     }
 
     // Anclas internas (#seccion) con scroll suave y offset del header. Las del menú llevan el inicio adelante
-    // ("/#seccion", "/english/#seccion") para que también funcionen desde otras páginas: en el inicio se tratan
+    // ("/#seccion", "/en/#seccion") para que también funcionen desde otras páginas: en el inicio se tratan
     // igual que "#seccion".
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey) return;
