@@ -43,6 +43,10 @@ Options -Indexes
 </FilesMatch>
 AddType application/manifest+json .webmanifest
 
+# The charset in the Content-Type header too, not only in the <meta> tag.
+AddDefaultCharset UTF-8
+AddCharset UTF-8 .css .js .json .webmanifest .svg .xml .txt
+
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript text/javascript application/json image/svg+xml application/xml text/xml application/manifest+json
 </IfModule>
