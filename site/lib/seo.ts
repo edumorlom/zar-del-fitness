@@ -48,7 +48,7 @@ const ids = {
   ronald: abs("/#ronald"),
 };
 
-const DAYS: Record<string, string> = {
+export const DAYS: Record<string, string> = {
   lunes: "Monday",
   martes: "Tuesday",
   miércoles: "Wednesday",
@@ -59,6 +59,13 @@ const DAYS: Record<string, string> = {
 };
 
 const ronald = team.find((m) => m.id === "ronald")!;
+
+// El texto en español y en inglés: ChatGPT y otros buscadores con IA buscan en inglés aunque les pregunten en español.
+// El inglés no sale de db/: si cambia el texto en español, actualizarlo a mano.
+const bilingual = (es: string, en: string) => [
+  { "@value": es, "@language": "es-AR" },
+  { "@value": en, "@language": "en" },
+];
 
 /** El sitio, el gimnasio y Ronald: van en todas las páginas (app/layout.tsx). */
 export function siteGraph() {
@@ -76,8 +83,11 @@ export function siteGraph() {
       "@id": ids.business,
       name: business.name,
       alternateName: [business.gym, "Reto de los 25 días"],
-      description:
+      description: bilingual(
         "Entrenamiento personal presencial en The VIP (Colegiales, CABA) y online con el Reto de los 25 días, el método de Ronald Medina, el Zar del Fitness.",
+        "Personal training in person at The VIP (Colegiales, Buenos Aires, Argentina) and online with the Reto de los 25 días (25-day challenge), the method of Ronald Medina, el Zar del Fitness."
+      ),
+      knowsLanguage: "es",
       url: abs("/"),
       logo: { "@type": "ImageObject", url: abs("/img/logo.webp"), width: 666, height: 361 },
       image: [abs("/img/ronald-hero.jpg"), abs("/img/ronald-portrait.webp"), abs("/img/ronald-seated.webp")],
@@ -121,7 +131,11 @@ export function siteGraph() {
       name: ronald.name,
       alternateName: ronald.nickname,
       jobTitle: "Personal trainer",
-      description: ronald.certifications ?? ronald.bio,
+      description: bilingual(
+        ronald.certifications ?? ronald.bio,
+        "Venezuelan personal trainer based in Buenos Aires, Argentina, known as el Zar del Fitness and creator of the Reto de los 25 días (25-day challenge). Certified by IPEF (Instituto Panamericano de Educación Física) in exercise prescription for people with obesity and metabolic diseases, in sports supplementation and in nutrition for muscle gain."
+      ),
+      knowsLanguage: "es",
       image: abs(ronald.img.src),
       url: abs("/#zar"),
       nationality: { "@type": "Country", name: "Venezuela" },

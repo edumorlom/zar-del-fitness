@@ -108,6 +108,8 @@ export const videos = {
 export type ProgramArtVariant = "online" | "premium" | "general" | "reto";
 
 export type Program = {
+  /** El id del plan en db/planes.json. */
+  id: string;
   tag: string;
   title: string;
   currency: string;
@@ -178,6 +180,7 @@ export const programs: Program[] = cards.map(({ id, ...card }) => {
   const p = plan(id);
   const { monto, moneda } = p.precios[0];
   return {
+    id,
     tag: p.etiqueta,
     title: p.nombre,
     currency: moneda === "ARS" ? "$" : moneda,
