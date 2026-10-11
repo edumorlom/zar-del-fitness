@@ -26,10 +26,6 @@ export function Footer() {
             <Icon name="wa" />
             {contact.phone}
           </a>
-          <a href={`mailto:${contact.email}`}>
-            <Icon name="mail" />
-            {contact.email}
-          </a>
           <a href={links.directions}>
             <Icon name="pin" />
             {contact.street}

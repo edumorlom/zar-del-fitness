@@ -6,7 +6,7 @@ Lo que puede cambiar, en un solo lugar: lo usan el sitio (`site/lib/content.ts`)
 |---|---|
 | `planes.json` | Los planes: nombre, precios, formas de pago, descripción y qué incluyen. |
 | `horarios.json` | Días y turnos del gimnasio, último ingreso y duración de la clase. |
-| `gimnasio.json` | Dirección, WhatsApp, email, redes y la cantidad de personas evaluadas. |
+| `gimnasio.json` | Dirección, WhatsApp, redes y la cantidad de personas evaluadas. |
 | `preguntas.json` | Las preguntas frecuentes. |
 | `equipo.json` | Los entrenadores. |
 | `textos.json` | Los párrafos del sitio: la descripción y los destacados del inicio, el lema, la historia y la cita de Ronald, los pasos del método y las introducciones de Programas, Equipo y Preguntas. |

@@ -173,7 +173,6 @@ def placeholders() -> dict[str, str]:
         # '11 2733-6258', as it's dialed from Argentina.
         "{{WHATSAPP}}": GYM["whatsapp"].removeprefix("+54 9 "),
         "{{WHATSAPP_INTERNACIONAL}}": GYM["whatsapp"],
-        "{{EMAIL}}": GYM["email"],
         "{{SITIO_WEB}}": GYM["sitioWeb"],
         "{{INSTAGRAM_DEL_GIMNASIO}}": GYM["instagram"],
         "{{INSTAGRAM_DE_RONALD}}": ronald.get("instagram", ""),

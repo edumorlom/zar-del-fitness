@@ -19,7 +19,6 @@ Todos los precios son mensuales (por mes).
 - No trabajan {{DIAS_CERRADO}}.
 - Es el horario de todos los entrenamientos en el gimnasio. Cada clase dura aproximadamente {{DURACION_DE_LA_CLASE}}. Dentro de esas franjas, cada alumno entrena en el horario que le quede más cómodo.
 - WhatsApp: {{WHATSAPP}} (desde el exterior, {{WHATSAPP_INTERNACIONAL}}). Es el canal para consultas, inscripciones y pedidos.
-- Email: {{EMAIL}}
 - Instagram del gimnasio: {{INSTAGRAM_DEL_GIMNASIO}}. Instagram de Ronald Medina: {{INSTAGRAM_DE_RONALD}}. También en {{OTRAS_REDES}}.
 - Sitio web: {{SITIO_WEB}}
 
@@ -43,4 +42,4 @@ Todos los precios son mensuales (por mes).
 
 ## Información que no tenemos
 
-No tenemos información sobre: los medios de pago del Sistema Premium, la política de cancelación o reembolso, la edad mínima para entrenar en forma presencial, ni estacionamiento. Para estas consultas, se puede transferir la llamada a uno de nuestros asesores de recepción para que dé más información, o escribir por WhatsApp al {{WHATSAPP}} o al email {{EMAIL}}.
+No tenemos información sobre: los medios de pago del Sistema Premium, la política de cancelación o reembolso, la edad mínima para entrenar en forma presencial, ni estacionamiento. Para estas consultas, se puede transferir la llamada a uno de nuestros asesores de recepción para que dé más información, o escribir por WhatsApp al {{WHATSAPP}}.
