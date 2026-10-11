@@ -25,11 +25,15 @@ Options -Indexes
   RewriteRule ^transformaciones-(online|presencial)/?$ /#resultados [NE,R=301,L]
   RewriteRule ^blog/page/[0-9]+/?$ /blog/ [R=301,L]
 
+  # The sitemap is /sitemap.xml. The old WordPress sitemaps (maybe still registered in Search Console)
+  # and the address typed without ".xml" or with a trailing slash go there.
+  RewriteCond %{REQUEST_URI} ^/(sitemap/?|sitemap\.xml/|sitemap\.html|sitemap_index\.xml|wp-sitemap\.xml|(post|page|product|category)-sitemap\.xml)$
+  RewriteRule ^ /sitemap.xml [R=301,L]
+
   # Everything else the old site had and this one doesn't (store, cart, account, directories,
   # category and date archives, feeds, WordPress files): 410 Gone, so Google drops it from the index.
   RewriteRule ^(tienda|carrito|checkout|finalizar-compra|mi-cuenta|producto|product|categoria-producto|product-category|guia-de-entrenadores|guia-de-gimnasios|category|tag|author|feed|comments|wp-admin|wp-content|wp-includes|wp-json)(/.*)?$ - [G,L]
   RewriteRule ^(wp-login|xmlrpc|wp-cron)\.php$ - [G,L]
-  RewriteRule ^(sitemap_index|post-sitemap|page-sitemap|product-sitemap|category-sitemap|wp-sitemap)\.xml$ - [G,L]
   RewriteRule ^[0-9]{4}(/[0-9]{2}(/[0-9]{2})?)?/?$ - [G,L]
   RewriteRule ^[0-9]{4}/[0-9]{2}/[0-9]{2}/[^/]+/(feed|amp)/?$ - [G,L]
 </IfModule>
