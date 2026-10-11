@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Icon } from "./Icon";
-import { links, nav, socials } from "@/lib/content";
+import { links, nav, price, socials } from "@/lib/content";
 import { scroll } from "@/lib/scroll";
 import styles from "./Header.module.css";
 
@@ -58,7 +58,7 @@ export function Header() {
         <a className={styles.announce} href={links.retoOnline}>
           <Icon name="spark" />
           <span>
-            Reto de los 25 días online: <strong>$100.000</strong>
+            Reto de los 25 días online: <strong>{price("reto-online")}</strong>
           </span>
           <span className={styles.announceCta}>
             Inscribite <Icon name="arrow" />

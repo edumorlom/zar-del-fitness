@@ -1,0 +1,176 @@
+[
+  {
+    "id": "premium",
+    "nombre": "Sistema Premium",
+    "nombreCompleto": "Sistema Premium Reto de los 25 días by Zar del Fitness",
+    "etiqueta": "Presencial · The VIP",
+    "precios": [
+      { "monto": 450000, "moneda": "ARS" },
+      { "monto": 300, "moneda": "USD" }
+    ],
+    "periodo": "por mes",
+    "resumen": "Entrená directamente con el Zar y sus dos asistentes premium en un gimnasio exclusivo, con horarios que se adaptan a vos.",
+    "descripcion": "Más observación, más exclusividad y dinámicas de entrenamiento más individuales, con el acompañamiento cercano del Zar y sus dos asistentes premium.",
+    "destacados": [
+      "Consulta antropométrica y evaluación física",
+      "Plan personalizado con el Zar + 2 asistentes",
+      "Gimnasio The VIP incluido y exclusivo",
+      "Bebidas premium e hidratación libre",
+      "Médico traumatólogo exclusivo",
+      "Traé un amigo una vez al mes"
+    ],
+    "incluye": [
+      { "titulo": "Consulta antropométrica", "texto": "Evaluación completa sobre tus objetivos y tu evolución física para optimizar tu entrenamiento de forma constante." },
+      { "titulo": "Evaluación física y estratégica", "texto": "A disponibilidad de Zar del Fitness, sin restricciones." },
+      { "titulo": "Sugerencia alimentaria y suplementaria", "texto": "Orientación para comer más sano y enfocado en tu objetivo. Si querés un seguimiento nutricional más profesional, te recomendamos sumar un nutricionista." },
+      { "titulo": "Plan de entrenamiento personalizado", "texto": "Con entrenador personal a cargo de @zardelfitness y 2 asistentes premium." },
+      { "titulo": "Gimnasio The VIP by Zar del Fitness", "texto": "Incluido en el costo y exclusivo para este servicio." },
+      { "titulo": "Hidratación libre", "texto": "Agua con gas y sin gas." },
+      { "titulo": "Bebidas premium", "texto": "Pre-entreno, aminoácidos y whey protein (sujetos a disponibilidad)." },
+      { "titulo": "Acceso con huella dactilar", "texto": "Entrás al gimnasio sin llaves ni tarjetas." },
+      { "titulo": "Pausá tu sistema", "texto": "Hasta una semana, en caso de viaje o eventualidades de fuerza mayor." },
+      { "titulo": "Médico traumatólogo", "texto": "Exclusivo para alumnos premium." },
+      { "titulo": "Traé un amigo", "texto": "Invitá a un amigo a un día de prueba sin costo, una vez al mes." }
+    ]
+  },
+  {
+    "id": "general",
+    "nombre": "Sistema General Dirigido",
+    "etiqueta": "Presencial · The VIP",
+    "precios": [
+      { "monto": 170000, "moneda": "ARS" }
+    ],
+    "periodo": "por mes",
+    "formasDePago": "Débito, crédito o transferencia.",
+    "resumen": "Entrená directamente con el Zar y su equipo de asistentes en The VIP, cuando te resulte más cómodo dentro de las franjas horarias.",
+    "destacados": [
+      "Consulta inicial: % de grasa, peso y estatura",
+      "Controles mensuales con cita previa",
+      "Plan de entrenamiento con los asistentes del Zar",
+      "Entrenamiento supervisado y compartido",
+      "Gimnasio The VIP incluido",
+      "Lunes a viernes, clases de 1\u00a0h\u00a020\u00a0min"
+    ],
+    "incluye": [
+      { "titulo": "Consulta inicial", "texto": "Una sola vez, para determinar tu porcentaje de grasa, peso y estatura. Los controles posteriores son con cita previa el último viernes de cada mes, según disponibilidad; los alumnos premium tienen prioridad." },
+      { "titulo": "Plan de entrenamiento", "texto": "Con el equipo de asistentes de Zar del Fitness, que te entrenan según las indicaciones del Zardelfitness. El entrenamiento es supervisado, pero no es exclusivo: los asistentes acompañan a todas las personas que estén entrenando en ese momento y pueden cambiar según lo disponga el Zardelfitness." },
+      { "titulo": "Gimnasio The VIP by Zar del Fitness", "texto": "Incluido en el costo." }
+    ],
+    "detalles": [
+      {
+        "titulo": "Condiciones",
+        "puntos": [
+          "No se pueden pausar días por viajes ni por situaciones ajenas al servicio (a diferencia del Sistema Premium).",
+          "El acceso al gimnasio es con clave; el acceso con huella es exclusivo de los alumnos premium.",
+          "Una vez contratado el servicio, tenés que pedir turno para tu evaluación con el Zardelfitness."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "lipo",
+    "nombre": "Lipo Entrenamiento",
+    "nombreCompleto": "Lipo Entrenamiento by Zar del Fitness",
+    "etiqueta": "20 días · 4 fases",
+    "precios": [
+      { "monto": 180000, "moneda": "ARS" }
+    ],
+    "periodo": "por mes, por los 20 días completos",
+    "formasDePago": "Transferencia al alias Medinaronald.bna.",
+    "resumen": "\"20 días. 4 fases. Impacto visible.\" Un sistema corto para verse mejor en poco tiempo.",
+    "descripcion": "\"Lipo Entrenamiento no es para cambiar tu cuerpo para siempre. Es para verte mejor cuando lo necesitás.\"",
+    "incluye": [
+      { "titulo": "Plan de entrenamiento estructurado de 20 días" },
+      { "titulo": "Plan nutricional estratégico" },
+      { "titulo": "Guía de suplementación" },
+      { "titulo": "Soporte y acompañamiento durante todo el proceso" },
+      { "titulo": "Un sistema diseñado y dirigido por Zardelfitness" }
+    ],
+    "detalles": [
+      {
+        "titulo": "Para quién es",
+        "puntos": [
+          "Personas que tienen un evento próximo (boda, viaje, fiesta, sesión de fotos), quieren verse mejor en poco tiempo, buscan desinflamar, tonificar y mejorar su apariencia, y necesitan un plan claro, dirigido y sin improvisación.",
+          "No es un programa de transformación extrema ni a largo plazo."
+        ]
+      },
+      {
+        "titulo": "Entrenamiento",
+        "puntos": [
+          "100% dirigido durante 20 días: rutinas planificadas día por día, ejecución simple y efectiva, adaptado a nivel principiante e intermedio, con enfoque estético y funcional.",
+          "Los entrenamientos son en el horario del gimnasio.",
+          "Cupos limitados para garantizar el seguimiento."
+        ]
+      },
+      {
+        "titulo": "Las 4 fases",
+        "puntos": [
+          "Fase 1, cardio dirigido (días 1 a 5): activar el metabolismo y reducir la inflamación y la retención de líquidos. Cardio estratégico (no como castigo), caminatas activas con intervalos suaves, trabajo respiratorio y core básico.",
+          "Fase 2, entrenamiento funcional (días 6 a 10): tonificar el cuerpo y mejorar la postura y el control. Movimientos compuestos, peso corporal y accesorios simples, con foco en abdomen, glúteos, espalda y hombros.",
+          "Fase 3, HIIT controlado (días 11 a 15): aumentar la quema de grasa y lograr definición rápida. Intervalos cortos de alta intensidad, rutinas breves y efectivas, con control del volumen para evitar sobrecarga.",
+          "Fase 4, musculación estética (días 16 a 20): marcar, dar forma y cerrar el proceso con impacto visual. Rutinas simples de musculación, series cortas y enfocadas, en hombros, brazos, pecho y glúteos."
+        ]
+      },
+      {
+        "titulo": "Alimentación y suplementación",
+        "puntos": [
+          "Plan de alimentación: enfoque antiinflamatorio, déficit leve y controlado, menos sodio y ultraprocesados, con una guía práctica y fácil de seguir.",
+          "Suplementación opcional y guiada: recomendaciones claras y seguras para apoyar la quema de grasa, la recuperación, la hidratación y la digestión. La suplementación no es obligatoria."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "reto-online",
+    "nombre": "Reto de los 25 días",
+    "nombreCompleto": "Reto de los 25 días online",
+    "etiqueta": "Online · Argentina",
+    "precios": [
+      { "monto": 100000, "moneda": "ARS" }
+    ],
+    "periodo": "por mes",
+    "formasDePago": "Mercado Pago, en hasta 12 cuotas sin tarjeta (crédito sujeto a aprobación).",
+    "resumen": "Entrená en casa o en el gym con videos diseñados para tu sistema, a tu ritmo y en tu horario.",
+    "descripcion": "Programa 100% online de 25 días, creado por Ronald Medina.",
+    "destacados": [
+      "Evaluación a distancia",
+      "Plan de alimentación individual",
+      "Plan de suplementación individual",
+      "Rutina en video (casa o gym)",
+      "Controles cada 15 días",
+      "Asistencia permanente por WhatsApp"
+    ],
+    "detalles": [
+      {
+        "titulo": "Cómo funciona",
+        "puntos": [
+          "Al inscribirte completás un cuestionario a distancia sobre tus objetivos. Con eso te preparan los planes.",
+          "Los entrenamientos son videos grabados, así que entrenás cuando te queda más cómodo, en casa o en el gimnasio.",
+          "Controles de avance los días 1, 15 y 25: enviás fotos y tu peso actual.",
+          "Los planes solo se modifican si es importante para tus objetivos.",
+          "La suplementación deportiva se indica solo si hace falta."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "reto-internacional",
+    "nombre": "Reto Internacional",
+    "nombreCompleto": "Reto de los 25 días online internacional",
+    "etiqueta": "Online · Internacional",
+    "precios": [
+      { "monto": 100, "moneda": "USD" }
+    ],
+    "periodo": "por mes",
+    "formasDePago": "Con opción de PayPal.",
+    "resumen": "El mismo método, desde cualquier país. Seguimiento por WhatsApp durante todo el reto.",
+    "descripcion": "Es el Reto de los 25 días online para personas fuera de Argentina.",
+    "destacados": [
+      "Evaluación a distancia",
+      "Plan nutricional a medida",
+      "Plan de entrenamiento",
+      "Controles día 1, 15 y 25",
+      "Suplementación deportiva (si se requiere)"
+    ]
+  }
+]

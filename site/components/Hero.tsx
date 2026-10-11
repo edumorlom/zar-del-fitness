@@ -7,7 +7,7 @@ import { Sparkles } from "./Sparkles";
 import { VideoButton } from "./motion/VideoButton";
 import { useMotion } from "./motion/MotionProvider";
 import { gsap, useGSAP, reducedMotion, finePointer } from "@/lib/gsap";
-import { links, videos } from "@/lib/content";
+import { contact, links, price, videos } from "@/lib/content";
 import styles from "./Hero.module.css";
 
 export function Hero() {
@@ -91,7 +91,7 @@ export function Hero() {
           <div className={styles.ctas} data-hero-fade>
             <a className="btn btn--gold btn--lg" href={links.retoOnline} data-magnetic>
               <span>Empezar el reto</span>
-              <span className="btn__price">$100.000</span>
+              <span className="btn__price">{price("reto-online")}</span>
             </a>
             <VideoButton videoId={videos.trailer} className="btn btn--ghost btn--lg" data-magnetic>
               <span className="btn__play">
@@ -153,13 +153,13 @@ export function Hero() {
         </span>
         <ul className={styles.chips}>
           <li>
-            Online <b>$100.000</b>
+            Online <b>{price("reto-online")}</b>
           </li>
           <li>
-            Presencial <b>Colegiales, CABA</b>
+            Presencial <b>{contact.area}</b>
           </li>
           <li>
-            Internacional <b>USD 100</b>
+            Internacional <b>{price("reto-internacional")}</b>
           </li>
         </ul>
       </div>

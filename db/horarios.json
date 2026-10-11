@@ -1,0 +1,10 @@
+{
+  "zonaHoraria": "America/Argentina/Buenos_Aires",
+  "dias": ["lunes", "martes", "miércoles", "jueves", "viernes"],
+  "abreLosFeriados": false,
+  "turnos": [
+    { "abre": "08:00", "cierra": "12:00", "ultimoIngreso": "11:00" },
+    { "abre": "14:30", "cierra": "21:00", "ultimoIngreso": "20:00" }
+  ],
+  "minutosPorClase": 80
+}

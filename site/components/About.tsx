@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Icon } from "./Icon";
 import { VideoButton } from "./motion/VideoButton";
-import { videos } from "@/lib/content";
+import { stats, videos } from "@/lib/content";
 import styles from "./About.module.css";
 
 const quote =
@@ -103,8 +103,8 @@ export function About() {
             <dt>Personas evaluadas</dt>
             <dd>
               <small>casi</small>
-              <span data-count="2000" data-format="thousands">
-                2.000
+              <span data-count={stats.peopleEvaluated} data-format="thousands">
+                {stats.peopleEvaluatedText}
               </span>
             </dd>
           </div>
