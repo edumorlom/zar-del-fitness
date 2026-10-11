@@ -61,12 +61,12 @@ En `assistant/`, en el orden en que pasa una llamada:
 
 ## Publicar en Railway
 
-1. En Railway, crear un proyecto a partir del repositorio de GitHub. El `Dockerfile` le indica a Railway cómo construirlo y arrancarlo.
+1. En Railway, crear un proyecto a partir del repositorio de GitHub. Como el asistente está en `assistant/`, en **Settings → Source** poner *Root Directory* en `/assistant` y *Watch Paths* en `/assistant/**` (así los cambios del sitio no lo vuelven a publicar). El `Dockerfile` le indica a Railway cómo construirlo y arrancarlo.
 2. En las **Variables** del servicio, agregar `OPENAI_API_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `RESEND_API_KEY` y, si hace falta, `FRONT_DESK_PHONE`, `BOOKINGS_EMAIL_TO`, `BOOKINGS_EMAIL_FROM`, `OPENAI_LIVE_MODEL`, `OPENAI_BACKEND_MODEL`, `OPENAI_REASONING_EFFORT`, `OPENAI_VOICE`, `BUSINESS_NAME` y `GREETING`. `PUBLIC_BASE_URL` no hace falta.
 3. En **Settings → Networking**, hacer clic en **Generate Domain**. Se obtiene una dirección como `https://zar-del-fitness-production.up.railway.app`.
 4. En la consola de Twilio, poner como webhook del número esa dirección más `/incoming-call`.
 
-Cada push a `main` vuelve a publicar el servidor.
+Cada push a `main` que cambie algo en `assistant/` vuelve a publicar el servidor.
 
 ## Probar sin llamar
 
