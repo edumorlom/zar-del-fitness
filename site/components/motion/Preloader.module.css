@@ -1,0 +1,140 @@
+.preloader {
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  /* El brillo dorado detrás del logo va en el fondo y no como filter en la imagen:
+     Safari/iOS a veces pinta un <img> con filter (drop-shadow, blur) como un rectángulo blanco. */
+  background:
+    radial-gradient(200px 130px at 50% calc(50% - 52px), rgba(214, 166, 29, 0.16), transparent),
+    radial-gradient(60% 60% at 50% 45%, #131313 0%, #000 70%);
+  clip-path: inset(0% 0% 0% 0%);
+  /* Fallback si el JS no llega a tiempo: se oculta solo poco después de la intro */
+  animation: hide 0.4s 3.5s forwards;
+}
+
+.inner {
+  display: grid;
+  justify-items: center;
+  gap: 28px;
+  width: min(320px, 72vw);
+}
+
+.logo {
+  width: 100%;
+  height: auto;
+  animation: logo-in 1s var(--ease-out) both;
+}
+@media (max-width: 640px) {
+  .logo {
+    width: 80%;
+  }
+}
+
+.meta {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  animation: meta-in 0.6s 0.4s var(--ease-out) both;
+}
+
+.label {
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  padding-bottom: 10px;
+}
+
+.count {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 4.2rem;
+  line-height: 1;
+  background: var(--grad-gold);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-variant-numeric: tabular-nums;
+}
+.count small {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.5rem;
+}
+
+/* El número es un contador CSS animado: corre aunque el JS todavía no haya cargado */
+.num {
+  /* calc() redondea: Safari interpola --pl-count con decimales y counter-reset sólo acepta enteros */
+  counter-reset: pl calc(var(--pl-count));
+  animation: count 1.5s 0.6s var(--ease-in-out) both;
+}
+.num::after {
+  content: counter(pl, decimal-leading-zero);
+}
+
+.bar {
+  width: 100%;
+  height: 1px;
+  background: var(--line);
+  overflow: hidden;
+}
+.bar i {
+  display: block;
+  height: 100%;
+  background: var(--grad-gold-flat);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: fill 1.5s 0.6s var(--ease-in-out) both;
+}
+
+/* Intro en CSS pura: arranca con el primer pintado, sin esperar al bundle de JS.
+   El JS sólo espera a que termine (ver Preloader.tsx) para hacer la salida. */
+@property --pl-count {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes logo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes meta-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@keyframes count {
+  from {
+    --pl-count: 0;
+  }
+  to {
+    --pl-count: 25;
+  }
+}
+
+@keyframes fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes hide {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
