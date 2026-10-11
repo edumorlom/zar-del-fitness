@@ -2,6 +2,7 @@
 import "@/app/globals.css";
 import type { Metadata, Viewport } from "next";
 import { Anton, Instrument_Serif, Manrope } from "next/font/google";
+import { Analytics } from "@/components/Analytics";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { JsonLd } from "@/components/JsonLd";
 import { business, content, siteUrl } from "@/lib/content";
@@ -66,6 +67,7 @@ export function RootShell({ lang, children }: { lang: Lang; children: React.Reac
         <MotionProvider home={pages.home} labels={{ preloader: t.precarga, video: t.video }}>
           {children}
         </MotionProvider>
+        <Analytics />
       </body>
     </html>
   );
