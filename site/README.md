@@ -20,24 +20,17 @@ npm run lint
 | Secciones | `components/*.tsx` + su `*.module.css` |
 | Imágenes | `../db/img/` (WebP). Se copian a `public/img/` antes de `dev` y `build`. |
 | Notas del blog | `../db/blog/` (ver `../db/README.md`) |
-| SEO: título y descripción de cada página | `export const metadata` en su `app/…/page.tsx` |
+| SEO: título y descripción | `export const metadata` en `app/page.tsx` (inicio) y `app/blog/page.tsx` |
 | SEO: datos estructurados (Google), sitemap, robots | `lib/seo.ts`, `app/sitemap.ts`, `app/robots.ts` |
 | Imágenes para compartir (WhatsApp, redes) | `opengraph-image.tsx` de cada página, con el diseño de `lib/og.tsx` |
 | Redirecciones de las URLs del sitio anterior | `public/.htaccess` |
 
 ## Páginas
 
-| URL | Qué es |
-| --- | --- |
-| `/` | El inicio (todas las secciones) |
-| `/entrenamiento-online/` | Reto de los 25 días online e internacional |
-| `/entrenamiento-presencial/` | Sistema Premium y General en The VIP, horarios y mapa |
-| `/sistema-general-dirigido/` | Sistema General Dirigido, con sus condiciones |
-| `/sobre-ronald/` | Historia, prensa, premios y equipo |
-| `/blog/` y `/año/mes/día/nota/` | El blog (`../db/blog/`) |
-
-Son las mismas URLs que tenía el sitio anterior en WordPress, para no perder lo que Google ya había indexado. Las
-URLs viejas que tienen su contenido en otra página redirigen ahí (301); las que ya no existen (tienda, carrito,
+El sitio es una sola página (`/`, todas las secciones) más el blog: `/blog/` y cada nota en `/año/mes/día/nota/`
+(`../db/blog/`), las mismas URLs que tenían en el sitio anterior en WordPress, para no perder lo que Google ya
+había indexado. Las páginas viejas cuyo contenido hoy es una sección del inicio redirigen ahí (301: por ejemplo
+`/entrenamiento-online/` → `/#programas`, `/sobre-ronald/` → `/#zar`); las que ya no existen (tienda, carrito,
 mi cuenta, guías, categorías) responden 410, para que Google las saque. Todo en `public/.htaccess`.
 
 Entre páginas se navega con `<a>` común y no con `<Link>`: cada página carga completa, así Lenis, GSAP y las

@@ -2,7 +2,7 @@
 // Todo sale de lib/content.ts (y por lo tanto de db/): si cambia un precio o un horario, cambia acá también.
 
 import type { Metadata } from "next";
-import { awards, business, faqs, pages, press, programs, schedule, siteUrl, socials, team } from "./content";
+import { awards, business, faqs, press, programs, schedule, siteUrl, socials, team } from "./content";
 
 /** "/blog/" → "https://zardelfitness.com.ar/blog/" */
 export const abs = (path: string) => new URL(path, siteUrl).href;
@@ -45,7 +45,7 @@ export function pageMetadata({ title, description, path, absoluteTitle, article 
 const ids = {
   website: abs("/#sitio"),
   business: abs("/#negocio"),
-  ronald: abs(`${pages.ronald}#ronald`),
+  ronald: abs("/#ronald"),
 };
 
 const DAYS: Record<string, string> = {
@@ -59,7 +59,6 @@ const DAYS: Record<string, string> = {
 };
 
 const ronald = team.find((m) => m.id === "ronald")!;
-export const ronaldName = ronald.name;
 
 /** El sitio, el gimnasio y Ronald: van en todas las páginas (app/layout.tsx). */
 export function siteGraph() {
@@ -111,7 +110,7 @@ export function siteGraph() {
           "@type": "Offer",
           price: Number(p.price.replace(/\./g, "")),
           priceCurrency: p.suffix ?? p.currency,
-          url: abs(p.page),
+          url: abs("/#programas"),
           itemOffered: { "@type": "Service", name: p.title, description: p.desc },
         })),
       },
@@ -124,7 +123,7 @@ export function siteGraph() {
       jobTitle: "Personal trainer",
       description: ronald.certifications ?? ronald.bio,
       image: abs(ronald.img.src),
-      url: abs(pages.ronald),
+      url: abs("/#zar"),
       nationality: { "@type": "Country", name: "Venezuela" },
       worksFor: { "@id": ids.business },
       sameAs: [ronald.handleHref].filter(Boolean),
@@ -140,13 +139,14 @@ export function siteGraph() {
   ];
 }
 
-/** La página en sí. ProfilePage para la de Ronald, CollectionPage para el blog. */
+/** La página en sí. CollectionPage para el blog. */
 export function webPageLd({ path, name, description, type = "WebPage", about }: {
   path: string;
   name: string;
   description: string;
-  type?: "WebPage" | "ProfilePage" | "CollectionPage";
-  about?: "ronald" | "business";
+  type?: "WebPage" | "CollectionPage";
+  /** De qué trata: el gimnasio (en el inicio). */
+  about?: "business";
 }) {
   return {
     "@type": type,
@@ -156,7 +156,7 @@ export function webPageLd({ path, name, description, type = "WebPage", about }: 
     description,
     inLanguage: "es-AR",
     isPartOf: { "@id": ids.website },
-    ...(about && { [type === "ProfilePage" ? "mainEntity" : "about"]: { "@id": about === "ronald" ? ids.ronald : ids.business } }),
+    ...(about && { about: { "@id": ids.business } }),
   };
 }
 
@@ -178,36 +178,6 @@ export function faqLd() {
     "@type": "FAQPage",
     "@id": abs("/#preguntas"),
     mainEntity: faqs.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
-  };
-}
-
-/** Un programa (servicio) con sus precios. */
-export function serviceLd({ path, key = "servicio", name, description, prices, online }: {
-  path: string;
-  /** Para distinguir dos servicios en la misma página: "#servicio", "#internacional"… */
-  key?: string;
-  name: string;
-  description: string;
-  prices: { amount: number; currency: string }[];
-  online: boolean;
-}) {
-  return {
-    "@type": "Service",
-    "@id": abs(`${path}#${key}`),
-    name,
-    description,
-    serviceType: online ? "Entrenamiento personal online" : "Entrenamiento personal presencial",
-    url: abs(path),
-    provider: { "@id": ids.business },
-    areaServed: online ? { "@type": "Place", name: "Argentina y el mundo" } : { "@type": "City", name: "Buenos Aires" },
-    offers: prices.map((p) => ({
-      "@type": "Offer",
-      price: p.amount,
-      priceCurrency: p.currency,
-      url: abs(path),
-      availability: "https://schema.org/InStock",
-      priceSpecification: { "@type": "UnitPriceSpecification", price: p.amount, priceCurrency: p.currency, unitText: "MONTH" },
-    })),
   };
 }
 

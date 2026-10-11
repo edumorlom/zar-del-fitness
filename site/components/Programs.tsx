@@ -58,9 +58,6 @@ export function Programs() {
                       <span>{p.cta.label}</span>
                       <Icon name="arrow" />
                     </a>
-                    <a className="link-sm" href={p.page}>
-                      Ver detalles<span className="sr-only"> de {p.title}</span>
-                    </a>
                   </div>
                 </div>
               </TiltCard>

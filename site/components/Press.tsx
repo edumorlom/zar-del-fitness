@@ -2,14 +2,13 @@ import { PressList } from "./PressList";
 import { awards } from "@/lib/content";
 import styles from "./Press.module.css";
 
-/** `num`: el número de la sección en el inicio; las otras páginas la muestran sin número. */
-export function Press({ num }: { num?: string }) {
+export function Press() {
   return (
     <section className={`section ${styles.press}`}>
       <div className="container">
         <header className="section-head">
           <p className="eyebrow" data-reveal>
-            {num && <span className="num">{num}</span>} Trayectoria
+            <span className="num">06</span> Trayectoria
           </p>
           <h2 className="h2" data-lines>
             <span className="ln">

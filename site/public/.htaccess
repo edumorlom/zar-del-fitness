@@ -18,14 +18,11 @@ Options -Indexes
   RewriteRule ^ /%1 [R=301,L]
 
   # --- Old WordPress site (until 2026-10-10) ---
-  # Pages whose content lives on this site under another URL. The blog posts, /blog/,
-  # /entrenamiento-online/, /entrenamiento-presencial/, /sistema-general-dirigido/ and
-  # /sobre-ronald/ kept their old URLs, so they need nothing here.
-  RewriteRule ^producto/reto-de-los-25-dias-online/?$ /entrenamiento-online/ [R=301,L]
-  RewriteRule ^producto/reto-de-los-25-dias-presencial/?$ /entrenamiento-presencial/ [R=301,L]
-  RewriteRule ^servicios/?$ /#programas [NE,R=301,L]
+  # The site is one page plus the blog. The blog posts and /blog/ kept their old URLs; old pages
+  # whose content is now a section of the home page go to that section.
+  RewriteRule ^(servicios|entrenamiento-online|entrenamiento-presencial|sistema-general-dirigido|producto/reto-de-los-25-dias-(online|presencial))/?$ /#programas [NE,R=301,L]
+  RewriteRule ^(sobre-ronald|entrenadores)/?$ /#zar [NE,R=301,L]
   RewriteRule ^transformaciones-(online|presencial)/?$ /#resultados [NE,R=301,L]
-  RewriteRule ^entrenadores/?$ /sobre-ronald/ [R=301,L]
   RewriteRule ^blog/page/[0-9]+/?$ /blog/ [R=301,L]
 
   # Everything else the old site had and this one doesn't (store, cart, account, directories,

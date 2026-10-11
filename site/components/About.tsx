@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Icon } from "./Icon";
 import { VideoButton } from "./motion/VideoButton";
 import { Rich } from "./Rich";
-import { pages, stats, texts, videos } from "@/lib/content";
+import { stats, texts, videos } from "@/lib/content";
 import styles from "./About.module.css";
 
 const credentials = [
@@ -70,16 +70,13 @@ export function About() {
               </li>
             ))}
           </ul>
-          <div className={styles.links} data-reveal>
+          <div data-reveal>
             <VideoButton videoId={videos.historia} className="link-arrow">
               <span className="btn__play" style={{ marginLeft: 0 }}>
                 <Icon name="play" className="" />
               </span>
               Conocé su historia
             </VideoButton>
-            <a className="link-arrow" href={pages.ronald}>
-              Trayectoria y prensa <Icon name="arrow" />
-            </a>
           </div>
         </div>
       </div>

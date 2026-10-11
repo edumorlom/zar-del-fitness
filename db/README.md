@@ -60,7 +60,7 @@ imagen: /img/blog/gluteos-de-acero.webp
 - Debajo va el texto. Los subtítulos van con `##` (nunca `#`: el título ya es el de arriba), y las imágenes con
   `![qué se ve](/img/blog/archivo.webp)`.
 - Todas las imágenes del blog van en `img/blog/` y en WebP.
-- Si el autor es `Ronald Medina`, la nota muestra su recuadro y enlaza a su página.
+- Si el autor es `Ronald Medina`, la nota muestra su recuadro y enlaza a su sección del inicio.
 - Una nota nueva aparece sola en el blog, en "Más notas" y en el mapa del sitio para Google (`sitemap.xml`).
 
 ## Cosas a tener en cuenta
@@ -73,5 +73,5 @@ imagen: /img/blog/gluteos-de-acero.webp
   - El destacado "Lunes a viernes, clases de 1 h 20 min" del Sistema General Dirigido (`planes.json`) repite el horario.
   - El destacado "Presencial: Colegiales, CABA" del inicio (`textos.json`) repite el barrio.
   - El párrafo de Ronald dice "casi dos mil personas", y el contador del sitio usa `personasEvaluadas` (`gimnasio.json`).
-  - Las descripciones para Google de cada página están en su `site/app/…/page.tsx` y nombran lo que incluye cada
-    programa y el "Emmy Winner 2024" (la de Ronald).
+  - La descripción para Google del inicio (`site/app/page.tsx`) y la del negocio (`site/lib/seo.ts`) repiten el
+    barrio y el gimnasio.

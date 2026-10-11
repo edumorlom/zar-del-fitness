@@ -8,7 +8,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 1.3fr 1fr 1fr;
+  grid-template-columns: 1.3fr 1.2fr;
   gap: 40px;
 }
 
@@ -86,9 +86,6 @@
 @media (max-width: 1000px) {
   .grid {
     grid-template-columns: 1fr 1fr;
-  }
-  .brand {
-    grid-column: 1 / -1;
   }
 }
 @media (max-width: 560px) {

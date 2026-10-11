@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Icon } from "./Icon";
 import { Year } from "./Year";
-import { contact, links, pages, socials, texts } from "@/lib/content";
+import { contact, links, socials, texts } from "@/lib/content";
 import styles from "./Footer.module.css";
 
 export function Footer() {
@@ -19,15 +19,6 @@ export function Footer() {
             ))}
           </div>
         </div>
-
-        <nav className={styles.col} aria-label="Programas">
-          <h2>Programas</h2>
-          <a href={pages.online}>Entrenamiento online</a>
-          <a href={pages.presencial}>Entrenamiento presencial</a>
-          <a href={pages.general}>Sistema General Dirigido</a>
-          <a href={pages.ronald}>Sobre Ronald Medina</a>
-          <a href={pages.blog}>Blog</a>
-        </nav>
 
         <address className={styles.col}>
           <h2>Contacto</h2>
