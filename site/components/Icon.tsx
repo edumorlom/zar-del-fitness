@@ -24,12 +24,6 @@ const paths = {
       <path d="M12 7v5l3.5 2" {...stroke} strokeWidth={1.8} />
     </>
   ),
-  mail: (
-    <>
-      <rect x="3" y="5" width="18" height="14" rx="2.5" {...stroke} strokeWidth={1.8} />
-      <path d="m4 7 8 6 8-6" {...stroke} strokeWidth={1.8} />
-    </>
-  ),
   wa: (
     <path
       fill="currentColor"

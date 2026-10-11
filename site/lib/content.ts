@@ -42,7 +42,6 @@ export const links = {
 export const contact = {
   phone: gimnasio.whatsapp,
   phoneHref: `https://wa.me/${WA_NUMBER}`,
-  email: gimnasio.email,
   street: `${calle}, ${barrio}`,
   address: `${calle}, ${barrio}, ${ciudad}`,
   gym: `${gimnasio.gimnasio} · Exclusive Gym`,
