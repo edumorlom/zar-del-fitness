@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Icon } from "./Icon";
-import { socials, team } from "@/lib/content";
+import { team } from "@/lib/content";
 import styles from "./Team.module.css";
 
 export function Team() {
@@ -37,7 +37,7 @@ export function Team() {
               <h3>{c.name}</h3>
               <p>{c.bio}</p>
               {c.handle && (
-                <a className="link-arrow" href={socials[0].href}>
+                <a className="link-arrow" href={c.handleHref}>
                   <Icon name="ig" /> {c.handle}
                 </a>
               )}

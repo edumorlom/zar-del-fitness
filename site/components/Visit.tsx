@@ -5,7 +5,7 @@ import styles from "./Visit.module.css";
 
 const { from, to } = schedule.range;
 const pct = (h: number) => `${((h - from) / (to - from)) * 100}%`;
-const ticks = [7, 9, 11, 13, 15, 17, 19, 21];
+const ticks = Array.from({ length: Math.ceil((to - from) / 2) }, (_, i) => from + i * 2);
 
 export function Visit() {
   return (
@@ -17,7 +17,7 @@ export function Visit() {
           </p>
           <h2 className="h2 h2--sm" data-lines>
             <span className="ln">
-              <span>Lunes a viernes,</span>
+              <span>{schedule.daysLabel},</span>
             </span>
             <span className="ln">
               <span>
@@ -31,7 +31,7 @@ export function Visit() {
           </div>
 
           <div className={styles.timeline} data-reveal>
-            <div className={styles.bar} role="img" aria-label="Franjas horarias: de 8 a 12 y de 14:30 a 21">
+            <div className={styles.bar} role="img" aria-label={`Franjas horarias: ${schedule.slots.map((s) => `de ${s.opens} a ${s.closes}`).join(" y ")}`}>
               {schedule.slots.map((s, i) => (
                 <span
                   key={s.label}
@@ -56,8 +56,8 @@ export function Visit() {
             <li>
               <Icon name="clock" />
               <div>
-                <strong>Clases de ~1 h 20 min</strong>
-                <span>Último ingreso 11:00 por la mañana y 20:00 por la tarde.</span>
+                <strong>Clases de ~{schedule.classLength}</strong>
+                <span>Último ingreso {schedule.lastEntries}.</span>
               </div>
             </li>
             <li>

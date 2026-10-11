@@ -6,8 +6,8 @@ Not connected to a calendar yet: any time within opening hours is accepted.
 import datetime
 import logging
 
-from . import config, emails
-from .spanish import spanish_date
+from . import config, db, emails
+from .spanish import WEEKDAYS, spanish_date
 
 log = logging.getLogger(__name__)
 
@@ -17,8 +17,7 @@ TOOL = {
     "name": NAME,
     "description": (
         "Agenda una primera visita o un turno en el gimnasio. Usala solo cuando la persona ya dio su nombre y "
-        "confirmó el día, la hora y su número de teléfono. Solo agenda de lunes a viernes, empezando entre las 8:00 "
-        "y las 11:00 o entre las 14:30 y las 20:00."
+        f"confirmó el día, la hora y su número de teléfono. Solo agenda {db.days()}, empezando {db.start_times()}."
     ),
     "parameters": {
         "type": "object",
@@ -46,9 +45,12 @@ TOOL = {
     },
 }
 
-# When a visit can start, as in knowledge/gym-info.md: Monday to Friday, from opening to each shift's last entry.
-OPEN_WEEKDAYS = range(5)
-VISIT_START_HOURS = [(datetime.time(8, 0), datetime.time(11, 0)), (datetime.time(14, 30), datetime.time(20, 0))]
+# When a visit can start, from db/horarios.json: on the days it opens, from each shift's opening to its last entry.
+OPEN_WEEKDAYS = [WEEKDAYS.index(day) for day in db.SCHEDULE["dias"]]
+VISIT_START_HOURS = [
+    (datetime.time.fromisoformat(shift["abre"]), datetime.time.fromisoformat(shift["ultimoIngreso"]))
+    for shift in db.SHIFTS
+]
 
 
 def schedule_visit(args: dict, caller_number: str) -> dict:
@@ -67,8 +69,8 @@ def schedule_visit(args: dict, caller_number: str) -> dict:
         return {
             "turno_agendado": False,
             "motivo": "fuera del horario del gimnasio",
-            "dias": "lunes a viernes, no feriados",
-            "horas_de_inicio": ["08:00 a 11:00", "14:30 a 20:00"],
+            "dias": f"{db.days()}, no {db.closed_days()}",
+            "horas_de_inicio": [f"{shift['abre']} a {shift['ultimoIngreso']}" for shift in db.SHIFTS],
             "responder_en": language,
         }
 

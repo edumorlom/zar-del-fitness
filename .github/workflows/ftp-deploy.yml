@@ -9,9 +9,10 @@ name: Despliegue del sitio por FTP
 on:
   push:
     branches: [ main ]
-    # Sólo cuando cambia el sitio (o este workflow), no el asistente.
+    # Sólo cuando cambia el sitio, los datos que comparte con el asistente (db/) o este workflow.
     paths:
       - "site/**"
+      - "db/**"
       - ".github/workflows/ftp-deploy.yml"
   workflow_dispatch: {}   # permite lanzarlo a mano desde la pestaña Actions
 

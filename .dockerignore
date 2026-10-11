@@ -1,0 +1,8 @@
+# The assistant's Docker image (assistant/Dockerfile) is built from the root of the repo, for db/.
+# It only needs assistant/ and db/.
+*
+!assistant/
+!db/
+assistant/.env
+assistant/.venv/
+**/__pycache__/

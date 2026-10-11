@@ -14,7 +14,8 @@ El modelo de voz, `gpt-live-1`, conversa con quien llama y responde con la infor
 | Archivo | Qué es |
 |---|---|
 | `instructions.md` | Cómo se comporta el asistente: tono, idioma, reglas y cuándo delegar tareas al backend ("Delegation policy"). Se puede editar libremente. |
-| `knowledge/` | La información del gimnasio (horarios, precios, clases…), en archivos Markdown o de texto. El asistente la recibe completa en sus instrucciones al empezar cada llamada, así que responde sin buscar nada. |
+| `knowledge/` | La información del gimnasio, en archivos Markdown o de texto. El asistente la recibe completa en sus instrucciones al empezar cada llamada, así que responde sin buscar nada. |
+| `../db/` | Lo que puede cambiar (precios, planes, horarios, contacto, preguntas frecuentes, equipo), en JSON, compartido con el sitio. `instructions.md` y `knowledge/` lo usan con marcadores como `{{PLANES}}` o `{{DIAS}}` (la lista está en `assistant/db.py`). |
 | `main.py` | Arranca el servidor. |
 | `assistant/` | El código del servidor (ver abajo). |
 | `test_call.py` | Para hablar con el asistente desde el micrófono, sin llamar. |
@@ -26,6 +27,7 @@ En `assistant/`, en el orden en que pasa una llamada:
 | `server.py` | Atiende a Twilio: responde cada llamada nueva y recibe su audio. |
 | `call_session.py` | Una llamada: pasa el audio entre Twilio y OpenAI, ejecuta las funciones que pide el backend y transfiere la llamada. |
 | `live_session.py` | Configura el modelo de voz: `instructions.md`, `knowledge/`, la voz, y quién llama y cuándo. |
+| `db.py` | Lee `../db/` y completa los marcadores `{{…}}` de `instructions.md` y `knowledge/`. |
 | `backend.py` | El modelo backend: sus instrucciones, sus funciones y cómo se ejecutan. |
 | `transfer.py` | Función del backend: pasar la llamada a recepción. |
 | `visits.py` | Función del backend: agendar una visita dentro del horario y enviarla por email al gimnasio. |
@@ -42,7 +44,7 @@ En `assistant/`, en el orden en que pasa una llamada:
 
 2. **Configurar:** `cp .env.example .env` y completar `OPENAI_API_KEY`, `TWILIO_ACCOUNT_SID` y `TWILIO_AUTH_TOKEN`.
 
-3. **Cargar la información del gimnasio:** completar `knowledge/gym-info.md` y agregar cualquier otro archivo `.md` o `.txt` a `knowledge/`. El servidor los lee al arrancar: después de un cambio hay que reiniciarlo (en Railway, hacer push). Conviene que tengan solo lo que sabría alguien de recepción, porque cada llamada le envía todo a OpenAI.
+3. **Cargar la información del gimnasio:** los precios, planes, horarios y contacto están en `../db/` (ver su README); el resto, en `knowledge/gym-info.md`, y se puede agregar cualquier otro archivo `.md` o `.txt` a `knowledge/`. El servidor los lee al arrancar: después de un cambio hay que reiniciarlo (en Railway, hacer push). Conviene que tengan solo lo que sabría alguien de recepción, porque cada llamada le envía todo a OpenAI.
 
 4. **Exponer la computadora a internet** (Twilio tiene que poder llegar a ella):
    ```sh
@@ -61,12 +63,12 @@ En `assistant/`, en el orden en que pasa una llamada:
 
 ## Publicar en Railway
 
-1. En Railway, crear un proyecto a partir del repositorio de GitHub. Como el asistente está en `assistant/`, en **Settings → Source** poner *Root Directory* en `/assistant` y *Watch Paths* en `/assistant/**` (así los cambios del sitio no lo vuelven a publicar). El `Dockerfile` le indica a Railway cómo construirlo y arrancarlo.
+1. En Railway, crear un proyecto a partir del repositorio de GitHub. El asistente se construye desde la raíz del repo, porque usa `db/`: en **Settings → Source** dejar *Root Directory* en `/` y poner *Watch Paths* en `/assistant/**` y `/db/**` (así los cambios del sitio no lo vuelven a publicar), y en **Settings → Build** poner *Dockerfile Path* en `assistant/Dockerfile`. El `Dockerfile` le indica a Railway cómo construirlo y arrancarlo.
 2. En las **Variables** del servicio, agregar `OPENAI_API_KEY`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `RESEND_API_KEY` y, si hace falta, `FRONT_DESK_PHONE`, `BOOKINGS_EMAIL_TO`, `BOOKINGS_EMAIL_FROM`, `OPENAI_LIVE_MODEL`, `OPENAI_BACKEND_MODEL`, `OPENAI_REASONING_EFFORT`, `OPENAI_VOICE`, `BUSINESS_NAME` y `GREETING`. `PUBLIC_BASE_URL` no hace falta.
 3. En **Settings → Networking**, hacer clic en **Generate Domain**. Se obtiene una dirección como `https://zar-del-fitness-production.up.railway.app`.
 4. En la consola de Twilio, poner como webhook del número esa dirección más `/incoming-call`.
 
-Cada push a `main` que cambie algo en `assistant/` vuelve a publicar el servidor.
+Cada push a `main` que cambie algo en `assistant/` o en `db/` vuelve a publicar el servidor.
 
 ## Probar sin llamar
 
@@ -77,7 +79,7 @@ Se conecta al servidor igual que Twilio, así que prueba todo menos la red telef
 
 ## Transferencias y emails de turnos
 
-**Transferencias.** Cuando la persona pide hablar con alguien, con recepción o con Ronald, el asistente le delega la transferencia al backend, le dice que la pasa con uno de los asesores de recepción y, cuando termina de decirlo, la llamada se desvía a `FRONT_DESK_PHONE` (+54 9 11 2733-6258), que ve el número de quien llama. Twilio solo llama a los países habilitados en su consola, en *Voice → Settings → Geo permissions*: Argentina tiene que estar activada. Cada transferencia es además una llamada saliente que Twilio cobra.
+**Transferencias.** Cuando la persona pide hablar con alguien, con recepción o con Ronald, el asistente le delega la transferencia al backend, le dice que la pasa con uno de los asesores de recepción y, cuando termina de decirlo, la llamada se desvía a `FRONT_DESK_PHONE` (si no está, al WhatsApp de `db/gimnasio.json`: +54 9 11 2733-6258), que ve el número de quien llama. Twilio solo llama a los países habilitados en su consola, en *Voice → Settings → Geo permissions*: Argentina tiene que estar activada. Cada transferencia es además una llamada saliente que Twilio cobra.
 
 **Emails de turnos.** Cuando el asistente agenda una visita, el servidor la envía por email, en español, a `BOOKINGS_EMAIL_TO` (zardelfitnessgym@gmail.com): nombre, día, hora, motivo, el idioma de la persona y el número de teléfono que confirmó durante la llamada (y el número desde el que llamó, si es otro). Se envía con [Resend](https://resend.com), porque Railway bloquea el email común (SMTP) en el plan Hobby.
 

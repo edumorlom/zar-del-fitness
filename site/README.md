@@ -14,7 +14,8 @@ npm run lint
 
 | Qué | Dónde |
 | --- | --- |
-| Textos, precios, links, horarios, FAQ, blog, prensa | `lib/content.ts` |
+| Precios, planes, horarios, contacto, redes, preguntas frecuentes, equipo | `../db/` (compartido con el asistente) |
+| Textos, links, fotos, qué planes se muestran, prensa | `lib/content.ts` |
 | Colores, tipografía, botones | `app/globals.css` (tokens en `:root`) |
 | Secciones | `components/*.tsx` + su `*.module.css` |
 | Imágenes | `public/img/` (WebP) |
@@ -35,4 +36,4 @@ npm run lint
 - **Newsletter**: el formulario sólo valida y muestra un mensaje; conectarlo a un proveedor
   (`components/Newsletter.tsx`).
 - **Inscripción**: los botones de inscripción abren WhatsApp con un mensaje prearmado (no hay checkout online).
-- Revisar que los precios en `lib/content.ts` sigan vigentes.
+- Revisar que los precios en `db/planes.json` sigan vigentes.

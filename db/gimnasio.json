@@ -1,0 +1,21 @@
+{
+  "nombre": "Zar del Fitness",
+  "gimnasio": "The VIP by Zar del Fitness",
+  "direccion": {
+    "calle": "Av. Álvarez Thomas 847",
+    "barrio": "Colegiales",
+    "ciudad": "CABA"
+  },
+  "whatsapp": "+54 9 11 2733-6258",
+  "email": "contacto@zardelfitness.com.ar",
+  "sitioWeb": "zardelfitness.com.ar",
+  "instagram": "@zardelfitnessgym",
+  "redes": [
+    { "red": "Instagram", "url": "https://www.instagram.com/zardelfitness/" },
+    { "red": "Facebook", "url": "https://www.facebook.com/zardelfitness" },
+    { "red": "YouTube", "url": "https://www.youtube.com/user/MODELNUTRITION" },
+    { "red": "TikTok", "url": "https://vm.tiktok.com/ZMJbSAgWe/" },
+    { "red": "X (Twitter)", "url": "https://twitter.com/zardelfitness" }
+  ],
+  "personasEvaluadas": 2000
+}

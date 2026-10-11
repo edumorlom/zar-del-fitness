@@ -5,6 +5,8 @@ import os
 
 from dotenv import load_dotenv
 
+from . import db
+
 load_dotenv()
 
 log = logging.getLogger(__name__)
@@ -26,8 +28,8 @@ PUBLIC_BASE_URL = (
     os.getenv("PUBLIC_BASE_URL") or (f"https://{RAILWAY_PUBLIC_DOMAIN}" if RAILWAY_PUBLIC_DOMAIN else "")
 ).rstrip("/")
 
-# Where calls are transferred: the front desk advisors.
-FRONT_DESK_PHONE = os.getenv("FRONT_DESK_PHONE") or "+5491127336258"
+# Where calls are transferred: the front desk advisors. By default, the gym's WhatsApp number in db/gimnasio.json.
+FRONT_DESK_PHONE = os.getenv("FRONT_DESK_PHONE") or "+" + "".join(char for char in db.GYM["whatsapp"] if char.isdigit())
 
 # Booking confirmations are emailed through Resend (resend.com).
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")

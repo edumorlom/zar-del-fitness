@@ -1,0 +1,17 @@
+[
+  {
+    "id": "ronald",
+    "nombre": "Ronald Medina",
+    "apodo": "El Zar del Fitness",
+    "rol": "Fundador · Head coach",
+    "bio": "Creador del Reto de los 25 días. Su método cuenta con un equipo multidisciplinario para el control de peso y la definición muscular.",
+    "certificaciones": "Personal Trainer certificado por el IPEF (Instituto Panamericano de Educación Física), con certificación en prescripción del ejercicio en personas con obesidad y enfermedades metabólicas, en suplementación deportiva y en nutrición para el incremento de la masa muscular.",
+    "instagram": "@zardelfitness"
+  },
+  {
+    "id": "edwards",
+    "nombre": "Edwards Chacín",
+    "rol": "Entrenador",
+    "bio": "Entrenador certificado por el Instituto Panamericano de Educación Física (Universidad del Zulia). Certificación en nutrición para el incremento de la masa muscular."
+  }
+]

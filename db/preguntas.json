@@ -1,0 +1,42 @@
+[
+  {
+    "pregunta": "¿El reto de los 25 días es para cualquier persona?",
+    "respuesta": "Sí. El protocolo es individual: se diseña según tus objetivos, tu nivel y tus limitaciones."
+  },
+  {
+    "pregunta": "Nunca entrené, ¿puedo hacer el reto?",
+    "respuesta": "Claro que sí. Nuestro sistema responde a un protocolo que va de menor a mayor intensidad, según tu progreso."
+  },
+  {
+    "pregunta": "¿Puedo entrenar en casa o en el gym?",
+    "respuesta": "Sí. Diseñamos la rutina de entrenamiento según tus requerimientos y el lugar donde vas a entrenar."
+  },
+  {
+    "pregunta": "Tengo alguna enfermedad, ¿puedo entrenar?",
+    "respuesta": "Siempre que tu médico lo autorice. Trabajamos en función de tus limitaciones para establecer un objetivo seguro."
+  },
+  {
+    "pregunta": "¿Se puede hacer siendo menor de edad?",
+    "respuesta": "Sí, siempre y cuando la inscripción la haga su representante."
+  },
+  {
+    "pregunta": "¿La rutina es muy agresiva?",
+    "respuesta": "No, todo es progresivo e individual."
+  },
+  {
+    "pregunta": "¿Los profes están certificados?",
+    "respuesta": "Sí, estamos formados como profesionales del entrenamiento personalizado."
+  },
+  {
+    "pregunta": "¿Qué diferencia hay entre el Sistema Premium y el Sistema General Dirigido?",
+    "respuesta": "En el Premium te acompañan de cerca el Zar y dos asistentes premium, con acceso con huella, médico traumatólogo, bebidas premium, pausa de hasta una semana y un amigo gratis una vez al mes. El General Dirigido lo supervisan los asistentes, compartido con las demás personas que entrenan, con acceso por clave y sin pausas."
+  },
+  {
+    "pregunta": "¿Puedo pausar el Sistema Premium?",
+    "respuesta": "Sí, hasta por una semana en caso de viaje o eventualidades de fuerza mayor."
+  },
+  {
+    "pregunta": "¿Puedo pausar el Sistema General Dirigido?",
+    "respuesta": "No. No se pueden pausar días por viajes ni por situaciones ajenas a nuestro servicio."
+  }
+]

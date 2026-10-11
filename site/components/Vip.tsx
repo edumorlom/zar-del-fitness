@@ -1,4 +1,4 @@
-import { perks } from "@/lib/content";
+import { perks, vipNote } from "@/lib/content";
 import styles from "./Vip.module.css";
 
 export function Vip() {
@@ -21,8 +21,7 @@ export function Vip() {
               </span>
             </h2>
             <p className={styles.note} data-reveal>
-              Más observación, más exclusividad y dinámicas de entrenamiento más individuales, con el acompañamiento
-              cercano del Zar y sus dos asistentes premium.
+              {vipNote}
             </p>
           </div>
         </aside>

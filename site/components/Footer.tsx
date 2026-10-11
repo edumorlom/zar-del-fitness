@@ -32,7 +32,7 @@ export function Footer() {
           </a>
           <a href={links.directions}>
             <Icon name="pin" />
-            Álvarez Thomas 847, Colegiales
+            {contact.street}
           </a>
         </div>
       </div>

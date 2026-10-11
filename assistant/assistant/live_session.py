@@ -8,7 +8,7 @@ from zoneinfo import ZoneInfo
 from websockets.asyncio.client import ClientConnection
 from websockets.asyncio.client import connect as websocket_connect
 
-from . import backend, config
+from . import backend, config, db
 from .spanish import spanish_date
 
 URL = "wss://api.openai.com/v1/live/sessions"
@@ -17,17 +17,17 @@ BUENOS_AIRES = ZoneInfo("America/Argentina/Buenos_Aires")
 
 
 def load_instructions() -> str:
-    """instructions.md, with the business name and the gym's information (knowledge/) filled in."""
+    """instructions.md, with the gym's information (knowledge/), the business name and the data from db/ filled in."""
     # The gym's information goes in the instructions, so the assistant answers without looking anything up.
     knowledge = "\n\n".join(
         path.read_text() for path in sorted((PROJECT_DIR / "knowledge").iterdir()) if path.suffix in (".md", ".txt")
     )
-    return (
+    instructions = (
         (PROJECT_DIR / "instructions.md").read_text()
-        .replace("{{BUSINESS_NAME}}", config.BUSINESS_NAME)
         .replace("{{KNOWLEDGE}}", knowledge)
-        .rstrip()
+        .replace("{{BUSINESS_NAME}}", config.BUSINESS_NAME)
     )
+    return db.fill(instructions).rstrip()
 
 
 # Read once, when the server starts.

@@ -25,8 +25,11 @@ function describe({ day, hour }: Now) {
   const slot = workday ? schedule.slots.find((s) => hour >= s.from && hour < s.to) : undefined;
   if (slot) return { open: true, text: `Abierto ahora · último ingreso ${slot.lastEntry}` };
   const next = workday ? schedule.slots.find((s) => hour < s.from) : undefined;
-  if (next) return { open: false, text: `Cerrado · abre hoy a las ${next.label.split(" ")[0]}` };
-  return { open: false, text: "Cerrado · abre lunes a viernes desde las 8:00" };
+  if (next) return { open: false, text: `Cerrado · abre hoy a las ${next.opens}` };
+  return {
+    open: false,
+    text: `Cerrado · abre ${schedule.daysLabel.toLowerCase()} desde las ${schedule.slots[0].opens}`,
+  };
 }
 
 function useNowBA() {
@@ -47,7 +50,7 @@ export function OpenStatus() {
   return (
     <p className={styles.status} data-open={info?.open ?? false} aria-live="polite">
       <span className={styles.statusDot} />
-      {info?.text ?? "Lunes a viernes · 8:00 a 12:00 y 14:30 a 21:00"}
+      {info?.text ?? `${schedule.daysLabel} · ${schedule.slots.map((s) => `${s.opens} a ${s.closes}`).join(" y ")}`}
     </p>
   );
 }

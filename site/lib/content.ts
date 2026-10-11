@@ -1,19 +1,36 @@
-// Contenido del sitio. Todo el copy, precios y links viven acá para editarlos en un solo lugar.
+// Contenido del sitio. Lo que puede cambiar (precios, planes, horarios, contacto, preguntas frecuentes y equipo)
+// vive en db/, en la raíz del repo, y lo comparte con el asistente telefónico. Acá queda lo propio del sitio:
+// links, textos, imágenes y qué planes se muestran.
 
-const WA_NUMBER = "5491127336258";
+import equipo from "@db/equipo.json";
+import gimnasio from "@db/gimnasio.json";
+import horarios from "@db/horarios.json";
+import planes from "@db/planes.json";
+import preguntas from "@db/preguntas.json";
+import type { IconName } from "@/components/Icon";
+
+const WA_NUMBER = gimnasio.whatsapp.replace(/\D/g, "");
 
 export const wa = (text: string) =>
   `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
+
+// 100000 → "100.000"
+const thousands = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+// "lunes, miércoles y viernes"
+const list = (items: string[]) =>
+  items.length > 1 ? `${items.slice(0, -1).join(", ")} y ${items[items.length - 1]}` : items[0];
+
+const { calle, barrio, ciudad } = gimnasio.direccion;
+const mapsQuery = encodeURIComponent(`${calle}, ${barrio}, Buenos Aires`);
 
 export const links = {
   retoOnline: wa("Hola! Quiero inscribirme en el Reto de los 25 días online"),
   presencialCheckout: wa("Hola! Quiero inscribirme en el Sistema Premium presencial"),
   generalCheckout: wa("Hola! Quiero inscribirme en el Sistema General Dirigido"),
   hashtag: "https://www.instagram.com/explore/tags/loscuerposdelzar/",
-  directions:
-    "https://www.google.com/maps/dir/?api=1&destination=Alvarez+Thomas+847,+Colegiales,+CABA",
-  mapEmbed:
-    "https://www.google.com/maps?q=Alvarez+Thomas+847,+Colegiales,+Buenos+Aires&output=embed",
+  directions: `https://www.google.com/maps/dir/?api=1&destination=${mapsQuery}`,
+  mapEmbed: `https://www.google.com/maps?q=${mapsQuery}&output=embed`,
   waInfo: wa("Hola! Quiero información sobre los sistemas de entrenamiento del Zar."),
   waPresencial: wa("Hola! Quiero consultar sobre el Entrenamiento Presencial"),
   waInternacional: wa("Hola! Quiero el Reto de los 25 días online internacional"),
@@ -22,20 +39,34 @@ export const links = {
 };
 
 export const contact = {
-  phone: "+54 9 11 2733-6258",
+  phone: gimnasio.whatsapp,
   phoneHref: `https://wa.me/${WA_NUMBER}`,
-  email: "contacto@zardelfitness.com.ar",
-  address: "Álvarez Thomas 847, Colegiales, CABA",
-  gym: "The VIP by Zar del Fitness · Exclusive Gym",
+  email: gimnasio.email,
+  street: `${calle}, ${barrio}`,
+  area: `${barrio}, ${ciudad}`,
+  address: `${calle}, ${barrio}, ${ciudad}`,
+  gym: `${gimnasio.gimnasio} · Exclusive Gym`,
 };
 
-export const socials = [
-  { label: "Instagram", icon: "ig", href: "https://www.instagram.com/zardelfitness/" },
-  { label: "Facebook", icon: "fb", href: "https://www.facebook.com/zardelfitness" },
-  { label: "YouTube", icon: "yt", href: "https://www.youtube.com/user/MODELNUTRITION" },
-  { label: "TikTok", icon: "tt", href: "https://vm.tiktok.com/ZMJbSAgWe/" },
-  { label: "X (Twitter)", icon: "x", href: "https://twitter.com/zardelfitness" },
-] as const;
+// El ícono de cada red de db/gimnasio.json.
+const socialIcons: Record<string, IconName> = {
+  Instagram: "ig",
+  Facebook: "fb",
+  YouTube: "yt",
+  TikTok: "tt",
+  "X (Twitter)": "x",
+};
+
+export const socials = gimnasio.redes.map(({ red, url }) => {
+  const icon = socialIcons[red];
+  if (!icon) throw new Error(`Falta el ícono de "${red}" (db/gimnasio.json) en site/lib/content.ts`);
+  return { label: red, icon, href: url };
+});
+
+export const stats = {
+  peopleEvaluated: gimnasio.personasEvaluadas,
+  peopleEvaluatedText: thousands(gimnasio.personasEvaluadas),
+};
 
 export const nav = [
   { href: "#programas", label: "Programas" },
@@ -66,79 +97,75 @@ export type Program = {
   featured?: boolean;
 };
 
-export const programs: Program[] = [
+// Un plan de db/planes.json.
+type Plan = {
+  id: string;
+  nombre: string;
+  nombreCompleto?: string;
+  etiqueta: string;
+  precios: { monto: number; moneda: string }[];
+  periodo: string;
+  formasDePago?: string;
+  resumen: string;
+  descripcion?: string;
+  destacados?: string[];
+  incluye?: { titulo: string; texto?: string }[];
+  detalles?: { titulo: string; puntos: string[] }[];
+};
+
+const plans: Plan[] = planes;
+
+function plan(id: string) {
+  const found = plans.find((p) => p.id === id);
+  if (!found) throw new Error(`No existe el plan "${id}" en db/planes.json`);
+  return found;
+}
+
+/** El precio principal de un plan, como "$100.000" o "USD 100". */
+export function price(id: string) {
+  const { monto, moneda } = plan(id).precios[0];
+  return `${moneda === "ARS" ? "$" : `${moneda} `}${thousands(monto)}`;
+}
+
+// Las tarjetas de "Programas", en orden. Los datos de cada plan están en db/planes.json.
+const cards: { id: string; art: Program["art"]; cta: Program["cta"]; featured?: boolean }[] = [
   {
-    tag: "Online · Argentina",
-    title: "Reto de los 25 días",
-    currency: "$",
-    price: "100.000",
-    suffix: "ARS",
-    desc: "Entrená en casa o en el gym con videos diseñados para tu sistema, a tu ritmo y en tu horario.",
-    features: [
-      "Evaluación a distancia",
-      "Plan de alimentación individual",
-      "Plan de suplementación individual",
-      "Rutina en video (casa o gym)",
-      "Controles cada 15 días",
-      "Asistencia permanente por WhatsApp",
-    ],
+    id: "reto-online",
     art: { variant: "online", label: "Sistema Online de entrenamiento" },
     cta: { label: "Inscribirme", href: links.retoOnline },
   },
   {
-    tag: "Presencial · The VIP",
-    title: "Sistema Premium",
-    currency: "$",
-    price: "450.000",
-    suffix: "ARS",
-    desc: "Entrená directamente con el Zar y sus dos asistentes premium en un gimnasio exclusivo, con horarios que se adaptan a vos.",
-    features: [
-      "Consulta antropométrica y evaluación física",
-      "Plan personalizado con el Zar + 2 asistentes",
-      "Gimnasio The VIP incluido y exclusivo",
-      "Bebidas premium e hidratación libre",
-      "Médico traumatólogo exclusivo",
-      "Traé un amigo una vez al mes",
-    ],
+    id: "premium",
     art: { variant: "premium", label: "Sistema Premium de entrenamiento" },
     cta: { label: "Inscribirme", href: links.presencialCheckout },
     featured: true,
   },
   {
-    tag: "Presencial · The VIP",
-    title: "Sistema General Dirigido",
-    currency: "$",
-    price: "170.000",
-    suffix: "ARS",
-    desc: "Entrená directamente con el Zar y su equipo de asistentes en The VIP, cuando te resulte más cómodo dentro de las franjas horarias.",
-    features: [
-      "Consulta inicial: % de grasa, peso y estatura",
-      "Controles mensuales con cita previa",
-      "Plan de entrenamiento con los asistentes del Zar",
-      "Entrenamiento supervisado y compartido",
-      "Gimnasio The VIP incluido",
-      "Lunes a viernes, clases de 1\u00a0h\u00a020\u00a0min",
-    ],
+    id: "general",
     art: { variant: "general", label: "Sistema General Dirigido" },
     cta: { label: "Inscribirme", href: links.generalCheckout },
   },
   {
-    tag: "Online · Internacional",
-    title: "Reto Internacional",
-    currency: "USD",
-    price: "100",
-    desc: "El mismo método, desde cualquier país. Seguimiento por WhatsApp durante todo el reto.",
-    features: [
-      "Evaluación a distancia",
-      "Plan nutricional a medida",
-      "Plan de entrenamiento",
-      "Controles día 1, 15 y 25",
-      "Suplementación deportiva (si se requiere)",
-    ],
+    id: "reto-internacional",
     art: { variant: "reto", label: "Sello: comienza el reto de los 25 días, internacional" },
     cta: { label: "Quiero empezar", href: links.waInternacional },
   },
 ];
+
+export const programs: Program[] = cards.map(({ id, ...card }) => {
+  const p = plan(id);
+  const { monto, moneda } = p.precios[0];
+  return {
+    tag: p.etiqueta,
+    title: p.nombre,
+    currency: moneda === "ARS" ? "$" : moneda,
+    price: thousands(monto),
+    suffix: moneda === "ARS" ? "ARS" : undefined,
+    desc: p.resumen,
+    features: p.destacados ?? [],
+    ...card,
+  };
+});
 
 export const steps = [
   { n: "01", title: "Inscripción", text: "Te inscribís y completás un cuestionario sobre tus objetivos, hábitos y antecedentes." },
@@ -182,29 +209,61 @@ export const transformations: Shot[][] = [
   ],
 ];
 
-export const perks = [
-  ["Consulta antropométrica", "Evaluación completa sobre tus objetivos y tu evolución física para optimizar tu entrenamiento de forma constante."],
-  ["Evaluación física y estratégica", "A disponibilidad de Zar del Fitness, sin restricciones."],
-  ["Sugerencia alimentaria y suplementaria", "Orientación para comer más sano y enfocado en tu objetivo. Si querés un seguimiento nutricional más profesional, te recomendamos sumar un nutricionista."],
-  ["Plan de entrenamiento personalizado", "Con entrenador personal a cargo de @zardelfitness y 2 asistentes premium."],
-  ["Gimnasio The VIP by Zar del Fitness", "Incluido en el costo y exclusivo para este servicio."],
-  ["Hidratación libre", "Agua con gas y sin gas."],
-  ["Bebidas premium", "Pre-entreno, aminoácidos y whey protein (sujetos a disponibilidad)."],
-  ["Acceso con huella dactilar", "Entrás al gimnasio sin llaves ni tarjetas."],
-  ["Pausá tu sistema", "Hasta una semana, en caso de viaje o eventualidades de fuerza mayor."],
-  ["Médico traumatólogo", "Exclusivo para alumnos premium."],
-  ["Traé un amigo", "Invitá a un amigo a un día de prueba sin costo, una vez al mes."],
-] as const;
+// La sección The VIP: lo que incluye el Sistema Premium.
+const premium = plan("premium");
+export const vipNote = premium.descripcion ?? "";
+export const perks = (premium.incluye ?? []).map(({ titulo, texto }) => [titulo, texto ?? ""] as const);
 
-// Horario del gimnasio (hora de Buenos Aires, lunes a viernes). Horas en decimal: 14.5 = 14:30.
+// Los días como los cuenta Date.getDay(): 0 es domingo.
+const WEEKDAYS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+
+// "14:30" → 14.5
+const hours = (time: string) => {
+  const [h, m] = time.split(":").map(Number);
+  return h + m / 60;
+};
+// "08:00" → "8:00"
+const clock = (time: string) => time.replace(/^0/, "");
+
+// "Lunes a viernes" si los días son seguidos, o "Lunes, miércoles y viernes".
+function daysLabel(days: string[]) {
+  const n = days.map((d) => WEEKDAYS.indexOf(d));
+  const together = days.length > 2 && n.every((d, i) => i === 0 || d === n[i - 1] + 1);
+  const text = together ? `${days[0]} a ${days[days.length - 1]}` : list(days);
+  return text[0].toUpperCase() + text.slice(1);
+}
+
+const partOfDay = (hour: number) => (hour < 12 ? "por la mañana" : hour < 20 ? "por la tarde" : "por la noche");
+
+// 80 → "1 h 20 min"
+const duration = (minutes: number) =>
+  [Math.floor(minutes / 60) && `${Math.floor(minutes / 60)} h`, minutes % 60 && `${minutes % 60} min`]
+    .filter(Boolean)
+    .join(" ");
+
+const slots = horarios.turnos.map((t) => ({
+  from: hours(t.abre),
+  to: hours(t.cierra),
+  opens: clock(t.abre),
+  closes: clock(t.cierra),
+  lastEntry: clock(t.ultimoIngreso),
+  label: `${clock(t.abre)} – ${clock(t.cierra)}`,
+}));
+
+// Horario del gimnasio (hora de Buenos Aires), de db/horarios.json. Horas en decimal: 14.5 = 14:30.
 export const schedule = {
-  timeZone: "America/Argentina/Buenos_Aires",
-  days: [1, 2, 3, 4, 5],
-  slots: [
-    { from: 8, to: 12, lastEntry: "11:00", label: "8:00 – 12:00" },
-    { from: 14.5, to: 21, lastEntry: "20:00", label: "14:30 – 21:00" },
-  ],
-  range: { from: 7, to: 22 },
+  timeZone: horarios.zonaHoraria,
+  days: horarios.dias.map((d) => WEEKDAYS.indexOf(d)),
+  daysLabel: daysLabel(horarios.dias),
+  slots,
+  // "11:00 por la mañana y 20:00 por la tarde"
+  lastEntries: list(slots.map((s) => `${s.lastEntry} ${partOfDay(s.from)}`)),
+  classLength: duration(horarios.minutosPorClase),
+  // La línea de horarios va de una hora antes de abrir a una después de cerrar.
+  range: {
+    from: Math.floor(Math.min(...slots.map((s) => s.from))) - 1,
+    to: Math.ceil(Math.max(...slots.map((s) => s.to))) + 1,
+  },
 };
 
 export const press = [
@@ -222,30 +281,23 @@ export const awards = [
   { year: "Hoy", title: "Revista Cuerpo y Mente", text: "Articulista · Orador motivacional para Remax" },
 ];
 
-export const team = [
-  {
-    role: "Fundador · Head coach",
-    name: "Ronald Medina",
-    bio: "Creador del Reto de los 25 días. Su método cuenta con un equipo multidisciplinario para el control de peso y la definición muscular.",
-    img: { src: "/img/ronald-hero.jpg", w: 1218, h: 1291 },
-    handle: "@zardelfitness",
-  },
-  {
-    role: "Entrenador",
-    name: "Edwards Chacín",
-    bio: "Entrenador certificado por el Instituto Panamericano de Educación Física (Universidad del Zulia). Certificación en nutrición para el incremento de la masa muscular.",
-    img: { src: "/img/edwards-chacin.jpg", w: 1320, h: 1447 },
-  },
-];
+// La foto de cada persona de db/equipo.json, por su id.
+const teamPhotos: Record<string, { src: string; w: number; h: number }> = {
+  ronald: { src: "/img/ronald-hero.jpg", w: 1218, h: 1291 },
+  edwards: { src: "/img/edwards-chacin.jpg", w: 1320, h: 1447 },
+};
 
-export const faqs = [
-  ["¿El reto de los 25 días es para cualquier persona?", "Sí. El protocolo es individual: se diseña según tus objetivos, tu nivel y tus limitaciones."],
-  ["Nunca entrené, ¿puedo hacer el reto?", "Claro que sí. Nuestro sistema responde a un protocolo que va de menor a mayor intensidad, según tu progreso."],
-  ["¿Puedo entrenar en casa o en el gym?", "Sí. Diseñamos la rutina de entrenamiento según tus requerimientos y el lugar donde vas a entrenar."],
-  ["Tengo alguna enfermedad, ¿puedo entrenar?", "Siempre que tu médico lo autorice. Trabajamos en función de tus limitaciones para establecer un objetivo seguro."],
-  ["¿Se puede hacer siendo menor de edad?", "Sí, siempre y cuando la inscripción la haga su representante."],
-  ["¿La rutina es muy agresiva?", "No, todo es progresivo e individual."],
-  ["¿Los profes están certificados?", "Sí, estamos formados como profesionales del entrenamiento personalizado."],
-  ["¿Puedo pausar el Sistema Premium?", "Sí, hasta por una semana en caso de viaje o eventualidades de fuerza mayor."],
-  ["¿Puedo pausar el Sistema General Dirigido?", "No. No se pueden pausar días por viajes ni por situaciones ajenas a nuestro servicio."],
-] as const;
+export const team = equipo.map((m) => {
+  const img = teamPhotos[m.id];
+  if (!img) throw new Error(`Falta la foto de ${m.nombre} (db/equipo.json) en site/lib/content.ts`);
+  return {
+    role: m.rol,
+    name: m.nombre,
+    bio: m.bio,
+    img,
+    handle: m.instagram,
+    handleHref: m.instagram && `https://www.instagram.com/${m.instagram.replace(/^@/, "")}/`,
+  };
+});
+
+export const faqs = preguntas.map(({ pregunta, respuesta }) => [pregunta, respuesta] as const);
