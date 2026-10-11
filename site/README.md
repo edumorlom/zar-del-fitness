@@ -18,7 +18,7 @@ npm run lint
 | Textos, links, fotos, qué planes se muestran, prensa | `lib/content.ts` |
 | Colores, tipografía, botones | `app/globals.css` (tokens en `:root`) |
 | Secciones | `components/*.tsx` + su `*.module.css` |
-| Imágenes | `public/img/` (WebP) |
+| Imágenes | `../db/img/` (WebP). Se copian a `public/img/` antes de `dev` y `build`. |
 | SEO / metadata | `app/layout.tsx` |
 
 ## Animaciones

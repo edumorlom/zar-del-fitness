@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { Icon } from "./Icon";
-import { faqs, links } from "@/lib/content";
+import { faqs, links, texts } from "@/lib/content";
 import styles from "./Faq.module.css";
 
 export function Faq() {
@@ -27,7 +27,7 @@ export function Faq() {
             </span>
           </h2>
           <p className="section-head__lead" data-reveal>
-            ¿No encontrás tu respuesta? Contanos y un profesor te responde a la brevedad.
+            {texts.faq}
           </p>
           <div data-reveal style={{ marginTop: 28 }}>
             <a className="btn btn--outline" href={links.waDudas}>

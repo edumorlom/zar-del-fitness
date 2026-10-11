@@ -1,11 +1,9 @@
 import Image from "next/image";
 import { Icon } from "./Icon";
 import { VideoButton } from "./motion/VideoButton";
-import { stats, videos } from "@/lib/content";
+import { Rich } from "./Rich";
+import { stats, texts, videos } from "@/lib/content";
 import styles from "./About.module.css";
-
-const quote =
-  "“En mis inicios también fui gordito, pero me esforcé por ser lo que soy y ahora puedo ayudar a los demás a llevar una vida sana.”";
 
 const credentials = [
   "Personal Trainer · IPEF",
@@ -58,16 +56,11 @@ export function About() {
             </span>
           </h2>
           <div className={styles.text} data-reveal>
-            <p>
-              Venezolano, radicado en Buenos Aires. Creador del <strong>Reto de los 25 días</strong>, el motor de una marca
-              que hoy es referencia en el mundo fitness de Venezuela y Argentina.
-            </p>
-            <p>
-              Personal trainer certificado por el Instituto Panamericano de Educación Física (IPEF) en la prescripción del
-              ejercicio en personas con obesidad y enfermedades metabólicas. Conocido como <em>celebrity trainer</em> por
-              su trayectoria en el medio artístico, ya evaluó a casi dos mil personas y acompaña online a alumnos de
-              Latinoamérica y el mundo.
-            </p>
+            {texts.about.map((p) => (
+              <p key={p}>
+                <Rich text={p} />
+              </p>
+            ))}
           </div>
           <ul className={styles.chips} data-reveal-stagger>
             {credentials.map((c) => (
@@ -91,7 +84,7 @@ export function About() {
       <div className="container">
         <blockquote className={styles.quote}>
           <p data-words>
-            {quote.split(" ").map((w, i) => (
+            {texts.quote.split(" ").map((w, i) => (
               <span key={i}>{w} </span>
             ))}
           </p>

@@ -1,7 +1,7 @@
 import { Icon } from "./Icon";
 import { ProgramArt } from "./ProgramArt";
 import { TiltCard } from "./TiltCard";
-import { programs } from "@/lib/content";
+import { programs, texts } from "@/lib/content";
 import styles from "./Programs.module.css";
 
 export function Programs() {
@@ -23,7 +23,7 @@ export function Programs() {
             </span>
           </h2>
           <p className="section-head__lead" data-reveal>
-            Elegí cómo querés entrenar. Cada plan es individual y se diseña a partir de tu evaluación.
+            {texts.programs}
           </p>
         </header>
 

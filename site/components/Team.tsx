@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Icon } from "./Icon";
-import { team } from "@/lib/content";
+import { team, texts } from "@/lib/content";
 import styles from "./Team.module.css";
 
 export function Team() {
@@ -22,8 +22,7 @@ export function Team() {
             </span>
           </h2>
           <p className="section-head__lead" data-reveal>
-            El acompañamiento es el valor fundamental de nuestro servicio: sabemos que motivarte es clave, por eso nos
-            esmeramos en hacerte el camino más fácil.
+            {texts.team}
           </p>
         </header>
 

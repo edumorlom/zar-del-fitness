@@ -7,7 +7,8 @@ import { Sparkles } from "./Sparkles";
 import { VideoButton } from "./motion/VideoButton";
 import { useMotion } from "./motion/MotionProvider";
 import { gsap, useGSAP, reducedMotion, finePointer } from "@/lib/gsap";
-import { contact, links, price, videos } from "@/lib/content";
+import { Rich } from "./Rich";
+import { featuredPress, heroChips, links, price, texts, videos } from "@/lib/content";
 import styles from "./Hero.module.css";
 
 export function Hero() {
@@ -85,8 +86,7 @@ export function Hero() {
             y sumate a <a href={links.hashtag}>#LosCuerposDelZar</a>
           </p>
           <p className={styles.lead} data-hero-fade>
-            El método de Ronald Medina, <em>el Zar del Fitness</em>, para bajar grasa sin perder músculo:
-            entrenamiento, alimentación y acompañamiento 100% personalizados, con resultados cada 25 días.
+            <Rich text={texts.hero} />
           </p>
           <div className={styles.ctas} data-hero-fade>
             <a className="btn btn--gold btn--lg" href={links.retoOnline} data-magnetic>
@@ -134,16 +134,18 @@ export function Hero() {
             </div>
           </div>
 
-          <div className={styles.tagWrap} data-depth="22">
-            <a className={styles.tag} href={links.emmy} target="_blank" rel="noopener noreferrer" data-cursor="Play" data-hero-fade>
-              <Icon name="spark" />
-              <div>
-                <strong>Emmy Winner 2024</strong>
-                <span>DETRÁS DEL ESPEJO: EL LADO OSCURO DEL FITNESS</span>
-              </div>
-              <Icon name="arrow-ur" className={styles.tagArrow} />
-            </a>
-          </div>
+          {featuredPress && (
+            <div className={styles.tagWrap} data-depth="22">
+              <a className={styles.tag} href={featuredPress.href} target="_blank" rel="noopener noreferrer" data-cursor="Play" data-hero-fade>
+                <Icon name="spark" />
+                <div>
+                  <strong>{featuredPress.label}</strong>
+                  <span>{featuredPress.title}</span>
+                </div>
+                <Icon name="arrow-ur" className={styles.tagArrow} />
+              </a>
+            </div>
+          )}
         </div>
       </div>
 
@@ -152,15 +154,11 @@ export function Hero() {
           <i /> Scroll
         </span>
         <ul className={styles.chips}>
-          <li>
-            Online <b>{price("reto-online")}</b>
-          </li>
-          <li>
-            Presencial <b>{contact.area}</b>
-          </li>
-          <li>
-            Internacional <b>{price("reto-internacional")}</b>
-          </li>
+          {heroChips.map((c) => (
+            <li key={c.label}>
+              {c.label} <b>{c.value}</b>
+            </li>
+          ))}
         </ul>
       </div>
     </section>

@@ -7,6 +7,8 @@ import gimnasio from "@db/gimnasio.json";
 import horarios from "@db/horarios.json";
 import planes from "@db/planes.json";
 import preguntas from "@db/preguntas.json";
+import textos from "@db/textos.json";
+import trayectoria from "@db/trayectoria.json";
 import type { IconName } from "@/components/Icon";
 
 const WA_NUMBER = gimnasio.whatsapp.replace(/\D/g, "");
@@ -35,7 +37,6 @@ export const links = {
   waPresencial: wa("Hola! Quiero consultar sobre el Entrenamiento Presencial"),
   waInternacional: wa("Hola! Quiero el Reto de los 25 días online internacional"),
   waDudas: wa("Hola! Tengo una duda sobre el reto"),
-  emmy: "https://youtu.be/g-ENoAJHebQ",
 };
 
 export const contact = {
@@ -43,7 +44,6 @@ export const contact = {
   phoneHref: `https://wa.me/${WA_NUMBER}`,
   email: gimnasio.email,
   street: `${calle}, ${barrio}`,
-  area: `${barrio}, ${ciudad}`,
   address: `${calle}, ${barrio}, ${ciudad}`,
   gym: `${gimnasio.gimnasio} · Exclusive Gym`,
 };
@@ -167,14 +167,7 @@ export const programs: Program[] = cards.map(({ id, ...card }) => {
   };
 });
 
-export const steps = [
-  { n: "01", title: "Inscripción", text: "Te inscribís y completás un cuestionario sobre tus objetivos, hábitos y antecedentes." },
-  { n: "02", title: "Evaluación", text: "Analizamos tu punto de partida para prescribirte un plan 100% individual." },
-  { n: "03", title: "Tu plan", text: "Recibís tu plan de alimentación, suplementación y entrenamiento, adaptado a casa o gimnasio." },
-  { n: "04", title: "Entrenás", text: "Videos diseñados para tu sistema: entrenás cuando te resulte más cómodo, con asistencia por WhatsApp." },
-  { n: "05", title: "Controles", text: "Cada 15 días nos enviás fotos y tu peso. Ajustamos el plan sólo si es importante para tu avance." },
-  { n: "25", title: "Resultados", text: "Día 25: medimos, celebramos y vamos por el próximo objetivo." },
-];
+export const steps = textos.metodo.pasos.map(({ numero, titulo, texto }) => ({ n: numero, title: titulo, text: texto }));
 
 export const benefits = [
   ["Bajar tu % de grasa", "sin sacrificar músculo"],
@@ -266,20 +259,23 @@ export const schedule = {
   },
 };
 
-export const press = [
-  { src: "Emmy 2024", title: "DETRÁS DEL ESPEJO: EL LADO OSCURO DEL FITNESS", kind: "Premio", href: links.emmy, preview: "/img/press-emmy.webp" },
-  { src: "TN", title: "La historia del entrenador de los famosos", kind: "Entrevista", href: "https://tn.com.ar/show/basicas/la-dura-historia-de-ronald-medina-el-entrenador-de-los-famosos-que-se-fue-de-venezuela-despues-de_866544/", preview: "/img/ronald-portrait.webp" },
-  { src: "Olé", title: "Fitness con el Zar", kind: "Entrevista", href: "https://www.ole.com.ar/running/fitness_0_SvUQ4lGRR.html", preview: "/img/ronald-white.webp" },
-  { src: "Pronto", title: "El cambio de Rodrigo Noya en 25 días", kind: "Transformación", href: "https://www.pronto.com.ar/articulo/famosos/antes-despues-tremendo-cambio-fisico-rodrigo-noya-25-dias/20180922160638298499.html", preview: "/img/t09.webp" },
-  { src: "Funcional Magazine", title: "Portada: “Fitness con propósito”", kind: "Revista", preview: "/img/press-funcional.webp" },
-  { src: "TV", title: "Crónicas de Lirio (C5N) · La tarde con vos · Quedate con Georgina", kind: "Televisión", preview: "/img/ronald-seated.webp" },
-];
+export const press = trayectoria.prensa.map((p) => ({
+  src: p.medio,
+  title: p.titulo,
+  kind: p.tipo,
+  href: p.link,
+  preview: p.imagen,
+}));
 
-export const awards = [
-  { year: "2014", title: "Chiquinquirá de Oro", text: "Personal trainer de mayor prestigio del año · Maracaibo" },
-  { year: "2017", title: "Occamy Internacional", text: "Instructor deportivo" },
-  { year: "Hoy", title: "Revista Cuerpo y Mente", text: "Articulista · Orador motivacional para Remax" },
-];
+// La nota de prensa que se destaca en el inicio (con "destacadoEnInicio" en db/trayectoria.json), si hay.
+const featured = trayectoria.prensa.find((p) => p.destacadoEnInicio);
+export const featuredPress = featured && {
+  label: featured.destacadoEnInicio!,
+  title: featured.titulo,
+  href: featured.link,
+};
+
+export const awards = trayectoria.premios.map(({ fecha, titulo, texto }) => ({ year: fecha, title: titulo, text: texto }));
 
 // La foto de cada persona de db/equipo.json, por su id.
 const teamPhotos: Record<string, { src: string; w: number; h: number }> = {
@@ -301,3 +297,20 @@ export const team = equipo.map((m) => {
 });
 
 export const faqs = preguntas.map(({ pregunta, respuesta }) => [pregunta, respuesta] as const);
+
+// Los párrafos del sitio, de db/textos.json. Pueden tener *cursiva* y **negrita** (ver components/Rich.tsx).
+export const texts = {
+  motto: textos.lema,
+  hero: textos.inicio.descripcion,
+  about: textos.elZar.parrafos,
+  quote: `“${textos.elZar.cita}”`,
+  programs: textos.programas.introduccion,
+  team: textos.equipo.introduccion,
+  faq: textos.preguntas.introduccion,
+};
+
+// Los destacados del inicio ("Online $100.000"): el precio de un plan, o un texto.
+export const heroChips = textos.inicio.destacados.map((d) => ({
+  label: d.titulo,
+  value: d.precioDelPlan ? price(d.precioDelPlan) : (d.texto ?? ""),
+}));

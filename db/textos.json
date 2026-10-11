@@ -1,0 +1,37 @@
+{
+  "lema": "Tu cuerpo puede cambiar, y nosotros estamos para ayudarte.",
+  "inicio": {
+    "descripcion": "El método de Ronald Medina, *el Zar del Fitness*, para bajar grasa sin perder músculo: entrenamiento, alimentación y acompañamiento 100% personalizados, con resultados cada 25 días.",
+    "destacados": [
+      { "titulo": "Online", "precioDelPlan": "reto-online" },
+      { "titulo": "Presencial", "texto": "Colegiales, CABA" },
+      { "titulo": "Internacional", "precioDelPlan": "reto-internacional" }
+    ]
+  },
+  "elZar": {
+    "parrafos": [
+      "Venezolano, radicado en Buenos Aires. Creador del **Reto de los 25 días**, el motor de una marca que hoy es referencia en el mundo fitness de Venezuela y Argentina.",
+      "Personal trainer certificado por el Instituto Panamericano de Educación Física (IPEF) en la prescripción del ejercicio en personas con obesidad y enfermedades metabólicas. Conocido como *celebrity trainer* por su trayectoria en el medio artístico, ya evaluó a casi dos mil personas y acompaña online a alumnos de Latinoamérica y el mundo."
+    ],
+    "cita": "En mis inicios también fui gordito, pero me esforcé por ser lo que soy y ahora puedo ayudar a los demás a llevar una vida sana."
+  },
+  "programas": {
+    "introduccion": "Elegí cómo querés entrenar. Cada plan es individual y se diseña a partir de tu evaluación."
+  },
+  "metodo": {
+    "pasos": [
+      { "numero": "01", "titulo": "Inscripción", "texto": "Te inscribís y completás un cuestionario sobre tus objetivos, hábitos y antecedentes." },
+      { "numero": "02", "titulo": "Evaluación", "texto": "Analizamos tu punto de partida para prescribirte un plan 100% individual." },
+      { "numero": "03", "titulo": "Tu plan", "texto": "Recibís tu plan de alimentación, suplementación y entrenamiento, adaptado a casa o gimnasio." },
+      { "numero": "04", "titulo": "Entrenás", "texto": "Videos diseñados para tu sistema: entrenás cuando te resulte más cómodo, con asistencia por WhatsApp." },
+      { "numero": "05", "titulo": "Controles", "texto": "Cada 15 días nos enviás fotos y tu peso. Ajustamos el plan sólo si es importante para tu avance." },
+      { "numero": "25", "titulo": "Resultados", "texto": "Día 25: medimos, celebramos y vamos por el próximo objetivo." }
+    ]
+  },
+  "equipo": {
+    "introduccion": "El acompañamiento es el valor fundamental de nuestro servicio: sabemos que motivarte es clave, por eso nos esmeramos en hacerte el camino más fácil."
+  },
+  "preguntas": {
+    "introduccion": "¿No encontrás tu respuesta? Contanos y un profesor te responde a la brevedad."
+  }
+}
