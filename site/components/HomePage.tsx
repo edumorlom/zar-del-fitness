@@ -19,7 +19,7 @@ import { faqLd, pageMetadata, webPageLd } from "@/lib/seo";
 
 const alternates = { es: homePath("es"), en: homePath("en") };
 
-/** El título, la descripción y la URL del inicio en un idioma (app/(es)/page.tsx y app/(en)/english/page.tsx). */
+/** El título, la descripción y la URL del inicio en un idioma (app/(es)/page.tsx y app/(en)/en/page.tsx). */
 export function homeMetadata(lang: Lang) {
   const { t, pages } = content(lang);
   return pageMetadata({
@@ -29,6 +29,7 @@ export function homeMetadata(lang: Lang) {
     path: pages.home,
     alternates,
     absoluteTitle: true,
+    keywords: t.seo.palabrasClave,
   });
 }
 
@@ -40,7 +41,14 @@ export function HomePage({ lang }: { lang: Lang }) {
     <>
       <JsonLd
         data={[
-          webPageLd({ lang, path: c.pages.home, name: t.seo.inicio.titulo, description: t.seo.inicio.descripcion, about: "business" }),
+          webPageLd({
+            lang,
+            path: c.pages.home,
+            name: t.seo.inicio.titulo,
+            description: t.seo.inicio.descripcion,
+            about: "business",
+            keywords: t.seo.palabrasClave,
+          }),
           faqLd(lang),
         ]}
       />

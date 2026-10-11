@@ -1,4 +1,4 @@
-// Los dos idiomas del sitio. El castellano está en la raíz ("/") y el inglés en "/english/".
+// Los dos idiomas del sitio. El castellano está en la raíz ("/") y el inglés en "/en/".
 // En db/, cada texto que se ve en el sitio viene en los dos: { "es": "…", "en": "…" } (ver db/README.md).
 
 export const LANGS = ["es", "en"] as const;
@@ -6,15 +6,15 @@ export type Lang = (typeof LANGS)[number];
 
 export const locales = {
   es: { html: "es-AR", og: "es_AR", intl: "es-AR", prefix: "" },
-  en: { html: "en", og: "en_US", intl: "en-US", prefix: "/english" },
+  en: { html: "en", og: "en_US", intl: "en-US", prefix: "/en" },
 } as const;
 
 export const otherLang = (lang: Lang): Lang => (lang === "es" ? "en" : "es");
 
-/** La URL de una página en un idioma: ("en", "/blog/") → "/english/blog/". */
+/** La URL de una página en un idioma: ("en", "/blog/") → "/en/blog/". */
 export const localePath = (lang: Lang, path: string) => locales[lang].prefix + path;
 
-/** El inicio de cada idioma: "/" o "/english/". */
+/** El inicio de cada idioma: "/" o "/en/". */
 export const homePath = (lang: Lang) => localePath(lang, "/");
 
 type Pair<T> = { es: T; en: T };

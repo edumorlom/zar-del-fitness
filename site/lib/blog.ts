@@ -1,6 +1,6 @@
 // Las notas del blog: un archivo Markdown por nota en db/blog/ (en inglés, en db/blog/en/), con un encabezado entre
 // "---" (ver db/README.md). Se leen durante el build. Cada nota se publica en /año/mes/día/archivo/, la misma URL que
-// tenía en el sitio anterior, para no perder lo que Google ya había indexado; las de inglés, en /english/año/mes/día/archivo/.
+// tenía en el sitio anterior, para no perder lo que Google ya había indexado; las de inglés, en /en/año/mes/día/archivo/.
 
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";

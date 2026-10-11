@@ -1,6 +1,6 @@
 import { RootShell, rootMetadata, rootViewport } from "@/components/RootShell";
 
-// El sitio en inglés, todo bajo /english/: <html lang="en">.
+// El sitio en inglés, todo bajo /en/: <html lang="en">.
 export const metadata = rootMetadata;
 export const viewport = rootViewport;
 

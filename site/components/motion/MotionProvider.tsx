@@ -33,8 +33,8 @@ export type MotionLabels = {
 };
 
 export function MotionProvider({ home, labels, children }: { home: string; labels: MotionLabels; children: React.ReactNode }) {
-  // El preloader es la intro del inicio ("/" o "/english/"): las otras páginas arrancan directo.
-  // usePathname() no trae la barra final: "/english".
+  // El preloader es la intro del inicio ("/" o "/en/"): las otras páginas arrancan directo.
+  // usePathname() no trae la barra final: "/en".
   const [intro] = useState(`${usePathname().replace(/\/$/, "")}/` === home);
   const [ready, setReady] = useState(!intro);
   const [video, setVideo] = useState<string | null>(null);

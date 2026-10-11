@@ -1,5 +1,5 @@
 // Una nota del blog, en la misma URL que tenía en el sitio anterior: /2026/10/03/peptidos-y-perdida-de-peso…/
-// La versión en inglés va en /english/2026/10/03/peptides-weight-loss…/ (ver lib/blog.ts).
+// La versión en inglés va en /en/2026/10/03/peptides-weight-loss…/ (ver lib/blog.ts).
 
 import Image from "next/image";
 import { notFound } from "next/navigation";

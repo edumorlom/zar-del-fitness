@@ -4,7 +4,7 @@ Lo que puede cambiar, en un solo lugar: lo usan el sitio (`site/lib/content.ts`)
 
 ## Castellano e inglés
 
-El sitio está en castellano (`zardelfitness.com.ar/`) y en inglés (`zardelfitness.com.ar/english/`). Todo texto que se ve en el sitio va en los dos idiomas, uno al lado del otro:
+El sitio está en castellano (`zardelfitness.com.ar/`) y en inglés (`zardelfitness.com.ar/en/`). Todo texto que se ve en el sitio va en los dos idiomas, uno al lado del otro:
 
 ```json
 "boton": { "es": "Inscribirme", "en": "Sign me up" }
@@ -53,6 +53,7 @@ El sitio muestra los planes `reto-online`, `premium`, `general` y `reto-internac
 - Los párrafos pueden tener `*cursiva*` y `**negrita**`, como en Markdown.
 - Los títulos de las secciones son una lista de líneas: `["Soy Ronald Medina,", "*el Zar del Fitness.*"]`. La línea entre asteriscos es la destacada, en dorado.
 - Algunos textos tienen marcadores entre llaves, como `"Último ingreso {horas}."`: el sitio los reemplaza por el dato. Hay que dejarlos tal cual, en los dos idiomas.
+- `seo.palabrasClave` son las búsquedas a las que apunta el inicio ("mejor entrenador personal", …). No se ven en el sitio: van en los datos para Google y otros buscadores. La frase que más pesa es la de la descripción del inicio (`seo.inicio.descripcion`), que Google muestra debajo del título.
 - `general.leerEn` es el botón para cambiar de idioma: cada uno está en su idioma ("Leer en español", "Read in English") y se muestra en la página del otro.
 - Cada destacado del inicio (`inicio.destacados`, como "Online $100.000") tiene un `titulo` y, o bien `precioDelPlan` con el `id` de un plan (muestra su precio), o bien un `texto`.
 - En la prensa, `link` es opcional. La `imagen` es la que aparece al pasar el mouse, y va en `db/img/`.
@@ -84,7 +85,7 @@ imagen: /img/blog/gluteos-de-acero.webp
 
 ### En inglés (`blog/en/`)
 
-La traducción de una nota es otro archivo, en `blog/en/`, con un nombre en inglés (que es el final de su URL): `blog/en/steel-glutes.md` se publica en `zardelfitness.com.ar/english/2020/12/15/steel-glutes/`. El encabezado tiene los mismos datos (en castellano los nombres, en inglés los valores) más `original`, el nombre del archivo de la nota en castellano, sin `.md`:
+La traducción de una nota es otro archivo, en `blog/en/`, con un nombre en inglés (que es el final de su URL): `blog/en/steel-glutes.md` se publica en `zardelfitness.com.ar/en/2020/12/15/steel-glutes/`. El encabezado tiene los mismos datos (en castellano los nombres, en inglés los valores) más `original`, el nombre del archivo de la nota en castellano, sin `.md`:
 
 ```
 ---

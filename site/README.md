@@ -28,8 +28,8 @@ npm run lint
 
 ## Idiomas
 
-El sitio está en castellano en la raíz (`/`) y en inglés en `/english/`, con las mismas páginas: `/english/`,
-`/english/blog/` y cada nota traducida en `/english/año/mes/día/nota-en-ingles/`. `/spanish/` redirige a `/`.
+El sitio está en castellano en la raíz (`/`) y en inglés en `/en/`, con las mismas páginas: `/en/`,
+`/en/blog/` y cada nota traducida en `/en/año/mes/día/nota-en-ingles/`. `/es/` redirige a `/`.
 
 - Cada idioma tiene su layout raíz, con su `<html lang>`: `app/(es)/layout.tsx` y `app/(en)/layout.tsx` (los dos
   usan `components/RootShell.tsx`). Las páginas de cada idioma son archivos cortos que llaman al mismo componente
@@ -51,7 +51,7 @@ había indexado. Las páginas viejas cuyo contenido hoy es una sección del inic
 mi cuenta, guías, categorías) responden 410, para que Google las saque. Todo en `public/.htaccess`.
 
 Entre páginas se navega con `<a>` común y no con `<Link>`: cada página carga completa, así Lenis, GSAP y las
-secciones fijadas arrancan de cero. Los links del menú son `/#seccion` (`/english/#seccion`): desde otra página abren el inicio
+secciones fijadas arrancan de cero. Los links del menú son `/#seccion` (`/en/#seccion`): desde otra página abren el inicio
 sin el preloader y bajan a la sección (ver `components/RootShell.tsx` y `components/motion/MotionProvider.tsx`).
 
 ## Animaciones
