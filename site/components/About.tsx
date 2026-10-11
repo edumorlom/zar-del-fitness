@@ -1,18 +1,15 @@
 import Image from "next/image";
 import { Icon } from "./Icon";
 import { VideoButton } from "./motion/VideoButton";
+import { Lines } from "./Lines";
 import { Rich } from "./Rich";
-import { stats, texts, videos } from "@/lib/content";
+import { content, stats, videos } from "@/lib/content";
+import type { Lang } from "@/lib/i18n";
 import styles from "./About.module.css";
 
-const credentials = [
-  "Personal Trainer · IPEF",
-  "Obesidad y enfermedades metabólicas",
-  "Suplementación deportiva",
-  "Nutrición para masa muscular",
-];
-
-export function About() {
+export function About({ lang }: { lang: Lang }) {
+  const { t, peopleEvaluated } = content(lang);
+  const z = t.elZar;
   return (
     <section className={`section ${styles.about}`} id="zar">
       <div className={`container ${styles.grid}`}>
@@ -21,7 +18,7 @@ export function About() {
           <figure className={styles.img} data-reveal-img>
             <Image
               src="/img/ronald-seated.webp"
-              alt="Ronald Medina sentado, con ropa negra de Zar del Fitness"
+              alt={z.foto}
               width={841}
               height={1024}
               sizes="(max-width: 900px) 90vw, 45vw"
@@ -31,39 +28,32 @@ export function About() {
             <figure className={styles.float} data-reveal="scale">
               <Image
                 src="/img/press-funcional.webp"
-                alt="Ronald Medina en la portada de Funcional Magazine"
+                alt={z.portada}
                 width={819}
                 height={1024}
                 sizes="220px"
               />
-              <figcaption>Portada · Funcional Magazine</figcaption>
+              <figcaption>{z.portadaPie}</figcaption>
             </figure>
           </div>
         </div>
 
         <div className={styles.copy}>
           <p className="eyebrow" data-reveal>
-            <span className="num">01</span> El Zar
+            <span className="num">01</span> {z.antetitulo}
           </p>
           <h2 className="h2" data-lines>
-            <span className="ln">
-              <span>Soy Ronald Medina,</span>
-            </span>{" "}
-            <span className="ln">
-              <span>
-                <em className="serif gold-text">el Zar del Fitness.</em>
-              </span>
-            </span>
+            <Lines lines={z.titulo} />
           </h2>
           <div className={styles.text} data-reveal>
-            {texts.about.map((p) => (
+            {z.parrafos.map((p) => (
               <p key={p}>
                 <Rich text={p} />
               </p>
             ))}
           </div>
           <ul className={styles.chips} data-reveal-stagger>
-            {credentials.map((c) => (
+            {z.credenciales.map((c) => (
               <li key={c}>
                 <Icon name="check" />
                 {c}
@@ -71,11 +61,11 @@ export function About() {
             ))}
           </ul>
           <div data-reveal>
-            <VideoButton videoId={videos.historia} className="link-arrow">
+            <VideoButton videoId={videos.historia} cursor={t.general.cursorVideo} className="link-arrow">
               <span className="btn__play" style={{ marginLeft: 0 }}>
                 <Icon name="play" className="" />
               </span>
-              Conocé su historia
+              {z.historia}
             </VideoButton>
           </div>
         </div>
@@ -84,7 +74,7 @@ export function About() {
       <div className="container">
         <blockquote className={styles.quote}>
           <p data-words>
-            {texts.quote.split(" ").map((w, i) => (
+            {`“${z.cita}”`.split(" ").map((w, i) => (
               <span key={i}>{w} </span>
             ))}
           </p>
@@ -93,22 +83,22 @@ export function About() {
 
         <dl className={styles.stats} data-reveal-stagger>
           <div className={styles.stat}>
-            <dt>Personas evaluadas</dt>
+            <dt>{z.cifras.evaluadas}</dt>
             <dd>
-              <small>casi</small>
+              <small>{z.cifras.casi}</small>
               <span data-count={stats.peopleEvaluated} data-format="thousands">
-                {stats.peopleEvaluatedText}
+                {peopleEvaluated}
               </span>
             </dd>
           </div>
           <div className={styles.stat}>
-            <dt>Días por ciclo de resultados</dt>
+            <dt>{z.cifras.ciclo}</dt>
             <dd>
               <span data-count="25">25</span>
             </dd>
           </div>
           <div className={styles.stat}>
-            <dt>Chiquinquirá de Oro · Trainer del año</dt>
+            <dt>{z.cifras.chiquinquira}</dt>
             <dd>
               <span data-count="2014" data-from="1990">
                 2014
@@ -116,7 +106,7 @@ export function About() {
             </dd>
           </div>
           <div className={styles.stat}>
-            <dt>Emmy Winner</dt>
+            <dt>{z.cifras.emmy}</dt>
             <dd>
               <span data-count="2024" data-from="2000">
                 2024

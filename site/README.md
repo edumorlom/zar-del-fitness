@@ -15,15 +15,32 @@ npm run lint
 | Qué | Dónde |
 | --- | --- |
 | Precios, planes, horarios, contacto, redes, preguntas frecuentes, equipo | `../db/` (compartido con el asistente) |
-| Textos, links, fotos, qué planes se muestran, prensa | `lib/content.ts` |
+| Todos los textos del sitio, en castellano y en inglés: botones, menú, títulos, SEO | `../db/textos.json` (ver `../db/README.md`) |
+| Links, fotos, qué planes se muestran | `lib/content.ts` |
 | Colores, tipografía, botones | `app/globals.css` (tokens en `:root`) |
 | Secciones | `components/*.tsx` + su `*.module.css` |
 | Imágenes | `../db/img/` (WebP). Se copian a `public/img/` antes de `dev` y `build`. |
-| Notas del blog | `../db/blog/` (ver `../db/README.md`) |
-| SEO: título y descripción | `export const metadata` en `app/page.tsx` (inicio) y `app/blog/page.tsx` |
-| SEO: datos estructurados (Google), sitemap, robots | `lib/seo.ts`, `app/sitemap.ts`, `app/robots.ts` |
+| Notas del blog | `../db/blog/`, y en inglés `../db/blog/en/` (ver `../db/README.md`) |
+| SEO: título y descripción | `../db/textos.json` (`seo`) |
+| SEO: datos estructurados (Google), hreflang, sitemap, robots | `lib/seo.ts`, `app/sitemap.ts`, `app/robots.ts` |
 | Imágenes para compartir (WhatsApp, redes) | `opengraph-image.tsx` de cada página, con el diseño de `lib/og.tsx` |
 | Redirecciones de las URLs del sitio anterior | `public/.htaccess` |
+
+## Idiomas
+
+El sitio está en castellano en la raíz (`/`) y en inglés en `/english/`, con las mismas páginas: `/english/`,
+`/english/blog/` y cada nota traducida en `/english/año/mes/día/nota-en-ingles/`. `/spanish/` redirige a `/`.
+
+- Cada idioma tiene su layout raíz, con su `<html lang>`: `app/(es)/layout.tsx` y `app/(en)/layout.tsx` (los dos
+  usan `components/RootShell.tsx`). Las páginas de cada idioma son archivos cortos que llaman al mismo componente
+  con `lang` (`components/HomePage.tsx`, `BlogIndex.tsx`, `BlogPost.tsx`).
+- La 404 es una sola, en castellano con una línea en inglés: `app/global-not-found.tsx`.
+- `content(lang)` (`lib/content.ts`) devuelve todo resuelto en un idioma. Los textos de `db/` vienen en los dos
+  (`{ "es": …, "en": … }`); si falta uno, el sitio no se construye y dice cuál (`lib/i18n.ts`).
+- Los componentes de cliente (`"use client"`) reciben sus textos por props, para no mandar `db/` entero al
+  navegador.
+- Cada página dice cuál es su versión en el otro idioma (`<link rel="alternate" hreflang>`, también en
+  `sitemap.xml`), y el botón "EN"/"ES" del menú lleva ahí.
 
 ## Páginas
 
@@ -34,8 +51,8 @@ había indexado. Las páginas viejas cuyo contenido hoy es una sección del inic
 mi cuenta, guías, categorías) responden 410, para que Google las saque. Todo en `public/.htaccess`.
 
 Entre páginas se navega con `<a>` común y no con `<Link>`: cada página carga completa, así Lenis, GSAP y las
-secciones fijadas arrancan de cero. Los links del menú son `/#seccion`: desde otra página abren el inicio sin el
-preloader y bajan a la sección (ver `app/layout.tsx` y `components/motion/MotionProvider.tsx`).
+secciones fijadas arrancan de cero. Los links del menú son `/#seccion` (`/english/#seccion`): desde otra página abren el inicio
+sin el preloader y bajan a la sección (ver `components/RootShell.tsx` y `components/motion/MotionProvider.tsx`).
 
 ## Animaciones
 

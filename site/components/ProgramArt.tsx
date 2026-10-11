@@ -1,5 +1,5 @@
 // Arte de las tarjetas de programas. SVG inline (no <img>) para que use las tipografías del sitio.
-import type { ProgramArtVariant } from "@/lib/content";
+import type { Content, ProgramArtVariant } from "@/lib/content";
 import styles from "./ProgramArt.module.css";
 
 const W = 800;
@@ -7,6 +7,9 @@ const H = 500;
 const CX = W / 2;
 const CY = H / 2;
 const INK = "#1a1407";
+
+// Las palabras de las ilustraciones, de db/textos.json (programas.arte).
+type Words = Content["t"]["programas"]["arte"];
 
 // Borde festoneado del sello: r(θ) = R + a·cos(nθ)
 const scallop = Array.from({ length: 360 }, (_, i) => {
@@ -100,38 +103,39 @@ function Subtitle({ y, children }: { y: number; children: string }) {
   );
 }
 
-function Sistema({ id, variant }: { id: string; variant: "online" | "premium" }) {
+function Sistema({ id, variant, words }: { id: string; variant: "online" | "premium"; words: Words }) {
   const word = variant === "online" ? "ONLINE" : "PREMIUM";
   return (
     <>
       <Title y={170} size={92} fill={`url(#${id}-silver)`} className={styles.serif}>
-        Sistema
+        {words.sistema}
       </Title>
       <Title y={336} size={variant === "online" ? 176 : 162} spacing={4} fill={`url(#${id}-gold)`} className={styles.display}>
         {word}
       </Title>
-      <Subtitle y={394}>DE ENTRENAMIENTO</Subtitle>
+      <Subtitle y={394}>{words.deEntrenamiento}</Subtitle>
     </>
   );
 }
 
-function General({ id }: { id: string }) {
+function General({ id, words }: { id: string; words: Words }) {
+  const [top, first, second] = words.general;
   return (
     <>
       <Title y={140} size={78} fill={`url(#${id}-silver)`} className={styles.serif}>
-        Sistema
+        {top}
       </Title>
       <Title y={268} size={124} spacing={3} fill={`url(#${id}-gold)`} className={styles.display}>
-        GENERAL
+        {first}
       </Title>
       <Title y={388} size={124} spacing={3} fill={`url(#${id}-gold)`} className={styles.display}>
-        DIRIGIDO
+        {second}
       </Title>
     </>
   );
 }
 
-function Seal({ id }: { id: string }) {
+function Seal({ id, words }: { id: string; words: Words }) {
   const sparkle = (x: number) => (
     <path d={`M${x} ${CY - 7}l2 5 5 2-5 2-2 5-2-5-5-2 5-2z`} fill={INK} />
   );
@@ -146,40 +150,40 @@ function Seal({ id }: { id: string }) {
       <path id={`${id}-bottom`} d={`M${CX - 162} ${CY}A162 162 0 0 0 ${CX + 162} ${CY}`} fill="none" />
       <text fontSize="25" letterSpacing="5" fill={INK} className={styles.sans}>
         <textPath href={`#${id}-top`} startOffset="50%" textAnchor="middle">
-          COMIENZA EL RETO
+          {words.selloArriba}
         </textPath>
       </text>
       <text fontSize="25" letterSpacing="5" fill={INK} className={styles.sans}>
         <textPath href={`#${id}-bottom`} startOffset="50%" textAnchor="middle">
-          INTERNACIONAL
+          {words.selloAbajo}
         </textPath>
       </text>
       {sparkle(CX - 153)}
       {sparkle(CX + 153)}
       <text x={CX + 3} y={198} fontSize="20" letterSpacing="6" textAnchor="middle" fill={INK} className={styles.sans}>
-        DE LOS
+        {words.selloDeLos}
       </text>
       <text x={CX} y={314} fontSize="104" textAnchor="middle" fill={INK} className={styles.display}>
         25
       </text>
       <text x={CX + 3} y={350} fontSize="22" letterSpacing="6" textAnchor="middle" fill={INK} className={styles.sans}>
-        DÍAS
+        {words.selloDias}
       </text>
       <path d={`M${CX - 88} 342h36M${CX + 52} 342h36`} stroke={INK} strokeWidth="3" strokeLinecap="round" />
     </>
   );
 }
 
-export function ProgramArt({ variant, label }: { variant: ProgramArtVariant; label: string }) {
+export function ProgramArt({ variant, label, words }: { variant: ProgramArtVariant; label: string; words: Words }) {
   // Cada variante aparece una sola vez en la página, así que su nombre alcanza como prefijo de ids.
   const id = `art-${variant}`;
   return (
     <svg className={styles.art} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" role="img" aria-label={label}>
       <Defs id={id} />
       <Backdrop id={id} double={variant === "premium"} />
-      {(variant === "online" || variant === "premium") && <Sistema id={id} variant={variant} />}
-      {variant === "general" && <General id={id} />}
-      {variant === "reto" && <Seal id={id} />}
+      {(variant === "online" || variant === "premium") && <Sistema id={id} variant={variant} words={words} />}
+      {variant === "general" && <General id={id} words={words} />}
+      {variant === "reto" && <Seal id={id} words={words} />}
     </svg>
   );
 }

@@ -1,24 +1,20 @@
-import { perks, vipNote } from "@/lib/content";
+import { Lines } from "./Lines";
+import { content } from "@/lib/content";
+import type { Lang } from "@/lib/i18n";
 import styles from "./Vip.module.css";
 
-export function Vip() {
+export function Vip({ lang }: { lang: Lang }) {
+  const { t, perks, vipNote } = content(lang);
   return (
     <section className={`section ${styles.vip}`} id="gym">
       <div className={`container ${styles.grid}`}>
         <aside className={styles.aside}>
           <div className={styles.sticky}>
             <p className="eyebrow" data-reveal>
-              <span className="num">05</span> Sistema Premium
+              <span className="num">05</span> {t.vip.antetitulo}
             </p>
             <h2 className="h2" data-lines>
-              <span className="ln">
-                <span>The VIP.</span>
-              </span>{" "}
-              <span className="ln">
-                <span>
-                  <em className="serif gold-text">Un gym sólo para vos.</em>
-                </span>
-              </span>
+              <Lines lines={t.vip.titulo} />
             </h2>
             <p className={styles.note} data-reveal>
               {vipNote}
@@ -27,7 +23,7 @@ export function Vip() {
         </aside>
 
         <ol className={styles.perks}>
-          {perks.map(([title, text], i) => (
+          {perks.map(({ title, text }, i) => (
             <li key={title} className={styles.perk} data-reveal>
               <span className={styles.n}>{String(i + 1).padStart(2, "0")}</span>
               <div>

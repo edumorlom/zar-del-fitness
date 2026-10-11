@@ -1,37 +1,459 @@
 {
-  "lema": "Tu cuerpo puede cambiar, y nosotros estamos para ayudarte.",
+  "lema": {
+    "es": "Tu cuerpo puede cambiar, y nosotros estamos para ayudarte.",
+    "en": "Your body can change, and we're here to help."
+  },
+
+  "general": {
+    "irAlContenido": { "es": "Ir al contenido", "en": "Skip to content" },
+    "inicio": { "es": "Inicio", "en": "Home" },
+    "migasDePan": { "es": "Migas de pan", "en": "Breadcrumb" },
+    "leerEn": { "es": "Leer en español", "en": "Read in English" },
+    "gimnasioExclusivo": { "es": "Exclusive Gym", "en": "Exclusive Gym" },
+    "cursorVideo": { "es": "Play", "en": "Play" },
+    "cursorChat": { "es": "Chat", "en": "Chat" }
+  },
+
+  "whatsapp": {
+    "retoOnline": {
+      "es": "Hola! Quiero inscribirme en el Reto de los 25 días online",
+      "en": "Hi! I'd like to sign up for the online 25-Day Challenge"
+    },
+    "premium": {
+      "es": "Hola! Quiero inscribirme en el Sistema Premium presencial",
+      "en": "Hi! I'd like to sign up for the in-person Premium System"
+    },
+    "general": {
+      "es": "Hola! Quiero inscribirme en el Sistema General Dirigido",
+      "en": "Hi! I'd like to sign up for the Guided General System"
+    },
+    "internacional": {
+      "es": "Hola! Quiero el Reto de los 25 días online internacional",
+      "en": "Hi! I'd like the international online 25-Day Challenge"
+    },
+    "informacion": {
+      "es": "Hola! Quiero información sobre los sistemas de entrenamiento del Zar.",
+      "en": "Hi! I'd like information about the Zar's training systems."
+    },
+    "presencial": {
+      "es": "Hola! Quiero consultar sobre el Entrenamiento Presencial",
+      "en": "Hi! I'd like to ask about in-person training"
+    },
+    "dudas": {
+      "es": "Hola! Tengo una duda sobre el reto",
+      "en": "Hi! I have a question about the challenge"
+    },
+    "botonFlotante": { "es": "Escribinos por WhatsApp", "en": "Message us on WhatsApp" }
+  },
+
+  "encabezado": {
+    "anuncio": { "es": "Reto de los 25 días online:", "en": "Online 25-Day Challenge:" },
+    "anuncioBoton": { "es": "Inscribite", "en": "Sign up" },
+    "logo": { "es": "Zar del Fitness, inicio", "en": "Zar del Fitness, home" },
+    "menuPrincipal": { "es": "Principal", "en": "Main" },
+    "menuMovil": { "es": "Móvil", "en": "Mobile" },
+    "boton": { "es": "Empezá el reto", "en": "Start the challenge" },
+    "abrirMenu": { "es": "Abrir menú", "en": "Open menu" },
+    "cerrarMenu": { "es": "Cerrar menú", "en": "Close menu" },
+    "escribinos": { "es": "Escribinos", "en": "Message us" }
+  },
+
+  "menu": {
+    "programas": { "es": "Programas", "en": "Programs" },
+    "metodo": { "es": "Método", "en": "Method" },
+    "resultados": { "es": "Resultados", "en": "Results" },
+    "zar": { "es": "El Zar", "en": "The Zar" },
+    "gym": { "es": "The VIP", "en": "The VIP" },
+    "faq": { "es": "FAQ", "en": "FAQ" },
+    "blog": { "es": "Blog", "en": "Blog" }
+  },
+
+  "precarga": {
+    "reto": { "es": "Reto de los", "en": "The challenge" },
+    "dias": { "es": "días", "en": "days" }
+  },
+
   "inicio": {
-    "descripcion": "El método de Ronald Medina, *el Zar del Fitness*, para bajar grasa sin perder músculo: entrenamiento, alimentación y acompañamiento 100% personalizados, con resultados cada 25 días.",
+    "antetitulo": { "es": "Personal trainer · Buenos Aires · Online", "en": "Personal trainer · Buenos Aires · Online" },
+    "titulo": {
+      "es": ["Comenzá el", "reto de los", "*25 días*"],
+      "en": ["Start the", "*25-day*", "challenge"]
+    },
+    "sumate": { "es": "y sumate a", "en": "and join" },
+    "descripcion": {
+      "es": "El método de Ronald Medina, *el Zar del Fitness*, para bajar grasa sin perder músculo: entrenamiento, alimentación y acompañamiento 100% personalizados, con resultados cada 25 días.",
+      "en": "The method of Ronald Medina, *the Zar del Fitness*, to lose fat without losing muscle: 100% personalized training, nutrition and coaching, with results every 25 days."
+    },
+    "boton": { "es": "Empezar el reto", "en": "Start the challenge" },
+    "trailer": { "es": "Ver trailer", "en": "Watch the trailer" },
+    "foto": { "es": "Ronald Medina, el Zar del Fitness", "en": "Ronald Medina, the Zar del Fitness" },
+    "sello": {
+      "es": "COMENZÁ EL RETO ✦ DE LOS 25 DÍAS ✦ BY RONALD MEDINA ✦ ",
+      "en": "START THE CHALLENGE ✦ 25 DAYS ✦ BY RONALD MEDINA ✦ "
+    },
+    "dias": { "es": "días", "en": "days" },
+    "scroll": { "es": "Scroll", "en": "Scroll" },
     "destacados": [
-      { "titulo": "Online", "precioDelPlan": "reto-online" },
-      { "titulo": "Presencial", "texto": "Colegiales, CABA" },
-      { "titulo": "Internacional", "precioDelPlan": "reto-internacional" }
+      { "titulo": { "es": "Online", "en": "Online" }, "precioDelPlan": "reto-online" },
+      { "titulo": { "es": "Presencial", "en": "In person" }, "texto": { "es": "Colegiales, CABA", "en": "Colegiales, Buenos Aires" } },
+      { "titulo": { "es": "Internacional", "en": "International" }, "precioDelPlan": "reto-internacional" }
     ]
   },
+
+  "cinta": {
+    "descripcion": {
+      "es": "Reto de los 25 días · #LosCuerposDelZar · Online y presencial",
+      "en": "25-Day Challenge · #LosCuerposDelZar · Online and in person"
+    },
+    "arriba": {
+      "es": ["Reto de los 25 días", "#LosCuerposDelZar", "Entrenamiento personalizado", "Online & presencial"],
+      "en": ["25-Day Challenge", "#LosCuerposDelZar", "Personalized training", "Online & in person"]
+    },
+    "abajo": {
+      "es": ["The VIP by Zar del Fitness", "Resultados cada 25 días", "Alimentación · Entrenamiento · Acompañamiento"],
+      "en": ["The VIP by Zar del Fitness", "Results every 25 days", "Nutrition · Training · Coaching"]
+    }
+  },
+
   "elZar": {
+    "antetitulo": { "es": "El Zar", "en": "The Zar" },
+    "titulo": {
+      "es": ["Soy Ronald Medina,", "*el Zar del Fitness.*"],
+      "en": ["I'm Ronald Medina,", "*the Zar del Fitness.*"]
+    },
     "parrafos": [
-      "Venezolano, radicado en Buenos Aires. Creador del **Reto de los 25 días**, el motor de una marca que hoy es referencia en el mundo fitness de Venezuela y Argentina.",
-      "Personal trainer certificado por el Instituto Panamericano de Educación Física (IPEF) en la prescripción del ejercicio en personas con obesidad y enfermedades metabólicas. Conocido como *celebrity trainer* por su trayectoria en el medio artístico, ya evaluó a casi dos mil personas y acompaña online a alumnos de Latinoamérica y el mundo."
+      {
+        "es": "Venezolano, radicado en Buenos Aires. Creador del **Reto de los 25 días**, el motor de una marca que hoy es referencia en el mundo fitness de Venezuela y Argentina.",
+        "en": "Venezuelan, based in Buenos Aires. Creator of the **25-Day Challenge**, the engine of a brand that is now a benchmark in the fitness world of Venezuela and Argentina."
+      },
+      {
+        "es": "Personal trainer certificado por el Instituto Panamericano de Educación Física (IPEF) en la prescripción del ejercicio en personas con obesidad y enfermedades metabólicas. Conocido como *celebrity trainer* por su trayectoria en el medio artístico, ya evaluó a casi dos mil personas y acompaña online a alumnos de Latinoamérica y el mundo.",
+        "en": "Personal trainer certified by the Pan-American Institute of Physical Education (IPEF) in exercise prescription for people with obesity and metabolic diseases. Known as a *celebrity trainer* for a career in show business, Ronald has assessed almost two thousand people and coaches clients online across Latin America and the world."
+      }
     ],
-    "cita": "En mis inicios también fui gordito, pero me esforcé por ser lo que soy y ahora puedo ayudar a los demás a llevar una vida sana."
+    "cita": {
+      "es": "En mis inicios también fui gordito, pero me esforcé por ser lo que soy y ahora puedo ayudar a los demás a llevar una vida sana.",
+      "en": "When I started out I was chubby too, but I worked hard to become who I am, and now I can help others live a healthy life."
+    },
+    "credenciales": {
+      "es": ["Personal Trainer · IPEF", "Obesidad y enfermedades metabólicas", "Suplementación deportiva", "Nutrición para masa muscular"],
+      "en": ["Personal Trainer · IPEF", "Obesity and metabolic diseases", "Sports supplementation", "Nutrition for muscle mass"]
+    },
+    "historia": { "es": "Conocé su historia", "en": "Watch Ronald's story" },
+    "foto": {
+      "es": "Ronald Medina sentado, con ropa negra de Zar del Fitness",
+      "en": "Ronald Medina seated, wearing black Zar del Fitness clothes"
+    },
+    "portada": { "es": "Ronald Medina en la portada de Funcional Magazine", "en": "Ronald Medina on the cover of Funcional Magazine" },
+    "portadaPie": { "es": "Portada · Funcional Magazine", "en": "Cover · Funcional Magazine" },
+    "cifras": {
+      "evaluadas": { "es": "Personas evaluadas", "en": "People assessed" },
+      "casi": { "es": "casi", "en": "almost" },
+      "ciclo": { "es": "Días por ciclo de resultados", "en": "Days per results cycle" },
+      "chiquinquira": { "es": "Chiquinquirá de Oro · Trainer del año", "en": "Chiquinquirá de Oro · Trainer of the year" },
+      "emmy": { "es": "Emmy Winner", "en": "Emmy Winner" }
+    }
   },
+
   "programas": {
-    "introduccion": "Elegí cómo querés entrenar. Cada plan es individual y se diseña a partir de tu evaluación."
+    "antetitulo": { "es": "Programas", "en": "Programs" },
+    "titulo": {
+      "es": ["Cuatro protocolos,", "*un solo objetivo: el tuyo.*"],
+      "en": ["Four protocols,", "*one goal: yours.*"]
+    },
+    "introduccion": {
+      "es": "Elegí cómo querés entrenar. Cada plan es individual y se diseña a partir de tu evaluación.",
+      "en": "Choose how you want to train. Every plan is individual and designed from your assessment."
+    },
+    "destacado": { "es": "Experiencia exclusiva", "en": "Exclusive experience" },
+    "inscribirme": { "es": "Inscribirme", "en": "Sign me up" },
+    "quieroEmpezar": { "es": "Quiero empezar", "en": "I want to start" },
+    "ilustraciones": {
+      "online": { "es": "Sistema Online de entrenamiento", "en": "Online training system" },
+      "premium": { "es": "Sistema Premium de entrenamiento", "en": "Premium training system" },
+      "general": { "es": "Sistema General Dirigido", "en": "Guided General System" },
+      "reto": { "es": "Sello: comienza el reto de los 25 días, internacional", "en": "Seal: start the 25-day challenge, international" }
+    },
+    "arte": {
+      "sistema": { "es": "Sistema", "en": "The" },
+      "deEntrenamiento": { "es": "DE ENTRENAMIENTO", "en": "TRAINING SYSTEM" },
+      "general": { "es": ["Sistema", "GENERAL", "DIRIGIDO"], "en": ["Guided", "GENERAL", "SYSTEM"] },
+      "selloArriba": { "es": "COMIENZA EL RETO", "en": "START THE CHALLENGE" },
+      "selloDeLos": { "es": "DE LOS", "en": "THE" },
+      "selloDias": { "es": "DÍAS", "en": "DAYS" },
+      "selloAbajo": { "es": "INTERNACIONAL", "en": "INTERNATIONAL" }
+    }
   },
+
   "metodo": {
+    "antetitulo": { "es": "Cómo funciona", "en": "How it works" },
+    "titulo": {
+      "es": ["25 días.", "*Un antes y un después.*"],
+      "en": ["25 days.", "*A before and after.*"]
+    },
+    "dia": { "es": "Día", "en": "Day" },
+    "boton": { "es": "Quiero mi plan", "en": "I want my plan" },
     "pasos": [
-      { "numero": "01", "titulo": "Inscripción", "texto": "Te inscribís y completás un cuestionario sobre tus objetivos, hábitos y antecedentes." },
-      { "numero": "02", "titulo": "Evaluación", "texto": "Analizamos tu punto de partida para prescribirte un plan 100% individual." },
-      { "numero": "03", "titulo": "Tu plan", "texto": "Recibís tu plan de alimentación, suplementación y entrenamiento, adaptado a casa o gimnasio." },
-      { "numero": "04", "titulo": "Entrenás", "texto": "Videos diseñados para tu sistema: entrenás cuando te resulte más cómodo, con asistencia por WhatsApp." },
-      { "numero": "05", "titulo": "Controles", "texto": "Cada 15 días nos enviás fotos y tu peso. Ajustamos el plan sólo si es importante para tu avance." },
-      { "numero": "25", "titulo": "Resultados", "texto": "Día 25: medimos, celebramos y vamos por el próximo objetivo." }
+      {
+        "numero": "01",
+        "titulo": { "es": "Inscripción", "en": "Sign-up" },
+        "texto": {
+          "es": "Te inscribís y completás un cuestionario sobre tus objetivos, hábitos y antecedentes.",
+          "en": "You sign up and fill out a questionnaire about your goals, habits and history."
+        }
+      },
+      {
+        "numero": "02",
+        "titulo": { "es": "Evaluación", "en": "Assessment" },
+        "texto": {
+          "es": "Analizamos tu punto de partida para prescribirte un plan 100% individual.",
+          "en": "We analyze your starting point to prescribe a 100% individual plan."
+        }
+      },
+      {
+        "numero": "03",
+        "titulo": { "es": "Tu plan", "en": "Your plan" },
+        "texto": {
+          "es": "Recibís tu plan de alimentación, suplementación y entrenamiento, adaptado a casa o gimnasio.",
+          "en": "You get your nutrition, supplementation and training plan, adapted for home or the gym."
+        }
+      },
+      {
+        "numero": "04",
+        "titulo": { "es": "Entrenás", "en": "You train" },
+        "texto": {
+          "es": "Videos diseñados para tu sistema: entrenás cuando te resulte más cómodo, con asistencia por WhatsApp.",
+          "en": "Videos designed for your system: you train whenever it suits you, with support on WhatsApp."
+        }
+      },
+      {
+        "numero": "05",
+        "titulo": { "es": "Controles", "en": "Check-ins" },
+        "texto": {
+          "es": "Cada 15 días nos enviás fotos y tu peso. Ajustamos el plan sólo si es importante para tu avance.",
+          "en": "Every 15 days you send us photos and your weight. We adjust the plan only when it matters for your progress."
+        }
+      },
+      {
+        "numero": "25",
+        "titulo": { "es": "Resultados", "en": "Results" },
+        "texto": {
+          "es": "Día 25: medimos, celebramos y vamos por el próximo objetivo.",
+          "en": "Day 25: we measure, we celebrate and we go for the next goal."
+        }
+      }
     ]
   },
-  "equipo": {
-    "introduccion": "El acompañamiento es el valor fundamental de nuestro servicio: sabemos que motivarte es clave, por eso nos esmeramos en hacerte el camino más fácil."
+
+  "beneficios": {
+    "antetitulo": { "es": "Durante el reto vas a", "en": "During the challenge you'll" },
+    "logo": { "es": "Zar del Fitness · Ronald Medina", "en": "Zar del Fitness · Ronald Medina" },
+    "lista": [
+      { "texto": { "es": "Bajar tu % de grasa", "en": "Lower your body fat %" }, "acento": { "es": "sin sacrificar músculo", "en": "without sacrificing muscle" } },
+      { "texto": { "es": "Bajar talles de pantalón", "en": "Drop pant sizes" }, "acento": { "es": "o vestido", "en": "or dress sizes" } },
+      { "texto": { "es": "Tonificar y desarrollar", "en": "Tone up and build" }, "acento": { "es": "masa muscular", "en": "muscle mass" } },
+      { "texto": { "es": "Construir buenos", "en": "Build good" }, "acento": { "es": "hábitos alimenticios", "en": "eating habits" } },
+      { "texto": { "es": "Ganar un estilo de vida", "en": "Gain a healthy" }, "acento": { "es": "saludable", "en": "lifestyle" } }
+    ]
   },
+
+  "resultados": {
+    "titulo": {
+      "es": ["Ellos también", "*lo lograron.*"],
+      "en": ["They did it", "*too.*"]
+    },
+    "instagram": { "es": "Ver más en Instagram", "en": "See more on Instagram" },
+    "antesDespues": { "es": "Antes / Después", "en": "Before / After" },
+    "fotoAlumno": { "es": "Transformación de un alumno: antes y después", "en": "A client's transformation: before and after" },
+    "fotoAlumna": { "es": "Transformación de una alumna: antes y después", "en": "A client's transformation: before and after" },
+    "fotoDosAlumnos": { "es": "Dos transformaciones de alumnos: antes y después", "en": "Two clients' transformations: before and after" }
+  },
+
+  "vip": {
+    "antetitulo": { "es": "Sistema Premium", "en": "Premium System" },
+    "titulo": {
+      "es": ["The VIP.", "*Un gym sólo para vos.*"],
+      "en": ["The VIP.", "*A gym just for you.*"]
+    }
+  },
+
+  "visita": {
+    "antetitulo": { "es": "Horarios y ubicación", "en": "Hours and location" },
+    "acento": { "es": "a tu medida.", "en": "on your schedule." },
+    "franjas": { "es": "Franjas horarias: {franjas}", "en": "Time slots: {franjas}" },
+    "franja": { "es": "de {desde} a {hasta}", "en": "from {desde} to {hasta}" },
+    "clases": { "es": "Clases de ~{duracion}", "en": "~{duracion} classes" },
+    "ultimoIngreso": { "es": "Último ingreso {horas}.", "en": "Last entry {horas}." },
+    "boton": { "es": "Reservá tu evaluación", "en": "Book your assessment" },
+    "comoLlegar": { "es": "Cómo llegar", "en": "Get directions" },
+    "mapa": { "es": "Mapa: {lugar}", "en": "Map: {lugar}" },
+    "abierto": { "es": "Abierto ahora · último ingreso {hora}", "en": "Open now · last entry {hora}" },
+    "abreHoy": { "es": "Cerrado · abre hoy a las {hora}", "en": "Closed · opens today at {hora}" },
+    "cerrado": { "es": "Cerrado · abre {dias} desde las {hora}", "en": "Closed · opens {dias} from {hora}" },
+    "ahora": { "es": "Ahora", "en": "Now" }
+  },
+
+  "horario": {
+    "y": { "es": "y", "en": "and" },
+    "desdeHasta": { "es": "{desde} a {hasta}", "en": "{desde} to {hasta}" },
+    "manana": { "es": "por la mañana", "en": "for the morning shift" },
+    "tarde": { "es": "por la tarde", "en": "for the afternoon shift" },
+    "noche": { "es": "por la noche", "en": "for the evening shift" }
+  },
+
+  "trayectoria": {
+    "antetitulo": { "es": "Trayectoria", "en": "Career" },
+    "titulo": {
+      "es": ["De Maracaibo", "*a la pantalla.*"],
+      "en": ["From Maracaibo", "*to the screen.*"]
+    },
+    "imagen": { "es": "Ronald Medina en los medios", "en": "Ronald Medina in the media" }
+  },
+
+  "equipo": {
+    "antetitulo": { "es": "Equipo", "en": "Team" },
+    "titulo": {
+      "es": ["Entrenadores", "*by Zar del Fitness.*"],
+      "en": ["Trainers", "*by Zar del Fitness.*"]
+    },
+    "introduccion": {
+      "es": "El acompañamiento es el valor fundamental de nuestro servicio: sabemos que motivarte es clave, por eso nos esmeramos en hacerte el camino más fácil.",
+      "en": "Coaching is the core of our service: we know keeping you motivated is key, so we work hard to make the journey easier for you."
+    }
+  },
+
   "preguntas": {
-    "introduccion": "¿No encontrás tu respuesta? Contanos y un profesor te responde a la brevedad."
+    "antetitulo": { "es": "Preguntas frecuentes", "en": "Frequently asked questions" },
+    "titulo": {
+      "es": ["¿Dudas?", "*Las resolvemos.*"],
+      "en": ["Questions?", "*We'll answer them.*"]
+    },
+    "introduccion": {
+      "es": "¿No encontrás tu respuesta? Contanos y un profesor te responde a la brevedad.",
+      "en": "Can't find your answer? Tell us and a coach will get back to you shortly."
+    },
+    "boton": { "es": "Preguntar mis dudas", "en": "Ask your questions" }
+  },
+
+  "final": {
+    "titulo": {
+      "es": ["Tu cuerpo", "*puede cambiar.*"],
+      "en": ["Your body", "*can change.*"]
+    },
+    "subtitulo": { "es": "Y nosotros estamos para ayudarte.", "en": "And we're here to help." },
+    "boton": { "es": "Comenzá el reto", "en": "Start the challenge" }
+  },
+
+  "pie": {
+    "contacto": { "es": "Contacto", "en": "Contact" },
+    "derechos": { "es": "Zar del Fitness. Todos los derechos reservados.", "en": "Zar del Fitness. All rights reserved." },
+    "arriba": { "es": "Volver arriba ↑", "en": "Back to top ↑" }
+  },
+
+  "video": {
+    "nombre": { "es": "Video", "en": "Video" },
+    "cerrar": { "es": "Cerrar", "en": "Close" },
+    "titulo": { "es": "Video de Zar del Fitness", "en": "Zar del Fitness video" }
+  },
+
+  "blog": {
+    "antetitulo": { "es": "Blog", "en": "Blog" },
+    "titulo": {
+      "es": ["Entrenamiento,", "alimentación", "*y mitos del fitness.*"],
+      "en": ["Training,", "nutrition", "*and fitness myths.*"]
+    },
+    "bajada": {
+      "es": "Lo que hay que saber para entrenar mejor, comer mejor y no caer en promesas mágicas.",
+      "en": "What you need to know to train better, eat better and not fall for magic promises."
+    },
+    "lectura": { "es": "{minutos} min de lectura", "en": "{minutos} min read" },
+    "por": { "es": "Por", "en": "By" },
+    "sobreElAutor": { "es": "Sobre el autor", "en": "About the author" },
+    "planTitulo": { "es": "¿Querés un plan *hecho para vos?*", "en": "Want a plan *made for you?*" },
+    "planTexto": {
+      "es": "Entrenamiento, alimentación y acompañamiento personalizados, online o en Colegiales.",
+      "en": "Personalized training, nutrition and coaching, online or in Colegiales, Buenos Aires."
+    },
+    "planBoton": { "es": "Reto de los 25 días", "en": "25-Day Challenge" },
+    "verProgramas": { "es": "Ver los programas", "en": "See the programs" },
+    "masNotas": { "es": "Más *notas.*", "en": "More *posts.*" }
+  },
+
+  "noEncontrada": {
+    "titulo": { "es": "Página no encontrada", "en": "Page not found" },
+    "antetitulo": { "es": "Error 404", "en": "Error 404" },
+    "encabezado": { "es": "Esta página *no existe.*", "en": "This page *doesn't exist.*" },
+    "texto": {
+      "es": "Puede que el link sea del sitio anterior. La tienda online ya no está: la inscripción a los programas es por WhatsApp.",
+      "en": "The link may be from the old site. The online store is gone: you sign up for the programs on WhatsApp."
+    },
+    "irAlInicio": { "es": "Ir al inicio", "en": "Go to the home page" },
+    "sitioEnIngles": { "es": "Ir al sitio en inglés", "en": "Go to the English site" }
+  },
+
+  "seo": {
+    "inicio": {
+      "titulo": {
+        "es": "Zar del Fitness: entrenamiento personal en Colegiales y online",
+        "en": "Zar del Fitness: personal training in Buenos Aires and online"
+      },
+      "descripcion": {
+        "es": "Entrená con Ronald Medina, el Zar del Fitness: entrenamiento personal en The VIP, Colegiales (CABA), y el Reto de los 25 días online, desde cualquier país.",
+        "en": "Train with Ronald Medina, the Zar del Fitness: personal training at The VIP in Colegiales, Buenos Aires, and the online 25-Day Challenge from any country."
+      }
+    },
+    "blog": {
+      "titulo": {
+        "es": "Blog de entrenamiento, alimentación y mitos del fitness",
+        "en": "Blog on training, nutrition and fitness myths"
+      },
+      "descripcion": {
+        "es": "Notas de Ronald Medina, el Zar del Fitness, y su equipo sobre entrenamiento, alimentación, suplementación y los mitos del gimnasio, explicados sin vueltas.",
+        "en": "Posts by Ronald Medina, the Zar del Fitness, and the team on training, nutrition, supplements and gym myths, explained in plain words."
+      }
+    },
+    "negocio": {
+      "es": "Entrenamiento personal presencial en The VIP (Colegiales, CABA) y online con el Reto de los 25 días, el método de Ronald Medina, el Zar del Fitness.",
+      "en": "In-person personal training at The VIP (Colegiales, Buenos Aires) and online with the 25-Day Challenge, the method of Ronald Medina, the Zar del Fitness."
+    },
+    "otroNombre": { "es": "Reto de los 25 días", "en": "25-Day Challenge" },
+    "catalogo": { "es": "Programas de entrenamiento", "en": "Training programs" },
+    "puesto": { "es": "Personal trainer", "en": "Personal trainer" },
+    "especialidades": {
+      "es": ["Entrenamiento personal", "Pérdida de grasa", "Musculación", "Nutrición deportiva", "Suplementación deportiva"],
+      "en": ["Personal training", "Fat loss", "Strength training", "Sports nutrition", "Sports supplementation"]
+    },
+    "aplicacion": {
+      "es": "Entrenamiento personal online y presencial con Ronald Medina, el Zar del Fitness.",
+      "en": "Online and in-person personal training with Ronald Medina, the Zar del Fitness."
+    },
+    "imagenInicio": {
+      "alt": { "es": "Zar del Fitness: el Reto de los 25 días by Ronald Medina", "en": "Zar del Fitness: the 25-Day Challenge by Ronald Medina" },
+      "antetitulo": { "es": "Personal trainer · Colegiales, CABA · Online", "en": "Personal trainer · Buenos Aires · Online" },
+      "titulo": { "es": "Reto de los 25 días", "en": "The 25-Day Challenge" },
+      "acento": { "es": "by Ronald Medina, el Zar del Fitness", "en": "by Ronald Medina, the Zar del Fitness" }
+    },
+    "imagenBlog": {
+      "alt": { "es": "Blog de Zar del Fitness: entrenamiento, alimentación y mitos", "en": "Zar del Fitness blog: training, nutrition and myths" },
+      "antetitulo": { "es": "Blog", "en": "Blog" },
+      "titulo": { "es": "Entrenamiento y alimentación", "en": "Training and nutrition" },
+      "acento": { "es": "sin mitos", "en": "without the myths" }
+    },
+    "imagenNota": { "es": "Nota del blog de Zar del Fitness", "en": "Zar del Fitness blog post" },
+    "llms": {
+      "resumen": {
+        "es": "Entrenamiento personal con Ronald Medina en The VIP ({direccion}) y el Reto de los 25 días online, desde cualquier país. Las inscripciones y consultas son por WhatsApp: {telefono} ({link}).",
+        "en": "Personal training with Ronald Medina at The VIP ({direccion}) and the online 25-Day Challenge, from any country. Sign-ups and questions go through WhatsApp: {telefono} ({link})."
+      },
+      "programas": { "es": "Programas", "en": "Programs" },
+      "gimnasio": { "es": "El gimnasio", "en": "The gym" },
+      "horario": {
+        "es": "Horario: {dias}, {franjas} (hora de Buenos Aires). Clases de ~{duracion}; último ingreso {ultimoIngreso}.",
+        "en": "Hours: {dias}, {franjas} (Buenos Aires time). ~{duracion} classes; last entry {ultimoIngreso}."
+      },
+      "preguntas": { "es": "Preguntas frecuentes", "en": "Frequently asked questions" },
+      "blog": { "es": "notas sobre entrenamiento, alimentación y salud.", "en": "posts on training, nutrition and health." },
+      "otroIdioma": { "es": "El sitio en castellano", "en": "The site in English" }
+    }
   }
 }

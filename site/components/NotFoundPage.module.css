@@ -28,3 +28,15 @@
   gap: 18px 32px;
   margin-top: 40px;
 }
+
+/* La línea en inglés, que lleva al sitio en inglés */
+.other {
+  margin-top: 48px;
+  padding-top: 24px;
+  max-width: 560px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+}
+.other a {
+  margin-left: 8px;
+}

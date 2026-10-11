@@ -1,28 +1,24 @@
 import Image from "next/image";
 import { Icon } from "./Icon";
-import { team, texts } from "@/lib/content";
+import { Lines } from "./Lines";
+import { content } from "@/lib/content";
+import type { Lang } from "@/lib/i18n";
 import styles from "./Team.module.css";
 
-export function Team() {
+export function Team({ lang }: { lang: Lang }) {
+  const { t, team } = content(lang);
   return (
     <section className={`section ${styles.team}`}>
       <div className={`container ${styles.grid}`}>
         <header className={styles.head}>
           <p className="eyebrow" data-reveal>
-            Equipo
+            {t.equipo.antetitulo}
           </p>
           <h2 className="h2 h2--sm" data-lines>
-            <span className="ln">
-              <span>Entrenadores</span>
-            </span>{" "}
-            <span className="ln">
-              <span>
-                <em className="serif gold-text">by Zar del Fitness.</em>
-              </span>
-            </span>
+            <Lines lines={t.equipo.titulo} />
           </h2>
           <p className="section-head__lead" data-reveal>
-            {texts.team}
+            {t.equipo.introduccion}
           </p>
         </header>
 

@@ -26,9 +26,16 @@ declare global {
   }
 }
 
-export function MotionProvider({ children }: { children: React.ReactNode }) {
-  // El preloader es la intro del inicio: las otras páginas arrancan directo.
-  const [intro] = useState(usePathname() === "/");
+/** Los textos del preloader y del video, de db/textos.json, ya en el idioma de la página. */
+export type MotionLabels = {
+  preloader: { reto: string; dias: string };
+  video: { nombre: string; cerrar: string; titulo: string };
+};
+
+export function MotionProvider({ home, labels, children }: { home: string; labels: MotionLabels; children: React.ReactNode }) {
+  // El preloader es la intro del inicio ("/" o "/english/"): las otras páginas arrancan directo.
+  // usePathname() no trae la barra final: "/english".
+  const [intro] = useState(`${usePathname().replace(/\/$/, "")}/` === home);
   const [ready, setReady] = useState(!intro);
   const [video, setVideo] = useState<string | null>(null);
 
@@ -50,11 +57,11 @@ export function MotionProvider({ children }: { children: React.ReactNode }) {
   return (
     <MotionContext.Provider value={value}>
       <SmoothScroll />
-      {intro && <Preloader onDone={onPreloaderDone} />}
+      {intro && <Preloader onDone={onPreloaderDone} labels={labels.preloader} />}
       <Cursor />
       <ScrollProgress />
       {children}
-      <VideoModal id={video} onClose={closeVideo} />
+      <VideoModal id={video} onClose={closeVideo} labels={labels.video} />
     </MotionContext.Provider>
   );
 }

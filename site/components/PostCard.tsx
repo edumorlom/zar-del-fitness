@@ -13,7 +13,7 @@ export function PostCard({ post, heading: Heading = "h2" }: { post: Post; headin
         <div className={styles.body}>
           <p className={styles.meta}>
             <span className="tag">{post.category}</span>
-            <time dateTime={post.date}>{formatDate(post.date)}</time>
+            <time dateTime={post.date}>{formatDate(post.date, post.lang)}</time>
           </p>
           <Heading className={styles.title}>{post.title}</Heading>
           <p className={styles.desc}>{post.description}</p>

@@ -1,28 +1,32 @@
-import { Fragment } from "react";
 import Image from "next/image";
+import { Lines } from "./Lines";
 import styles from "./PageHero.module.css";
 
 type Crumb = { name: string; path: string };
 
 /**
- * El encabezado de las páginas internas: migas de pan, el h1 (por líneas, la última en cursiva dorada),
- * una bajada y botones. Las migas son las mismas que van en el JSON-LD (breadcrumbLd de lib/seo.ts).
+ * El encabezado de las páginas internas: migas de pan, el h1 (por líneas; la que va entre *asteriscos*, en cursiva
+ * dorada), una bajada y botones. Las migas son las mismas que van en el JSON-LD (breadcrumbLd de lib/seo.ts); la
+ * primera es el inicio (`home`).
  * Su entrada es una animación CSS y no GSAP (data-*): arranca con el primer pintado, sin esperar al JS,
  * así Google mide rápido el contenido principal (LCP).
  */
 export function PageHero({
+  home,
+  crumbsLabel,
   crumbs,
   eyebrow,
   lines,
-  accent,
   lead,
   image,
   children,
 }: {
+  home: Crumb;
+  /** El nombre de las migas para lectores de pantalla ("Migas de pan"). */
+  crumbsLabel: string;
   crumbs: Crumb[];
   eyebrow: string;
   lines: string[];
-  accent?: string;
   lead?: React.ReactNode;
   image?: { src: string; w: number; h: number; alt: string };
   children?: React.ReactNode;
@@ -32,10 +36,10 @@ export function PageHero({
       <div className={styles.glow} aria-hidden="true" />
       <div className={`container ${styles.grid}`}>
         <div className={styles.copy}>
-          <nav aria-label="Migas de pan" className={styles.crumbs}>
+          <nav aria-label={crumbsLabel} className={styles.crumbs}>
             <ol>
               <li>
-                <a href="/">Inicio</a>
+                <a href={home.path}>{home.name}</a>
               </li>
               {crumbs.map((c, i) =>
                 i === crumbs.length - 1 ? (
@@ -55,23 +59,7 @@ export function PageHero({
             <span className="dot" /> {eyebrow}
           </p>
           <h1 className={styles.title}>
-            {/* Con un espacio entre líneas, para que el texto no quede pegado ("Entrenamientoonline") */}
-            {lines.map((l, i) => (
-              <Fragment key={l}>
-                {i > 0 && " "}
-                <span className="ln">
-                  <span>{l}</span>
-                </span>
-              </Fragment>
-            ))}
-            {accent && " "}
-            {accent && (
-              <span className="ln">
-                <span>
-                  <em className="serif gold-text">{accent}</em>
-                </span>
-              </span>
-            )}
+            <Lines lines={lines} />
           </h1>
           {lead && (
             <div className={styles.lead}>

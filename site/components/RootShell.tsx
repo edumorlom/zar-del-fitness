@@ -1,10 +1,12 @@
+// Primero: los estilos de los componentes (.module.css) tienen que cargarse después, para poder pisar los globales.
+import "@/app/globals.css";
 import type { Metadata, Viewport } from "next";
 import { Anton, Instrument_Serif, Manrope } from "next/font/google";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { JsonLd } from "@/components/JsonLd";
-import { business, siteUrl } from "@/lib/content";
+import { business, content, siteUrl } from "@/lib/content";
+import { locales, type Lang } from "@/lib/i18n";
 import { siteGraph } from "@/lib/seo";
-import "./globals.css";
 
 const anton = Anton({ weight: "400", subsets: ["latin"], variable: "--font-anton" });
 const instrument = Instrument_Serif({
@@ -17,7 +19,7 @@ const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
 
 // Lo común a todas las páginas. El título, la descripción y la URL canónica de cada una van en su page.tsx
 // (con pageMetadata() de lib/seo.ts), y la imagen para compartir en su opengraph-image.tsx.
-export const metadata: Metadata = {
+export const rootMetadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: business.name, template: `%s | ${business.name}` },
   applicationName: business.name,
@@ -31,7 +33,7 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false, address: false, email: false },
 };
 
-export const viewport: Viewport = {
+export const rootViewport: Viewport = {
   themeColor: "#000000",
   colorScheme: "dark",
 };
@@ -43,19 +45,27 @@ export const viewport: Viewport = {
 const scrollTopScript =
   'history.scrollRestoration="manual";if(location.hash){window.__zarHash=location.hash;document.documentElement.setAttribute("data-skip-intro","");history.replaceState(null,"",location.pathname+location.search)}';
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+/**
+ * El <html> de cada página, en su idioma. Lo usan los dos layouts raíz (app/(es)/layout.tsx y app/(en)/layout.tsx)
+ * y la página 404 (app/global-not-found.tsx).
+ */
+export function RootShell({ lang, children }: { lang: Lang; children: React.ReactNode }) {
+  const { t, pages } = content(lang);
   return (
     // suppressHydrationWarning: el script del <head> puede agregar data-skip-intro antes de hidratar.
-    <html lang="es-AR" className={`${anton.variable} ${instrument.variable} ${manrope.variable}`} suppressHydrationWarning>
+    <html lang={locales[lang].html} className={`${anton.variable} ${instrument.variable} ${manrope.variable}`} suppressHydrationWarning>
+      {/* eslint-disable-next-line @next/next/no-head-element -- es el <html> de los layouts raíz de app/, no una página */}
       <head>
         <script dangerouslySetInnerHTML={{ __html: scrollTopScript }} />
       </head>
       <body>
-        <JsonLd data={siteGraph()} />
+        <JsonLd data={siteGraph(lang)} />
         <a className="skip-link" href="#main">
-          Ir al contenido
+          {t.general.irAlContenido}
         </a>
-        <MotionProvider>{children}</MotionProvider>
+        <MotionProvider home={pages.home} labels={{ preloader: t.precarga, video: t.video }}>
+          {children}
+        </MotionProvider>
       </body>
     </html>
   );

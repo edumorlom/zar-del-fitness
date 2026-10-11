@@ -112,7 +112,7 @@ export function Reveals() {
 
     // Contadores (también con reduced-motion: muestran el valor final)
     const fmt = (el: HTMLElement, v: number) =>
-      el.dataset.format === "thousands" ? Math.round(v).toLocaleString("es-AR") : String(Math.round(v));
+      el.dataset.format === "thousands" ? Math.round(v).toLocaleString(document.documentElement.lang) : String(Math.round(v));
     q("[data-count]").forEach((el) => {
       const to = parseFloat(el.dataset.count || "0");
       const from = parseFloat(el.dataset.from || "0");

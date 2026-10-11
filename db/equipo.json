@@ -2,16 +2,25 @@
   {
     "id": "ronald",
     "nombre": "Ronald Medina",
-    "apodo": "El Zar del Fitness",
-    "rol": "Fundador · Head coach",
-    "bio": "Creador del Reto de los 25 días. Su método cuenta con un equipo multidisciplinario para el control de peso y la definición muscular.",
-    "certificaciones": "Personal Trainer certificado por el IPEF (Instituto Panamericano de Educación Física), con certificación en prescripción del ejercicio en personas con obesidad y enfermedades metabólicas, en suplementación deportiva y en nutrición para el incremento de la masa muscular.",
+    "apodo": { "es": "El Zar del Fitness", "en": "The Zar del Fitness" },
+    "rol": { "es": "Fundador · Head coach", "en": "Founder · Head coach" },
+    "bio": {
+      "es": "Creador del Reto de los 25 días. Su método cuenta con un equipo multidisciplinario para el control de peso y la definición muscular.",
+      "en": "Creator of the 25-Day Challenge. The method relies on a multidisciplinary team for weight control and muscle definition."
+    },
+    "certificaciones": {
+      "es": "Personal Trainer certificado por el IPEF (Instituto Panamericano de Educación Física), con certificación en prescripción del ejercicio en personas con obesidad y enfermedades metabólicas, en suplementación deportiva y en nutrición para el incremento de la masa muscular.",
+      "en": "Personal Trainer certified by the IPEF (Pan-American Institute of Physical Education), with certifications in exercise prescription for people with obesity and metabolic diseases, in sports supplementation and in nutrition for muscle gain."
+    },
     "instagram": "@zardelfitness"
   },
   {
     "id": "edwards",
     "nombre": "Edwards Chacín",
-    "rol": "Entrenador",
-    "bio": "Entrenador certificado por el Instituto Panamericano de Educación Física (Universidad del Zulia). Certificación en nutrición para el incremento de la masa muscular."
+    "rol": { "es": "Entrenador", "en": "Trainer" },
+    "bio": {
+      "es": "Entrenador certificado por el Instituto Panamericano de Educación Física (Universidad del Zulia). Certificación en nutrición para el incremento de la masa muscular.",
+      "en": "Trainer certified by the Pan-American Institute of Physical Education (University of Zulia). Certified in nutrition for muscle gain."
+    }
   }
 ]

@@ -1,42 +1,102 @@
 [
   {
-    "pregunta": "¿El reto de los 25 días es para cualquier persona?",
-    "respuesta": "Sí. El protocolo es individual: se diseña según tus objetivos, tu nivel y tus limitaciones."
+    "pregunta": {
+      "es": "¿El reto de los 25 días es para cualquier persona?",
+      "en": "Is the 25-day challenge for anyone?"
+    },
+    "respuesta": {
+      "es": "Sí. El protocolo es individual: se diseña según tus objetivos, tu nivel y tus limitaciones.",
+      "en": "Yes. The protocol is individual: it's designed around your goals, your level and your limitations."
+    }
   },
   {
-    "pregunta": "Nunca entrené, ¿puedo hacer el reto?",
-    "respuesta": "Claro que sí. Nuestro sistema responde a un protocolo que va de menor a mayor intensidad, según tu progreso."
+    "pregunta": {
+      "es": "Nunca entrené, ¿puedo hacer el reto?",
+      "en": "I've never trained. Can I do the challenge?"
+    },
+    "respuesta": {
+      "es": "Claro que sí. Nuestro sistema responde a un protocolo que va de menor a mayor intensidad, según tu progreso.",
+      "en": "Of course. Our system follows a protocol that goes from lower to higher intensity as you progress."
+    }
   },
   {
-    "pregunta": "¿Puedo entrenar en casa o en el gym?",
-    "respuesta": "Sí. Diseñamos la rutina de entrenamiento según tus requerimientos y el lugar donde vas a entrenar."
+    "pregunta": {
+      "es": "¿Puedo entrenar en casa o en el gym?",
+      "en": "Can I train at home or at the gym?"
+    },
+    "respuesta": {
+      "es": "Sí. Diseñamos la rutina de entrenamiento según tus requerimientos y el lugar donde vas a entrenar.",
+      "en": "Yes. We design your training routine around your needs and where you're going to train."
+    }
   },
   {
-    "pregunta": "Tengo alguna enfermedad, ¿puedo entrenar?",
-    "respuesta": "Siempre que tu médico lo autorice. Trabajamos en función de tus limitaciones para establecer un objetivo seguro."
+    "pregunta": {
+      "es": "Tengo alguna enfermedad, ¿puedo entrenar?",
+      "en": "I have a medical condition. Can I train?"
+    },
+    "respuesta": {
+      "es": "Siempre que tu médico lo autorice. Trabajamos en función de tus limitaciones para establecer un objetivo seguro.",
+      "en": "As long as your doctor approves it. We work around your limitations to set a safe goal."
+    }
   },
   {
-    "pregunta": "¿Se puede hacer siendo menor de edad?",
-    "respuesta": "Sí, siempre y cuando la inscripción la haga su representante."
+    "pregunta": {
+      "es": "¿Se puede hacer siendo menor de edad?",
+      "en": "Can minors do it?"
+    },
+    "respuesta": {
+      "es": "Sí, siempre y cuando la inscripción la haga su representante.",
+      "en": "Yes, as long as a parent or legal guardian signs them up."
+    }
   },
   {
-    "pregunta": "¿La rutina es muy agresiva?",
-    "respuesta": "No, todo es progresivo e individual."
+    "pregunta": {
+      "es": "¿La rutina es muy agresiva?",
+      "en": "Is the routine very intense?"
+    },
+    "respuesta": {
+      "es": "No, todo es progresivo e individual.",
+      "en": "No, everything is progressive and individual."
+    }
   },
   {
-    "pregunta": "¿Los profes están certificados?",
-    "respuesta": "Sí, estamos formados como profesionales del entrenamiento personalizado."
+    "pregunta": {
+      "es": "¿Los profes están certificados?",
+      "en": "Are the coaches certified?"
+    },
+    "respuesta": {
+      "es": "Sí, estamos formados como profesionales del entrenamiento personalizado.",
+      "en": "Yes, we're trained professionals in personalized training."
+    }
   },
   {
-    "pregunta": "¿Qué diferencia hay entre el Sistema Premium y el Sistema General Dirigido?",
-    "respuesta": "En el Premium te acompañan de cerca el Zar y dos asistentes premium, con acceso con huella, médico traumatólogo, bebidas premium, pausa de hasta una semana y un amigo gratis una vez al mes. El General Dirigido lo supervisan los asistentes, compartido con las demás personas que entrenan, con acceso por clave y sin pausas."
+    "pregunta": {
+      "es": "¿Qué diferencia hay entre el Sistema Premium y el Sistema General Dirigido?",
+      "en": "What's the difference between the Premium System and the Guided General System?"
+    },
+    "respuesta": {
+      "es": "En el Premium te acompañan de cerca el Zar y dos asistentes premium, con acceso con huella, médico traumatólogo, bebidas premium, pausa de hasta una semana y un amigo gratis una vez al mes. El General Dirigido lo supervisan los asistentes, compartido con las demás personas que entrenan, con acceso por clave y sin pausas.",
+      "en": "In the Premium System, the Zar and two premium assistants coach you closely, with fingerprint access, an orthopedic doctor, premium drinks, a pause of up to a week and a free friend once a month. The Guided General System is supervised by the assistants and shared with everyone else training at the time, with code access and no pauses."
+    }
   },
   {
-    "pregunta": "¿Puedo pausar el Sistema Premium?",
-    "respuesta": "Sí, hasta por una semana en caso de viaje o eventualidades de fuerza mayor."
+    "pregunta": {
+      "es": "¿Puedo pausar el Sistema Premium?",
+      "en": "Can I pause the Premium System?"
+    },
+    "respuesta": {
+      "es": "Sí, hasta por una semana en caso de viaje o eventualidades de fuerza mayor.",
+      "en": "Yes, for up to a week if you travel or for reasons beyond your control."
+    }
   },
   {
-    "pregunta": "¿Puedo pausar el Sistema General Dirigido?",
-    "respuesta": "No. No se pueden pausar días por viajes ni por situaciones ajenas a nuestro servicio."
+    "pregunta": {
+      "es": "¿Puedo pausar el Sistema General Dirigido?",
+      "en": "Can I pause the Guided General System?"
+    },
+    "respuesta": {
+      "es": "No. No se pueden pausar días por viajes ni por situaciones ajenas a nuestro servicio.",
+      "en": "No. Days can't be paused for travel or for situations outside our service."
+    }
   }
 ]

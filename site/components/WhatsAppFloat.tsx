@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Icon } from "./Icon";
-import { links } from "@/lib/content";
 
 /** Botón flotante de WhatsApp; aparece después del hero. */
-export function WhatsAppFloat() {
+export function WhatsAppFloat({ href, label, cursor }: { href: string; label: string; cursor: string }) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -16,7 +15,7 @@ export function WhatsAppFloat() {
   }, []);
 
   return (
-    <a className="wa-float" href={links.waInfo} aria-label="Escribinos por WhatsApp" data-show={show} data-cursor="Chat">
+    <a className="wa-float" href={href} aria-label={label} data-show={show} data-cursor={cursor}>
       <Icon name="wa" className="" />
     </a>
   );

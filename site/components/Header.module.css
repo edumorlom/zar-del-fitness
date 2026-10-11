@@ -124,6 +124,27 @@
   flex: none;
 }
 
+/* El link a la misma página en el otro idioma: "EN" / "ES" */
+.lang {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -8px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--silver);
+  transition: color 0.3s, border-color 0.3s;
+}
+.lang:hover {
+  color: var(--gold-light);
+  border-color: var(--gold);
+}
+
 .burger {
   display: none;
   position: relative;
@@ -229,7 +250,7 @@
   .nav {
     display: none;
   }
-  .cta {
+  .lang {
     margin-left: auto;
   }
   .burger {
@@ -241,9 +262,6 @@
 @media (max-width: 560px) {
   .cta {
     display: none;
-  }
-  .burger {
-    margin-left: auto;
   }
   .announceCta {
     display: none;

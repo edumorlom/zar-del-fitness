@@ -7,7 +7,9 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
-import { siteUrl } from "./content";
+import { formatDate, posts } from "./blog";
+import { content, siteUrl } from "./content";
+import type { Lang } from "./i18n";
 
 export const ogSize = { width: 1200, height: 630 };
 export const ogContentType = "image/jpeg";
@@ -114,4 +116,34 @@ export async function ogImage({ eyebrow, title, accent, withPhoto = true }: Card
   );
   const jpeg = await sharp(Buffer.from(await png.arrayBuffer())).jpeg({ quality: 82, mozjpeg: true }).toBuffer();
   return new Response(new Uint8Array(jpeg), { headers: { "Content-Type": ogContentType } });
+}
+
+// ---------- La imagen de cada página, en su idioma (las usan los opengraph-image.tsx de app/) ----------
+
+/** El inicio: "Reto de los 25 días" con la foto de Ronald. */
+export function homeImage(lang: Lang) {
+  const t = content(lang).t.seo.imagenInicio;
+  return { alt: t.alt, render: () => ogImage({ eyebrow: t.antetitulo, title: t.titulo, accent: t.acento }) };
+}
+
+export function blogImage(lang: Lang) {
+  const t = content(lang).t.seo.imagenBlog;
+  return { alt: t.alt, render: () => ogImage({ eyebrow: t.antetitulo, title: t.titulo, accent: t.acento }) };
+}
+
+/** Una nota: su categoría, fecha, título y autor, sin la foto. */
+export function postImage(lang: Lang) {
+  const { t } = content(lang);
+  return {
+    alt: t.seo.imagenNota,
+    render: (slug: string) => {
+      const post = posts[lang].find((p) => p.slug === slug)!;
+      return ogImage({
+        eyebrow: `${post.category} · ${formatDate(post.date, lang)}`,
+        title: post.title,
+        accent: `${t.blog.por} ${post.author}`,
+        withPhoto: false,
+      });
+    },
+  };
 }

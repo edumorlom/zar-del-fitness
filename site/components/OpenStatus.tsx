@@ -1,16 +1,37 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { schedule } from "@/lib/content";
+import { fill } from "@/lib/i18n";
 import styles from "./Visit.module.css";
+
+/** El horario y los textos del indicador, ya en el idioma de la página (los arma components/Visit.tsx). */
+export type StatusProps = {
+  timeZone: string;
+  /** Los días que abre, como Date.getDay(): 0 es domingo. */
+  days: number[];
+  /** Horas en decimal: 14.5 = 14:30. */
+  slots: { from: number; to: number; opens: string; lastEntry: string }[];
+  range: { from: number; to: number };
+  text: {
+    /** "Abierto ahora · último ingreso {hora}" */
+    open: string;
+    /** "Cerrado · abre hoy a las {hora}" */
+    opensToday: string;
+    /** "Cerrado · abre lunes a viernes desde las 8:00" */
+    closed: string;
+    now: string;
+    /** Lo que se ve antes de saber la hora (en el HTML del build). */
+    schedule: string;
+  };
+};
 
 type Now = { day: number; hour: number };
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-function nowInBA(): Now {
+function nowIn(timeZone: string): Now {
   const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: schedule.timeZone,
+    timeZone,
     weekday: "short",
     hour: "numeric",
     minute: "numeric",
@@ -20,49 +41,46 @@ function nowInBA(): Now {
   return { day: DAYS.indexOf(get("weekday")), hour: Number(get("hour")) + Number(get("minute")) / 60 };
 }
 
-function describe({ day, hour }: Now) {
-  const workday = schedule.days.includes(day);
-  const slot = workday ? schedule.slots.find((s) => hour >= s.from && hour < s.to) : undefined;
-  if (slot) return { open: true, text: `Abierto ahora · último ingreso ${slot.lastEntry}` };
-  const next = workday ? schedule.slots.find((s) => hour < s.from) : undefined;
-  if (next) return { open: false, text: `Cerrado · abre hoy a las ${next.opens}` };
-  return {
-    open: false,
-    text: `Cerrado · abre ${schedule.daysLabel.toLowerCase()} desde las ${schedule.slots[0].opens}`,
-  };
+function describe({ day, hour }: Now, { days, slots, text }: StatusProps) {
+  const workday = days.includes(day);
+  const slot = workday ? slots.find((s) => hour >= s.from && hour < s.to) : undefined;
+  if (slot) return { open: true, text: fill(text.open, { hora: slot.lastEntry }) };
+  const next = workday ? slots.find((s) => hour < s.from) : undefined;
+  if (next) return { open: false, text: fill(text.opensToday, { hora: next.opens }) };
+  return { open: false, text: text.closed };
 }
 
-function useNowBA() {
+function useNow(timeZone: string) {
   const [now, setNow] = useState<Now | null>(null);
   useEffect(() => {
-    const update = () => setNow(nowInBA());
+    const update = () => setNow(nowIn(timeZone));
     update();
     const id = setInterval(update, 60_000);
     return () => clearInterval(id);
-  }, []);
+  }, [timeZone]);
   return now;
 }
 
 /** Indicador "abierto/cerrado". Se calcula sólo en el cliente (hora de Buenos Aires). */
-export function OpenStatus() {
-  const now = useNowBA();
-  const info = now ? describe(now) : null;
+export function OpenStatus(props: StatusProps) {
+  const now = useNow(props.timeZone);
+  const info = now ? describe(now, props) : null;
   return (
     <p className={styles.status} data-open={info?.open ?? false} aria-live="polite">
       <span className={styles.statusDot} />
-      {info?.text ?? `${schedule.daysLabel} · ${schedule.slots.map((s) => `${s.opens} a ${s.closes}`).join(" y ")}`}
+      {info?.text ?? props.text.schedule}
     </p>
   );
 }
 
 /** Marcador de la hora actual sobre la línea de horarios. */
-export function NowMarker() {
-  const now = useNowBA();
-  const { from, to } = schedule.range;
-  if (!now || !schedule.days.includes(now.day) || now.hour < from || now.hour > to) return null;
+export function NowMarker({ timeZone, days, range, text }: StatusProps) {
+  const now = useNow(timeZone);
+  const { from, to } = range;
+  if (!now || !days.includes(now.day) || now.hour < from || now.hour > to) return null;
   return (
     <span className={styles.now} style={{ left: `${((now.hour - from) / (to - from)) * 100}%` }} aria-hidden="true">
-      <b>Ahora</b>
+      <b>{text.now}</b>
     </span>
   );
 }

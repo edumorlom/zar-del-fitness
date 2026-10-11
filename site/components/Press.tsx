@@ -1,28 +1,24 @@
+import { Lines } from "./Lines";
 import { PressList } from "./PressList";
-import { awards } from "@/lib/content";
+import { content } from "@/lib/content";
+import type { Lang } from "@/lib/i18n";
 import styles from "./Press.module.css";
 
-export function Press() {
+export function Press({ lang }: { lang: Lang }) {
+  const { t, press, awards } = content(lang);
   return (
     <section className={`section ${styles.press}`}>
       <div className="container">
         <header className="section-head">
           <p className="eyebrow" data-reveal>
-            <span className="num">06</span> Trayectoria
+            <span className="num">06</span> {t.trayectoria.antetitulo}
           </p>
           <h2 className="h2" data-lines>
-            <span className="ln">
-              <span>De Maracaibo</span>
-            </span>{" "}
-            <span className="ln">
-              <span>
-                <em className="serif gold-text">a la pantalla.</em>
-              </span>
-            </span>
+            <Lines lines={t.trayectoria.titulo} />
           </h2>
         </header>
 
-        <PressList />
+        <PressList items={press} alt={t.trayectoria.imagen} />
 
         <div className={styles.awards} data-reveal-stagger>
           {awards.map((a) => (

@@ -3,11 +3,12 @@
 import { useRef } from "react";
 import Image from "next/image";
 import { Icon } from "./Icon";
+import { Lines } from "./Lines";
 import { useMarquee } from "@/lib/useMarquee";
-import { links, transformations, type Shot } from "@/lib/content";
+import type { Content, Shot } from "@/lib/content";
 import styles from "./Results.module.css";
 
-function Row({ shots, direction }: { shots: Shot[]; direction: 1 | -1 }) {
+function Row({ shots, direction, label }: { shots: Shot[]; direction: 1 | -1; label: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useMarquee(ref, `.${styles.track}`, { direction, speed: 1.4, pauseOnHover: true });
 
@@ -23,7 +24,7 @@ function Row({ shots, direction }: { shots: Shot[]; direction: 1 | -1 }) {
               aria-hidden={copy === 1 || undefined}
             >
               <Image src={s.src} alt={s.alt} width={s.w} height={s.h} sizes="(max-width: 700px) 70vw, 30vw" />
-              <span className={styles.label}>Antes / Después</span>
+              <span className={styles.label}>{label}</span>
             </div>
           ))
         )}
@@ -32,33 +33,31 @@ function Row({ shots, direction }: { shots: Shot[]; direction: 1 | -1 }) {
   );
 }
 
-export function Results() {
+/** Los textos de db/textos.json (resultados) y las fotos, ya en el idioma de la página. */
+export function Results({ t, hashtag, shots }: {
+  t: Content["t"]["resultados"];
+  hashtag: { text: string; href: string };
+  shots: Content["transformations"];
+}) {
   return (
     <section className={`section ${styles.results}`} id="resultados">
       <div className="container section-head section-head--row">
         <div>
           <p className="eyebrow" data-reveal>
-            <span className="num">04</span> #LosCuerposDelZar
+            <span className="num">04</span> {hashtag.text}
           </p>
           <h2 className="h2" data-lines>
-            <span className="ln">
-              <span>Ellos también</span>
-            </span>{" "}
-            <span className="ln">
-              <span>
-                <em className="serif gold-text">lo lograron.</em>
-              </span>
-            </span>
+            <Lines lines={t.titulo} />
           </h2>
         </div>
-        <a className="link-arrow" href={links.hashtag} data-reveal>
-          Ver más en Instagram <Icon name="arrow-ur" />
+        <a className="link-arrow" href={hashtag.href} data-reveal>
+          {t.instagram} <Icon name="arrow-ur" />
         </a>
       </div>
 
       <div className={styles.gallery} data-reveal>
-        <Row shots={transformations[0]} direction={-1} />
-        <Row shots={transformations[1]} direction={1} />
+        <Row shots={shots[0]} direction={-1} label={t.antesDespues} />
+        <Row shots={shots[1]} direction={1} label={t.antesDespues} />
       </div>
     </section>
   );

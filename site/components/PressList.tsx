@@ -3,11 +3,11 @@
 import { useRef } from "react";
 import { Icon } from "./Icon";
 import { gsap, useGSAP, finePointer } from "@/lib/gsap";
-import { press } from "@/lib/content";
+import type { Content } from "@/lib/content";
 import styles from "./Press.module.css";
 
 /** Lista de prensa: al pasar el mouse por una fila aparece su imagen siguiendo al cursor. */
-export function PressList() {
+export function PressList({ items: press, alt }: { items: Content["press"]; alt: string }) {
   const root = useRef<HTMLDivElement>(null);
   const preview = useRef<HTMLDivElement>(null);
   const img = useRef<HTMLImageElement>(null);
@@ -80,7 +80,7 @@ export function PressList() {
       </ul>
       <div className={styles.preview} ref={preview} aria-hidden="true">
         {/* eslint-disable-next-line @next/next/no-img-element -- src cambia en hover */}
-        <img ref={img} alt="Ronald Medina en los medios" src={press[0].preview} />
+        <img ref={img} alt={alt} src={press[0].preview} />
       </div>
     </div>
   );

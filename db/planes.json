@@ -1,57 +1,136 @@
 [
   {
     "id": "premium",
-    "nombre": "Sistema Premium",
+    "nombre": { "es": "Sistema Premium", "en": "Premium System" },
     "nombreCompleto": "Sistema Premium Reto de los 25 días by Zar del Fitness",
-    "etiqueta": "Presencial · The VIP",
+    "etiqueta": { "es": "Presencial · The VIP", "en": "In person · The VIP" },
     "precios": [
       { "monto": 450000, "moneda": "ARS" },
       { "monto": 300, "moneda": "USD" }
     ],
     "periodo": "por mes",
-    "resumen": "Entrená directamente con el Zar y sus dos asistentes premium en un gimnasio exclusivo, con horarios que se adaptan a vos.",
-    "descripcion": "Más observación, más exclusividad y dinámicas de entrenamiento más individuales, con el acompañamiento cercano del Zar y sus dos asistentes premium.",
-    "destacados": [
-      "Consulta antropométrica y evaluación física",
-      "Plan personalizado con el Zar + 2 asistentes",
-      "Gimnasio The VIP incluido y exclusivo",
-      "Bebidas premium e hidratación libre",
-      "Médico traumatólogo exclusivo",
-      "Traé un amigo una vez al mes"
-    ],
+    "resumen": {
+      "es": "Entrená directamente con el Zar y sus dos asistentes premium en un gimnasio exclusivo, con horarios que se adaptan a vos.",
+      "en": "Train directly with the Zar and two premium assistants in an exclusive gym, with hours that adapt to you."
+    },
+    "descripcion": {
+      "es": "Más observación, más exclusividad y dinámicas de entrenamiento más individuales, con el acompañamiento cercano del Zar y sus dos asistentes premium.",
+      "en": "More attention, more exclusivity and more individual training, with close coaching from the Zar and two premium assistants."
+    },
+    "destacados": {
+      "es": [
+        "Consulta antropométrica y evaluación física",
+        "Plan personalizado con el Zar + 2 asistentes",
+        "Gimnasio The VIP incluido y exclusivo",
+        "Bebidas premium e hidratación libre",
+        "Médico traumatólogo exclusivo",
+        "Traé un amigo una vez al mes"
+      ],
+      "en": [
+        "Body composition consultation and physical assessment",
+        "Personalized plan with the Zar + 2 assistants",
+        "The VIP gym, included and exclusive",
+        "Premium drinks and free hydration",
+        "Exclusive orthopedic doctor",
+        "Bring a friend once a month"
+      ]
+    },
     "incluye": [
-      { "titulo": "Consulta antropométrica", "texto": "Evaluación completa sobre tus objetivos y tu evolución física para optimizar tu entrenamiento de forma constante." },
-      { "titulo": "Evaluación física y estratégica", "texto": "A disponibilidad de Zar del Fitness, sin restricciones." },
-      { "titulo": "Sugerencia alimentaria y suplementaria", "texto": "Orientación para comer más sano y enfocado en tu objetivo. Si querés un seguimiento nutricional más profesional, te recomendamos sumar un nutricionista." },
-      { "titulo": "Plan de entrenamiento personalizado", "texto": "Con entrenador personal a cargo de @zardelfitness y 2 asistentes premium." },
-      { "titulo": "Gimnasio The VIP by Zar del Fitness", "texto": "Incluido en el costo y exclusivo para este servicio." },
-      { "titulo": "Hidratación libre", "texto": "Agua con gas y sin gas." },
-      { "titulo": "Bebidas premium", "texto": "Pre-entreno, aminoácidos y whey protein (sujetos a disponibilidad)." },
-      { "titulo": "Acceso con huella dactilar", "texto": "Entrás al gimnasio sin llaves ni tarjetas." },
-      { "titulo": "Pausá tu sistema", "texto": "Hasta una semana, en caso de viaje o eventualidades de fuerza mayor." },
-      { "titulo": "Médico traumatólogo", "texto": "Exclusivo para alumnos premium." },
-      { "titulo": "Traé un amigo", "texto": "Invitá a un amigo a un día de prueba sin costo, una vez al mes." }
-      
+      {
+        "titulo": { "es": "Consulta antropométrica", "en": "Body composition consultation" },
+        "texto": {
+          "es": "Evaluación completa sobre tus objetivos y tu evolución física para optimizar tu entrenamiento de forma constante.",
+          "en": "A complete assessment of your goals and physical progress to keep optimizing your training."
+        }
+      },
+      {
+        "titulo": { "es": "Evaluación física y estratégica", "en": "Physical and strategic assessment" },
+        "texto": { "es": "A disponibilidad de Zar del Fitness, sin restricciones.", "en": "Whenever Zar del Fitness is available, with no restrictions." }
+      },
+      {
+        "titulo": { "es": "Sugerencia alimentaria y suplementaria", "en": "Nutrition and supplement guidance" },
+        "texto": {
+          "es": "Orientación para comer más sano y enfocado en tu objetivo. Si querés un seguimiento nutricional más profesional, te recomendamos sumar un nutricionista.",
+          "en": "Guidance to eat healthier and stay focused on your goal. For more professional nutrition follow-up, we recommend adding a nutritionist."
+        }
+      },
+      {
+        "titulo": { "es": "Plan de entrenamiento personalizado", "en": "Personalized training plan" },
+        "texto": {
+          "es": "Con entrenador personal a cargo de @zardelfitness y 2 asistentes premium.",
+          "en": "With personal training led by @zardelfitness and 2 premium assistants."
+        }
+      },
+      {
+        "titulo": { "es": "Gimnasio The VIP by Zar del Fitness", "en": "The VIP by Zar del Fitness gym" },
+        "texto": { "es": "Incluido en el costo y exclusivo para este servicio.", "en": "Included in the price and exclusive to this service." }
+      },
+      {
+        "titulo": { "es": "Hidratación libre", "en": "Free hydration" },
+        "texto": { "es": "Agua con gas y sin gas.", "en": "Sparkling and still water." }
+      },
+      {
+        "titulo": { "es": "Bebidas premium", "en": "Premium drinks" },
+        "texto": {
+          "es": "Pre-entreno, aminoácidos y whey protein (sujetos a disponibilidad).",
+          "en": "Pre-workout, amino acids and whey protein (subject to availability)."
+        }
+      },
+      {
+        "titulo": { "es": "Acceso con huella dactilar", "en": "Fingerprint access" },
+        "texto": { "es": "Entrás al gimnasio sin llaves ni tarjetas.", "en": "You get into the gym without keys or cards." }
+      },
+      {
+        "titulo": { "es": "Pausá tu sistema", "en": "Pause your system" },
+        "texto": {
+          "es": "Hasta una semana, en caso de viaje o eventualidades de fuerza mayor.",
+          "en": "For up to a week, if you travel or for reasons beyond your control."
+        }
+      },
+      {
+        "titulo": { "es": "Médico traumatólogo", "en": "Orthopedic doctor" },
+        "texto": { "es": "Exclusivo para alumnos premium.", "en": "Exclusive to premium clients." }
+      },
+      {
+        "titulo": { "es": "Traé un amigo", "en": "Bring a friend" },
+        "texto": {
+          "es": "Invitá a un amigo a un día de prueba sin costo, una vez al mes.",
+          "en": "Invite a friend to a free trial day, once a month."
+        }
+      }
     ]
   },
   {
     "id": "general",
-    "nombre": "Sistema General Dirigido",
-    "etiqueta": "Presencial · The VIP",
+    "nombre": { "es": "Sistema General Dirigido", "en": "Guided General System" },
+    "etiqueta": { "es": "Presencial · The VIP", "en": "In person · The VIP" },
     "precios": [
       { "monto": 170000, "moneda": "ARS" }
     ],
     "periodo": "por mes",
     "formasDePago": "Débito, crédito o transferencia.",
-    "resumen": "Entrená directamente con el Zar y su equipo de asistentes en The VIP, cuando te resulte más cómodo dentro de las franjas horarias.",
-    "destacados": [
-      "Consulta inicial: % de grasa, peso y estatura",
-      "Controles mensuales con cita previa",
-      "Plan de entrenamiento con los asistentes del Zar",
-      "Entrenamiento supervisado y compartido",
-      "Gimnasio The VIP incluido",
-      "Lunes a viernes, clases de 1\u00a0h\u00a020\u00a0min"
-    ],
+    "resumen": {
+      "es": "Entrená directamente con el Zar y su equipo de asistentes en The VIP, cuando te resulte más cómodo dentro de las franjas horarias.",
+      "en": "Train directly with the Zar and the team of assistants at The VIP, whenever it suits you within the time slots."
+    },
+    "destacados": {
+      "es": [
+        "Consulta inicial: % de grasa, peso y estatura",
+        "Controles mensuales con cita previa",
+        "Plan de entrenamiento con los asistentes del Zar",
+        "Entrenamiento supervisado y compartido",
+        "Gimnasio The VIP incluido",
+        "Lunes a viernes, clases de 1 h 20 min"
+      ],
+      "en": [
+        "Initial consultation: body fat %, weight and height",
+        "Monthly check-ins by appointment",
+        "Training plan with the Zar's assistants",
+        "Supervised, shared training",
+        "The VIP gym included",
+        "Monday to Friday, 1 h 20 min classes"
+      ]
+    },
     "incluye": [
       { "titulo": "Consulta inicial", "texto": "Una sola vez, para determinar tu porcentaje de grasa, peso y estatura. Los controles posteriores son con cita previa el último viernes de cada mes, según disponibilidad; los alumnos premium tienen prioridad." },
       { "titulo": "Plan de entrenamiento", "texto": "Con el equipo de asistentes de Zar del Fitness, que te entrenan según las indicaciones del Zardelfitness. El entrenamiento es supervisado, pero no es exclusivo: los asistentes acompañan a todas las personas que estén entrenando en ese momento y pueden cambiar según lo disponga el Zardelfitness." },
@@ -123,24 +202,37 @@
   },
   {
     "id": "reto-online",
-    "nombre": "Reto de los 25 días",
+    "nombre": { "es": "Reto de los 25 días", "en": "25-Day Challenge" },
     "nombreCompleto": "Reto de los 25 días online",
-    "etiqueta": "Online · Argentina",
+    "etiqueta": { "es": "Online · Argentina", "en": "Online · Argentina" },
     "precios": [
       { "monto": 100000, "moneda": "ARS" }
     ],
     "periodo": "por mes",
     "formasDePago": "Mercado Pago, en hasta 12 cuotas sin tarjeta (crédito sujeto a aprobación).",
-    "resumen": "Entrená en casa o en el gym con videos diseñados para tu sistema, a tu ritmo y en tu horario.",
+    "resumen": {
+      "es": "Entrená en casa o en el gym con videos diseñados para tu sistema, a tu ritmo y en tu horario.",
+      "en": "Train at home or at the gym with videos designed for your system, at your own pace and on your own schedule."
+    },
     "descripcion": "Programa 100% online de 25 días, creado por Ronald Medina.",
-    "destacados": [
-      "Evaluación a distancia",
-      "Plan de alimentación individual",
-      "Plan de suplementación individual",
-      "Rutina en video (casa o gym)",
-      "Controles cada 15 días",
-      "Asistencia permanente por WhatsApp"
-    ],
+    "destacados": {
+      "es": [
+        "Evaluación a distancia",
+        "Plan de alimentación individual",
+        "Plan de suplementación individual",
+        "Rutina en video (casa o gym)",
+        "Controles cada 15 días",
+        "Asistencia permanente por WhatsApp"
+      ],
+      "en": [
+        "Remote assessment",
+        "Individual nutrition plan",
+        "Individual supplementation plan",
+        "Video workouts (home or gym)",
+        "Check-ins every 15 days",
+        "Ongoing support on WhatsApp"
+      ]
+    },
     "detalles": [
       {
         "titulo": "Cómo funciona",
@@ -156,22 +248,34 @@
   },
   {
     "id": "reto-internacional",
-    "nombre": "Reto Internacional",
+    "nombre": { "es": "Reto Internacional", "en": "International Challenge" },
     "nombreCompleto": "Reto de los 25 días online internacional",
-    "etiqueta": "Online · Internacional",
+    "etiqueta": { "es": "Online · Internacional", "en": "Online · International" },
     "precios": [
       { "monto": 100, "moneda": "USD" }
     ],
     "periodo": "por mes",
     "formasDePago": "Con opción de PayPal.",
-    "resumen": "El mismo método, desde cualquier país. Seguimiento por WhatsApp durante todo el reto.",
+    "resumen": {
+      "es": "El mismo método, desde cualquier país. Seguimiento por WhatsApp durante todo el reto.",
+      "en": "The same method, from any country. Follow-up on WhatsApp throughout the challenge."
+    },
     "descripcion": "Es el Reto de los 25 días online para personas fuera de Argentina.",
-    "destacados": [
-      "Evaluación a distancia",
-      "Plan nutricional a medida",
-      "Plan de entrenamiento",
-      "Controles día 1, 15 y 25",
-      "Suplementación deportiva (si se requiere)"
-    ]
+    "destacados": {
+      "es": [
+        "Evaluación a distancia",
+        "Plan nutricional a medida",
+        "Plan de entrenamiento",
+        "Controles día 1, 15 y 25",
+        "Suplementación deportiva (si se requiere)"
+      ],
+      "en": [
+        "Remote assessment",
+        "Tailored nutrition plan",
+        "Training plan",
+        "Check-ins on days 1, 15 and 25",
+        "Sports supplementation (if needed)"
+      ]
+    }
   }
 ]
