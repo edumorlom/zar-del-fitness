@@ -2,49 +2,67 @@
   "prensa": [
     {
       "medio": "Emmy 2024",
-      "titulo": "DETRÁS DEL ESPEJO: EL LADO OSCURO DEL FITNESS",
-      "tipo": "Premio",
+      "titulo": {
+        "es": "DETRÁS DEL ESPEJO: EL LADO OSCURO DEL FITNESS",
+        "en": "BEHIND THE MIRROR: THE DARK SIDE OF FITNESS"
+      },
+      "tipo": { "es": "Premio", "en": "Award" },
       "link": "https://youtu.be/g-ENoAJHebQ",
       "imagen": "/img/press-emmy.webp",
-      "destacadoEnInicio": "Emmy Winner 2024"
+      "destacadoEnInicio": { "es": "Emmy Winner 2024", "en": "Emmy Winner 2024" }
     },
     {
       "medio": "TN",
-      "titulo": "La historia del entrenador de los famosos",
-      "tipo": "Entrevista",
+      "titulo": { "es": "La historia del entrenador de los famosos", "en": "The story of the celebrities' trainer" },
+      "tipo": { "es": "Entrevista", "en": "Interview" },
       "link": "https://tn.com.ar/show/basicas/la-dura-historia-de-ronald-medina-el-entrenador-de-los-famosos-que-se-fue-de-venezuela-despues-de_866544/",
       "imagen": "/img/ronald-portrait.webp"
     },
     {
       "medio": "Olé",
-      "titulo": "Fitness con el Zar",
-      "tipo": "Entrevista",
+      "titulo": { "es": "Fitness con el Zar", "en": "Fitness with the Zar" },
+      "tipo": { "es": "Entrevista", "en": "Interview" },
       "link": "https://www.ole.com.ar/running/fitness_0_SvUQ4lGRR.html",
       "imagen": "/img/ronald-white.webp"
     },
     {
       "medio": "Pronto",
-      "titulo": "El cambio de Rodrigo Noya en 25 días",
-      "tipo": "Transformación",
+      "titulo": { "es": "El cambio de Rodrigo Noya en 25 días", "en": "Rodrigo Noya's change in 25 days" },
+      "tipo": { "es": "Transformación", "en": "Transformation" },
       "link": "https://www.pronto.com.ar/articulo/famosos/antes-despues-tremendo-cambio-fisico-rodrigo-noya-25-dias/20180922160638298499.html",
       "imagen": "/img/t09.webp"
     },
     {
       "medio": "Funcional Magazine",
-      "titulo": "Portada: “Fitness con propósito”",
-      "tipo": "Revista",
+      "titulo": { "es": "Portada: “Fitness con propósito”", "en": "Cover: “Fitness with purpose”" },
+      "tipo": { "es": "Revista", "en": "Magazine" },
       "imagen": "/img/press-funcional.webp"
     },
     {
       "medio": "TV",
-      "titulo": "Crónicas de Lirio (C5N) · La tarde con vos · Quedate con Georgina",
-      "tipo": "Televisión",
+      "titulo": {
+        "es": "Crónicas de Lirio (C5N) · La tarde con vos · Quedate con Georgina",
+        "en": "Crónicas de Lirio (C5N) · La tarde con vos · Quedate con Georgina"
+      },
+      "tipo": { "es": "Televisión", "en": "Television" },
       "imagen": "/img/ronald-seated.webp"
     }
   ],
   "premios": [
-    { "fecha": "2014", "titulo": "Chiquinquirá de Oro", "texto": "Personal trainer de mayor prestigio del año · Maracaibo" },
-    { "fecha": "2017", "titulo": "Occamy Internacional", "texto": "Instructor deportivo" },
-    { "fecha": "Hoy", "titulo": "Revista Cuerpo y Mente", "texto": "Articulista · Orador motivacional para Remax" }
+    {
+      "fecha": "2014",
+      "titulo": { "es": "Chiquinquirá de Oro", "en": "Chiquinquirá de Oro" },
+      "texto": { "es": "Personal trainer de mayor prestigio del año · Maracaibo", "en": "Most prestigious personal trainer of the year · Maracaibo" }
+    },
+    {
+      "fecha": "2017",
+      "titulo": { "es": "Occamy Internacional", "en": "Occamy Internacional" },
+      "texto": { "es": "Instructor deportivo", "en": "Sports instructor" }
+    },
+    {
+      "fecha": { "es": "Hoy", "en": "Today" },
+      "titulo": { "es": "Revista Cuerpo y Mente", "en": "Cuerpo y Mente magazine" },
+      "texto": { "es": "Articulista · Orador motivacional para Remax", "en": "Columnist · Motivational speaker for Remax" }
+    }
   ]
 }

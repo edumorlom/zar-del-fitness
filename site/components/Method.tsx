@@ -2,11 +2,14 @@
 
 import { useRef } from "react";
 import { Icon } from "./Icon";
+import { Lines } from "./Lines";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { steps } from "@/lib/content";
+import type { Content } from "@/lib/content";
 import styles from "./Method.module.css";
 
-export function Method() {
+/** `t`: los textos de la sección, de db/textos.json (metodo), ya en el idioma de la página. */
+export function Method({ t }: { t: Content["t"]["metodo"] }) {
+  const steps = t.pasos;
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
@@ -76,21 +79,14 @@ export function Method() {
         <div className={`container ${styles.head}`}>
           <div>
             <p className="eyebrow">
-              <span className="num">03</span> Cómo funciona
+              <span className="num">03</span> {t.antetitulo}
             </p>
             <h2 className="h2" data-lines>
-              <span className="ln">
-                <span>25 días.</span>
-              </span>{" "}
-              <span className="ln">
-                <span>
-                  <em className="serif gold-text">Un antes y un después.</em>
-                </span>
-              </span>
+              <Lines lines={t.titulo} />
             </h2>
           </div>
           <div className={styles.day} aria-hidden="true">
-            <span className={styles.dayLabel}>Día</span>
+            <span className={styles.dayLabel}>{t.dia}</span>
             <span className={styles.dayNum} data-day>
               01
             </span>
@@ -101,15 +97,15 @@ export function Method() {
           {steps.map((s, i) => {
             const final = i === steps.length - 1;
             return (
-              <article key={s.n} className={`${styles.step} ${final ? styles.final : ""}`}>
-                <span className={styles.num}>{s.n}</span>
+              <article key={s.numero} className={`${styles.step} ${final ? styles.final : ""}`}>
+                <span className={styles.num}>{s.numero}</span>
                 <div>
-                  <h3>{s.title}</h3>
-                  <p>{s.text}</p>
+                  <h3>{s.titulo}</h3>
+                  <p>{s.texto}</p>
                 </div>
                 {final && (
                   <a className="btn btn--outline" href="#programas" style={{ alignSelf: "flex-start" }}>
-                    <span>Quiero mi plan</span>
+                    <span>{t.boton}</span>
                     <Icon name="arrow" />
                   </a>
                 )}
@@ -120,8 +116,8 @@ export function Method() {
 
         <div className={`container ${styles.progress}`} aria-hidden="true">
           <i className={styles.bar} />
-          <span>Día 01</span>
-          <span>Día 25</span>
+          <span>{t.dia} 01</span>
+          <span>{t.dia} 25</span>
         </div>
       </div>
     </section>

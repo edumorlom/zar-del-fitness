@@ -7,11 +7,23 @@ import { Sparkles } from "./Sparkles";
 import { VideoButton } from "./motion/VideoButton";
 import { useMotion } from "./motion/MotionProvider";
 import { gsap, useGSAP, reducedMotion, finePointer } from "@/lib/gsap";
+import { Lines } from "./Lines";
 import { Rich } from "./Rich";
-import { featuredPress, heroChips, links, price, texts, videos } from "@/lib/content";
+import type { Content } from "@/lib/content";
 import styles from "./Hero.module.css";
 
-export function Hero() {
+/** Los textos y links del inicio, ya en el idioma de la página (los arma components/HomePage.tsx). */
+export type HeroProps = {
+  t: Content["t"]["inicio"];
+  hashtag: { text: string; href: string };
+  cta: { price: string; href: string };
+  trailer: string;
+  featuredPress: Content["featuredPress"];
+  chips: Content["heroChips"];
+  cursorVideo: string;
+};
+
+export function Hero({ t, hashtag, cta, trailer, featuredPress, chips, cursorVideo }: HeroProps) {
   const root = useRef<HTMLElement>(null);
   const intro = useRef<gsap.core.Timeline | null>(null);
   const { ready } = useMotion();
@@ -69,35 +81,27 @@ export function Hero() {
       <div className={`container ${styles.grid}`}>
         <div className={styles.copy}>
           <p className="eyebrow" data-hero-fade>
-            <span className="dot" /> Personal trainer · Buenos Aires · Online
+            <span className="dot" /> {t.antetitulo}
           </p>
           <h1 className={styles.title}>
-            <span className="ln">
-              <span>Comenzá el</span>
-            </span>{" "}
-            <span className="ln">
-              <span>reto de los</span>
-            </span>{" "}
-            <span className="ln">
-              <span className="gold-text">25 días</span>
-            </span>
+            <Lines lines={t.titulo} accent="gold" />
           </h1>
           <p className={styles.script} data-hero-fade>
-            y sumate a <a href={links.hashtag}>#LosCuerposDelZar</a>
+            {t.sumate} <a href={hashtag.href}>{hashtag.text}</a>
           </p>
           <p className={styles.lead} data-hero-fade>
-            <Rich text={texts.hero} />
+            <Rich text={t.descripcion} />
           </p>
           <div className={styles.ctas} data-hero-fade>
-            <a className="btn btn--gold btn--lg" href={links.retoOnline} data-magnetic>
-              <span>Empezar el reto</span>
-              <span className="btn__price">{price("reto-online")}</span>
+            <a className="btn btn--gold btn--lg" href={cta.href} data-magnetic>
+              <span>{t.boton}</span>
+              <span className="btn__price">{cta.price}</span>
             </a>
-            <VideoButton videoId={videos.trailer} className="btn btn--ghost btn--lg" data-magnetic>
+            <VideoButton videoId={trailer} cursor={cursorVideo} className="btn btn--ghost btn--lg" data-magnetic>
               <span className="btn__play">
                 <Icon name="play" className="" />
               </span>
-              <span>Ver trailer</span>
+              <span>{t.trailer}</span>
             </VideoButton>
           </div>
         </div>
@@ -107,7 +111,7 @@ export function Hero() {
             <div className={styles.frame}>
               <Image
                 src="/img/ronald-hero.jpg"
-                alt="Ronald Medina, el Zar del Fitness"
+                alt={t.foto}
                 width={1218}
                 height={1291}
                 sizes="(max-width: 900px) 90vw, 40vw"
@@ -124,19 +128,19 @@ export function Hero() {
                   <path id="seal-circle" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" />
                 </defs>
                 <text>
-                  <textPath href="#seal-circle" textLength="486" lengthAdjust="spacing">COMENZÁ EL RETO ✦ DE LOS 25 DÍAS ✦ BY RONALD MEDINA ✦ </textPath>
+                  <textPath href="#seal-circle" textLength="486" lengthAdjust="spacing">{t.sello}</textPath>
                 </text>
               </svg>
               <div className={styles.sealCore}>
                 <span>25</span>
-                <small>días</small>
+                <small>{t.dias}</small>
               </div>
             </div>
           </div>
 
           {featuredPress && (
             <div className={styles.tagWrap} data-depth="22">
-              <a className={styles.tag} href={featuredPress.href} target="_blank" rel="noopener noreferrer" data-cursor="Play" data-hero-fade>
+              <a className={styles.tag} href={featuredPress.href} target="_blank" rel="noopener noreferrer" data-cursor={cursorVideo} data-hero-fade>
                 <Icon name="spark" />
                 <div>
                   <strong>{featuredPress.label}</strong>
@@ -151,10 +155,10 @@ export function Hero() {
 
       <div className={`container ${styles.foot}`} data-hero-fade>
         <span className={styles.scroll}>
-          <i /> Scroll
+          <i /> {t.scroll}
         </span>
         <ul className={styles.chips}>
-          {heroChips.map((c) => (
+          {chips.map((c) => (
             <li key={c.label}>
               {c.label} <span>{c.value}</span>
             </li>

@@ -14,8 +14,19 @@ from .spanish import WEEKDAYS
 DB_DIR = Path(__file__).resolve().parent.parent.parent / "db"
 
 
+def spanish(value):
+    """The Spanish side of the website's texts, which come in both languages: {"es": …, "en": …}."""
+    if isinstance(value, dict):
+        if value.keys() == {"es", "en"}:
+            return value["es"]
+        return {key: spanish(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [spanish(item) for item in value]
+    return value
+
+
 def load(name: str):
-    return json.loads((DB_DIR / f"{name}.json").read_text())
+    return spanish(json.loads((DB_DIR / f"{name}.json").read_text()))
 
 
 GYM = load("gimnasio")

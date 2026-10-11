@@ -8,7 +8,7 @@ import styles from "./Preloader.module.css";
 
 const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-export function Preloader({ onDone }: { onDone: () => void }) {
+export function Preloader({ onDone, labels }: { onDone: () => void; labels: { reto: string; dias: string } }) {
   const root = useRef<HTMLDivElement>(null);
   const [gone, setGone] = useState(false);
 
@@ -74,10 +74,10 @@ export function Preloader({ onDone }: { onDone: () => void }) {
       <div className={styles.inner}>
         <Image className={styles.logo} src="/img/logo.webp" alt="Zar del Fitness" width={666} height={361} preload />
         <div className={styles.meta}>
-          <span className={styles.label}>Reto de los</span>
+          <span className={styles.label}>{labels.reto}</span>
           <span className={styles.count}>
             <span className={styles.num} />
-            <small>días</small>
+            <small>{labels.dias}</small>
           </span>
         </div>
         <div className={styles.bar}>

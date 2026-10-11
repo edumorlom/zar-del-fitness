@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
   // sin esto, Turbopack no lee archivos fuera de site/.
   turbopack: { root: path.join(__dirname, "..") },
   // cacheComponents / partialPrefetching (PPR) are not allowed with `output: "export"`
+  // Dos layouts raíz (app/(es) y app/(en), uno por idioma): la 404 va aparte, en app/global-not-found.tsx.
+  experimental: { globalNotFound: true },
 };
 
 export default nextConfig;

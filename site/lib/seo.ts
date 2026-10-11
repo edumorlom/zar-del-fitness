@@ -1,37 +1,52 @@
 // SEO: la metadata de cada página y los datos estructurados (JSON-LD) que leen Google y los buscadores con IA.
 // Todo sale de lib/content.ts (y por lo tanto de db/): si cambia un precio o un horario, cambia acá también.
+// Cada página dice cuál es su versión en el otro idioma (hreflang), para que Google muestre la que corresponde.
 
 import type { Metadata } from "next";
-import { awards, business, faqs, press, programs, schedule, siteUrl, socials, team } from "./content";
+import { business, content, siteUrl, socials } from "./content";
+import { LANGS, locales, otherLang, type Lang } from "./i18n";
 
 /** "/blog/" → "https://zardelfitness.com.ar/blog/" */
 export const abs = (path: string) => new URL(path, siteUrl).href;
 
 const xHandle = socials.find((s) => s.icon === "x")?.href.split("/").pop();
 
+/** La URL de la página en cada idioma, si existe en los dos. */
+export type Alternates = Record<Lang, string>;
+
+/**
+ * Los links rel="alternate" hreflang: la página en castellano, en inglés, y "x-default" (para quien no habla
+ * ninguno de los dos) la de castellano, que es la del inicio del sitio. "es" sin país: es para todo hispanohablante.
+ */
+export const languages = (alternates: Alternates) => ({ es: alternates.es, en: alternates.en, "x-default": alternates.es });
+
 type PageMeta = {
+  lang: Lang;
   title: string;
   description: string;
   /** La URL de la página, p. ej. "/blog/". Es la canónica. */
   path: string;
+  /** La misma página en los dos idiomas (si no está traducida, no va). */
+  alternates?: Alternates;
   /** El título tal cual, sin " | Zar del Fitness" (para el inicio). */
   absoluteTitle?: boolean;
   article?: { publishedTime: string; authors: string[]; section?: string };
 };
 
 /** Título, descripción, URL canónica y cómo se ve al compartir. La imagen sale del opengraph-image.tsx de cada página. */
-export function pageMetadata({ title, description, path, absoluteTitle, article }: PageMeta): Metadata {
+export function pageMetadata({ lang, title, description, path, alternates, absoluteTitle, article }: PageMeta): Metadata {
   const fullTitle = absoluteTitle ? title : `${title} | ${business.name}`;
   return {
     title: absoluteTitle ? { absolute: title } : title,
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: path, ...(alternates && { languages: languages(alternates) }) },
     openGraph: {
       title: fullTitle,
       description,
       url: path,
       siteName: business.name,
-      locale: "es_AR",
+      locale: locales[lang].og,
+      ...(alternates && { alternateLocale: [locales[otherLang(lang)].og] }),
       ...(article
         ? { type: "article", publishedTime: article.publishedTime, authors: article.authors, section: article.section }
         : { type: "website" }),
@@ -42,6 +57,7 @@ export function pageMetadata({ title, description, path, absoluteTitle, article 
 
 // ---------- JSON-LD ----------
 
+// Los mismos en los dos idiomas: son el mismo sitio, el mismo gimnasio y la misma persona.
 const ids = {
   website: abs("/#sitio"),
   business: abs("/#negocio"),
@@ -58,37 +74,33 @@ export const DAYS: Record<string, string> = {
   domingo: "Sunday",
 };
 
-const ronald = team.find((m) => m.id === "ronald")!;
+// El texto en castellano y en inglés, de db/: ChatGPT y otros buscadores con IA buscan en inglés aunque les pregunten
+// en español. Así el gimnasio y Ronald tienen la misma descripción en las páginas de los dos idiomas.
+const bilingual = (text: (lang: Lang) => string) => LANGS.map((l) => ({ "@value": text(l), "@language": locales[l].html }));
 
-// El texto en español y en inglés: ChatGPT y otros buscadores con IA buscan en inglés aunque les pregunten en español.
-// El inglés no sale de db/: si cambia el texto en español, actualizarlo a mano.
-const bilingual = (es: string, en: string) => [
-  { "@value": es, "@language": "es-AR" },
-  { "@value": en, "@language": "en" },
-];
+const ronaldIn = (lang: Lang) => content(lang).team.find((m) => m.id === "ronald")!;
 
-/** El sitio, el gimnasio y Ronald: van en todas las páginas (app/layout.tsx). */
-export function siteGraph() {
+/** El sitio, el gimnasio y Ronald: van en todas las páginas (el layout de cada idioma). */
+export function siteGraph(lang: Lang) {
+  const { t, pages, programs, schedule, team, awards, press } = content(lang);
+  const ronald = ronaldIn(lang);
   return [
     {
       "@type": "WebSite",
       "@id": ids.website,
       url: abs("/"),
       name: business.name,
-      inLanguage: "es-AR",
+      inLanguage: LANGS.map((l) => locales[l].html),
       publisher: { "@id": ids.business },
     },
     {
       "@type": "ExerciseGym",
       "@id": ids.business,
       name: business.name,
-      alternateName: [business.gym, "Reto de los 25 días"],
-      description: bilingual(
-        "Entrenamiento personal presencial en The VIP (Colegiales, CABA) y online con el Reto de los 25 días, el método de Ronald Medina, el Zar del Fitness.",
-        "Personal training in person at The VIP (Colegiales, Buenos Aires, Argentina) and online with the Reto de los 25 días (25-day challenge), the method of Ronald Medina, el Zar del Fitness."
-      ),
+      alternateName: [business.gym, ...LANGS.map((l) => content(l).t.seo.otroNombre)],
+      description: bilingual((l) => content(l).t.seo.negocio),
       knowsLanguage: "es",
-      url: abs("/"),
+      url: abs(pages.home),
       logo: { "@type": "ImageObject", url: abs("/img/logo.webp"), width: 666, height: 361 },
       image: [abs("/img/ronald-hero.jpg"), abs("/img/ronald-portrait.webp"), abs("/img/ronald-seated.webp")],
       telephone: business.phone,
@@ -115,12 +127,12 @@ export function siteGraph() {
       employee: team.map((m) => (m.id === "ronald" ? { "@id": ids.ronald } : { "@type": "Person", name: m.name, jobTitle: m.role })),
       hasOfferCatalog: {
         "@type": "OfferCatalog",
-        name: "Programas de entrenamiento",
+        name: t.seo.catalogo,
         itemListElement: programs.map((p) => ({
           "@type": "Offer",
-          price: Number(p.price.replace(/\./g, "")),
-          priceCurrency: p.suffix ?? p.currency,
-          url: abs("/#programas"),
+          price: p.amount,
+          priceCurrency: p.currencyCode,
+          url: abs(`${pages.home}#programas`),
           itemOffered: { "@type": "Service", name: p.title, description: p.desc },
         })),
       },
@@ -130,31 +142,29 @@ export function siteGraph() {
       "@id": ids.ronald,
       name: ronald.name,
       alternateName: ronald.nickname,
-      jobTitle: "Personal trainer",
-      description: bilingual(
-        ronald.certifications ?? ronald.bio,
-        "Venezuelan personal trainer based in Buenos Aires, Argentina, known as el Zar del Fitness and creator of the Reto de los 25 días (25-day challenge). Certified by IPEF (Instituto Panamericano de Educación Física) in exercise prescription for people with obesity and metabolic diseases, in sports supplementation and in nutrition for muscle gain."
-      ),
+      jobTitle: t.seo.puesto,
+      description: bilingual((l) => ronaldIn(l).certifications ?? ronaldIn(l).bio),
       knowsLanguage: "es",
       image: abs(ronald.img.src),
-      url: abs("/#zar"),
+      url: abs(`${pages.home}#zar`),
       nationality: { "@type": "Country", name: "Venezuela" },
       worksFor: { "@id": ids.business },
       sameAs: [ronald.handleHref].filter(Boolean),
-      knowsAbout: ["Entrenamiento personal", "Pérdida de grasa", "Musculación", "Nutrición deportiva", "Suplementación deportiva"],
+      knowsAbout: t.seo.especialidades,
       award: [
         ...awards.filter((a) => /^\d{4}$/.test(a.year)).map((a) => `${a.title} (${a.year}): ${a.text}`),
-        ...press.filter((p) => p.kind === "Premio").map((p) => `${p.src}: ${p.title}`),
+        ...press.filter((p) => p.isAward).map((p) => `${p.src}: ${p.title}`),
       ],
       subjectOf: press
-        .filter((p) => p.href && p.kind !== "Premio")
+        .filter((p) => p.href && !p.isAward)
         .map((p) => ({ "@type": "CreativeWork", name: p.title, url: p.href, publisher: { "@type": "Organization", name: p.src } })),
     },
   ];
 }
 
 /** La página en sí. CollectionPage para el blog. */
-export function webPageLd({ path, name, description, type = "WebPage", about }: {
+export function webPageLd({ lang, path, name, description, type = "WebPage", about }: {
+  lang: Lang;
   path: string;
   name: string;
   description: string;
@@ -168,17 +178,18 @@ export function webPageLd({ path, name, description, type = "WebPage", about }: 
     url: abs(path),
     name,
     description,
-    inLanguage: "es-AR",
+    inLanguage: locales[lang].html,
     isPartOf: { "@id": ids.website },
     ...(about && { about: { "@id": ids.business } }),
   };
 }
 
 /** Las migas de pan: Inicio › … › la página. */
-export function breadcrumbLd(items: { name: string; path: string }[]) {
+export function breadcrumbLd(lang: Lang, items: { name: string; path: string }[]) {
+  const { t, pages } = content(lang);
   return {
     "@type": "BreadcrumbList",
-    itemListElement: [{ name: "Inicio", path: "/" }, ...items].map((item, i) => ({
+    itemListElement: [{ name: t.general.inicio, path: pages.home }, ...items].map((item, i) => ({
       "@type": "ListItem",
       position: i + 1,
       name: item.name,
@@ -187,16 +198,18 @@ export function breadcrumbLd(items: { name: string; path: string }[]) {
   };
 }
 
-export function faqLd() {
+export function faqLd(lang: Lang) {
+  const { faqs, pages } = content(lang);
   return {
     "@type": "FAQPage",
-    "@id": abs("/#preguntas"),
-    mainEntity: faqs.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+    "@id": abs(`${pages.home}#preguntas`),
+    mainEntity: faqs.map(({ q, a }) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
   };
 }
 
 /** Una nota del blog. */
 export function articleLd(post: {
+  lang: Lang;
   path: string;
   title: string;
   description: string;
@@ -206,6 +219,7 @@ export function articleLd(post: {
   image: string;
   words: number;
 }) {
+  const ronald = content(post.lang).team.find((m) => m.id === "ronald")!;
   return {
     "@type": "BlogPosting",
     "@id": abs(`${post.path}#nota`),
@@ -219,6 +233,6 @@ export function articleLd(post: {
     mainEntityOfPage: { "@id": abs(post.path) },
     articleSection: post.category,
     wordCount: post.words,
-    inLanguage: "es-AR",
+    inLanguage: locales[post.lang].html,
   };
 }

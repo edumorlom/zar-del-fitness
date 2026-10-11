@@ -1,29 +1,25 @@
 import { Icon } from "./Icon";
 import { ProgramArt } from "./ProgramArt";
+import { Lines } from "./Lines";
 import { TiltCard } from "./TiltCard";
-import { programs, texts } from "@/lib/content";
+import { content } from "@/lib/content";
+import type { Lang } from "@/lib/i18n";
 import styles from "./Programs.module.css";
 
-export function Programs() {
+export function Programs({ lang }: { lang: Lang }) {
+  const { t, programs } = content(lang);
   return (
     <section className={`section ${styles.programs}`} id="programas">
       <div className="container">
         <header className="section-head">
           <p className="eyebrow" data-reveal>
-            <span className="num">02</span> Programas
+            <span className="num">02</span> {t.programas.antetitulo}
           </p>
           <h2 className="h2" data-lines>
-            <span className="ln">
-              <span>Cuatro protocolos,</span>
-            </span>{" "}
-            <span className="ln">
-              <span>
-                <em className="serif gold-text">un solo objetivo: el tuyo.</em>
-              </span>
-            </span>
+            <Lines lines={t.programas.titulo} />
           </h2>
           <p className="section-head__lead" data-reveal>
-            {texts.programs}
+            {t.programas.introduccion}
           </p>
         </header>
 
@@ -32,9 +28,9 @@ export function Programs() {
             <div key={p.title} className={styles.cell}>
               <TiltCard className={`${styles.card} ${p.featured ? styles.featured : ""}`}>
                 <div className={styles.glow} aria-hidden="true" />
-                {p.featured && <span className={styles.ribbon}>Experiencia exclusiva</span>}
+                {p.featured && <span className={styles.ribbon}>{t.programas.destacado}</span>}
                 <div className={styles.media}>
-                  <ProgramArt variant={p.art.variant} label={p.art.label} />
+                  <ProgramArt variant={p.art.variant} label={p.art.label} words={t.programas.arte} />
                 </div>
                 <div className={styles.body}>
                   <p className="tag">{p.tag}</p>

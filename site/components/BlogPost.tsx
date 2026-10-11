@@ -1,55 +1,55 @@
 // Una nota del blog, en la misma URL que tenía en el sitio anterior: /2026/10/03/peptidos-y-perdida-de-peso…/
+// La versión en inglés va en /english/2026/10/03/peptides-weight-loss…/ (ver lib/blog.ts).
 
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { PageShell } from "@/components/PageShell";
-import { PostCard, PostGrid } from "@/components/PostCard";
-import { Icon } from "@/components/Icon";
-import { JsonLd } from "@/components/JsonLd";
-import { formatDate, posts } from "@/lib/blog";
-import { links, pages, price, team } from "@/lib/content";
+import { PageShell } from "./PageShell";
+import { PostCard, PostGrid } from "./PostCard";
+import { Icon } from "./Icon";
+import { JsonLd } from "./JsonLd";
+import { Rich } from "./Rich";
+import { findPost, formatDate, posts, translationOf, type Post, type PostParams } from "@/lib/blog";
+import { content } from "@/lib/content";
+import { fill, otherLang, type Lang } from "@/lib/i18n";
 import { articleLd, breadcrumbLd, pageMetadata, webPageLd } from "@/lib/seo";
-import styles from "./page.module.css";
+import styles from "./BlogPost.module.css";
 
-type Params = { year: string; month: string; day: string; slug: string };
-
-export const dynamicParams = false;
-
-export function generateStaticParams(): Params[] {
-  return posts.map((p) => {
-    const [year, month, day] = p.date.split("-");
-    return { year, month, day, slug: p.slug };
-  });
+/** La nota en castellano y en inglés, si está traducida. */
+function alternatesOf(post: Post) {
+  const other = translationOf(post);
+  return other && ({ [post.lang]: post.path, [other.lang]: other.path } as Record<Lang, string>);
 }
 
-const find = ({ year, month, day, slug }: Params) => posts.find((p) => p.slug === slug && p.date === `${year}-${month}-${day}`);
-
-export async function generateMetadata({ params }: { params: Promise<Params> }) {
-  const post = find(await params);
+export function postMetadata(lang: Lang, params: PostParams) {
+  const post = findPost(lang, params);
   if (!post) return {};
   return pageMetadata({
+    lang,
     title: post.title,
     description: post.description,
     path: post.path,
+    alternates: alternatesOf(post),
     article: { publishedTime: post.date, authors: [post.author], section: post.category },
   });
 }
 
-const ronald = team.find((m) => m.id === "ronald")!;
-
-export default async function PostPage({ params }: { params: Promise<Params> }) {
-  const post = find(await params);
+export function BlogPost({ lang, params }: { lang: Lang; params: PostParams }) {
+  const post = findPost(lang, params);
   if (!post) notFound();
-  const more = posts.filter((p) => p !== post).slice(0, 3);
+  const { t, pages, team, links, price } = content(lang);
+  const ronald = team.find((m) => m.id === "ronald")!;
+  const more = posts[lang].filter((p) => p !== post).slice(0, 3);
   const byRonald = post.author === ronald.name;
+  // El botón de idioma lleva a la nota traducida, o al blog del otro idioma si no lo está.
+  const alternate = translationOf(post)?.path ?? content(otherLang(lang)).pages.blog;
 
   return (
-    <PageShell>
+    <PageShell lang={lang} alternate={alternate}>
       <JsonLd
         data={[
-          webPageLd({ path: post.path, name: post.title, description: post.description }),
-          breadcrumbLd([
-            { name: "Blog", path: pages.blog },
+          webPageLd({ lang, path: post.path, name: post.title, description: post.description }),
+          breadcrumbLd(lang, [
+            { name: t.menu.blog, path: pages.blog },
             { name: post.title, path: post.path },
           ]),
           articleLd(post),
@@ -60,27 +60,27 @@ export default async function PostPage({ params }: { params: Promise<Params> }) 
         <header className={styles.head} id="top">
           <div className={styles.glow} aria-hidden="true" />
           <div className={styles.narrow}>
-            <nav aria-label="Migas de pan" className={styles.crumbs}>
+            <nav aria-label={t.general.migasDePan} className={styles.crumbs}>
               <ol>
                 <li>
-                  <a href="/">Inicio</a>
+                  <a href={pages.home}>{t.general.inicio}</a>
                 </li>
                 <li>
-                  <a href={pages.blog}>Blog</a>
+                  <a href={pages.blog}>{t.menu.blog}</a>
                 </li>
                 <li aria-current="page">{post.title}</li>
               </ol>
             </nav>
             <p className={styles.meta}>
               <span className="tag">{post.category}</span>
-              <time dateTime={post.date}>{formatDate(post.date)}</time>
-              <span>{post.minutes} min de lectura</span>
+              <time dateTime={post.date}>{formatDate(post.date, lang)}</time>
+              <span>{fill(t.blog.lectura, { minutos: post.minutes })}</span>
             </p>
             <h1 className={styles.title}>{post.title}</h1>
             <p className={styles.byline}>
-              Por{" "}
+              {t.blog.por}{" "}
               {byRonald ? (
-                <a href="/#zar" rel="author">
+                <a href={`${pages.home}#zar`} rel="author">
                   {post.author}
                 </a>
               ) : (
@@ -103,9 +103,9 @@ export default async function PostPage({ params }: { params: Promise<Params> }) 
             <aside className={styles.author}>
               <Image src={ronald.img.src} alt={ronald.name} width={ronald.img.w} height={ronald.img.h} sizes="88px" />
               <div>
-                <p className="tag">Sobre el autor</p>
+                <p className="tag">{t.blog.sobreElAutor}</p>
                 <p className={styles.authorName}>
-                  <a href="/#zar">{ronald.name}</a>
+                  <a href={`${pages.home}#zar`}>{ronald.name}</a>
                 </p>
                 <p>{ronald.bio}</p>
               </div>
@@ -114,16 +114,16 @@ export default async function PostPage({ params }: { params: Promise<Params> }) 
 
           <aside className={styles.cta}>
             <p className={styles.ctaTitle}>
-              ¿Querés un plan <em className="serif gold-text">hecho para vos?</em>
+              <Rich text={t.blog.planTitulo} emClass="serif gold-text" />
             </p>
-            <p>Entrenamiento, alimentación y acompañamiento personalizados, online o en Colegiales.</p>
+            <p>{t.blog.planTexto}</p>
             <div className={styles.ctaLinks}>
               <a className="btn btn--gold" href={links.retoOnline}>
-                <span>Reto de los 25 días</span>
+                <span>{t.blog.planBoton}</span>
                 <span className="btn__price">{price("reto-online")}</span>
               </a>
-              <a className="link-arrow" href="/#programas">
-                Ver los programas <Icon name="arrow" />
+              <a className="link-arrow" href={`${pages.home}#programas`}>
+                {t.blog.verProgramas} <Icon name="arrow" />
               </a>
             </div>
           </aside>
@@ -134,7 +134,7 @@ export default async function PostPage({ params }: { params: Promise<Params> }) 
         <section className="section">
           <div className="container">
             <h2 className={`h2 h2--sm ${styles.moreTitle}`}>
-              Más <em className="serif gold-text">notas.</em>
+              <Rich text={t.blog.masNotas} emClass="serif gold-text" />
             </h2>
             <PostGrid>
               {more.map((p) => (

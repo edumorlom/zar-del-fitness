@@ -3,16 +3,30 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Icon } from "./Icon";
-import { links, nav, price, socials } from "@/lib/content";
+import { Icon, type IconName } from "./Icon";
+import type { Lang } from "@/lib/i18n";
 import { scroll } from "@/lib/scroll";
 import styles from "./Header.module.css";
 
-export function Header() {
+/** Los textos y links del menú, ya en el idioma de la página (los arma components/PageShell.tsx). */
+export type HeaderProps = {
+  home: string;
+  nav: { href: string; label: string }[];
+  socials: { label: string; icon: IconName; href: string }[];
+  announce: { text: string; price: string; cta: string; href: string };
+  cta: string;
+  waInfo: string;
+  labels: { logo: string; nav: string; navMobile: string; open: string; close: string; write: string };
+  /** La misma página en el otro idioma. */
+  language: { href: string; lang: Lang; label: string };
+};
+
+export function Header({ home, nav, socials, announce, cta, waInfo, labels, language }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
-  const home = usePathname() === "/";
+  // usePathname() no trae la barra final: "/english".
+  const isHome = `${usePathname().replace(/\/$/, "")}/` === home;
 
   useEffect(() => {
     let last = window.scrollY;
@@ -57,22 +71,22 @@ export function Header() {
         data-hidden={hidden && !open}
         data-open={open}
       >
-        <a className={styles.announce} href={links.retoOnline}>
+        <a className={styles.announce} href={announce.href}>
           <Icon name="spark" />
           <span>
-            Reto de los 25 días online: <strong>{price("reto-online")}</strong>
+            {announce.text} <strong>{announce.price}</strong>
           </span>
           <span className={styles.announceCta}>
-            Inscribite <Icon name="arrow" />
+            {announce.cta} <Icon name="arrow" />
           </span>
         </a>
 
         <div className={`container ${styles.bar}`}>
-          <a className={styles.logo} href={home ? "#top" : "/"} aria-label="Zar del Fitness, inicio" onClick={closeMenu}>
+          <a className={styles.logo} href={isHome ? "#top" : home} aria-label={labels.logo} onClick={closeMenu}>
             <Image src="/img/logo.webp" alt="Zar del Fitness" width={666} height={361} sizes="120px" preload />
           </a>
 
-          <nav className={styles.nav} aria-label="Principal">
+          <nav className={styles.nav} aria-label={labels.nav}>
             {nav.map((item) => (
               <a key={item.href} href={item.href}>
                 <span data-text={item.label}>{item.label}</span>
@@ -80,14 +94,25 @@ export function Header() {
             ))}
           </nav>
 
-          <a className={`btn btn--gold btn--sm ${styles.cta}`} href="/#programas" data-magnetic>
-            <span>Empezá el reto</span>
+          <a
+            className={styles.lang}
+            href={language.href}
+            hrefLang={language.lang}
+            lang={language.lang}
+            aria-label={language.label}
+            title={language.label}
+          >
+            {language.lang.toUpperCase()}
+          </a>
+
+          <a className={`btn btn--gold btn--sm ${styles.cta}`} href={`${home}#programas`} data-magnetic>
+            <span>{cta}</span>
           </a>
 
           <button
             className={styles.burger}
             type="button"
-            aria-label={open ? "Cerrar menú" : "Abrir menú"}
+            aria-label={open ? labels.close : labels.open}
             aria-expanded={open}
             aria-controls="mobile-menu"
             onClick={() => setOpen((o) => !o)}
@@ -99,7 +124,7 @@ export function Header() {
       </header>
 
       <div className={styles.menu} id="mobile-menu" data-open={open} aria-hidden={!open} inert={!open}>
-        <nav className={styles.menuNav} aria-label="Móvil">
+        <nav className={styles.menuNav} aria-label={labels.navMobile}>
           {nav.map((item, i) => (
             <a key={item.href} href={item.href} onClick={closeMenu} style={{ "--i": i } as React.CSSProperties}>
               <small>0{i + 1}</small>
@@ -108,9 +133,9 @@ export function Header() {
           ))}
         </nav>
         <div className={styles.menuFoot}>
-          <a className="btn btn--gold" href={links.waInfo}>
+          <a className="btn btn--gold" href={waInfo}>
             <Icon name="wa" />
-            <span>Escribinos</span>
+            <span>{labels.write}</span>
           </a>
           <div className="socials">
             {socials.slice(0, 4).map((s) => (

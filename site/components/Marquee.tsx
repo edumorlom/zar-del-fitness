@@ -33,27 +33,12 @@ function Row({ items, direction, gold }: { items: Item[]; direction: 1 | -1; gol
   );
 }
 
-export function Marquee() {
+/** Los textos de db/textos.json (cinta), ya en el idioma de la página. En la fila de arriba, uno sí y uno no van calados. */
+export function Marquee({ label, top, bottom }: { label: string; top: string[]; bottom: string[] }) {
   return (
-    <section className={styles.band} aria-label="Reto de los 25 días · #LosCuerposDelZar · Online y presencial">
-      <Row
-        direction={-1}
-        items={[
-          { text: "Reto de los 25 días" },
-          { text: "#LosCuerposDelZar", outline: true },
-          { text: "Entrenamiento personalizado" },
-          { text: "Online & presencial", outline: true },
-        ]}
-      />
-      <Row
-        direction={1}
-        gold
-        items={[
-          { text: "The VIP by Zar del Fitness" },
-          { text: "Resultados cada 25 días" },
-          { text: "Alimentación · Entrenamiento · Acompañamiento" },
-        ]}
-      />
+    <section className={styles.band} aria-label={label}>
+      <Row direction={-1} items={top.map((text, i) => ({ text, outline: i % 2 === 1 }))} />
+      <Row direction={1} gold items={bottom.map((text) => ({ text }))} />
     </section>
   );
 }

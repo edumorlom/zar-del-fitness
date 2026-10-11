@@ -1,64 +1,75 @@
 import { posts } from "@/lib/blog";
-import { contact, faqs, pages, programs, schedule, socials, texts } from "@/lib/content";
-import { abs, DAYS } from "@/lib/seo";
+import { content, socials } from "@/lib/content";
+import { fill, type Lang } from "@/lib/i18n";
+import { abs } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
-// Cada plan en inglés, por su id en db/planes.json. Los precios sí salen de db/; si cambia un plan, actualizar su texto.
-const programsInEnglish: Record<string, string> = {
-  "reto-online":
-    "Monthly, online, for people in Argentina: train at home or at the gym with videos designed for your plan, at your own pace and on your own schedule.",
-  premium:
-    "Monthly, in person at The VIP: train directly with Ronald and his two premium assistants in a private gym, with hours that adapt to you.",
-  general:
-    "Monthly, in person at The VIP: train directly with Ronald and his team of assistants, whenever suits you within the gym's hours.",
-  "reto-internacional":
-    "Monthly, online, from any country outside Argentina: the same method, with WhatsApp follow-up throughout the challenge.",
-};
-
-function inEnglish(p: (typeof programs)[number]) {
-  const text = programsInEnglish[p.id];
-  if (!text) throw new Error(`Falta el texto en inglés del plan "${p.id}" en site/app/llms.txt/route.ts`);
-  return `- [${p.title}](${abs("/#programas")}): ${p.suffix ?? p.currency} ${p.price.replace(/\./g, ",")}. ${text}`;
+// Los planes, en un idioma: "- [Reto de los 25 días](…/#programas): $100.000 ARS. Entrená en casa…".
+function programLines(lang: Lang, withTag = false) {
+  const { programs, pages } = content(lang);
+  return programs.map(
+    (p) =>
+      `- [${p.title}](${abs(`${pages.home}#programas`)})${withTag ? ` (${p.tag})` : ""}: ${p.currency === "$" ? "$" : `${p.currency} `}${p.price}${p.suffix ? ` ${p.suffix}` : ""}. ${p.desc}`
+  );
 }
 
+// The VIP: la dirección y el horario, en un idioma.
+function gymLines(lang: Lang) {
+  const { t, contact, pages, schedule } = content(lang);
+  return [
+    `- [The VIP](${abs(`${pages.home}#gym`)}): ${contact.address}.`,
+    `- ${fill(t.seo.llms.horario, {
+      dias: schedule.daysLabel,
+      franjas: schedule.slots.map((s) => s.label).join(` ${t.horario.y} `),
+      duracion: schedule.classLength,
+      ultimoIngreso: schedule.lastEntries,
+    })}`,
+  ];
+}
+
+const plain = (text: string) => text.replace(/\*+([^*]+)\*+/g, "$1");
+
 // /llms.txt (llmstxt.org): el sitio resumido en Markdown para ChatGPT, Claude y otros asistentes.
-// Sale de db/, como el resto del sitio: no hay que editarlo a mano, salvo los textos en inglés.
+// Sale de db/, como el resto del sitio (los textos en inglés también): no hay que editarlo a mano.
 export function GET() {
+  const { t, contact, faqs, pages } = content("es");
+  const en = content("en");
+  const resumen = (lang: Lang) =>
+    fill(content(lang).t.seo.llms.resumen, { direccion: contact.address, telefono: contact.phone, link: contact.phoneHref });
   const text = [
     "# Zar del Fitness",
     "",
-    `> ${texts.hero}`,
+    `> ${t.inicio.descripcion}`,
     "",
-    `Entrenamiento personal con Ronald Medina en The VIP (${contact.address}) y el Reto de los 25 días online, desde cualquier país. Las inscripciones y consultas son por WhatsApp: ${contact.phone} (${contact.phoneHref}).`,
+    resumen("es"),
     "",
-    "## Programas",
+    `## ${t.seo.llms.programas}`,
     "",
-    ...programs.map(
-      (p) => `- [${p.title}](${abs("/#programas")}): ${p.currency === "$" ? "$" : `${p.currency} `}${p.price}${p.suffix ? ` ${p.suffix}` : ""}. ${p.desc}`
-    ),
+    ...programLines("es"),
     "",
-    "## El gimnasio",
+    `## ${t.seo.llms.gimnasio}`,
     "",
-    `- [The VIP](${abs("/#gym")}): ${contact.address}.`,
-    `- Horario: ${schedule.daysLabel}, ${schedule.slots.map((s) => s.label).join(" y ")} (hora de Buenos Aires). Clases de ~${schedule.classLength}; último ingreso ${schedule.lastEntries}.`,
+    ...gymLines("es"),
     "",
-    "## Preguntas frecuentes",
+    `## ${t.seo.llms.preguntas}`,
     "",
-    ...faqs.map(([q, a]) => `- ${q} ${a}`),
+    ...faqs.map(({ q, a }) => `- ${q} ${a}`),
     "",
-    "## Blog",
+    `## ${t.menu.blog}`,
     "",
-    `- [Blog](${abs(pages.blog)}): notas sobre entrenamiento, alimentación y salud.`,
-    ...posts.map((p) => `- [${p.title}](${abs(p.path)}): ${p.description}`),
+    `- [${t.menu.blog}](${abs(pages.blog)}): ${t.seo.llms.blog}`,
+    ...posts.es.map((p) => `- [${p.title}](${abs(p.path)}): ${p.description}`),
     "",
     // Para los asistentes que buscan en inglés aunque les pregunten en español.
     "## In English",
     "",
-    `Personal training with Ronald Medina, *el Zar del Fitness*, a Venezuelan certified personal trainer based in Buenos Aires, Argentina. His method is about losing body fat without losing muscle, with training, nutrition and coaching personalized for each person and results every 25 days. He trains people in person at The VIP, a private gym in Colegiales, Buenos Aires, and online from any country with the Reto de los 25 días (25-day challenge). Sign-up and questions by WhatsApp: ${contact.phone} (${contact.phoneHref}). The website is in Spanish.`,
+    `${plain(en.t.inicio.descripcion)} ${resumen("en")}`,
     "",
-    ...programs.map(inEnglish),
-    `- [The VIP](${abs("/#gym")}): ${contact.street}, Buenos Aires, Argentina. Open ${schedule.dayNames.map((d) => DAYS[d]).join(", ")}, ${schedule.slots.map((s) => s.label).join(" and ")} (Buenos Aires time). Sessions last about ${schedule.classLength}.`,
+    `- [${en.t.seo.llms.otroIdioma}](${abs(en.pages.home)}): ${en.t.seo.inicio.descripcion}`,
+    ...programLines("en", true),
+    ...gymLines("en"),
+    `- [${en.t.menu.blog}](${abs(en.pages.blog)}): ${en.t.seo.llms.blog}`,
     "",
     "## Optional",
     "",

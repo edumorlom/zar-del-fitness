@@ -2,10 +2,12 @@
 
 import { useId, useState } from "react";
 import { Icon } from "./Icon";
-import { faqs, links, texts } from "@/lib/content";
+import { Lines } from "./Lines";
+import type { Content } from "@/lib/content";
 import styles from "./Faq.module.css";
 
-export function Faq() {
+/** Los textos de db/textos.json (preguntas) y las preguntas de db/preguntas.json, ya en el idioma de la página. */
+export function Faq({ t, faqs, askHref }: { t: Content["t"]["preguntas"]; faqs: Content["faqs"]; askHref: string }) {
   const [open, setOpen] = useState<number | null>(0);
   const id = useId();
 
@@ -14,31 +16,24 @@ export function Faq() {
       <div className={`container ${styles.grid}`}>
         <header className={styles.head}>
           <p className="eyebrow" data-reveal>
-            <span className="num">07</span> Preguntas frecuentes
+            <span className="num">07</span> {t.antetitulo}
           </p>
           <h2 className="h2" data-lines>
-            <span className="ln">
-              <span>¿Dudas?</span>
-            </span>{" "}
-            <span className="ln">
-              <span>
-                <em className="serif gold-text">Las resolvemos.</em>
-              </span>
-            </span>
+            <Lines lines={t.titulo} />
           </h2>
           <p className="section-head__lead" data-reveal>
-            {texts.faq}
+            {t.introduccion}
           </p>
           <div data-reveal style={{ marginTop: 28 }}>
-            <a className="btn btn--outline" href={links.waDudas}>
+            <a className="btn btn--outline" href={askHref}>
               <Icon name="wa" />
-              <span>Preguntar mis dudas</span>
+              <span>{t.boton}</span>
             </a>
           </div>
         </header>
 
         <div className={styles.list}>
-          {faqs.map(([q, a], i) => {
+          {faqs.map(({ q, a }, i) => {
             const isOpen = open === i;
             return (
               <div key={q} className={styles.item} data-open={isOpen} data-reveal>

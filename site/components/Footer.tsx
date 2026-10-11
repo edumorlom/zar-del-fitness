@@ -1,16 +1,18 @@
 import Image from "next/image";
 import { Icon } from "./Icon";
 import { Year } from "./Year";
-import { contact, links, socials, texts } from "@/lib/content";
+import { content, socials } from "@/lib/content";
+import type { Lang } from "@/lib/i18n";
 import styles from "./Footer.module.css";
 
-export function Footer() {
+export function Footer({ lang }: { lang: Lang }) {
+  const { t, contact, links } = content(lang);
   return (
     <footer className={styles.footer}>
       <div className={`container ${styles.grid}`}>
         <div className={styles.brand}>
           <Image src="/img/logo.webp" alt="Zar del Fitness" width={666} height={361} sizes="200px" />
-          <p>{texts.motto}</p>
+          <p>{t.lema}</p>
           <div className="socials">
             {socials.map((s) => (
               <a key={s.label} href={s.href} aria-label={s.label}>
@@ -21,7 +23,7 @@ export function Footer() {
         </div>
 
         <address className={styles.col}>
-          <h2>Contacto</h2>
+          <h2>{t.pie.contacto}</h2>
           <a href={contact.phoneHref}>
             <Icon name="wa" />
             {contact.phone}
@@ -35,10 +37,10 @@ export function Footer() {
 
       <div className={`container ${styles.bottom}`}>
         <span>
-          © <Year /> Zar del Fitness. Todos los derechos reservados.
+          © <Year /> {t.pie.derechos}
         </span>
         <a href="#top" className="link-sm">
-          Volver arriba ↑
+          {t.pie.arriba}
         </a>
       </div>
 

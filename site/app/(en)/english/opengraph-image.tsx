@@ -1,0 +1,12 @@
+import { homeImage, ogContentType, ogSize } from "@/lib/og";
+
+const image = homeImage("en");
+
+export const dynamic = "force-static";
+export const alt = image.alt;
+export const size = ogSize;
+export const contentType = ogContentType;
+
+export default function Image() {
+  return image.render();
+}
