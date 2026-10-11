@@ -15,11 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   });
 
   return [
-    page("/", 1, ["/img/ronald-hero.jpg", "/img/ronald-seated.webp"]),
-    page(pages.online, 0.9, ["/img/ronald-white.webp"]),
-    page(pages.presencial, 0.9, ["/img/vip-gym.webp"]),
-    page(pages.general, 0.8),
-    page(pages.ronald, 0.8, ["/img/ronald-portrait.webp"]),
+    page("/", 1, ["/img/ronald-hero.jpg", "/img/ronald-seated.webp", "/img/vip-gym.webp"]),
     { ...page(pages.blog, 0.7), lastModified: posts[0]?.date, changeFrequency: "weekly" as const },
     ...posts.map((p) => ({ ...page(p.path, 0.6, [p.image]), lastModified: p.date, changeFrequency: "yearly" as const })),
   ];

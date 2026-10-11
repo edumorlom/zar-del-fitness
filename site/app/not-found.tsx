@@ -30,13 +30,8 @@ export default function NotFound() {
               </a>
             </li>
             <li>
-              <a className="link-arrow" href={pages.online}>
-                Entrenamiento online <Icon name="arrow" />
-              </a>
-            </li>
-            <li>
-              <a className="link-arrow" href={pages.presencial}>
-                Entrenamiento presencial <Icon name="arrow" />
+              <a className="link-arrow" href="/#programas">
+                Programas <Icon name="arrow" />
               </a>
             </li>
             <li>

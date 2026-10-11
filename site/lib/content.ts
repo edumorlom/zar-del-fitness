@@ -29,13 +29,8 @@ const mapsQuery = encodeURIComponent(`${calle}, ${barrio}, Buenos Aires`);
 // "https://zardelfitness.com.ar", de db/gimnasio.json.
 export const siteUrl = `https://${gimnasio.sitioWeb}`;
 
-// Las páginas del sitio. Las de los programas y la de Ronald usan las mismas URLs que el sitio anterior,
-// para no perder lo que Google ya tenía indexado.
+// El sitio es una sola página más el blog, que usa la misma URL que en el sitio anterior.
 export const pages = {
-  online: "/entrenamiento-online/",
-  presencial: "/entrenamiento-presencial/",
-  general: "/sistema-general-dirigido/",
-  ronald: "/sobre-ronald/",
   blog: "/blog/",
 };
 
@@ -122,8 +117,6 @@ export type Program = {
   features: string[];
   art: { variant: ProgramArtVariant; label: string };
   cta: { label: string; href: string };
-  /** La página del programa, con todos los detalles. */
-  page: string;
   featured?: boolean;
 };
 
@@ -157,31 +150,27 @@ export function price(id: string) {
 }
 
 // Las tarjetas de "Programas", en orden. Los datos de cada plan están en db/planes.json.
-const cards: { id: string; art: Program["art"]; cta: Program["cta"]; page: string; featured?: boolean }[] = [
+const cards: { id: string; art: Program["art"]; cta: Program["cta"]; featured?: boolean }[] = [
   {
     id: "reto-online",
     art: { variant: "online", label: "Sistema Online de entrenamiento" },
     cta: { label: "Inscribirme", href: links.retoOnline },
-    page: pages.online,
   },
   {
     id: "premium",
     art: { variant: "premium", label: "Sistema Premium de entrenamiento" },
     cta: { label: "Inscribirme", href: links.presencialCheckout },
-    page: pages.presencial,
     featured: true,
   },
   {
     id: "general",
     art: { variant: "general", label: "Sistema General Dirigido" },
     cta: { label: "Inscribirme", href: links.generalCheckout },
-    page: pages.general,
   },
   {
     id: "reto-internacional",
     art: { variant: "reto", label: "Sello: comienza el reto de los 25 días, internacional" },
     cta: { label: "Quiero empezar", href: links.waInternacional },
-    page: `${pages.online}#internacional`,
   },
 ];
 
@@ -202,24 +191,6 @@ export const programs: Program[] = cards.map(({ id, ...card }) => {
 
 const money = ({ monto, moneda }: { monto: number; moneda: string }) =>
   `${moneda === "ARS" ? "$" : `${moneda} `}${thousands(monto)}`;
-
-/** Todo lo de un plan de db/planes.json, para su página. */
-export function planInfo(id: string) {
-  const p = plan(id);
-  return {
-    name: p.nombre,
-    fullName: p.nombreCompleto ?? p.nombre,
-    tag: p.etiqueta,
-    prices: p.precios.map((pr) => ({ amount: pr.monto, currency: pr.moneda, text: money(pr) })),
-    period: p.periodo,
-    payment: p.formasDePago,
-    summary: p.resumen,
-    description: p.descripcion,
-    highlights: p.destacados ?? [],
-    includes: (p.incluye ?? []).map(({ titulo, texto }) => ({ title: titulo, text: texto })),
-    details: (p.detalles ?? []).map(({ titulo, puntos }) => ({ title: titulo, points: puntos })),
-  };
-}
 
 export const steps = textos.metodo.pasos.map(({ numero, titulo, texto }) => ({ n: numero, title: titulo, text: texto }));
 

@@ -37,11 +37,11 @@ export default function Home() {
         <Method />
         <Benefits />
         <Results />
-        <Vip num="05" />
+        <Vip />
         <Visit />
-        <Press num="06" />
+        <Press />
         <Team />
-        <Faq num="07" />
+        <Faq />
         <FinalCta />
       </main>
       <Footer />

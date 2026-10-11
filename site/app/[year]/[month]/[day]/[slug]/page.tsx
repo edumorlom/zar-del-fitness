@@ -80,7 +80,7 @@ export default async function PostPage({ params }: { params: Promise<Params> }) 
             <p className={styles.byline}>
               Por{" "}
               {byRonald ? (
-                <a href={pages.ronald} rel="author">
+                <a href="/#zar" rel="author">
                   {post.author}
                 </a>
               ) : (
@@ -105,7 +105,7 @@ export default async function PostPage({ params }: { params: Promise<Params> }) 
               <div>
                 <p className="tag">Sobre el autor</p>
                 <p className={styles.authorName}>
-                  <a href={pages.ronald}>{ronald.name}</a>
+                  <a href="/#zar">{ronald.name}</a>
                 </p>
                 <p>{ronald.bio}</p>
               </div>
@@ -122,8 +122,8 @@ export default async function PostPage({ params }: { params: Promise<Params> }) 
                 <span>Reto de los 25 días</span>
                 <span className="btn__price">{price("reto-online")}</span>
               </a>
-              <a className="link-arrow" href={pages.presencial}>
-                Entrenamiento presencial <Icon name="arrow" />
+              <a className="link-arrow" href="/#programas">
+                Ver los programas <Icon name="arrow" />
               </a>
             </div>
           </aside>
