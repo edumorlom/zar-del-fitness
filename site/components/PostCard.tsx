@@ -8,7 +8,7 @@ export function PostCard({ post, heading: Heading = "h2" }: { post: Post; headin
     <article className={styles.card} data-reveal>
       <a href={post.path} className={styles.link}>
         <div className={styles.img}>
-          <Image src={post.image} alt="" fill sizes="(max-width: 700px) 90vw, (max-width: 1100px) 45vw, 30vw" />
+          <Image src={post.image} alt={post.title} fill sizes="(max-width: 700px) 90vw, (max-width: 1100px) 45vw, 30vw" />
         </div>
         <div className={styles.body}>
           <p className={styles.meta}>
