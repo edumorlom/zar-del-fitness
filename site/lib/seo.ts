@@ -67,7 +67,7 @@ const ids = {
   ronald: abs("/#ronald"),
 };
 
-export const DAYS: Record<string, string> = {
+const DAYS: Record<string, string> = {
   lunes: "Monday",
   martes: "Tuesday",
   miércoles: "Wednesday",

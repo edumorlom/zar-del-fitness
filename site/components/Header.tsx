@@ -9,7 +9,7 @@ import { scroll } from "@/lib/scroll";
 import styles from "./Header.module.css";
 
 /** Los textos y links del menú, ya en el idioma de la página (los arma components/PageShell.tsx). */
-export type HeaderProps = {
+type HeaderProps = {
   home: string;
   nav: { href: string; label: string }[];
   socials: { label: string; icon: IconName; href: string }[];

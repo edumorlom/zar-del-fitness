@@ -72,7 +72,7 @@ export function Preloader({ onDone, labels }: { onDone: () => void; labels: { re
   return (
     <div className={styles.preloader} ref={root} aria-hidden="true">
       <div className={styles.inner}>
-        <Image className={styles.logo} src="/img/logo.webp" alt="Zar del Fitness" width={666} height={361} preload />
+        <Image className={styles.logo} src="/img/logo.webp" alt="Zar del Fitness" width={666} height={361} sizes="(max-width: 640px) 58vw, 320px" preload />
         <div className={styles.meta}>
           <span className={styles.label}>{labels.reto}</span>
           <span className={styles.count}>

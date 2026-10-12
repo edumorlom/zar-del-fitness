@@ -13,7 +13,7 @@ import type { Content } from "@/lib/content";
 import styles from "./Hero.module.css";
 
 /** Los textos y links del inicio, ya en el idioma de la página (los arma components/HomePage.tsx). */
-export type HeroProps = {
+type HeroProps = {
   t: Content["t"]["inicio"];
   hashtag: { text: string; href: string };
   cta: { price: string; href: string };
@@ -80,10 +80,11 @@ export function Hero({ t, hashtag, cta, trailer, featuredPress, chips, cursorVid
 
       <div className={`container ${styles.grid}`}>
         <div className={styles.copy}>
-          <p className="eyebrow" data-hero-fade>
-            <span className="dot" /> {t.antetitulo}
-          </p>
+          {/* El antetítulo ("El mejor entrenamiento personal en Buenos Aires") es parte del h1: es lo que buscan en Google. */}
           <h1 className={styles.title}>
+            <span className={`eyebrow ${styles.kicker}`} data-hero-fade>
+              <span className="dot" /> {t.antetitulo}
+            </span>
             <Lines lines={t.titulo} accent="gold" />
           </h1>
           <p className={styles.script} data-hero-fade>

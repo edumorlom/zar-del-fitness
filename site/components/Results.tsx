@@ -23,8 +23,11 @@ function Row({ shots, direction, label }: { shots: Shot[]; direction: 1 | -1; la
               style={{ aspectRatio: `${s.w} / ${s.h}` }}
               aria-hidden={copy === 1 || undefined}
             >
-              <Image src={s.src} alt={s.alt} width={s.w} height={s.h} sizes="(max-width: 700px) 70vw, 30vw" />
-              <span className={styles.label}>{label}</span>
+              {/* La copia (para que el loop sea continuo) no repite el texto alternativo. */}
+              <Image src={s.src} alt={copy === 1 ? "" : s.alt} width={s.w} height={s.h} sizes="(max-width: 700px) 70vw, 30vw" />
+              {/* "Antes / Después" lo escribe el CSS (data-label): repetido en cada foto, no es texto de la página para
+                  Google ni los analizadores de palabras clave. */}
+              <span className={styles.label} data-label={label} aria-hidden="true" />
             </div>
           ))
         )}

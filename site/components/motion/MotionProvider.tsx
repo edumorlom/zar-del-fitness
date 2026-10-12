@@ -27,7 +27,7 @@ declare global {
 }
 
 /** Los textos del preloader y del video, de db/textos.json, ya en el idioma de la página. */
-export type MotionLabels = {
+type MotionLabels = {
   preloader: { reto: string; dias: string };
   video: { nombre: string; cerrar: string; titulo: string };
 };

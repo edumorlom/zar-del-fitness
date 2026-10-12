@@ -36,7 +36,7 @@ type Card = {
   withPhoto?: boolean;
 };
 
-export async function ogImage({ eyebrow, title, accent, withPhoto = true }: Card) {
+async function ogImage({ eyebrow, title, accent, withPhoto = true }: Card) {
   const [[anton, serif], ronald] = await Promise.all([fonts, photo]);
   const textWidth = withPhoto ? 700 : 1040;
 
