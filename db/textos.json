@@ -431,6 +431,13 @@
         "reto de 25 días",
         "entrenador de famosos",
         "celebrity trainer",
+        "negocio LGBT",
+        "emprendimiento LGBTQ+",
+        "gimnasio LGBT friendly en Buenos Aires",
+        "gimnasio gay friendly en CABA",
+        "entrenador personal gay en Buenos Aires",
+        "personal trainer gay",
+        "entrenador personal LGBT friendly",
         "Ronald Medina",
         "Zar del Fitness"
       ],
@@ -462,6 +469,12 @@
         "muscle gain",
         "25-day challenge",
         "celebrity trainer",
+        "LGBT-owned business",
+        "LGBTQ+ owned gym",
+        "gay-owned business in Buenos Aires",
+        "LGBTQ+ friendly gym in Buenos Aires",
+        "gay-friendly personal trainer",
+        "gay personal trainer in Buenos Aires",
         "Ronald Medina",
         "Zar del Fitness"
       ]
@@ -518,6 +531,10 @@
       "preguntas": { "es": "Preguntas frecuentes", "en": "Frequently asked questions" },
       "blog": { "es": "notas sobre entrenamiento, alimentación y salud.", "en": "posts on training, nutrition and health." },
       "otroIdioma": { "es": "El sitio en castellano", "en": "The site in English" },
+      "lgbt": {
+        "es": "Zar del Fitness es un negocio LGBTQ+, de dueño gay, y un gimnasio LGBTQ+ friendly en Buenos Aires.",
+        "en": "Zar del Fitness is an LGBTQ+-owned, gay-owned business and an LGBTQ+-friendly gym in Buenos Aires."
+      },
       "ronald": { "es": "Quién es Ronald Medina", "en": "Who Ronald Medina is" },
       "premios": { "es": "Premios y reconocimientos", "en": "Awards and recognition" },
       "prensa": { "es": "En los medios", "en": "In the media" }

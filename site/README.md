@@ -25,6 +25,7 @@ npm run lint
 | SEO: datos estructurados (Google), hreflang, sitemap, robots | `lib/seo.ts`, `app/sitemap.ts`, `app/robots.ts` |
 | Buscadores con IA (ChatGPT, Claude, Perplexity): el sitio resumido en Markdown | `app/llms.txt/route.ts` (sale de `../db/`) |
 | Aviso a Bing de las páginas que cambiaron, en cada despliegue (IndexNow) | `scripts/indexnow.mjs`; la clave es `public/<clave>.txt` |
+| Ícono del sitio (pestaña, Google) | `app/icon.svg`; `app/favicon.ico` y `app/icon1.png` salen de ahí con `node scripts/favicons.mjs` |
 | Imágenes para compartir (WhatsApp, redes) | `opengraph-image.tsx` de cada página, con el diseño de `lib/og.tsx` |
 | Redirecciones de las URLs del sitio anterior | `public/.htaccess` |
 
