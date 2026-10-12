@@ -23,6 +23,8 @@ npm run lint
 | Notas del blog | `../db/blog/`, y en inglés `../db/blog/en/` (ver `../db/README.md`) |
 | SEO: título y descripción | `../db/textos.json` (`seo`) |
 | SEO: datos estructurados (Google), hreflang, sitemap, robots | `lib/seo.ts`, `app/sitemap.ts`, `app/robots.ts` |
+| Buscadores con IA (ChatGPT, Claude, Perplexity): el sitio resumido en Markdown | `app/llms.txt/route.ts` (sale de `../db/`) |
+| Aviso a Bing de las páginas que cambiaron, en cada despliegue (IndexNow) | `scripts/indexnow.mjs`; la clave es `public/<clave>.txt` |
 | Imágenes para compartir (WhatsApp, redes) | `opengraph-image.tsx` de cada página, con el diseño de `lib/og.tsx` |
 | Redirecciones de las URLs del sitio anterior | `public/.htaccess` |
 

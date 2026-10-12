@@ -81,7 +81,17 @@ const DAYS: Record<string, string> = {
 // en español. Así el gimnasio y Ronald tienen la misma descripción en las páginas de los dos idiomas.
 const bilingual = (text: (lang: Lang) => string) => LANGS.map((l) => ({ "@value": text(l), "@language": locales[l].html }));
 
-const ronaldIn = (lang: Lang) => content(lang).team.find((m) => m.id === "ronald")!;
+const memberIn = (lang: Lang, id: string) => content(lang).team.find((m) => m.id === id)!;
+const ronaldIn = (lang: Lang) => memberIn(lang, "ronald");
+
+/** Las certificaciones de un entrenador (db/equipo.json, credenciales), con el nombre en los dos idiomas. */
+const credentials = (id: string) =>
+  memberIn("es", id).credentials.map((c, i) => ({
+    "@type": "EducationalOccupationalCredential",
+    name: bilingual((l) => memberIn(l, id).credentials[i].title),
+    credentialCategory: "certificate",
+    ...(c.issuer && { recognizedBy: { "@type": "EducationalOrganization", name: c.issuer } }),
+  }));
 
 /** El sitio, el gimnasio y Ronald: van en todas las páginas (el layout de cada idioma). */
 export function siteGraph(lang: Lang) {
@@ -125,7 +135,7 @@ export function siteGraph(lang: Lang) {
         addressCountry: "AR",
       },
       geo: { "@type": "GeoCoordinates", latitude: business.lat, longitude: business.lng },
-      hasMap: business.maps,
+      hasMap: business.googleMaps,
       openingHoursSpecification: schedule.slots.map((s) => ({
         "@type": "OpeningHoursSpecification",
         dayOfWeek: schedule.dayNames.map((d) => DAYS[d]),
@@ -134,9 +144,21 @@ export function siteGraph(lang: Lang) {
       })),
       priceRange: "$$$",
       currenciesAccepted: "ARS, USD",
-      sameAs: socials.map((s) => s.href),
+      // La ficha de Google Maps también: así Google y los asistentes con IA saben que el sitio y la ficha (con sus
+      // reseñas) son el mismo gimnasio.
+      sameAs: [...socials.map((s) => s.href), business.googleMaps],
       founder: { "@id": ids.ronald },
-      employee: team.map((m) => (m.id === "ronald" ? { "@id": ids.ronald } : { "@type": "Person", name: m.name, jobTitle: m.role })),
+      employee: team.map((m) =>
+        m.id === "ronald"
+          ? { "@id": ids.ronald }
+          : {
+              "@type": "Person",
+              name: m.name,
+              jobTitle: m.role,
+              description: bilingual((l) => memberIn(l, m.id).bio),
+              hasCredential: credentials(m.id),
+            }
+      ),
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: t.seo.catalogo,
@@ -163,6 +185,7 @@ export function siteGraph(lang: Lang) {
       worksFor: { "@id": ids.business },
       sameAs: [ronald.handleHref].filter(Boolean),
       knowsAbout: t.seo.especialidades,
+      hasCredential: credentials("ronald"),
       award: [
         ...awards.filter((a) => /^\d{4}$/.test(a.year)).map((a) => `${a.title} (${a.year}): ${a.text}`),
         ...press.filter((p) => p.isAward).map((p) => `${p.src}: ${p.title}`),

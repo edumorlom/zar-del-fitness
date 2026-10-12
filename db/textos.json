@@ -517,7 +517,10 @@
       },
       "preguntas": { "es": "Preguntas frecuentes", "en": "Frequently asked questions" },
       "blog": { "es": "notas sobre entrenamiento, alimentación y salud.", "en": "posts on training, nutrition and health." },
-      "otroIdioma": { "es": "El sitio en castellano", "en": "The site in English" }
+      "otroIdioma": { "es": "El sitio en castellano", "en": "The site in English" },
+      "ronald": { "es": "Quién es Ronald Medina", "en": "Who Ronald Medina is" },
+      "premios": { "es": "Premios y reconocimientos", "en": "Awards and recognition" },
+      "prensa": { "es": "En los medios", "en": "In the media" }
     }
   }
 }

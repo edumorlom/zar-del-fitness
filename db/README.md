@@ -20,9 +20,9 @@ El sitio está en castellano (`zardelfitness.com.ar/`) y en inglés (`zardelfitn
 |---|---|
 | `planes.json` | Los planes: nombre, precios, formas de pago, descripción y qué incluyen. |
 | `horarios.json` | Días y turnos del gimnasio, último ingreso y duración de la clase. |
-| `gimnasio.json` | Dirección (con código postal), coordenadas del gimnasio para Google Maps, WhatsApp, redes y la cantidad de personas evaluadas. |
+| `gimnasio.json` | Dirección (con código postal), coordenadas del gimnasio para Google Maps, el link de su ficha en Google Maps (`googleMaps`, la de las reseñas: le dice a Google y a los asistentes con IA que el sitio y la ficha son el mismo gimnasio), WhatsApp, redes y la cantidad de personas evaluadas. |
 | `preguntas.json` | Las preguntas frecuentes. |
-| `equipo.json` | Los entrenadores. |
+| `equipo.json` | Los entrenadores. `credenciales` son sus certificaciones una por una (`titulo` y, si se sabe, `otorgadaPor`): no se ven en el sitio, van en los datos para Google y los buscadores con IA. |
 | `textos.json` | Todos los textos del sitio, por sección, en castellano y en inglés: botones, menú, títulos, párrafos, textos alternativos de las fotos, los mensajes que se arman para WhatsApp, y el título y la descripción de cada página para Google (`seo`). |
 | `trayectoria.json` | La prensa (medio, título, tipo, link e imagen) y los premios (fecha, título y texto). |
 | `blog/` | Las notas del blog, una por archivo Markdown (ver abajo). Las traducciones al inglés, en `blog/en/`. Sólo las usa el sitio. |
@@ -111,8 +111,7 @@ original: gluteos-de-acero
 - Una red nueva en `gimnasio.json` necesita su ícono en `site/lib/content.ts`; si falta, el sitio no se construye y avisa.
 - Hay textos que repiten un dato a mano: revisarlos si cambia ese dato.
   - El destacado "Lunes a viernes, clases de 1 h 20 min" del Sistema General Dirigido (`planes.json`) repite el horario.
-  - El destacado "Presencial: Colegiales, CABA" del inicio (`textos.json`) repite el barrio, en los dos idiomas.
   - El párrafo de Ronald dice "casi dos mil personas", y el contador del sitio usa `personasEvaluadas` (`gimnasio.json`).
   - La descripción para Google del inicio (`seo.inicio` en `textos.json`) y la del negocio (`seo.negocio`) repiten el
-    barrio y el gimnasio, y la de Ronald (`certificaciones` en `equipo.json`) repite sus certificaciones.
+    barrio y el gimnasio, y la de Ronald (`certificaciones` en `equipo.json`) repite sus certificaciones, que también están una por una en `credenciales`.
   - Los mensajes de WhatsApp (`whatsapp` en `textos.json`) nombran los planes.
