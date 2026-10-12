@@ -44,7 +44,7 @@ function eventFor(el: HTMLElement): [string, Properties] | null {
 const noop = () => () => {};
 
 /**
- * Carga LogRocket (el script de su CDN, después de que la página está lista, para no demorarla) y registra los
+ * Carga LogRocket (el script de su CDN, cuando la página terminó de cargar, para no demorarla) y registra los
  * eventos. Sólo en el sitio publicado (`host`): ni en `npm run dev` ni en pruebas locales, que gastarían sesiones
  * del plan. `release` es el commit del build (next.config.ts), para saber qué versión vio cada sesión.
  */
@@ -68,7 +68,7 @@ export function SessionRecording({ host, release }: { host: string; release: str
     <Script
       src="https://cdn.logr-in.com/LogRocket.min.js"
       crossOrigin="anonymous"
-      strategy="afterInteractive"
+      strategy="lazyOnload"
       onLoad={() => window.LogRocket?.init(APP_ID, { release })}
     />
   );

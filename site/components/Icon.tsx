@@ -45,10 +45,27 @@ const paths = {
 
 export type IconName = keyof typeof paths;
 
+/** Un ícono: apunta con <use> a su dibujo en el IconSprite, para no repetir el dibujo en cada uso. */
 export function Icon({ name, className = "icon", ...rest }: { name: IconName } & SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" focusable="false" {...rest}>
-      {paths[name]}
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true" {...rest}>
+      <use href={`#i-${name}`} />
+    </svg>
+  );
+}
+
+/**
+ * Los dibujos de todos los íconos, una sola vez por página (en components/RootShell.tsx). El WhatsApp, el check o la
+ * chispa aparecen decenas de veces: repetirlos inline sumaba ~30 KB al HTML.
+ */
+export function IconSprite() {
+  return (
+    <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true">
+      {Object.entries(paths).map(([name, path]) => (
+        <symbol key={name} id={`i-${name}`} viewBox="0 0 24 24">
+          {path}
+        </symbol>
+      ))}
     </svg>
   );
 }
