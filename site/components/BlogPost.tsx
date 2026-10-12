@@ -92,7 +92,7 @@ export function BlogPost({ lang, params }: { lang: Lang; params: PostParams }) {
 
         <div className={styles.wide}>
           <figure className={styles.cover}>
-            <Image src={post.image} alt="" width={post.imageSize.w} height={post.imageSize.h} sizes="(max-width: 1000px) 92vw, 960px" fetchPriority="high" />
+            <Image src={post.image} alt={post.title} width={post.imageSize.w} height={post.imageSize.h} sizes="(max-width: 1000px) 92vw, 960px" fetchPriority="high" />
           </figure>
         </div>
 
