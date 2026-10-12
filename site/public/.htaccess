@@ -9,6 +9,11 @@ Options -Indexes
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # zardelfitness.com (with or without www) is a second address for the same site: it goes to the same page on
+  # .com.ar in one hop. Its certificate is on the same cPanel account (AutoSSL), so https://zardelfitness.com works too.
+  RewriteCond %{HTTP_HOST} ^(www\.)?zardelfitness\.com$ [NC]
+  RewriteRule ^ https://zardelfitness.com.ar%{REQUEST_URI} [R=301,L]
+
   # One version of the site for Google: without www (http → https is already done by the host).
   RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
   RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
