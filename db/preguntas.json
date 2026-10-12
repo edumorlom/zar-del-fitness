@@ -70,6 +70,13 @@
     }
   },
   {
+    "pregunta": { "es": "¿Dónde queda el gimnasio?", "en": "Where is the gym?" },
+    "respuesta": {
+      "es": "En Colegiales (CABA), a pasos de Belgrano, Palermo y Chacarita: es The VIP by Zar del Fitness, el gimnasio de Ronald Medina. Si no vivís en Buenos Aires, podés hacer el Reto de los 25 días online desde cualquier país.",
+      "en": "In Colegiales, Buenos Aires, a short walk from Belgrano, Palermo and Chacarita: it's The VIP by Zar del Fitness, Ronald Medina's gym. If you don't live in Buenos Aires, you can do the 25-Day Challenge online from any country."
+    }
+  },
+  {
     "pregunta": {
       "es": "¿Qué diferencia hay entre el Sistema Premium y el Sistema General Dirigido?",
       "en": "What's the difference between the Premium System and the Guided General System?"

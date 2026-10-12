@@ -15,7 +15,7 @@ import { checkTranslated, fill, homePath, localePath, localize, locales, text, t
 
 const WA_NUMBER = gimnasio.whatsapp.replace(/\D/g, "");
 
-export const wa = (message: string) => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
+const wa = (message: string) => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
 
 // 100000 → "100.000" en castellano, "100,000" en inglés
 const thousands = (n: number, lang: Lang) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, lang === "es" ? "." : ",");
@@ -67,7 +67,7 @@ export const videos = {
 };
 
 // Todos los textos de db/textos.json tienen que estar en los dos idiomas, salvo estos datos.
-checkTranslated(textos, "db/textos.json", ["numero", "precioDelPlan"]);
+checkTranslated(textos, "db/textos.json", ["numero"]);
 
 export type ProgramArtVariant = "online" | "premium" | "general" | "reto";
 
@@ -79,6 +79,7 @@ type Txts = string[] | { es: string[]; en: string[] };
 type Plan = {
   id: string;
   nombre: Txt;
+  nombreEnInicio?: Txt;
   etiqueta: Txt;
   precios: { monto: number; moneda: string }[];
   resumen: Txt;
@@ -324,11 +325,11 @@ function build(lang: Lang) {
     a: text(respuesta, lang, `db/preguntas.json [${i}].respuesta`),
   }));
 
-  // Los destacados del inicio ("Online $100.000"): el precio de un plan, o un texto.
-  const heroChips = t.inicio.destacados.map((d) => ({
-    label: d.titulo,
-    value: "precioDelPlan" in d && d.precioDelPlan ? price(d.precioDelPlan) : "texto" in d ? (d.texto ?? "") : "",
-  }));
+  // Los destacados del inicio ("Online $100.000"): los mismos planes que las tarjetas de Programas, con su precio.
+  const heroChips = cards.map(({ id }) => {
+    const p = plan(id);
+    return { label: text(p.nombreEnInicio ?? p.nombre, lang, where(p, p.nombreEnInicio ? "nombreEnInicio" : "nombre")), value: price(id) };
+  });
 
   return {
     lang,

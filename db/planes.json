@@ -2,6 +2,7 @@
   {
     "id": "premium",
     "nombre": { "es": "Sistema Premium", "en": "Premium System" },
+    "nombreEnInicio": { "es": "Premium", "en": "Premium" },
     "nombreCompleto": "Sistema Premium Reto de los 25 días by Zar del Fitness",
     "etiqueta": { "es": "Presencial · The VIP", "en": "In person · The VIP" },
     "precios": [
@@ -103,6 +104,7 @@
   {
     "id": "general",
     "nombre": { "es": "Sistema General Dirigido", "en": "Guided General System" },
+    "nombreEnInicio": { "es": "General", "en": "General" },
     "etiqueta": { "es": "Presencial · The VIP", "en": "In person · The VIP" },
     "precios": [
       { "monto": 170000, "moneda": "ARS" }
@@ -203,6 +205,7 @@
   {
     "id": "reto-online",
     "nombre": { "es": "Reto de los 25 días", "en": "25-Day Challenge" },
+    "nombreEnInicio": { "es": "Online", "en": "Online" },
     "nombreCompleto": "Reto de los 25 días online",
     "etiqueta": { "es": "Online · Argentina", "en": "Online · Argentina" },
     "precios": [
@@ -249,6 +252,7 @@
   {
     "id": "reto-internacional",
     "nombre": { "es": "Reto Internacional", "en": "International Challenge" },
+    "nombreEnInicio": { "es": "Internacional", "en": "International" },
     "nombreCompleto": "Reto de los 25 días online internacional",
     "etiqueta": { "es": "Online · Internacional", "en": "Online · International" },
     "precios": [

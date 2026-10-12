@@ -90,10 +90,6 @@
   text-transform: uppercase;
   letter-spacing: 0.005em;
 }
-.title .serif {
-  font-size: 1.04em;
-  line-height: 1;
-}
 
 .lead {
   margin-top: 28px;

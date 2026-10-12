@@ -19,7 +19,7 @@ npm run lint
 | Links, fotos, qué planes se muestran | `lib/content.ts` |
 | Colores, tipografía, botones | `app/globals.css` (tokens en `:root`) |
 | Secciones | `components/*.tsx` + su `*.module.css` |
-| Imágenes | `../db/img/` (WebP). Se copian a `public/img/` antes de `dev` y `build`. |
+| Imágenes | `../db/img/` (WebP). Se copian a `public/img/` antes de `dev` y `build`, con copias más chicas en WebP para cada ancho de pantalla (`scripts/copy-images.mjs`; `next/image` las elige con `lib/image-loader.ts`). |
 | Notas del blog | `../db/blog/`, y en inglés `../db/blog/en/` (ver `../db/README.md`) |
 | SEO: título y descripción | `../db/textos.json` (`seo`) |
 | SEO: datos estructurados (Google), hreflang, sitemap, robots | `lib/seo.ts`, `app/sitemap.ts`, `app/robots.ts` |

@@ -34,6 +34,7 @@ El sitio está en castellano (`zardelfitness.com.ar/`) y en inglés (`zardelfitn
 |---|---|---|
 | `id` | Identificador del plan. No cambiarlo: el sitio lo usa para elegir qué planes muestra. | — |
 | `nombre`, `nombreCompleto` | Nombre corto, y el oficial (opcional). | Sitio: el corto. Asistente: el oficial, si hay. |
+| `nombreEnInicio` | Opcional: el nombre en los destacados de arriba del inicio ("Premium $450.000"). Si no está, va `nombre`. | Sitio (inicio). |
 | `etiqueta` | Por ejemplo "Presencial · The VIP". | Sitio y asistente. |
 | `precios` | Lista de `{ "monto": 450000, "moneda": "ARS" }`. El primero es el principal. | Sitio: el primero. Asistente: todos. |
 | `periodo` | Por ejemplo "por mes". | Asistente. |
@@ -44,9 +45,9 @@ El sitio está en castellano (`zardelfitness.com.ar/`) y en inglés (`zardelfitn
 | `incluye` | Opcional: la lista completa, de `{ "titulo": …, "texto": … }` (`texto` es opcional). | Asistente, y del Sistema Premium, la sección The VIP del sitio. |
 | `detalles` | Opcional: más información, de `{ "titulo": …, "puntos": [ … ] }`. | Asistente. |
 
-Los campos que se ven en el sitio van en castellano y en inglés: `nombre`, `etiqueta`, `resumen` y `destacados` de los cuatro planes que muestra, y del Sistema Premium también `descripcion` e `incluye`.
+Los campos que se ven en el sitio van en castellano y en inglés: `nombre`, `nombreEnInicio`, `etiqueta`, `resumen` y `destacados` de los cuatro planes que muestra, y del Sistema Premium también `descripcion` e `incluye`.
 
-El sitio muestra los planes `reto-online`, `premium`, `general` y `reto-internacional`. Para mostrar uno nuevo, agregarlo en `site/lib/content.ts` (con su ilustración y su botón).
+El sitio muestra los planes `reto-online`, `premium`, `general` y `reto-internacional`, en las tarjetas de Programas y, con su precio, en los destacados de arriba del inicio. Para mostrar uno nuevo, agregarlo en `site/lib/content.ts` (con su ilustración y su botón).
 
 ## Textos (`textos.json`) y trayectoria (`trayectoria.json`)
 
@@ -55,10 +56,9 @@ El sitio muestra los planes `reto-online`, `premium`, `general` y `reto-internac
 - Algunos textos tienen marcadores entre llaves, como `"Último ingreso {horas}."`: el sitio los reemplaza por el dato. Hay que dejarlos tal cual, en los dos idiomas.
 - `seo.palabrasClave` son las búsquedas a las que apunta el inicio ("mejor entrenador personal", …). No se ven en el sitio: van en los datos para Google y otros buscadores. La frase que más pesa es la de la descripción del inicio (`seo.inicio.descripcion`), que Google muestra debajo del título.
 - `general.leerEn` es el botón para cambiar de idioma: cada uno está en su idioma ("Leer en español", "Read in English") y se muestra en la página del otro.
-- Cada destacado del inicio (`inicio.destacados`, como "Online $100.000") tiene un `titulo` y, o bien `precioDelPlan` con el `id` de un plan (muestra su precio), o bien un `texto`.
 - En la prensa, `link` es opcional. La `imagen` es la que aparece al pasar el mouse, y va en `db/img/`.
 - La nota con `destacadoEnInicio` aparece también en el inicio, con ese texto ("Emmy Winner 2024"). Si ninguna lo tiene, no se muestra.
-- El asistente usa todo menos los pasos del método, las introducciones de Programas y Preguntas, los destacados del inicio, los links y las imágenes.
+- El asistente usa todo menos los pasos del método, las introducciones de Programas y Preguntas, los links y las imágenes.
 
 ## Blog (`blog/`)
 

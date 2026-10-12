@@ -31,7 +31,7 @@ export function About({ lang }: { lang: Lang }) {
                 alt={z.portada}
                 width={819}
                 height={1024}
-                sizes="220px"
+                sizes="(max-width: 900px) 36vw, 204px"
               />
               <figcaption>{z.portadaPie}</figcaption>
             </figure>

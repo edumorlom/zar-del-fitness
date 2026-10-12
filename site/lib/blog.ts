@@ -16,7 +16,7 @@ const KEYS = ["titulo", "fecha", "autor", "categoria", "descripcion", "imagen"] 
  * El ancho y alto de una imagen WebP de db/ ("/img/blog/x.webp"), leídos de su encabezado. Con el tamaño en el
  * <img>, el navegador le reserva el lugar y la página no salta mientras carga.
  */
-export function imageSize(src: string) {
+function imageSize(src: string) {
   if (!src.endsWith(".webp")) throw new Error(`${src}: las imágenes del blog van en WebP`);
   const b = readFileSync(path.join(DB, src)).subarray(0, 30);
   const chunk = b.toString("ascii", 12, 16);

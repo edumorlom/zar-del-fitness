@@ -76,7 +76,9 @@ export function Visit({ lang }: { lang: Lang }) {
               <Icon name="pin" />
               <div>
                 <strong>{contact.gym}</strong>
-                <span>{contact.address}</span>
+                <span>
+                  {contact.address}. {v.cerca}
+                </span>
               </div>
             </li>
           </ul>

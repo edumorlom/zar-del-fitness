@@ -13,8 +13,9 @@
 # testing
 /coverage
 
-# images: copied from db/img/ before dev and build (scripts/copy-images.mjs)
+# images: copied from db/img/ before dev and build, with smaller WebP copies and their widths (scripts/copy-images.mjs)
 /public/img/
+/lib/image-widths.json
 
 # next.js
 /.next/

@@ -20,7 +20,7 @@ export const homePath = (lang: Lang) => localePath(lang, "/");
 type Pair<T> = { es: T; en: T };
 
 /** Un texto de db/ ya en un idioma: los { "es", "en" } pasan a ser string (o string[]). */
-export type Localized<T> = T extends Pair<infer U>
+type Localized<T> = T extends Pair<infer U>
   ? U
   : T extends readonly (infer I)[]
     ? Localized<I>[]

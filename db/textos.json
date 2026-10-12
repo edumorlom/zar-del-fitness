@@ -74,7 +74,7 @@
   },
 
   "inicio": {
-    "antetitulo": { "es": "Personal trainer · Buenos Aires · Online", "en": "Personal trainer · Buenos Aires · Online" },
+    "antetitulo": { "es": "El mejor entrenamiento personal en Buenos Aires", "en": "The best personal training in Buenos Aires" },
     "titulo": {
       "es": ["Comenzá el", "reto de los", "*25 días*"],
       "en": ["Start the", "*25-day*", "challenge"]
@@ -86,32 +86,27 @@
     },
     "boton": { "es": "Empezar el reto", "en": "Start the challenge" },
     "trailer": { "es": "Ver trailer", "en": "Watch the trailer" },
-    "foto": { "es": "Ronald Medina, el Zar del Fitness", "en": "Ronald Medina, the Zar del Fitness" },
+    "foto": { "es": "Ronald Medina, el Zar del Fitness, entrenador personal en Buenos Aires", "en": "Ronald Medina, the Zar del Fitness, personal trainer in Buenos Aires" },
     "sello": {
       "es": "COMENZÁ EL RETO ✦ DE LOS 25 DÍAS ✦ BY RONALD MEDINA ✦ ",
       "en": "START THE CHALLENGE ✦ 25 DAYS ✦ BY RONALD MEDINA ✦ "
     },
     "dias": { "es": "días", "en": "days" },
-    "scroll": { "es": "Scroll", "en": "Scroll" },
-    "destacados": [
-      { "titulo": { "es": "Online", "en": "Online" }, "precioDelPlan": "reto-online" },
-      { "titulo": { "es": "Presencial", "en": "In person" }, "texto": { "es": "Colegiales, CABA", "en": "Colegiales, Buenos Aires" } },
-      { "titulo": { "es": "Internacional", "en": "International" }, "precioDelPlan": "reto-internacional" }
-    ]
+    "scroll": { "es": "Scroll", "en": "Scroll" }
   },
 
   "cinta": {
     "descripcion": {
-      "es": "Reto de los 25 días · #LosCuerposDelZar · Online y presencial",
-      "en": "25-Day Challenge · #LosCuerposDelZar · Online and in person"
+      "es": "Entrenamiento personal · Sistema Premium · #LosCuerposDelZar · Online y presencial",
+      "en": "Personal training · Premium System · #LosCuerposDelZar · Online and in person"
     },
     "arriba": {
-      "es": ["Reto de los 25 días", "#LosCuerposDelZar", "Entrenamiento personalizado", "Online & presencial"],
-      "en": ["25-Day Challenge", "#LosCuerposDelZar", "Personalized training", "Online & in person"]
+      "es": ["Entrenamiento personal", "#LosCuerposDelZar", "Entrenador personal en Buenos Aires", "Online & presencial"],
+      "en": ["Personal training", "#LosCuerposDelZar", "Personal trainer in Buenos Aires", "Online & in person"]
     },
     "abajo": {
-      "es": ["The VIP by Zar del Fitness", "Resultados cada 25 días", "Alimentación · Entrenamiento · Acompañamiento"],
-      "en": ["The VIP by Zar del Fitness", "Results every 25 days", "Nutrition · Training · Coaching"]
+      "es": ["The VIP by Zar del Fitness", "Sistema Premium", "Alimentación · Entrenamiento · Acompañamiento"],
+      "en": ["The VIP by Zar del Fitness", "Premium System", "Nutrition · Training · Coaching"]
     }
   },
 
@@ -162,8 +157,8 @@
       "en": ["Four protocols,", "*one goal: yours.*"]
     },
     "introduccion": {
-      "es": "Elegí cómo querés entrenar. Cada plan es individual y se diseña a partir de tu evaluación.",
-      "en": "Choose how you want to train. Every plan is individual and designed from your assessment."
+      "es": "Entrenamiento personal en Buenos Aires u online: elegí cómo querés entrenar. Cada plan es individual y se diseña a partir de tu evaluación.",
+      "en": "Personal training in Buenos Aires or online: choose how you want to train. Every plan is individual and designed from your assessment."
     },
     "destacado": { "es": "Experiencia exclusiva", "en": "Exclusive experience" },
     "inscribirme": { "es": "Inscribirme", "en": "Sign me up" },
@@ -285,6 +280,7 @@
     "clases": { "es": "Clases de ~{duracion}", "en": "~{duracion} classes" },
     "ultimoIngreso": { "es": "Último ingreso {horas}.", "en": "Last entry {horas}." },
     "boton": { "es": "Reservá tu evaluación", "en": "Book your assessment" },
+    "cerca": { "es": "A pasos de Belgrano, Palermo y Chacarita.", "en": "A short walk from Belgrano, Palermo and Chacarita." },
     "comoLlegar": { "es": "Cómo llegar", "en": "Get directions" },
     "mapa": { "es": "Mapa: {lugar}", "en": "Map: {lugar}" },
     "abierto": { "es": "Abierto ahora · último ingreso {hora}", "en": "Open now · last entry {hora}" },
@@ -394,12 +390,12 @@
   "seo": {
     "inicio": {
       "titulo": {
-        "es": "Zar del Fitness: entrenamiento personal en Colegiales y online",
-        "en": "Zar del Fitness: personal training in Buenos Aires and online"
+        "es": "Entrenamiento personal en Buenos Aires | Zar del Fitness",
+        "en": "Personal training in Buenos Aires | Zar del Fitness"
       },
       "descripcion": {
-        "es": "¿Buscás el mejor entrenador personal de Argentina? Entrená con Ronald Medina, el Zar del Fitness, en The VIP (Colegiales, CABA) u online desde cualquier país.",
-        "en": "Looking for the best personal trainer in Buenos Aires? Train with Ronald Medina, the Zar del Fitness, at The VIP in Colegiales or online from any country."
+        "es": "¿Buscás el mejor entrenamiento personal en Buenos Aires? Entrená con Ronald Medina, el Zar del Fitness, en The VIP (Colegiales) u online.",
+        "en": "Looking for the best personal training in Buenos Aires? Train with Ronald Medina, the Zar del Fitness, at The VIP in Colegiales or online."
       }
     },
     "palabrasClave": {
@@ -410,13 +406,24 @@
         "mejor personal trainer de Argentina",
         "entrenador personal en Buenos Aires",
         "entrenador personal en CABA",
+        "entrenamiento personal en Buenos Aires",
+        "el mejor entrenamiento personal en Buenos Aires",
         "personal trainer en Buenos Aires",
+        "personal trainer en CABA",
+        "entrenador personal en Belgrano",
+        "entrenador personal en Palermo",
         "entrenador personal en Colegiales",
         "gimnasio en Colegiales",
         "gimnasio exclusivo en Buenos Aires",
+        "gimnasio privado en Buenos Aires",
+        "gimnasio boutique en CABA",
+        "entrenamiento premium",
         "entrenamiento personalizado",
         "entrenador personal online",
         "plan de entrenamiento y alimentación",
+        "rutina personalizada",
+        "plan de alimentación personalizado",
+        "nutrición deportiva",
         "bajar de peso",
         "perder grasa sin perder músculo",
         "tonificar el cuerpo",
@@ -432,14 +439,23 @@
         "best personal trainer in Argentina",
         "best personal trainer",
         "personal trainer in Buenos Aires",
+        "personal training in Buenos Aires",
+        "best personal training in Buenos Aires",
         "personal trainer in Argentina",
         "Spanish-speaking personal trainer",
         "personal trainer in Colegiales",
+        "personal trainer in Belgrano",
+        "personal trainer in Palermo",
         "private gym in Buenos Aires",
+        "boutique gym in Buenos Aires",
+        "premium personal training",
         "personalized training",
         "online personal trainer",
         "online fitness coach",
         "training and nutrition plan",
+        "personalized workout plan",
+        "personalized meal plan",
+        "sports nutrition",
         "weight loss program",
         "lose fat without losing muscle",
         "body toning",
