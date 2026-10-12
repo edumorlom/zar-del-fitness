@@ -62,12 +62,9 @@
   text-transform: uppercase;
   letter-spacing: 0.005em;
 }
-/* El antetítulo dentro del h1: se ve como los demás antetítulos, no con la tipografía grande del título.
-   flex y no inline-flex: si no, ocupa una línea del alto del título. */
-.title .kicker {
+/* El antetítulo (el h1): se ve como los demás antetítulos. flex y no inline-flex, para que quede en su propia línea. */
+.kicker {
   display: flex;
-  font-family: var(--font-sans);
-  line-height: 1.6;
 }
 
 .script {

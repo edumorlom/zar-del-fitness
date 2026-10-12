@@ -3,6 +3,7 @@ import "@/app/globals.css";
 import type { Metadata, Viewport } from "next";
 import { Anton, Instrument_Serif, Manrope } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
+import { IconSprite } from "@/components/Icon";
 import { SessionRecording } from "@/components/SessionRecording";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { JsonLd } from "@/components/JsonLd";
@@ -62,6 +63,7 @@ export function RootShell({ lang, children }: { lang: Lang; children: React.Reac
       </head>
       <body>
         <JsonLd data={siteGraph(lang)} />
+        <IconSprite />
         <a className="skip-link" href="#main">
           {t.general.irAlContenido}
         </a>

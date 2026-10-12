@@ -80,13 +80,14 @@ export function Hero({ t, hashtag, cta, trailer, featuredPress, chips, cursorVid
 
       <div className={`container ${styles.grid}`}>
         <div className={styles.copy}>
-          {/* El antetítulo ("El mejor entrenamiento personal en Buenos Aires") es parte del h1: es lo que buscan en Google. */}
-          <h1 className={styles.title}>
-            <span className={`eyebrow ${styles.kicker}`} data-hero-fade>
-              <span className="dot" /> {t.antetitulo}
-            </span>
-            <Lines lines={t.titulo} accent="gold" />
+          {/* El h1 es el antetítulo ("El mejor entrenamiento personal en Buenos Aires"): es lo que buscan en Google.
+              El título grande va aparte porque los dos juntos pasan los 70 caracteres que piden los analizadores SEO. */}
+          <h1 className={`eyebrow ${styles.kicker}`} data-hero-fade>
+            <span className="dot" /> {t.antetitulo}
           </h1>
+          <p className={styles.title}>
+            <Lines lines={t.titulo} accent="gold" />
+          </p>
           <p className={styles.script} data-hero-fade>
             {t.sumate} <a href={hashtag.href}>{hashtag.text}</a>
           </p>

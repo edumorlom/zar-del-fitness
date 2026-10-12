@@ -79,8 +79,9 @@ export function PressList({ items: press, alt }: { items: Content["press"]; alt:
         })}
       </ul>
       <div className={styles.preview} ref={preview} aria-hidden="true">
+        {/* lazy: si no, React la precarga en el <head> y el celular (que nunca la muestra) la baja antes que el inicio. */}
         {/* eslint-disable-next-line @next/next/no-img-element -- src cambia en hover */}
-        <img ref={img} alt={alt} src={press[0].preview} />
+        <img ref={img} alt={alt} src={press[0].preview} loading="lazy" />
       </div>
     </div>
   );
