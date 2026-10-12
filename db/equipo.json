@@ -12,6 +12,18 @@
       "es": "Personal Trainer certificado por el IPEF (Instituto Panamericano de Educación Física), con certificación en prescripción del ejercicio en personas con obesidad y enfermedades metabólicas, en suplementación deportiva y en nutrición para el incremento de la masa muscular.",
       "en": "Personal Trainer certified by the IPEF (Pan-American Institute of Physical Education), with certifications in exercise prescription for people with obesity and metabolic diseases, in sports supplementation and in nutrition for muscle gain."
     },
+    "credenciales": [
+      { "titulo": { "es": "Personal trainer", "en": "Personal trainer" }, "otorgadaPor": "Instituto Panamericano de Educación Física (IPEF)" },
+      {
+        "titulo": {
+          "es": "Prescripción del ejercicio en personas con obesidad y enfermedades metabólicas",
+          "en": "Exercise prescription for people with obesity and metabolic diseases"
+        },
+        "otorgadaPor": "Instituto Panamericano de Educación Física (IPEF)"
+      },
+      { "titulo": { "es": "Suplementación deportiva", "en": "Sports supplementation" } },
+      { "titulo": { "es": "Nutrición para el incremento de la masa muscular", "en": "Nutrition for muscle gain" } }
+    ],
     "instagram": "@zardelfitness"
   },
   {
@@ -21,6 +33,10 @@
     "bio": {
       "es": "Entrenador certificado por el Instituto Panamericano de Educación Física (Universidad del Zulia). Certificación en nutrición para el incremento de la masa muscular.",
       "en": "Trainer certified by the Pan-American Institute of Physical Education (University of Zulia). Certified in nutrition for muscle gain."
-    }
+    },
+    "credenciales": [
+      { "titulo": { "es": "Entrenador", "en": "Trainer" }, "otorgadaPor": "Instituto Panamericano de Educación Física (Universidad del Zulia)" },
+      { "titulo": { "es": "Nutrición para el incremento de la masa muscular", "en": "Nutrition for muscle gain" } }
+    ]
   }
 ]

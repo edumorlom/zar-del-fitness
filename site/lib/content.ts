@@ -44,6 +44,8 @@ export const business = {
   lat: gimnasio.coordenadas.latitud,
   lng: gimnasio.coordenadas.longitud,
   maps: `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`,
+  /** La ficha del gimnasio en Google Maps (la de las reseñas). */
+  googleMaps: gimnasio.googleMaps,
 };
 
 // El ícono de cada red de db/gimnasio.json.
@@ -311,6 +313,10 @@ function build(lang: Lang) {
       id: m.id,
       nickname: "apodo" in m ? text(m.apodo, lang, field("apodo")) : undefined,
       certifications: "certificaciones" in m ? text(m.certificaciones, lang, field("certificaciones")) : undefined,
+      credentials: ("credenciales" in m ? m.credenciales : []).map((c, i) => ({
+        title: text(c.titulo, lang, field(`credenciales[${i}].titulo`)),
+        issuer: "otorgadaPor" in c ? c.otorgadaPor : undefined,
+      })),
       role: text(m.rol, lang, field("rol")),
       name: m.nombre,
       bio: text(m.bio, lang, field("bio")),

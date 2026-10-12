@@ -30,6 +30,10 @@ jobs:
     steps:
       - name: Descargar el repositorio
         uses: actions/checkout@v7
+        with:
+          # Toda la historia: la fecha de cada página en sitemap.xml (lastmod) es la de su último commit
+          # (site/lib/git.ts). Con sólo el último commit, todas tendrían la misma.
+          fetch-depth: 0
 
       - name: Preparar Node
         uses: actions/setup-node@v7
@@ -43,6 +47,10 @@ jobs:
 
       - name: Verificar y construir el sitio
         run: npm run check
+
+      - name: Guardar el sitemap publicado
+        # Para avisarle después a Bing sólo las páginas que cambiaron (scripts/indexnow.mjs).
+        run: curl -sf https://zardelfitness.com.ar/sitemap.xml -o ../sitemap-anterior.xml || true
 
       - name: Subir por FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
@@ -59,3 +67,6 @@ jobs:
           # "zardelfitness.com.ar/").
           server-dir: ${{ secrets.FTP_SERVER_DIR || 'public_html/' }}
           local-dir: site/out/
+
+      - name: Avisar a Bing (IndexNow)
+        run: node scripts/indexnow.mjs ../sitemap-anterior.xml

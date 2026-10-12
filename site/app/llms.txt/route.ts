@@ -30,6 +30,34 @@ function gymLines(lang: Lang) {
 
 const plain = (text: string) => text.replace(/\*+([^*]+)\*+/g, "$1");
 
+// Quién es Ronald, sus premios, la prensa y el equipo, en un idioma: es lo que la gente le pregunta a un asistente
+// ("¿quién es el Zar del Fitness?", "¿es bueno?"). `h` es el nivel de los títulos ("##" o "###").
+function ronaldLines(lang: Lang, h: string) {
+  const { t, awards, press, team } = content(lang);
+  const pressLine = (p: (typeof press)[number]) => {
+    const name = `${p.src}: ${p.title}`;
+    return `- ${p.href ? `[${name}](${p.href})` : name} (${p.kind})`;
+  };
+  return [
+    `${h} ${t.seo.llms.ronald}`,
+    "",
+    t.elZar.parrafos.map(plain).join("\n\n"),
+    "",
+    `${h}# ${t.seo.llms.premios}`,
+    "",
+    ...press.filter((p) => p.isAward).map(pressLine),
+    ...awards.map((a) => `- ${a.year} · ${a.title}: ${a.text}`),
+    "",
+    `${h}# ${t.seo.llms.prensa}`,
+    "",
+    ...press.filter((p) => !p.isAward).map(pressLine),
+    "",
+    `${h}# ${t.equipo.antetitulo}`,
+    "",
+    ...team.map((m) => `- ${m.name} (${m.role}): ${m.certifications ?? m.bio}`),
+  ];
+}
+
 // /llms.txt (llmstxt.org): el sitio resumido en Markdown para ChatGPT, Claude y otros asistentes.
 // Sale de db/, como el resto del sitio (los textos en inglés también): no hay que editarlo a mano.
 export function GET() {
@@ -52,6 +80,8 @@ export function GET() {
     "",
     ...gymLines("es"),
     "",
+    ...ronaldLines("es", "##"),
+    "",
     `## ${t.seo.llms.preguntas}`,
     "",
     ...faqs.map(({ q, a }) => `- ${q} ${a}`),
@@ -70,6 +100,8 @@ export function GET() {
     ...programLines("en", true),
     ...gymLines("en"),
     `- [${en.t.menu.blog}](${abs(en.pages.blog)}): ${en.t.seo.llms.blog}`,
+    "",
+    ...ronaldLines("en", "###"),
     "",
     "## Optional",
     "",
