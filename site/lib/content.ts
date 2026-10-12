@@ -120,10 +120,7 @@ const photo = (file: string, w: number, h: number, alt: ShotAlt = "fotoAlumno") 
 
 const gallery = [
   [
-    shot("03", 900, 860),
-    shot("09", 900, 888),
     shot("13", 900, 900),
-    shot("04", 1100, 782, "fotoDosAlumnos"),
     shot("10", 600, 593, "fotoAlumna"),
     shot("02", 600, 599),
     photo("1a7a9a7a-886d-4433-bf43-b014d0205209.JPG", 1276, 1280),
@@ -139,12 +136,9 @@ const gallery = [
     photo("02f5c15b-b8dc-4235-898b-b0db9769dda2.JPG", 951, 1230),
   ],
   [
-    shot("11", 900, 923),
     shot("05", 600, 602, "fotoAlumna"),
-    shot("07", 900, 746),
     shot("12", 600, 603),
     shot("01", 900, 900, "fotoAlumna"),
-    shot("08", 600, 597),
     shot("06", 900, 804),
     photo("22dbbd51-28a1-489c-abb9-4309a1feaf6b.JPG", 1080, 586),
     photo("2dcbb75c-306c-42f0-bafa-b9f480ffa108.JPG", 1080, 1080),
