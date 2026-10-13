@@ -54,7 +54,7 @@ El sitio muestra los planes `reto-online`, `premium`, `general` y `reto-internac
 - Los párrafos pueden tener `*cursiva*` y `**negrita**`, como en Markdown.
 - Los títulos de las secciones son una lista de líneas: `["Soy Ronald Medina,", "*el Zar del Fitness.*"]`. La línea entre asteriscos es la destacada, en dorado.
 - Algunos textos tienen marcadores entre llaves, como `"Último ingreso {horas}."`: el sitio los reemplaza por el dato. Hay que dejarlos tal cual, en los dos idiomas.
-- `seo.palabrasClave` son las búsquedas a las que apunta el inicio ("mejor entrenador personal", …). No se ven en el sitio: van en los datos para Google y otros buscadores. La frase que más pesa es la de la descripción del inicio (`seo.inicio.descripcion`), que Google muestra debajo del título.
+- `seo.palabrasClave` son las búsquedas a las que apunta el inicio ("entrenador personal en Buenos Aires", …), 10 por idioma. No se ven en el sitio: van en `<meta name="keywords">` y en los datos estructurados. Ni Google ni Bing las usan para posicionar, y Bing puede tomar una lista larga como spam: mantenela corta. La frase que más pesa es la de la descripción del inicio (`seo.inicio.descripcion`), que Google muestra debajo del título.
 - `general.leerEn` es el botón para cambiar de idioma: cada uno está en su idioma ("Leer en español", "Read in English") y se muestra en la página del otro.
 - En la prensa, `link` es opcional. La `imagen` es la que aparece al pasar el mouse, y va en `db/img/`.
 - La nota con `destacadoEnInicio` aparece también en el inicio, con ese texto ("Emmy Winner 2024"). Si ninguna lo tiene, no se muestra.
