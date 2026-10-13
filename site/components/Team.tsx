@@ -29,7 +29,7 @@ export function Team({ lang }: { lang: Lang }) {
             </div>
             <div className={styles.body}>
               <p className="tag">{c.role}</p>
-              <h3>{c.name}</h3>
+              <strong className={styles.name}>{c.name}</strong>
               <p>{c.bio}</p>
               {c.handle && (
                 <a className="link-arrow" href={c.handleHref}>

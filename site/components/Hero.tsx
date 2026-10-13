@@ -89,7 +89,7 @@ export function Hero({ t, hashtag, cta, trailer, featuredPress, chips, cursorVid
             <Lines lines={t.titulo} accent="gold" />
           </p>
           <p className={styles.script} data-hero-fade>
-            {t.sumate} <a href={hashtag.href}>{hashtag.text}</a>
+            {t.sumate} <span>{hashtag.text}</span>
           </p>
           <p className={styles.lead} data-hero-fade>
             <Rich text={t.descripcion} />
@@ -142,14 +142,15 @@ export function Hero({ t, hashtag, cta, trailer, featuredPress, chips, cursorVid
 
           {featuredPress && (
             <div className={styles.tagWrap} data-depth="22">
-              <a className={styles.tag} href={featuredPress.href} target="_blank" rel="noopener noreferrer" data-cursor={cursorVideo} data-hero-fade>
-                <Icon name="spark" />
-                <div>
-                  <strong>{featuredPress.label}</strong>
-                  <span>{featuredPress.title}</span>
-                </div>
-                <Icon name="arrow-ur" className={styles.tagArrow} />
-              </a>
+              {featuredPress.videoId ? (
+                <VideoButton videoId={featuredPress.videoId} cursor={cursorVideo} className={styles.tag} data-hero-fade>
+                  <PressTag {...featuredPress} />
+                </VideoButton>
+              ) : (
+                <a className={styles.tag} href={featuredPress.href} target="_blank" rel="noopener noreferrer" data-cursor={cursorVideo} data-hero-fade>
+                  <PressTag {...featuredPress} />
+                </a>
+              )}
             </div>
           )}
         </div>
@@ -168,5 +169,19 @@ export function Hero({ t, hashtag, cta, trailer, featuredPress, chips, cursorVid
         </ul>
       </div>
     </section>
+  );
+}
+
+/** El contenido de la etiqueta de prensa del hero (un botón si es un video de YouTube, si no un link). */
+function PressTag({ label, title }: { label: string; title: string }) {
+  return (
+    <>
+      <Icon name="spark" />
+      <span>
+        <strong>{label}</strong>
+        <span>{title}</span>
+      </span>
+      <Icon name="arrow-ur" className={styles.tagArrow} />
+    </>
   );
 }

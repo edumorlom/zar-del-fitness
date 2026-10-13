@@ -75,13 +75,8 @@
   line-height: 1.1;
   color: var(--silver);
 }
-.script a {
+.script span {
   color: var(--gold-light);
-  background: linear-gradient(var(--gold), var(--gold)) left 92% / 100% 1px no-repeat;
-  transition: background-size 0.4s var(--ease-out);
-}
-.script a:hover {
-  background-size: 0 1px;
 }
 
 .lead {
@@ -231,6 +226,7 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: inherit;
+  text-align: left;
   text-decoration: none;
   transition: border-color 0.3s, background-color 0.3s;
 }
@@ -259,7 +255,7 @@
   font-weight: 800;
   letter-spacing: 0.04em;
 }
-.tag span {
+.tag strong + span {
   display: block;
   margin-top: 4px;
   color: var(--gold-light);
