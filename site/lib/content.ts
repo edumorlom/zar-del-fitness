@@ -115,41 +115,39 @@ const cards: {
 // Las fotos de "Resultados". `alt` elige el texto de db/textos.json (resultados.fotoAlumno, fotoAlumna o fotoDosAlumnos).
 type ShotAlt = "fotoAlumno" | "fotoAlumna" | "fotoDosAlumnos";
 const shot = (n: string, w: number, h: number, alt: ShotAlt = "fotoAlumno") => ({ src: `/img/t${n}.webp`, w, h, alt });
-// Las fotos con otro nombre de archivo (las que se suben tal cual a db/img/).
-const photo = (file: string, w: number, h: number, alt: ShotAlt = "fotoAlumno") => ({ src: `/img/${file}`, w, h, alt });
 
 const gallery = [
   [
     shot("13", 900, 900),
     shot("10", 600, 593, "fotoAlumna"),
     shot("02", 600, 599),
-    photo("1a7a9a7a-886d-4433-bf43-b014d0205209.JPG", 1276, 1280),
-    photo("2b70868b-b677-42b2-9d90-51cf4b58b1a4.JPG", 1417, 1176),
-    photo("3ef0247c-e490-428f-8ed0-bbaa692bd227.JPG", 1421, 1555, "fotoAlumna"),
-    photo("69b0746f-e0ca-4fb9-920d-eec89d2c2385.JPG", 1438, 1451),
-    photo("702a5aab-262d-455a-9274-a7a3397491dd.JPG", 1063, 1063),
-    photo("8d6bdf67-36fe-49fe-ac7e-ad5e26f3fc32.JPG", 1206, 1241),
-    photo("IMG_4388.jpg", 1320, 1143),
-    photo("IMG_4390.jpg", 1320, 1213),
-    photo("IMG_4392.jpg", 1320, 1199),
-    photo("IMG_4394.jpg", 1135, 1318),
-    photo("02f5c15b-b8dc-4235-898b-b0db9769dda2.JPG", 951, 1230),
+    shot("14", 897, 900),
+    shot("15", 1084, 900),
+    shot("16", 822, 900, "fotoAlumna"),
+    shot("17", 892, 900),
+    shot("18", 900, 900),
+    shot("19", 875, 900),
+    shot("20", 1039, 900),
+    shot("21", 979, 900),
+    shot("22", 991, 900),
+    shot("23", 775, 900),
+    shot("24", 696, 900),
   ],
   [
     shot("05", 600, 602, "fotoAlumna"),
     shot("12", 600, 603),
     shot("01", 900, 900, "fotoAlumna"),
     shot("06", 900, 804),
-    photo("22dbbd51-28a1-489c-abb9-4309a1feaf6b.JPG", 1080, 586),
-    photo("2dcbb75c-306c-42f0-bafa-b9f480ffa108.JPG", 1080, 1080),
-    photo("626a04b4-535e-4840-9fe1-eb30007d883b.JPG", 1274, 1280),
-    photo("6afdecd2-dc4f-46e3-b525-062cef48ebe7.JPG", 1080, 1082),
-    photo("75744894-050a-4e95-afab-53cd037706f8.JPG", 1415, 1341),
-    photo("9ef5e7fc-7dfe-4125-a161-0e2b8a1541e8.JPG", 1070, 928),
-    photo("IMG_4389.jpg", 1320, 1218),
-    photo("IMG_4391.jpg", 1320, 1214),
-    photo("IMG_4393.jpg", 1320, 1288),
-    photo("IMG_4395.jpg", 1320, 1234),
+    shot("25", 1080, 586),
+    shot("26", 900, 900),
+    shot("27", 896, 900),
+    shot("28", 898, 900),
+    shot("29", 950, 900),
+    shot("30", 1038, 900),
+    shot("31", 975, 900),
+    shot("32", 979, 900),
+    shot("33", 922, 900),
+    shot("34", 963, 900),
   ],
 ];
 
