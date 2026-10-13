@@ -30,7 +30,7 @@ type PageMeta = {
   alternates?: Alternates;
   /** El título tal cual, sin " | Zar del Fitness" (para el inicio). */
   absoluteTitle?: boolean;
-  /** Las búsquedas a las que apunta la página (<meta name="keywords">; Google no lo usa, Bing y otros sí). */
+  /** Las búsquedas a las que apunta la página (<meta name="keywords">). Ni Google ni Bing lo usan para posicionar; Bing puede tomar una lista larga como spam. */
   keywords?: string[];
   article?: { publishedTime: string; authors: string[]; section?: string };
 };
