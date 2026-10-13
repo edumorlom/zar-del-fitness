@@ -93,14 +93,14 @@ export function Method({ t }: { t: Content["t"]["metodo"] }) {
           </div>
         </div>
 
-        <div className={styles.track}>
+        <ol className={styles.track}>
           {steps.map((s, i) => {
             const final = i === steps.length - 1;
             return (
-              <article key={s.numero} className={`${styles.step} ${final ? styles.final : ""}`}>
+              <li key={s.numero} className={`${styles.step} ${final ? styles.final : ""}`}>
                 <span className={styles.num}>{s.numero}</span>
                 <div>
-                  <h3>{s.titulo}</h3>
+                  <strong className={styles.title}>{s.titulo}</strong>
                   <p>{s.texto}</p>
                 </div>
                 {final && (
@@ -109,10 +109,10 @@ export function Method({ t }: { t: Content["t"]["metodo"] }) {
                     <Icon name="arrow" />
                   </a>
                 )}
-              </article>
+              </li>
             );
           })}
-        </div>
+        </ol>
 
         <div className={`container ${styles.progress}`} aria-hidden="true">
           <i className={styles.bar} />

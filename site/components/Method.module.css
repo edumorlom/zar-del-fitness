@@ -81,7 +81,8 @@
   -webkit-text-stroke: 1.2px var(--gold);
 }
 
-.step h3 {
+.title {
+  display: block;
   font-family: var(--font-display);
   font-weight: 400;
   font-size: 2rem;

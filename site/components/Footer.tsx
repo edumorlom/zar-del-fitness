@@ -23,7 +23,7 @@ export function Footer({ lang }: { lang: Lang }) {
         </div>
 
         <address className={styles.col}>
-          <h2>{t.pie.contacto}</h2>
+          <p className={styles.label}>{t.pie.contacto}</p>
           <a href={contact.phoneHref}>
             <Icon name="wa" />
             {contact.phone}

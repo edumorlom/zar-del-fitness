@@ -51,7 +51,8 @@
   gap: 10px;
   padding: 26px;
 }
-.body h3 {
+.name {
+  display: block;
   font-family: var(--font-display);
   font-weight: 400;
   font-size: 2rem;

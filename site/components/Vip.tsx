@@ -27,7 +27,7 @@ export function Vip({ lang }: { lang: Lang }) {
             <li key={title} className={styles.perk} data-reveal>
               <span className={styles.n}>{String(i + 1).padStart(2, "0")}</span>
               <div>
-                <h3>{title}</h3>
+                <strong className={styles.title}>{title}</strong>
                 <p>{text}</p>
               </div>
             </li>

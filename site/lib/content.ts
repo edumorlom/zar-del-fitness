@@ -311,6 +311,8 @@ function build(lang: Lang) {
     label: text(featured.destacadoEnInicio, lang, "db/trayectoria.json prensa.destacadoEnInicio"),
     title: text(featured.titulo, lang, "db/trayectoria.json prensa.titulo"),
     href: featured.link,
+    // Si es un video de YouTube, se abre en el modal en vez de salir del sitio (y no suma un link externo más).
+    videoId: featured.link?.match(/(?:youtu\.be\/|[?&]v=)([\w-]{11})/)?.[1],
   };
 
   const awards = trayectoria.premios.map((a, i) => ({

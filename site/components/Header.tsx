@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Icon, type IconName } from "./Icon";
+import { Icon } from "./Icon";
 import type { Lang } from "@/lib/i18n";
 import { scroll } from "@/lib/scroll";
 import styles from "./Header.module.css";
@@ -12,7 +12,6 @@ import styles from "./Header.module.css";
 type HeaderProps = {
   home: string;
   nav: { href: string; label: string }[];
-  socials: { label: string; icon: IconName; href: string }[];
   announce: { text: string; price: string; cta: string; href: string };
   cta: string;
   waInfo: string;
@@ -21,7 +20,7 @@ type HeaderProps = {
   language: { href: string; lang: Lang; label: string };
 };
 
-export function Header({ home, nav, socials, announce, cta, waInfo, labels, language }: HeaderProps) {
+export function Header({ home, nav, announce, cta, waInfo, labels, language }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -137,13 +136,6 @@ export function Header({ home, nav, socials, announce, cta, waInfo, labels, lang
             <Icon name="wa" />
             <span>{labels.write}</span>
           </a>
-          <div className="socials">
-            {socials.slice(0, 4).map((s) => (
-              <a key={s.label} href={s.href} aria-label={s.label}>
-                <Icon name={s.icon} className="" />
-              </a>
-            ))}
-          </div>
         </div>
       </div>
     </>

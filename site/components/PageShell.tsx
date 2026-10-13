@@ -2,7 +2,7 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { WhatsAppFloat } from "./WhatsAppFloat";
 import { Reveals } from "./motion/Reveals";
-import { content, socials } from "@/lib/content";
+import { content } from "@/lib/content";
 import { otherLang, type Lang } from "@/lib/i18n";
 
 /**
@@ -17,7 +17,6 @@ export function PageShell({ lang, alternate, children }: { lang: Lang; alternate
       <Header
         home={pages.home}
         nav={nav}
-        socials={socials}
         announce={{ text: t.encabezado.anuncio, price: price("reto-online"), cta: t.encabezado.anuncioBoton, href: links.retoOnline }}
         cta={t.encabezado.boton}
         waInfo={links.waInfo}

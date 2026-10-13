@@ -28,7 +28,7 @@
   flex-direction: column;
   gap: 12px;
 }
-.col h2 {
+.label {
   margin-bottom: 8px;
   color: var(--gold);
   font-size: 0.75rem;
