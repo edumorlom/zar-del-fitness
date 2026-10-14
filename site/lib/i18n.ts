@@ -11,7 +11,7 @@ export const locales = {
 
 export const otherLang = (lang: Lang): Lang => (lang === "es" ? "en" : "es");
 
-/** La URL de una página en un idioma: ("en", "/blog/") → "/en/blog/". */
+/** La URL de una página en un idioma: ("en", "/podcasts/") → "/en/podcasts/". */
 export const localePath = (lang: Lang, path: string) => locales[lang].prefix + path;
 
 /** El inicio de cada idioma: "/" o "/en/". */

@@ -33,7 +33,7 @@ export function homeMetadata(lang: Lang) {
   });
 }
 
-/** El inicio: el sitio es una sola página (más el blog). */
+/** El inicio: el sitio es una sola página (más los podcasts). */
 export function HomePage({ lang }: { lang: Lang }) {
   const c = content(lang);
   const { t } = c;

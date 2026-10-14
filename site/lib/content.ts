@@ -197,7 +197,7 @@ export const stats = { peopleEvaluated: gimnasio.personasEvaluadas };
 function build(lang: Lang) {
   const t = localize(textos, lang, "db/textos.json");
   const home = homePath(lang);
-  const pages = { home, blog: localePath(lang, "/blog/") };
+  const pages = { home, podcasts: localePath(lang, "/podcasts/") };
 
   const links = {
     retoOnline: wa(t.whatsapp.retoOnline),
@@ -225,7 +225,7 @@ function build(lang: Lang) {
     { href: `${home}#zar`, label: t.menu.zar },
     { href: `${home}#gym`, label: t.menu.gym },
     { href: `${home}#faq`, label: t.menu.faq },
-    { href: pages.blog, label: t.menu.blog },
+    { href: pages.podcasts, label: t.menu.podcasts },
   ];
 
   const where = (p: Plan, field: string) => `db/planes.json (plan "${p.id}", ${field})`;

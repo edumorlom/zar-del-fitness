@@ -3,8 +3,9 @@
 //
 // Lo corre el workflow de despliegue después de subir el sitio, con el sitemap que estaba publicado antes:
 //   node scripts/indexnow.mjs ../sitemap-anterior.xml
-// Compara ese sitemap con el nuevo (out/sitemap.xml) y avisa las páginas nuevas o con otra fecha (lastmod, ver
-// app/sitemap.ts). Sin el sitemap anterior, avisa todas. Con --dry-run sólo muestra cuáles avisaría.
+// Compara ese sitemap con el nuevo (out/sitemap.xml) y avisa las páginas nuevas, las que tienen otra fecha (lastmod,
+// ver app/sitemap.ts) y las que ya no están (responden 410 o redirigen: así Bing las saca antes). Sin el sitemap
+// anterior, avisa todas. Con --dry-run sólo muestra cuáles avisaría.
 //
 // La clave es el archivo public/<clave>.txt: Bing lo lee en el sitio para comprobar que el aviso es nuestro.
 // Si el aviso falla, el despliegue no falla (el sitio ya está publicado): queda un aviso en GitHub Actions.
@@ -27,7 +28,7 @@ function read(file) {
 
 const now = read(new URL("../out/sitemap.xml", import.meta.url).pathname);
 const old = before ? read(before) : {};
-const changed = Object.keys(now).filter((url) => old[url] !== now[url]);
+const changed = [...Object.keys(now).filter((url) => old[url] !== now[url]), ...Object.keys(old).filter((url) => !(url in now))];
 
 const keyFile = readdirSync(new URL("../public", import.meta.url)).find((f) => /^[0-9a-f]{32}\.txt$/.test(f));
 if (!keyFile) throw new Error("Falta la clave de IndexNow: public/<32 caracteres hexadecimales>.txt");

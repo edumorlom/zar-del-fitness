@@ -35,8 +35,8 @@ export function NotFoundPage() {
               </a>
             </li>
             <li>
-              <a className="link-arrow" href={pages.blog}>
-                {t.menu.blog} <Icon name="arrow" />
+              <a className="link-arrow" href={pages.podcasts}>
+                {t.menu.podcasts} <Icon name="arrow" />
               </a>
             </li>
             <li>

@@ -30,7 +30,7 @@ const SOCIAL = /(^|\.)(instagram|facebook|youtube|tiktok|twitter|x)\.com$/;
  */
 function eventFor(el: HTMLElement): [string, Properties] | null {
   const lang = document.documentElement.lang;
-  if (el instanceof HTMLButtonElement && el.dataset.video) return ["VideoPlay", { video: el.dataset.video, label: label(el), lang }];
+  if (el.dataset.video) return ["VideoPlay", { video: el.dataset.video, label: label(el), lang }];
   if (!(el instanceof HTMLAnchorElement)) return null;
   const url = new URL(el.href, location.href);
   // El mensaje prearmado dice qué plan o qué consulta ("Quiero inscribirme en el Sistema Premium").
