@@ -3,7 +3,7 @@
 ErrorDocument 404 /404.html
 ErrorDocument 410 /404.html
 
-# No directory listings (e.g. /2026/10/, which only holds blog post folders).
+# No directory listings.
 Options -Indexes
 
 <IfModule mod_rewrite.c>
@@ -19,21 +19,26 @@ Options -Indexes
   RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 
   # Languages: Spanish is at the root and English under /en/. /es/ (and anything under it) goes to the same page
-  # without the prefix: /es/blog/ → /blog/. /spanish/ and /english/ were the prefixes for a few hours on 2026-10-11.
+  # without the prefix: /es/podcasts/ → /podcasts/. /spanish/ and /english/ were the prefixes for a few hours on 2026-10-11.
   RewriteRule ^(?:es|spanish)(?:/(.*))?$ /$1 [R=301,L]
   RewriteRule ^english(?:/(.*))?$ /en/$1 [R=301,L]
 
-  # /index.html and /blog/index.html → / and /blog/
+  # /index.html and /podcasts/index.html → / and /podcasts/
   RewriteCond %{THE_REQUEST} \s/+((?:[^\s?]*/)?)index\.html[\s?]
   RewriteRule ^ /%1 [R=301,L]
 
+  # --- Blog (until 2026-10-13) ---
+  # The blog was removed. /blog/ (and its old WordPress pages, /blog/page/2/) go to the podcasts; the posts
+  # (/2020/12/15/post/, /en/2020/12/15/post/) are gone: 410 below, with the old date archives.
+  RewriteRule ^blog(/.*)?$ /podcasts/ [R=301,L]
+  RewriteRule ^en/blog(/.*)?$ /en/podcasts/ [R=301,L]
+
   # --- Old WordPress site (until 2026-10-10) ---
-  # The site is one page plus the blog. The blog posts and /blog/ kept their old URLs; old pages
-  # whose content is now a section of the home page go to that section.
+  # The site is one page plus the podcasts. Old pages whose content is now a section of the home page go to that
+  # section.
   RewriteRule ^(servicios|entrenamiento-online|entrenamiento-presencial|sistema-general-dirigido|producto/reto-de-los-25-dias-(online|presencial))/?$ /#programas [NE,R=301,L]
   RewriteRule ^(sobre-ronald|entrenadores)/?$ /#zar [NE,R=301,L]
   RewriteRule ^transformaciones-(online|presencial)/?$ /#resultados [NE,R=301,L]
-  RewriteRule ^blog/page/[0-9]+/?$ /blog/ [R=301,L]
 
   # The sitemap is /sitemap.xml. The old WordPress sitemaps (maybe still registered in Search Console)
   # and the address typed without ".xml" or with a trailing slash go there.
@@ -41,11 +46,10 @@ Options -Indexes
   RewriteRule ^ /sitemap.xml [R=301,L]
 
   # Everything else the old site had and this one doesn't (store, cart, account, directories,
-  # category and date archives, feeds, WordPress files): 410 Gone, so Google drops it from the index.
+  # category and date archives, blog posts, feeds, WordPress files): 410 Gone, so Google drops it from the index.
   RewriteRule ^(tienda|carrito|checkout|finalizar-compra|mi-cuenta|producto|product|categoria-producto|product-category|guia-de-entrenadores|guia-de-gimnasios|category|tag|author|feed|comments|wp-admin|wp-content|wp-includes|wp-json)(/.*)?$ - [G,L]
   RewriteRule ^(wp-login|xmlrpc|wp-cron)\.php$ - [G,L]
-  RewriteRule ^[0-9]{4}(/[0-9]{2}(/[0-9]{2})?)?/?$ - [G,L]
-  RewriteRule ^[0-9]{4}/[0-9]{2}/[0-9]{2}/[^/]+/(feed|amp)/?$ - [G,L]
+  RewriteRule ^(en/)?[0-9]{4}(/.*)?$ - [G,L]
 </IfModule>
 
 # Share images and the iPhone icon are exported without an extension (Next.js file conventions). Inside the

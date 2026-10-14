@@ -25,8 +25,8 @@ El sitio está en castellano (`zardelfitness.com.ar/`) y en inglés (`zardelfitn
 | `equipo.json` | Los entrenadores. `credenciales` son sus certificaciones una por una (`titulo` y, si se sabe, `otorgadaPor`): no se ven en el sitio, van en los datos para Google y los buscadores con IA. |
 | `textos.json` | Todos los textos del sitio, por sección, en castellano y en inglés: botones, menú, títulos, párrafos, textos alternativos de las fotos, los mensajes que se arman para WhatsApp, y el título y la descripción de cada página para Google (`seo`). |
 | `trayectoria.json` | La prensa (medio, título, tipo, link e imagen) y los premios (fecha, título y texto). |
-| `blog/` | Las notas del blog, una por archivo Markdown (ver abajo). Las traducciones al inglés, en `blog/en/`. Sólo las usa el sitio. |
-| `img/` | Las imágenes del sitio. En los JSON se nombran como `/img/archivo.webp`. Las del blog van en `img/blog/`. |
+| `podcasts.json` | Los episodios del podcast, Detrás del Espejo (ver abajo). Sólo los usa el sitio. |
+| `img/` | Las imágenes del sitio. En los JSON se nombran como `/img/archivo.webp`. Las miniaturas de los podcasts van en `img/podcasts/`. |
 
 ## Planes (`planes.json`)
 
@@ -60,48 +60,36 @@ El sitio muestra los planes `reto-online`, `premium`, `general` y `reto-internac
 - La nota con `destacadoEnInicio` aparece también en el inicio, con ese texto ("Emmy Winner 2024"). Si ninguna lo tiene, no se muestra.
 - El asistente usa todo menos los pasos del método, las introducciones de Programas y Preguntas, los links y las imágenes.
 
-## Blog (`blog/`)
+## Podcasts (`podcasts.json`)
 
-Cada nota es un archivo `.md` (Markdown). El nombre del archivo es el final de su URL: `blog/gluteos-de-acero.md`
-con fecha `2020-12-15` se publica en `zardelfitness.com.ar/2020/12/15/gluteos-de-acero/` (la misma URL que tenía en
-el sitio anterior). Arriba de todo lleva este encabezado, un dato por línea:
+Cada episodio es un video de YouTube. Se listan en `zardelfitness.com.ar/podcasts/` (y en `/en/podcasts/`), del más
+nuevo al más viejo, y cada uno tiene su página, `zardelfitness.com.ar/podcasts/<id>/`, con el video y su resumen: es
+la que aparece en Google. Desde la lista, un click abre el video en la misma página y cambia la dirección a la del
+episodio, para poder compartirla.
 
-```
----
-titulo: Glúteos de acero
-fecha: 2020-12-15
-autor: Ronald Medina
-categoria: Entrenamiento
-descripcion: Lo que muestra Google debajo del título: una o dos frases, de 140 a 160 caracteres.
-imagen: /img/blog/gluteos-de-acero.webp
----
-```
-
-- Debajo va el texto. Los subtítulos van con `##` (nunca `#`: el título ya es el de arriba), y las imágenes con
-  `![qué se ve](/img/blog/archivo.webp)`.
-- Todas las imágenes del blog van en `img/blog/` y en WebP.
-- Si el autor es `Ronald Medina`, la nota muestra su recuadro y enlaza a su sección del inicio.
-- Una nota nueva aparece sola en el blog, en "Más notas" y en el mapa del sitio para Google (`sitemap.xml`).
-
-### En inglés (`blog/en/`)
-
-La traducción de una nota es otro archivo, en `blog/en/`, con un nombre en inglés (que es el final de su URL): `blog/en/steel-glutes.md` se publica en `zardelfitness.com.ar/en/2020/12/15/steel-glutes/`. El encabezado tiene los mismos datos (en castellano los nombres, en inglés los valores) más `original`, el nombre del archivo de la nota en castellano, sin `.md`:
-
-```
----
-titulo: Steel Glutes
-fecha: 2020-12-15
-autor: Ronald Medina
-categoria: Training
-descripcion: In English, 140 to 160 characters.
-imagen: /img/blog/gluteos-de-acero.webp
-original: gluteos-de-acero
----
+```json
+{
+  "id": "suplementos-ciencia-o-estafa",
+  "video": "https://www.youtube.com/watch?v=yQHnB0PmpZ4",
+  "fecha": "2026-09-18",
+  "duracion": "56:45",
+  "invitado": "Lic. David Fragale",
+  "titulo": { "es": "Suplementos: ¿ciencia o estafa?", "en": "Supplements: science or scam?" },
+  "descripcion": { "es": "Una o dos frases…", "en": "One or two sentences…" },
+  "resumen": { "es": ["Un párrafo…", "Otro…"], "en": ["A paragraph…", "Another…"] }
+}
 ```
 
-- `fecha`, `autor` e `imagen` son los de la nota original. Las categorías en inglés son `Training`, `Nutrition` y `Myths`.
-- Con `original`, las dos notas se enlazan entre sí: el botón "EN"/"ES" lleva de una a la otra, y Google sabe que son la misma nota.
-- Una nota en castellano sin traducir no aparece en el blog en inglés, y su botón "EN" lleva al blog en inglés.
+- `id` es el final de la URL del episodio (el mismo en los dos idiomas): en minúsculas, con guiones y sin tildes. No
+  cambiarlo una vez publicado: los links compartidos y Google usan esa URL.
+- `video` es el link del video, como lo da YouTube (`youtube.com/watch?v=…` o `youtu.be/…`).
+- `fecha` es la de publicación en YouTube, y `duracion` la del video (`56:45`, o `1:02:30` si pasa la hora).
+- `invitado` va en la etiqueta dorada de la tarjeta y en la página del episodio ("Con …"), y no se traduce.
+- `descripcion` es lo que muestra Google debajo del título: de 120 a 160 caracteres. Se ve también en la tarjeta.
+- `resumen` son los párrafos de la página del episodio: cuanto más cuenten del episodio, mejor lo encuentra Google.
+- La miniatura se baja sola de YouTube la primera vez que se corre el sitio (`npm run dev` o `npm run build`) y queda
+  en `img/podcasts/` (`<id del video>.webp`): subirla con el resto. Para usar otra, reemplazar ese archivo.
+- Un episodio nuevo aparece solo en la lista, en "Más episodios" y en el mapa del sitio para Google (`sitemap.xml`).
 
 ## Cosas a tener en cuenta
 

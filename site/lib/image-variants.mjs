@@ -9,7 +9,7 @@ export const imageSizes = [128, 256, 384, 512];
 export const imageWidths = [...imageSizes, ...deviceSizes];
 
 /**
- * "/img/blog/x.jpg" a 640 px → "/img/_w/blog/x-640.webp". Siempre una copia, también al ancho original: si el loader
+ * "/img/podcasts/x.jpg" a 640 px → "/img/_w/podcasts/x-640.webp". Siempre una copia, también al ancho original: si el loader
  * devolviera la foto tal cual, next/image avisa que no respeta el ancho ("missing-loader-width").
  * @param {string} src
  * @param {number} width

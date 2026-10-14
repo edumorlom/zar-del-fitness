@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { business, content, siteUrl, socials } from "./content";
 import { LANGS, locales, otherLang, type Lang } from "./i18n";
 
-/** "/blog/" → "https://zardelfitness.com.ar/blog/" */
+/** "/podcasts/" → "https://zardelfitness.com.ar/podcasts/" */
 export const abs = (path: string) => new URL(path, siteUrl).href;
 
 const xHandle = socials.find((s) => s.icon === "x")?.href.split("/").pop();
@@ -24,7 +24,7 @@ type PageMeta = {
   lang: Lang;
   title: string;
   description: string;
-  /** La URL de la página, p. ej. "/blog/". Es la canónica. */
+  /** La URL de la página, p. ej. "/podcasts/". Es la canónica. */
   path: string;
   /** La misma página en los dos idiomas (si no está traducida, no va). */
   alternates?: Alternates;
@@ -32,11 +32,10 @@ type PageMeta = {
   absoluteTitle?: boolean;
   /** Las búsquedas a las que apunta la página (<meta name="keywords">). Ni Google ni Bing lo usan para posicionar; Bing puede tomar una lista larga como spam. */
   keywords?: string[];
-  article?: { publishedTime: string; authors: string[]; section?: string };
 };
 
 /** Título, descripción, URL canónica y cómo se ve al compartir. La imagen sale del opengraph-image.tsx de cada página. */
-export function pageMetadata({ lang, title, description, path, alternates, absoluteTitle, keywords, article }: PageMeta): Metadata {
+export function pageMetadata({ lang, title, description, path, alternates, absoluteTitle, keywords }: PageMeta): Metadata {
   const fullTitle = absoluteTitle ? title : `${title} | ${business.name}`;
   return {
     title: absoluteTitle ? { absolute: title } : title,
@@ -50,9 +49,7 @@ export function pageMetadata({ lang, title, description, path, alternates, absol
       siteName: business.name,
       locale: locales[lang].og,
       ...(alternates && { alternateLocale: [locales[otherLang(lang)].og] }),
-      ...(article
-        ? { type: "article", publishedTime: article.publishedTime, authors: article.authors, section: article.section }
-        : { type: "website" }),
+      type: "website",
     },
     twitter: { card: "summary_large_image", title: fullTitle, description, site: xHandle && `@${xHandle}` },
   };
@@ -197,7 +194,7 @@ export function siteGraph(lang: Lang) {
   ];
 }
 
-/** La página en sí. CollectionPage para el blog. */
+/** La página en sí. CollectionPage para los podcasts. */
 export function webPageLd({ lang, path, name, description, type = "WebPage", about, keywords }: {
   lang: Lang;
   path: string;
@@ -244,32 +241,22 @@ export function faqLd(lang: Lang) {
   };
 }
 
-/** Una nota del blog. */
-export function articleLd(post: {
-  lang: Lang;
-  path: string;
-  title: string;
-  description: string;
-  date: string;
-  author: string;
-  category: string;
-  image: string;
-  words: number;
-}) {
-  const ronald = content(post.lang).team.find((m) => m.id === "ronald")!;
+/**
+ * El video de la página de un episodio del podcast, para los resultados de video de Google. El idioma es el del
+ * video (castellano), también en la página en inglés.
+ */
+export function videoLd(episode: { path: string; title: string; description: string; image: string; date: string; seconds: number; videoId: string }) {
+  const m = Math.floor(episode.seconds / 60);
   return {
-    "@type": "BlogPosting",
-    "@id": abs(`${post.path}#nota`),
-    headline: post.title,
-    description: post.description,
-    datePublished: post.date,
-    dateModified: post.date,
-    author: post.author === ronald.name ? { "@id": ids.ronald } : { "@type": "Person", name: post.author },
+    "@type": "VideoObject",
+    "@id": abs(`${episode.path}#video`),
+    name: episode.title,
+    description: episode.description,
+    thumbnailUrl: abs(episode.image),
+    uploadDate: episode.date,
+    duration: `PT${Math.floor(m / 60) ? `${Math.floor(m / 60)}H` : ""}${m % 60}M${episode.seconds % 60}S`,
+    embedUrl: `https://www.youtube.com/embed/${episode.videoId}`,
+    inLanguage: "es",
     publisher: { "@id": ids.business },
-    image: abs(post.image),
-    mainEntityOfPage: { "@id": abs(post.path) },
-    articleSection: post.category,
-    wordCount: post.words,
-    inLanguage: locales[post.lang].html,
   };
 }

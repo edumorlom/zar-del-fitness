@@ -5,22 +5,43 @@
 // lib/image-variants.mjs menor que el de la foto, más una al ancho original. next/image las ofrece en el
 // srcset (lib/image-loader.ts) y cada celular baja la que le alcanza, no la foto entera. Los anchos que hay de cada
 // foto quedan en lib/image-widths.json. Las copias que ya están (y son más nuevas que la foto) no se vuelven a hacer.
-import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
+//
+// Antes, las miniaturas de los episodios del podcast (db/podcasts.json) que faltan en db/img/podcasts/ se bajan de
+// YouTube, en WebP. Quedan en db/ para subirlas con el resto.
+import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { imageWidths, variantPath } from "../lib/image-variants.mjs";
+import { youtubeId, youtubeImage } from "../lib/youtube.mjs";
 
 const site = fileURLToPath(new URL("..", import.meta.url));
 const from = path.join(site, "..", "db", "img");
 const to = path.join(site, "public", "img");
+
+for (const { video } of JSON.parse(readFileSync(path.join(site, "..", "db", "podcasts.json"), "utf-8"))) {
+  const id = youtubeId(video);
+  if (!id) throw new Error(`db/podcasts.json: "${video}" no es un link de YouTube`);
+  const dest = path.join(site, "..", "db", youtubeImage(id));
+  if (existsSync(dest)) continue;
+  // La de 1280×720 no la tienen todos los videos. La de 480×360 sí, con franjas negras arriba y abajo: se recortan.
+  let thumb = await fetch(`https://i.ytimg.com/vi/${id}/maxresdefault.jpg`);
+  const small = !thumb.ok;
+  if (small) thumb = await fetch(`https://i.ytimg.com/vi/${id}/hqdefault.jpg`);
+  if (!thumb.ok) throw new Error(`No se pudo bajar la miniatura de ${video} (db/podcasts.json): ${thumb.status}`);
+  let img = sharp(Buffer.from(await thumb.arrayBuffer()));
+  if (small) img = img.extract({ left: 0, top: 45, width: 480, height: 270 });
+  mkdirSync(path.dirname(dest), { recursive: true });
+  await img.webp({ quality: 80 }).toFile(dest);
+  console.log(`Miniatura bajada de YouTube: db${youtubeImage(id)}`);
+}
 
 // Todo menos _w/, que guarda las copias ya hechas.
 mkdirSync(to, { recursive: true });
 for (const entry of readdirSync(to)) if (entry !== "_w") rmSync(path.join(to, entry), { recursive: true, force: true });
 cpSync(from, to, { recursive: true });
 
-/** "/img/blog/x.webp" de cada foto de db/img/ (no los SVG). */
+/** "/img/podcasts/x.webp" de cada foto de db/img/ (no los SVG). */
 const photos = (dir, base = "/img") =>
   readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
     e.isDirectory() ? photos(path.join(dir, e.name), `${base}/${e.name}`) : /\.(jpe?g|png|webp)$/i.test(e.name) ? [`${base}/${e.name}`] : []
