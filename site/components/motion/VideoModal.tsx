@@ -11,24 +11,28 @@ export function VideoModal({ id, onClose, labels }: {
   labels: { nombre: string; cerrar: string; titulo: string };
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
+  // Abierto mientras haya un video. Al pasar de un video a otro (atrás/adelante entre episodios) sigue abierto y
+  // sólo cambia el iframe.
+  const open = id !== null;
 
   useEffect(() => {
     const d = dialog.current!;
-    if (!id) return;
+    if (!open) return;
     d.showModal();
     scroll.lock();
     return () => {
       d.close();
       scroll.unlock();
     };
-  }, [id]);
+  }, [open]);
 
   return (
     <dialog
       ref={dialog}
       className={styles.modal}
       aria-label={labels.nombre}
-      onClose={onClose}
+      // El evento close llega también cuando lo cerramos nosotros (id ya es null): sólo cuenta el de Escape.
+      onClose={() => id !== null && onClose()}
       onClick={(e) => e.target === dialog.current && onClose()}
     >
       <button className={styles.close} type="button" aria-label={labels.cerrar} onClick={onClose}>
@@ -37,6 +41,7 @@ export function VideoModal({ id, onClose, labels }: {
       <div className={styles.video}>
         {id && (
           <iframe
+            key={id}
             src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`}
             title={labels.titulo}
             allow="autoplay; encrypted-media; picture-in-picture; fullscreen"

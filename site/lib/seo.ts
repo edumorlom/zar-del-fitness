@@ -92,7 +92,7 @@ const credentials = (id: string) =>
 
 /** El sitio, el gimnasio y Ronald: van en todas las páginas (el layout de cada idioma). */
 export function siteGraph(lang: Lang) {
-  const { t, pages, programs, schedule, team, awards, press } = content(lang);
+  const { t, pages, programs, schedule, team, press } = content(lang);
   const ronald = ronaldIn(lang);
   return [
     {
@@ -184,7 +184,6 @@ export function siteGraph(lang: Lang) {
       knowsAbout: t.seo.especialidades,
       hasCredential: credentials("ronald"),
       award: [
-        ...awards.filter((a) => /^\d{4}$/.test(a.year)).map((a) => `${a.title} (${a.year}): ${a.text}`),
         ...press.filter((p) => p.isAward).map((p) => `${p.src}: ${p.title}`),
       ],
       subjectOf: press

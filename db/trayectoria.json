@@ -47,22 +47,5 @@
       "tipo": { "es": "Televisión", "en": "Television" },
       "imagen": "/img/ronald-seated.webp"
     }
-  ],
-  "premios": [
-    {
-      "fecha": "2014",
-      "titulo": { "es": "Chiquinquirá de Oro", "en": "Chiquinquirá de Oro" },
-      "texto": { "es": "Personal trainer de mayor prestigio del año · Maracaibo", "en": "Most prestigious personal trainer of the year · Maracaibo" }
-    },
-    {
-      "fecha": "2017",
-      "titulo": { "es": "Occamy Internacional", "en": "Occamy Internacional" },
-      "texto": { "es": "Instructor deportivo", "en": "Sports instructor" }
-    },
-    {
-      "fecha": { "es": "Hoy", "en": "Today" },
-      "titulo": { "es": "Revista Cuerpo y Mente", "en": "Cuerpo y Mente magazine" },
-      "texto": { "es": "Articulista · Orador motivacional para Remax", "en": "Columnist · Motivational speaker for Remax" }
-    }
   ]
 }

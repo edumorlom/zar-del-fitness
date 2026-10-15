@@ -315,13 +315,6 @@ function build(lang: Lang) {
     videoId: featured.link?.match(/(?:youtu\.be\/|[?&]v=)([\w-]{11})/)?.[1],
   };
 
-  const awards = trayectoria.premios.map((a, i) => ({
-    // La fecha es un año, o un texto en los dos idiomas ("Hoy").
-    year: localize(a.fecha, lang, `db/trayectoria.json premios[${i}].fecha`),
-    title: text(a.titulo, lang, `db/trayectoria.json premios[${i}].titulo`),
-    text: text(a.texto, lang, `db/trayectoria.json premios[${i}].texto`),
-  }));
-
   const team = equipo.map((m) => {
     const img = teamPhotos[m.id];
     if (!img) throw new Error(`Falta la foto de ${m.nombre} (db/equipo.json) en site/lib/content.ts`);
@@ -371,7 +364,6 @@ function build(lang: Lang) {
     schedule,
     press,
     featuredPress,
-    awards,
     team,
     faqs,
     heroChips,

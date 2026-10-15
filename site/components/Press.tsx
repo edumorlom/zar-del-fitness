@@ -5,7 +5,7 @@ import type { Lang } from "@/lib/i18n";
 import styles from "./Press.module.css";
 
 export function Press({ lang }: { lang: Lang }) {
-  const { t, press, awards } = content(lang);
+  const { t, press } = content(lang);
   return (
     <section className={`section ${styles.press}`}>
       <div className="container">
@@ -19,16 +19,6 @@ export function Press({ lang }: { lang: Lang }) {
         </header>
 
         <PressList items={press} alt={t.trayectoria.imagen} />
-
-        <div className={styles.awards} data-reveal-stagger>
-          {awards.map((a) => (
-            <div key={a.title} className={styles.award}>
-              <span className={styles.year}>{a.year}</span>
-              <strong>{a.title}</strong>
-              <span>{a.text}</span>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
   );
