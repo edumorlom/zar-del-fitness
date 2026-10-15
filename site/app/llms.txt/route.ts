@@ -33,7 +33,7 @@ const plain = (text: string) => text.replace(/\*+([^*]+)\*+/g, "$1");
 // Quién es Ronald, sus premios, la prensa y el equipo, en un idioma: es lo que la gente le pregunta a un asistente
 // ("¿quién es el Zar del Fitness?", "¿es bueno?"). `h` es el nivel de los títulos ("##" o "###").
 function ronaldLines(lang: Lang, h: string) {
-  const { t, awards, press, team } = content(lang);
+  const { t, press, team } = content(lang);
   const pressLine = (p: (typeof press)[number]) => {
     const name = `${p.src}: ${p.title}`;
     return `- ${p.href ? `[${name}](${p.href})` : name} (${p.kind})`;
@@ -46,7 +46,6 @@ function ronaldLines(lang: Lang, h: string) {
     `${h}# ${t.seo.llms.premios}`,
     "",
     ...press.filter((p) => p.isAward).map(pressLine),
-    ...awards.map((a) => `- ${a.year} · ${a.title}: ${a.text}`),
     "",
     `${h}# ${t.seo.llms.prensa}`,
     "",

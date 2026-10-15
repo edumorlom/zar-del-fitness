@@ -62,6 +62,8 @@ export function MotionProvider({ home, labels, children }: { home: string; label
     if (history.state?.video) history.back();
   }, []);
   useEffect(() => {
+    // Recargada con un video abierto, la página ya es la del video: su entrada del historial deja de abrirlo.
+    if (history.state?.video) history.replaceState({ ...history.state, video: undefined, title: undefined }, "");
     const onPopState = () => {
       const state = history.state;
       if (state?.video) {
