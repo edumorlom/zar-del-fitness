@@ -235,4 +235,33 @@
   .cell:has(.featured) {
     order: -1;
   }
+
+  /* En el celular cada tarjeta ocupaba casi toda la pantalla: arte más bajo y todo más compacto */
+  .media {
+    aspect-ratio: 2 / 1;
+    margin: 6px 6px 0;
+    border-radius: 18px;
+  }
+  .body {
+    padding: 20px 20px 22px;
+  }
+  .price {
+    margin-top: 12px;
+  }
+  .desc {
+    margin-top: 10px;
+    font-size: 0.9rem;
+  }
+  .list {
+    gap: 8px;
+    margin: 16px 0 20px;
+    padding-top: 16px;
+  }
+  .list li {
+    font-size: 0.88rem;
+  }
+  .ctas > a {
+    flex: 1;
+    justify-content: center;
+  }
 }
