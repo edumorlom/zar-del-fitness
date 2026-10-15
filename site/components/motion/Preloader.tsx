@@ -36,11 +36,11 @@ export function Preloader({ onDone, labels }: { onDone: () => void; labels: { re
 
       // La intro (logo, contador, barra) es CSS y ya viene corriendo desde el primer pintado.
       // Se espera a que termine y a las fuentes, ambas con tope para no quedar nunca colgados.
-      const bar = el.querySelector<HTMLElement>(`.${styles.bar} i`)!;
-      const introDone = Promise.all((bar.getAnimations?.() ?? []).map((a) => a.finished.catch(() => {})));
+      const inner = el.querySelector<HTMLElement>(`.${styles.inner}`)!;
+      const introDone = Promise.all((inner.getAnimations?.({ subtree: true }) ?? []).map((a) => a.finished.catch(() => {})));
       const fontsReady = document.fonts?.ready ?? Promise.resolve();
 
-      Promise.race([introDone, wait(2500)])
+      Promise.race([introDone, wait(2200)])
         .then(() => Promise.race([fontsReady, wait(1000)]))
         .then(() => {
           if (cancelled) return;
@@ -50,12 +50,12 @@ export function Preloader({ onDone, labels }: { onDone: () => void; labels: { re
                 setGone(true);
               },
             })
-            .to(`.${styles.inner}`, { y: -40, autoAlpha: 0, duration: 0.5, ease: "power2.in" })
-            .to(el, { clipPath: "inset(0% 0% 100% 0%)", duration: 1, ease: "expo.inOut" }, "-=0.1")
+            .to(inner, { y: -40, autoAlpha: 0, duration: 0.4, ease: "power2.in" })
+            .to(el, { clipPath: "inset(0% 0% 100% 0%)", duration: 0.85, ease: "expo.inOut" }, "-=0.1")
             .add(() => {
               release();
               onDone();
-            }, "-=0.55");
+            }, "-=0.5");
         });
 
       // StrictMode/HMR: si se desmonta antes de terminar, liberar el scroll.
@@ -76,12 +76,16 @@ export function Preloader({ onDone, labels }: { onDone: () => void; labels: { re
         <div className={styles.meta}>
           <span className={styles.label}>{labels.reto}</span>
           <span className={styles.count}>
-            <span className={styles.num} />
+            <span className={styles.num}>
+              <span className={styles.tens} />
+              <span className={styles.ones} />
+            </span>
             <small>{labels.dias}</small>
           </span>
         </div>
         <div className={styles.bar}>
           <i />
+          <b />
         </div>
       </div>
     </div>
