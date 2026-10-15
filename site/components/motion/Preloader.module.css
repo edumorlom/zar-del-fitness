@@ -107,6 +107,8 @@
   width: 100%;
   height: 1px;
   background: var(--line);
+  /* Recorta a los costados (la punta no asoma antes de arrancar) pero deja ver su brillo arriba y abajo */
+  clip-path: inset(-20px 0);
 }
 .bar i {
   display: block;
