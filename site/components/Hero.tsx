@@ -25,23 +25,11 @@ type HeroProps = {
 export function Hero({ t, hashtag, cta, trailer, featuredPress, chips, cursorVideo }: HeroProps) {
   const root = useRef<HTMLElement>(null);
 
+  // La intro (título, foto, sello, textos) es con CSS (Hero.module.css), para que arranque con la primera pintada.
+  // Acá sólo el parallax suave con el mouse.
   useGSAP(
     () => {
-      if (reducedMotion()) return;
-      const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-      tl.from(`.${styles.title} .ln > span`, { yPercent: 115, rotate: 4, duration: 1.4, stagger: 0.1 })
-        .fromTo(
-          `.${styles.frame}`,
-          { clipPath: "inset(100% 0% 0% 0%)" },
-          { clipPath: "inset(0% 0% 0% 0%)", duration: 1.6, ease: "expo.inOut" },
-          0
-        )
-        .from(`.${styles.frame} img`, { scale: 1.4, duration: 2.2 }, 0.2)
-        .from(`.${styles.seal}`, { scale: 0, rotate: -120, duration: 1.4, ease: "back.out(1.6)" }, 0.8)
-        .from("[data-hero-fade]", { autoAlpha: 0, y: 30, duration: 1.1, stagger: 0.08 }, 0.5);
-
-      // Parallax suave con el mouse
-      if (!finePointer()) return;
+      if (reducedMotion() || !finePointer()) return;
       const layers = Array.from(root.current!.querySelectorAll<HTMLElement>("[data-depth]"));
       const setters = layers.map((el) => ({
         x: gsap.quickTo(el, "x", { duration: 1.2, ease: "power3.out" }),
@@ -83,7 +71,7 @@ export function Hero({ t, hashtag, cta, trailer, featuredPress, chips, cursorVid
           <p className={styles.script} data-hero-fade>
             {t.sumate} <span>{hashtag.text}</span>
           </p>
-          <p className={styles.lead} data-hero-fade>
+          <p className={styles.lead}>
             <Rich text={t.descripcion} />
           </p>
           <div className={styles.ctas} data-hero-fade>

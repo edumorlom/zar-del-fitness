@@ -179,6 +179,13 @@
   height: 100%;
   animation: spin 18s linear infinite;
 }
+/* Copia del `spin` de app/globals.css: dentro de un .module.css, Next.js le cambia el nombre a la animación y la
+   global no se encuentra (el anillo no giraba). */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 .sealRing text {
   fill: var(--gold-light);
   font-family: var(--font-sans);
@@ -323,6 +330,106 @@
   color: var(--white);
   font-weight: 700;
   margin-left: 4px;
+}
+
+/* ---------- Intro ----------
+   Con CSS y no con GSAP: arranca con la primera pintada, sin esperar al JavaScript. Con GSAP, al hidratar se
+   escondía lo que ya estaba pintado y volvía a entrar (un parpadeo en el celular, y peor Speed Index).
+   El párrafo (.lead) sólo sube, sin desvanecerse: en el celular es el elemento más grande de la pantalla (el LCP),
+   y Chrome cuenta un texto que aparece con opacity desde 0 recién cuando terminó de aparecer. */
+.title :global(.ln) > span {
+  animation: heroLine 1.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+/* La línea dorada tiene además el brillo de .gold-text (app/globals.css): el `animation` de arriba lo pisaría. */
+.title :global(.ln) > :global(.gold-text) {
+  animation: heroLine 1.4s cubic-bezier(0.16, 1, 0.3, 1) backwards, heroShimmer 7s linear infinite;
+}
+.title :global(.ln):nth-child(2) > span {
+  animation-delay: 0.1s;
+}
+.title :global(.ln):nth-child(3) > span {
+  animation-delay: 0.2s;
+}
+.title :global(.ln):nth-child(4) > span {
+  animation-delay: 0.3s;
+}
+.frame {
+  animation: heroFrame 1.6s cubic-bezier(0.87, 0, 0.13, 1) backwards;
+}
+.frame img {
+  animation: heroZoom 2.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
+}
+.seal {
+  animation: heroSeal 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s backwards;
+}
+.lead {
+  animation: heroRise 1.1s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+.hero [data-hero-fade] {
+  animation: heroFade 1.1s cubic-bezier(0.16, 1, 0.3, 1) var(--fade-delay, 0.5s) backwards;
+}
+.script {
+  --fade-delay: 0.58s;
+}
+.ctas {
+  --fade-delay: 0.66s;
+}
+.tag {
+  --fade-delay: 0.74s;
+}
+.foot {
+  --fade-delay: 0.82s;
+}
+@keyframes heroLine {
+  from {
+    transform: translateY(115%) rotate(4deg);
+  }
+}
+@keyframes heroFrame {
+  from {
+    clip-path: inset(100% 0% 0% 0%);
+  }
+  to {
+    clip-path: inset(0% 0% 0% 0%);
+  }
+}
+@keyframes heroZoom {
+  from {
+    transform: scale(1.4);
+  }
+}
+@keyframes heroSeal {
+  from {
+    transform: scale(0) rotate(-120deg);
+  }
+}
+@keyframes heroRise {
+  from {
+    transform: translateY(30px);
+  }
+}
+@keyframes heroFade {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+}
+/* El mismo que `shimmer` de app/globals.css: dentro de un .module.css, Next.js le cambia el nombre a las animaciones. */
+@keyframes heroShimmer {
+  to {
+    background-position: 220% center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .title :global(.ln) > span,
+  .title :global(.ln) > :global(.gold-text),
+  .frame,
+  .frame img,
+  .seal,
+  .lead,
+  .hero [data-hero-fade] {
+    animation: none;
+  }
 }
 
 @media (max-width: 900px) {
