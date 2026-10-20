@@ -260,65 +260,71 @@ ol {
 }
 
 /* ---------- Animaciones al entrar en pantalla (components/motion/Reveals.tsx) ----------
-   data-anim="wait": está más abajo; la animación espera en pausa en su primer cuadro (escondido).
-   data-anim="in": entró y la animación corre. Los keyframes sólo tienen `from`: terminan en el estilo propio del
-   elemento, y al terminar Reveals saca data-anim. Lo que ya se ve al cargar la página no lleva data-anim.
+   data-anim="wait": está más abajo y espera escondido, con un estilo fijo. No con la animación en pausa: Chrome le da
+   una capa propia a cada elemento con una animación de opacity o transform aunque esté en pausa, y eran ~80 capas
+   más que componer en cada cuadro. data-anim="in": entró y corre la animación, que arranca del mismo punto
+   (--reveal-from) y, sin `to`, termina en el estilo propio del elemento. Al terminar, Reveals saca data-anim.
+   Sin transition mientras tanto: la de hover de un botón o una tarjeta arrancaría al salir de "wait" y le ganaría a
+   la animación. Lo que ya se ve al cargar la página no lleva data-anim.
    Las curvas son las de GSAP: power3.out, expo.out y expo.inOut. */
 @media (prefers-reduced-motion: no-preference) {
-  [data-reveal][data-anim] {
-    animation: reveal-up 1.1s cubic-bezier(0.215, 0.61, 0.355, 1) backwards;
+  [data-reveal] {
+    --reveal-from: translateY(44px);
   }
-  [data-reveal="left"][data-anim] {
-    animation-name: reveal-left;
+  [data-reveal="left"] {
+    --reveal-from: translateX(-60px);
   }
-  [data-reveal="scale"][data-anim] {
-    animation-name: reveal-scale;
+  [data-reveal="scale"] {
+    --reveal-from: scale(0.92);
   }
-  [data-reveal-stagger][data-anim] > * {
-    animation: reveal-child 0.9s cubic-bezier(0.215, 0.61, 0.355, 1) backwards;
+  [data-reveal-stagger] > * {
+    --reveal-from: translateY(36px);
   }
-  [data-lines][data-anim] .ln > span {
+  [data-reveal][data-anim],
+  [data-reveal-stagger][data-anim] > *,
+  [data-lines][data-anim] .ln > span,
+  [data-reveal-img][data-anim],
+  [data-reveal-img][data-anim] :is(img, iframe) {
+    transition: none;
+  }
+
+  [data-reveal][data-anim="wait"],
+  [data-reveal-stagger][data-anim="wait"] > * {
+    opacity: 0;
+    transform: var(--reveal-from);
+  }
+  [data-reveal][data-anim="in"] {
+    animation: reveal 1.1s cubic-bezier(0.215, 0.61, 0.355, 1) backwards;
+  }
+  [data-reveal-stagger][data-anim="in"] > * {
+    animation: reveal 0.9s cubic-bezier(0.215, 0.61, 0.355, 1) backwards;
+  }
+
+  [data-lines][data-anim="wait"] .ln > span {
+    transform: translateY(115%) rotate(3deg);
+  }
+  [data-lines][data-anim="in"] .ln > span {
     animation: reveal-line 1.15s cubic-bezier(0.16, 1, 0.3, 1) backwards;
   }
   /* La línea dorada sigue con el brillo de .gold-text: el `animation` de arriba lo pisaría. */
-  [data-lines][data-anim] .ln > .gold-text {
+  [data-lines][data-anim="in"] .ln > .gold-text {
     animation: reveal-line 1.15s cubic-bezier(0.16, 1, 0.3, 1) backwards, shimmer 7s linear infinite;
   }
-  [data-reveal-img][data-anim] {
+
+  [data-reveal-img][data-anim="wait"] {
+    clip-path: inset(100% 0% 0% 0%);
+  }
+  [data-reveal-img][data-anim="in"] {
     animation: reveal-clip 1.4s cubic-bezier(0.87, 0, 0.13, 1) backwards;
   }
-  [data-reveal-img][data-anim] :is(img, iframe) {
+  [data-reveal-img][data-anim="in"] :is(img, iframe) {
     animation: reveal-zoom 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards;
   }
-  /* !important: el shorthand `animation` de arriba (más específico) vuelve a poner running. Sin la pausa, la
-     animación corre mientras espera fuera de pantalla, y al pasar a "in" no se repite (el nombre no cambia). */
-  [data-anim="wait"],
-  [data-anim="wait"] * {
-    animation-play-state: paused !important;
-  }
 }
-@keyframes reveal-up {
+@keyframes reveal {
   from {
     opacity: 0;
-    transform: translateY(44px);
-  }
-}
-@keyframes reveal-left {
-  from {
-    opacity: 0;
-    transform: translateX(-60px);
-  }
-}
-@keyframes reveal-scale {
-  from {
-    opacity: 0;
-    transform: scale(0.92);
-  }
-}
-@keyframes reveal-child {
-  from {
-    opacity: 0;
-    transform: translateY(36px);
+    transform: var(--reveal-from);
   }
 }
 @keyframes reveal-line {
