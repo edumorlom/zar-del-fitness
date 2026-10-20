@@ -70,23 +70,27 @@ function cssReveals() {
     );
   };
 
-  const watchers = new Map(
-    REVEALS.map((r) => {
-      const io = new IntersectionObserver(
-        (entries) => {
-          const entered = entries.filter((e) => e.isIntersecting);
-          entered.forEach((e) => io.unobserve(e.target));
-          // Lo que quedó arriba aparece directo; el resto entra, escalonado con un total acotado si son varios.
-          const visible = entered.filter((e) => e.boundingClientRect.bottom >= 0);
-          entered.filter((e) => e.boundingClientRect.bottom < 0).forEach((e) => delete (e.target as HTMLElement).dataset.anim);
-          const step = r.batch ? Math.min(0.09, 0.5 / Math.max(1, visible.length)) : 0;
-          visible.forEach((e, i) => play(e.target as HTMLElement, r, i * step));
-        },
-        { rootMargin: `${ABOVE}px 0px -${100 - r.start}% 0px` }
-      );
-      return [r, io] as const;
-    })
-  );
+  // Un observer por línea de entrada (el margen de abajo: "12%", o en px cerca del final de la página).
+  const watchers = new Map<string, IntersectionObserver>();
+  const onEnter = (entries: IntersectionObserverEntry[], io: IntersectionObserver) => {
+    const entered = entries.filter((e) => e.isIntersecting);
+    entered.forEach((e) => io.unobserve(e.target));
+    // Lo que quedó arriba aparece directo; el resto entra. Los data-reveal que entran juntos se escalonan, con un
+    // total acotado si son varios.
+    entered.filter((e) => e.boundingClientRect.bottom < 0).forEach((e) => delete (e.target as HTMLElement).dataset.anim);
+    const visible = entered.filter((e) => e.boundingClientRect.bottom >= 0).map((e) => e.target as HTMLElement);
+    const batch = visible.filter((el) => reveals.get(el)!.batch);
+    const step = Math.min(0.09, 0.5 / Math.max(1, batch.length));
+    visible.forEach((el) => play(el, reveals.get(el)!, batch.includes(el) ? batch.indexOf(el) * step : 0));
+  };
+  const watch = (el: HTMLElement, bottom: string) => {
+    let io = watchers.get(bottom);
+    if (!io) {
+      io = new IntersectionObserver(onEnter, { rootMargin: `${ABOVE}px 0px -${bottom} 0px` });
+      watchers.set(bottom, io);
+    }
+    io.observe(el);
+  };
 
   const first = new IntersectionObserver((entries) => {
     const pageBottom = document.documentElement.scrollHeight - scrollY;
@@ -95,11 +99,12 @@ function cssReveals() {
       if (e.isIntersecting || e.boundingClientRect.top < 0) continue;
       const el = e.target as HTMLElement;
       const r = reveals.get(el)!;
-      // Lo que no llega a su línea de entrada ni con la página scrolleada hasta abajo (el texto gigante del pie)
-      // queda visible: si no, no entraría nunca.
-      if (pageBottom - e.boundingClientRect.top < (innerHeight * (100 - r.start)) / 100) continue;
       el.dataset.anim = "wait";
-      watchers.get(r)!.observe(el);
+      // Cerca del final de la página (el texto gigante del pie) la línea de entrada puede quedar más abajo de lo que
+      // se llega scrolleando hasta el fondo, y no entraría nunca: entra 20 px antes de llegar abajo del todo.
+      const toEnd = pageBottom - e.boundingClientRect.top;
+      const line = (innerHeight * (100 - r.start)) / 100;
+      watch(el, toEnd < line + 20 ? `${Math.max(0, Math.round(toEnd - 20))}px` : `${100 - r.start}%`);
     }
   });
   reveals.forEach((_, el) => first.observe(el));
