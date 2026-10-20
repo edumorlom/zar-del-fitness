@@ -4,7 +4,7 @@
 
 import podcasts from "@db/podcasts.json";
 import { content } from "./content";
-import { fill, locales, localePath, text, type Lang } from "./i18n";
+import { fill, localePath, text, type Lang } from "./i18n";
 import { youtubeId, youtubeImage } from "./youtube.mjs";
 
 export type Episode = {
@@ -73,9 +73,3 @@ export const findEpisode = (lang: Lang, id: string) => episodes[lang].find((e) =
 
 /** Las URLs de los episodios, para el build (generateStaticParams). */
 export const episodeParams = () => podcasts.map((p) => ({ id: p.id }));
-
-/** "2026-09-18" → "18 de septiembre de 2026" (en inglés, "September 18, 2026") */
-export const formatDate = (date: string, lang: Lang) =>
-  new Intl.DateTimeFormat(locales[lang].intl, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(
-    new Date(`${date}T12:00:00Z`)
-  );

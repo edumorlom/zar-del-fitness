@@ -2,14 +2,15 @@
 // en el build con las tipografías del sitio. Cada página tiene su opengraph-image.tsx que llama a ogImage().
 // Salen en JPEG porque WhatsApp no muestra la vista previa si la imagen pesa más de ~300 KB (en PNG, con la
 // foto, pesan casi 1 MB). Se exportan sin extensión (out/…/opengraph-image): el .htaccess las sirve como JPEG.
-// Los episodios del podcast usan la miniatura de su video.
+// Las notas del blog van sin la foto de Ronald; los episodios del podcast usan la miniatura de su video.
 
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
+import { posts } from "./blog";
 import { content, siteUrl } from "./content";
-import type { Lang } from "./i18n";
+import { formatDate, type Lang } from "./i18n";
 import { findEpisode } from "./podcasts";
 
 export const ogSize = { width: 1200, height: 630 };
@@ -33,34 +34,39 @@ type Card = {
   title: string;
   /** Frase en cursiva debajo del título. */
   accent?: string;
+  /** La foto de Ronald a la derecha (no en las notas del blog). */
+  withPhoto?: boolean;
 };
 
-async function ogImage({ eyebrow, title, accent }: Card) {
+async function ogImage({ eyebrow, title, accent, withPhoto = true }: Card) {
   const [[anton, serif], ronald] = await Promise.all([fonts, photo]);
-  // El texto, a la izquierda de la foto de Ronald.
-  const textWidth = 700;
+  const textWidth = withPhoto ? 700 : 1040;
 
   const png = new ImageResponse(
     (
       <div style={{ display: "flex", width: "100%", height: "100%", background: "#000", color: "#fff", position: "relative" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={ronald}
-          alt=""
-          width={560}
-          height={630}
-          style={{ position: "absolute", right: 0, top: 0, width: 560, height: 630, objectFit: "cover", objectPosition: "center top" }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            right: 0,
-            top: 0,
-            width: 560,
-            height: 630,
-            background: "linear-gradient(90deg, #000 0%, rgba(0,0,0,0.6) 22%, rgba(0,0,0,0) 55%)",
-          }}
-        />
+        {withPhoto && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={ronald}
+            alt=""
+            width={560}
+            height={630}
+            style={{ position: "absolute", right: 0, top: 0, width: 560, height: 630, objectFit: "cover", objectPosition: "center top" }}
+          />
+        )}
+        {withPhoto && (
+          <div
+            style={{
+              position: "absolute",
+              right: 0,
+              top: 0,
+              width: 560,
+              height: 630,
+              background: "linear-gradient(90deg, #000 0%, rgba(0,0,0,0.6) 22%, rgba(0,0,0,0) 55%)",
+            }}
+          />
+        )}
         <div
           style={{
             position: "absolute",
@@ -120,6 +126,28 @@ async function ogImage({ eyebrow, title, accent }: Card) {
 export function homeImage(lang: Lang) {
   const t = content(lang).t.seo.imagenInicio;
   return { alt: t.alt, render: () => ogImage({ eyebrow: t.antetitulo, title: t.titulo, accent: t.acento }) };
+}
+
+export function blogImage(lang: Lang) {
+  const t = content(lang).t.seo.imagenBlog;
+  return { alt: t.alt, render: () => ogImage({ eyebrow: t.antetitulo, title: t.titulo, accent: t.acento }) };
+}
+
+/** Una nota: su categoría, fecha, título y autor, sin la foto. */
+export function postImage(lang: Lang) {
+  const { t } = content(lang);
+  return {
+    alt: t.seo.imagenNota,
+    render: (slug: string) => {
+      const post = posts[lang].find((p) => p.slug === slug)!;
+      return ogImage({
+        eyebrow: `${post.category} · ${formatDate(post.date, lang)}`,
+        title: post.title,
+        accent: `${t.blog.por} ${post.author}`,
+        withPhoto: false,
+      });
+    },
+  };
 }
 
 export function podcastsImage(lang: Lang) {

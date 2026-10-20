@@ -20,6 +20,7 @@ npm run lint
 | Colores, tipografía, botones | `app/globals.css` (tokens en `:root`) |
 | Secciones | `components/*.tsx` + su `*.module.css` |
 | Imágenes | `../db/img/` (WebP). Se copian a `public/img/` antes de `dev` y `build`, con copias más chicas en WebP para cada ancho de pantalla (`scripts/copy-images.mjs`; `next/image` las elige con `lib/image-loader.ts`). |
+| Notas del blog | `../db/blog/`, y en inglés `../db/blog/en/` (ver `../db/README.md`) |
 | Episodios del podcast | `../db/podcasts.json` (ver `../db/README.md`) |
 | SEO: título y descripción | `../db/textos.json` (`seo`) |
 | SEO: datos estructurados (Google), hreflang, sitemap, robots | `lib/seo.ts`, `app/sitemap.ts`, `app/robots.ts` |
@@ -32,11 +33,12 @@ npm run lint
 ## Idiomas
 
 El sitio está en castellano en la raíz (`/`) y en inglés en `/en/`, con las mismas páginas: `/en/`,
-`/en/podcasts/` y cada episodio en `/en/podcasts/<id>/`. `/es/` redirige a `/`.
+`/en/blog/`, cada nota traducida en `/en/año/mes/día/nota-en-ingles/`, `/en/podcasts/` y cada episodio en
+`/en/podcasts/<id>/`. `/es/` redirige a `/`.
 
 - Cada idioma tiene su layout raíz, con su `<html lang>`: `app/(es)/layout.tsx` y `app/(en)/layout.tsx` (los dos
   usan `components/RootShell.tsx`). Las páginas de cada idioma son archivos cortos que llaman al mismo componente
-  con `lang` (`components/HomePage.tsx`, `PodcastIndex.tsx`, `PodcastEpisode.tsx`).
+  con `lang` (`components/HomePage.tsx`, `BlogIndex.tsx`, `BlogPost.tsx`, `PodcastIndex.tsx`, `PodcastEpisode.tsx`).
 - La 404 es una sola, en castellano con una línea en inglés: `app/global-not-found.tsx`.
 - `content(lang)` (`lib/content.ts`) devuelve todo resuelto en un idioma. Los textos de `db/` vienen en los dos
   (`{ "es": …, "en": … }`); si falta uno, el sitio no se construye y dice cuál (`lib/i18n.ts`).
@@ -47,15 +49,18 @@ El sitio está en castellano en la raíz (`/`) y en inglés en `/en/`, con las m
 
 ## Páginas
 
-El sitio es una sola página (`/`, todas las secciones) más los podcasts: `/podcasts/` y cada episodio en
-`/podcasts/<id>/` (`../db/podcasts.json`). Desde la lista, un click en un episodio abre el video en el modal y
+El sitio es una sola página (`/`, todas las secciones) más el blog y los podcasts.
+
+El blog es `/blog/` y cada nota en `/año/mes/día/nota/` (`../db/blog/`), las mismas URLs que tenían en el sitio
+anterior en WordPress, para no perder lo que Google ya había indexado. Se sacó el 2026-10-13 y volvió el 2026-10-20.
+
+Los podcasts son `/podcasts/` y cada episodio en `/podcasts/<id>/` (`../db/podcasts.json`). Desde la lista, un click en un episodio abre el video en el modal y
 cambia la URL a la de su página sin recargar (`components/motion/VideoLink.tsx`); entrando directo a esa URL (desde
 Google o un link compartido) se ve la página del episodio, con el video embebido.
 
 Las páginas viejas cuyo contenido hoy es una sección del inicio redirigen ahí (301: por ejemplo
-`/entrenamiento-online/` → `/#programas`, `/sobre-ronald/` → `/#zar`). El blog se sacó el 2026-10-13: `/blog/`
-redirige a `/podcasts/`, y sus notas (`/año/mes/día/nota/`), como lo que ya no existe del sitio anterior en WordPress
-(tienda, carrito, mi cuenta, guías, categorías), responden 410, para que Google las saque. Todo en `public/.htaccess`.
+`/entrenamiento-online/` → `/#programas`, `/sobre-ronald/` → `/#zar`); las que ya no existen (tienda, carrito,
+mi cuenta, guías, categorías, archivos por fecha) responden 410, para que Google las saque. Todo en `public/.htaccess`.
 
 Entre páginas se navega con `<a>` común y no con `<Link>`: cada página carga completa, así Lenis, GSAP y las
 secciones fijadas arrancan de cero. Los links del menú son `/#seccion` (`/en/#seccion`): desde otra página abren el inicio

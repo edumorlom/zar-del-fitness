@@ -5,8 +5,8 @@ import { FinalCta } from "./FinalCta";
 import { JsonLd } from "./JsonLd";
 import { Rich } from "./Rich";
 import { content } from "@/lib/content";
-import { fill, otherLang, type Lang } from "@/lib/i18n";
-import { episodes, findEpisode, formatDate, type Episode } from "@/lib/podcasts";
+import { fill, formatDate, otherLang, type Lang } from "@/lib/i18n";
+import { episodes, findEpisode, type Episode } from "@/lib/podcasts";
 import { breadcrumbLd, pageMetadata, videoLd, webPageLd } from "@/lib/seo";
 import styles from "./PodcastEpisode.module.css";
 
