@@ -79,9 +79,11 @@ export function PressList({ items: press, alt }: { items: Content["press"]; alt:
         })}
       </ul>
       <div className={styles.preview} ref={preview} aria-hidden="true">
-        {/* lazy: si no, React la precarga en el <head> y el celular (que nunca la muestra) la baja antes que el inicio. */}
+        {/* Sin src: lo pone `show` al pasar el mouse por una fila. Con src, aunque fuera loading="lazy", se bajaba al
+            abrir la página y con prioridad alta (el preview es position: fixed, así que siempre está "en pantalla"),
+            también en el celular, que nunca lo muestra. */}
         {/* eslint-disable-next-line @next/next/no-img-element -- src cambia en hover */}
-        <img ref={img} alt={alt} src={press[0].preview} loading="lazy" />
+        <img ref={img} alt={alt} />
       </div>
     </div>
   );

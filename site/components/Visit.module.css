@@ -35,6 +35,19 @@
   background: var(--gold-bright);
   animation: pulse 2s infinite;
 }
+/* Copia del `pulse` de app/globals.css: dentro de un .module.css, Next.js le cambia el nombre a la animación y la
+   global no se encuentra (el punto no latía). */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(214, 166, 29, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(214, 166, 29, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(214, 166, 29, 0);
+  }
+}
 
 /* Línea de horarios */
 .timeline {

@@ -95,11 +95,12 @@ export function Reveals() {
         );
       });
 
-      // Palabras que se iluminan
+      // Palabras que se iluminan. Arrancan en 0.36 y no menos: blanco sobre negro con esa opacidad es el mínimo
+      // contraste (3:1, texto grande) que pide Lighthouse en Accesibilidad, que mide la página sin scrollear.
       q("[data-words]").forEach((el) => {
         gsap.fromTo(
           el.querySelectorAll("span"),
-          { opacity: 0.14 },
+          { opacity: 0.36 },
           {
             opacity: 1,
             ease: "none",

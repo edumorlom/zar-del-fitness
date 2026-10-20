@@ -12,9 +12,11 @@ import { locales, type Lang } from "@/lib/i18n";
 import { siteGraph } from "@/lib/seo";
 
 const anton = Anton({ weight: "400", subsets: ["latin"], variable: "--font-anton" });
+// Sólo la cursiva: la serif siempre va en cursiva (.serif y las demás), y cada estilo es un archivo más que se
+// precarga en el <head>.
 const instrument = Instrument_Serif({
   weight: "400",
-  style: ["normal", "italic"],
+  style: "italic",
   subsets: ["latin"],
   variable: "--font-instrument",
 });
