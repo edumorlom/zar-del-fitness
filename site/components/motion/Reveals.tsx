@@ -17,6 +17,7 @@ import { gsap, ScrollTrigger, useGSAP, finePointer } from "@/lib/gsap";
  */
 export function Reveals() {
   useGSAP(() => {
+    if (location.search.includes("noreveals")) return;
     const mm = gsap.matchMedia();
     const q = <T extends Element = HTMLElement>(sel: string) => gsap.utils.toArray<T>(sel);
 
