@@ -16,12 +16,18 @@ export function Cursor() {
     const ring = el.querySelector<HTMLElement>(`.${styles.ring}`)!;
     const dot = el.querySelector<HTMLElement>(`.${styles.dot}`)!;
     const label = el.querySelector<HTMLElement>(`.${styles.label}`)!;
-    const rx = gsap.quickTo(ring, "x", { duration: 0.5, ease: "power3.out" });
-    const ry = gsap.quickTo(ring, "y", { duration: 0.5, ease: "power3.out" });
-    const dx = gsap.quickTo(dot, "x", { duration: 0.12, ease: "power3.out" });
-    const dy = gsap.quickTo(dot, "y", { duration: 0.12, ease: "power3.out" });
+    // Los quickTo se crean con el primer movimiento: crearlos lee el transform del anillo y del punto (recálculos de
+    // estilos al hidratar).
+    let to: Record<"rx" | "ry" | "dx" | "dy", gsap.QuickToFunc> | undefined;
 
     const move = (e: PointerEvent) => {
+      to ??= {
+        rx: gsap.quickTo(ring, "x", { duration: 0.5, ease: "power3.out" }),
+        ry: gsap.quickTo(ring, "y", { duration: 0.5, ease: "power3.out" }),
+        dx: gsap.quickTo(dot, "x", { duration: 0.12, ease: "power3.out" }),
+        dy: gsap.quickTo(dot, "y", { duration: 0.12, ease: "power3.out" }),
+      };
+      const { rx, ry, dx, dy } = to;
       rx(e.clientX);
       ry(e.clientY);
       dx(e.clientX);

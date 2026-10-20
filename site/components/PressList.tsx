@@ -16,13 +16,22 @@ export function PressList({ items: press, alt }: { items: Content["press"]; alt:
     () => {
       if (!finePointer()) return;
       const el = preview.current!;
-      gsap.set(el, { xPercent: -50, yPercent: -50, scale: 0, autoAlpha: 0 });
-      const x = gsap.quickTo(el, "x", { duration: 0.6, ease: "power3.out" });
-      const y = gsap.quickTo(el, "y", { duration: 0.6, ease: "power3.out" });
-      const rot = gsap.quickTo(el, "rotation", { duration: 0.8, ease: "power3.out" });
+      // Se prepara con el primer movimiento: crear los quickTo lee el transform del preview (un recálculo de estilos
+      // al hidratar). Hasta entonces lo esconde el CSS (visibility: hidden).
+      let follow: { x: gsap.QuickToFunc; y: gsap.QuickToFunc; rot: gsap.QuickToFunc } | undefined;
+      const prepare = () => {
+        if (follow) return follow;
+        gsap.set(el, { xPercent: -50, yPercent: -50, scale: 0, autoAlpha: 0 });
+        return (follow = {
+          x: gsap.quickTo(el, "x", { duration: 0.6, ease: "power3.out" }),
+          y: gsap.quickTo(el, "y", { duration: 0.6, ease: "power3.out" }),
+          rot: gsap.quickTo(el, "rotation", { duration: 0.8, ease: "power3.out" }),
+        });
+      };
       let lastX = 0;
 
       const move = (e: PointerEvent) => {
+        const { x, y, rot } = prepare();
         x(e.clientX);
         y(e.clientY);
         rot(gsap.utils.clamp(-12, 12, (e.clientX - lastX) * 0.6));
@@ -31,12 +40,15 @@ export function PressList({ items: press, alt }: { items: Content["press"]; alt:
       const show = (e: PointerEvent) => {
         const row = (e.target as Element).closest<HTMLElement>("[data-preview]");
         if (!row) return;
+        prepare();
         if (img.current && img.current.getAttribute("src") !== row.dataset.preview) {
           img.current.src = row.dataset.preview!;
         }
         gsap.to(el, { scale: 1, autoAlpha: 1, duration: 0.5, ease: "power3.out", overwrite: "auto" });
       };
-      const hide = () => gsap.to(el, { scale: 0, autoAlpha: 0, duration: 0.4, ease: "power3.in", overwrite: "auto" });
+      const hide = () => {
+        if (follow) gsap.to(el, { scale: 0, autoAlpha: 0, duration: 0.4, ease: "power3.in", overwrite: "auto" });
+      };
 
       const list = root.current!;
       list.addEventListener("pointermove", move);
