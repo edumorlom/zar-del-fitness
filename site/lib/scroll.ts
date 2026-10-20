@@ -7,7 +7,7 @@ let locks = 0;
 export const scroll = {
   set(instance: Lenis | null) {
     lenis = instance;
-    if (lenis && locks > 0) lenis.stop(); // el preloader puede bloquear antes de que exista Lenis
+    if (lenis && locks > 0) lenis.stop(); // se puede bloquear antes de que exista Lenis
   },
   get: () => lenis,
   lock() {

@@ -64,17 +64,17 @@ mi cuenta, guías, categorías, archivos por fecha) responden 410, para que Goog
 
 Entre páginas se navega con `<a>` común y no con `<Link>`: cada página carga completa, así Lenis, GSAP y las
 secciones fijadas arrancan de cero. Los links del menú son `/#seccion` (`/en/#seccion`): desde otra página abren el inicio
-sin el preloader y bajan a la sección (ver `components/RootShell.tsx` y `components/motion/MotionProvider.tsx`).
+y bajan a la sección (ver `components/RootShell.tsx` y `components/motion/MotionProvider.tsx`).
 
 ## Animaciones
 
 - `components/motion/Reveals.tsx`: controlador global. Las secciones son Server Components y declaran su
   animación con atributos: `data-lines`, `data-reveal` (`="left"`, `="scale"`), `data-reveal-stagger`,
   `data-reveal-img`, `data-speed`, `data-words`, `data-count`, `data-magnetic`.
-- Preloader (contador 00→25, sólo en el inicio), intro del hero, cursor dorado, scroll suave (Lenis), cintas infinitas que
+- Intro del hero, cursor dorado, scroll suave (Lenis), cintas infinitas que
   reaccionan a la velocidad del scroll, sección "Cómo funciona" fijada con scroll horizontal y contador de días,
   galería de transformaciones con lightbox, lista de prensa con preview que sigue al cursor.
-- Respeta `prefers-reduced-motion`: sin preloader ni scroll suave, contenido visible de inmediato.
+- Respeta `prefers-reduced-motion`: sin scroll suave, contenido visible de inmediato.
 
 ## Pendientes
 
