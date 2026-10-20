@@ -204,6 +204,12 @@
   animation: bob 2.4s ease-in-out infinite;
   pointer-events: none;
 }
+.mapLink {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+}
 .pin svg {
   width: 24px;
   height: 24px;

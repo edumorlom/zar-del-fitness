@@ -288,10 +288,11 @@ ol {
     transition: none;
   }
 
+  /* Sólo opacity, sin el desplazamiento: escondido no se ve, y la animación arranca igual desde --reveal-from. Con
+     el transform, el IntersectionObserver lo veía 44 px más abajo y entraba tarde (o nunca, el texto del pie). */
   [data-reveal][data-anim="wait"],
   [data-reveal-stagger][data-anim="wait"] > * {
     opacity: 0;
-    transform: var(--reveal-from);
   }
   [data-reveal][data-anim="in"] {
     animation: reveal 1.1s cubic-bezier(0.215, 0.61, 0.355, 1) backwards;

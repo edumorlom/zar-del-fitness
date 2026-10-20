@@ -11,7 +11,8 @@
     "leerEn": { "es": "Leer en español", "en": "Read in English" },
     "gimnasioExclusivo": { "es": "Exclusive Gym", "en": "Exclusive Gym" },
     "cursorVideo": { "es": "Play", "en": "Play" },
-    "cursorChat": { "es": "Chat", "en": "Chat" }
+    "cursorChat": { "es": "Chat", "en": "Chat" },
+    "cursorMapa": { "es": "Maps", "en": "Maps" }
   },
 
   "whatsapp": {
@@ -279,6 +280,7 @@
     "cerca": { "es": "A pasos de Belgrano, Palermo y Chacarita.", "en": "A short walk from Belgrano, Palermo and Chacarita." },
     "comoLlegar": { "es": "Cómo llegar", "en": "Get directions" },
     "mapa": { "es": "Mapa: {lugar}", "en": "Map: {lugar}" },
+    "abrirMapa": { "es": "Ver {lugar} en Google Maps", "en": "See {lugar} on Google Maps" },
     "abierto": { "es": "Abierto ahora · último ingreso {hora}", "en": "Open now · last entry {hora}" },
     "abreHoy": { "es": "Cerrado · abre hoy a las {hora}", "en": "Closed · opens today at {hora}" },
     "cerrado": { "es": "Cerrado · abre {dias} desde las {hora}", "en": "Closed · opens {dias} from {hora}" },

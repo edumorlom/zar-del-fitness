@@ -100,10 +100,19 @@ export function Visit({ lang }: { lang: Lang }) {
             src={links.mapEmbed}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
+            tabIndex={-1}
           />
           <div className={styles.pin} aria-hidden="true">
             <Icon name="pin" className="" />
           </div>
+          {/* Tapa el mapa: así no se arrastra (el pin dorado es fijo y marcaría otra calle) y tocarlo abre la ficha
+              de Google Maps. Va al lado del iframe y no envolviéndolo: un iframe no puede ir dentro de un link. */}
+          <a
+            className={styles.mapLink}
+            href={links.googleMaps}
+            aria-label={fill(v.abrirMapa, { lugar: contact.gym })}
+            data-cursor={t.general.cursorMapa}
+          />
         </div>
       </div>
     </section>

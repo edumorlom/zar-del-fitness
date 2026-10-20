@@ -205,6 +205,8 @@ function build(lang: Lang) {
     directions: `https://www.google.com/maps/dir/?api=1&destination=${mapsQuery}`,
     // Centrado en las coordenadas y sin el marcador de Google: el pin dorado del centro marca el gimnasio.
     mapEmbed: `https://www.google.com/maps?ll=${business.lat},${business.lng}&z=15&output=embed`,
+    /** La ficha del gimnasio en Google Maps: se abre al tocar el mapa. */
+    googleMaps: gimnasio.googleMaps,
     waInfo: wa(t.whatsapp.informacion),
     waPresencial: wa(t.whatsapp.presencial),
     waDudas: wa(t.whatsapp.dudas),
