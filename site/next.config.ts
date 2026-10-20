@@ -1,18 +1,6 @@
-import { execSync } from "node:child_process";
 import path from "node:path";
 import type { NextConfig } from "next";
 import { deviceSizes, imageSizes } from "./lib/image-variants.mjs";
-
-// El commit del build, para LogRocket (components/SessionRecording.tsx): cada sesión dice qué versión del sitio vio.
-// En GitHub Actions viene en GITHUB_SHA.
-function release() {
-  if (process.env.GITHUB_SHA) return process.env.GITHUB_SHA.slice(0, 7);
-  try {
-    return execSync("git rev-parse --short HEAD").toString().trim();
-  } catch {
-    return "local";
-  }
-}
 
 const nextConfig: NextConfig = {
   // Static export to `out/` for plain hosting (cPanel/Apache)
@@ -21,7 +9,6 @@ const nextConfig: NextConfig = {
   // Sin servidor que achique las fotos: las copias en WebP de cada ancho las hace scripts/copy-images.mjs en el build,
   // y lib/image-loader.ts las pone en el srcset.
   images: { loader: "custom", loaderFile: "./lib/image-loader.ts", deviceSizes, imageSizes },
-  env: { RELEASE: release() },
   // Los precios, planes y horarios están en db/, en la raíz del repo, compartidos con el asistente:
   // sin esto, Turbopack no lee archivos fuera de site/.
   turbopack: { root: path.join(__dirname, "..") },

@@ -203,7 +203,8 @@ function build(lang: Lang) {
     retoOnline: wa(t.whatsapp.retoOnline),
     hashtag: `https://www.instagram.com/explore/tags/${gimnasio.hashtag.replace(/^#/, "").toLowerCase()}/`,
     directions: `https://www.google.com/maps/dir/?api=1&destination=${mapsQuery}`,
-    mapEmbed: `https://www.google.com/maps?q=${mapsQuery}&output=embed`,
+    // Centrado en las coordenadas y sin el marcador de Google: el pin dorado del centro marca el gimnasio.
+    mapEmbed: `https://www.google.com/maps?ll=${business.lat},${business.lng}&z=15&output=embed`,
     waInfo: wa(t.whatsapp.informacion),
     waPresencial: wa(t.whatsapp.presencial),
     waDudas: wa(t.whatsapp.dudas),

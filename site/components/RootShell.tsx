@@ -4,7 +4,6 @@ import type { Metadata, Viewport } from "next";
 import { Anton, Instrument_Serif, Manrope } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
 import { IconSprite } from "@/components/Icon";
-import { SessionRecording } from "@/components/SessionRecording";
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { JsonLd } from "@/components/JsonLd";
 import { business, content, siteUrl } from "@/lib/content";
@@ -72,7 +71,6 @@ export function RootShell({ lang, children }: { lang: Lang; children: React.Reac
           {children}
         </MotionProvider>
         <Analytics />
-        <SessionRecording host={new URL(siteUrl).hostname} release={process.env.RELEASE ?? "local"} />
       </body>
     </html>
   );
