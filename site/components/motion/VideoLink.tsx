@@ -10,12 +10,10 @@ import { useMotion, type VideoPage } from "./MotionProvider";
  */
 export function VideoLink({ videoId, page, cursor, ...rest }: { videoId: string; page: VideoPage; cursor: string } & ComponentProps<"a">) {
   const { openVideo } = useMotion();
-  // data-video: para el evento VideoPlay de LogRocket (components/SessionRecording.tsx).
   return (
     <a
       href={page.url}
       data-cursor={cursor}
-      data-video={videoId}
       onClick={(e) => {
         if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         e.preventDefault();
