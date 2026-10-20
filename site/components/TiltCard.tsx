@@ -10,11 +10,19 @@ export function TiltCard({ className, children }: { className?: string; children
   useGSAP(() => {
     const el = ref.current!;
     if (!finePointer() || reducedMotion()) return;
-    gsap.set(el, { transformPerspective: 1100 });
-    const rx = gsap.quickTo(el, "rotationX", { duration: 0.8, ease: "power3.out" });
-    const ry = gsap.quickTo(el, "rotationY", { duration: 0.8, ease: "power3.out" });
+    // Los quickTo se crean con el primer movimiento: crearlos lee el transform de la tarjeta (un recálculo de
+    // estilos al hidratar).
+    let tilt: { rx: gsap.QuickToFunc; ry: gsap.QuickToFunc } | undefined;
 
     const move = (e: PointerEvent) => {
+      if (!tilt) {
+        gsap.set(el, { transformPerspective: 1100 });
+        tilt = {
+          rx: gsap.quickTo(el, "rotationX", { duration: 0.8, ease: "power3.out" }),
+          ry: gsap.quickTo(el, "rotationY", { duration: 0.8, ease: "power3.out" }),
+        };
+      }
+      const { rx, ry } = tilt;
       const r = el.getBoundingClientRect();
       const px = (e.clientX - r.left) / r.width;
       const py = (e.clientY - r.top) / r.height;
@@ -24,8 +32,8 @@ export function TiltCard({ className, children }: { className?: string; children
       rx((0.5 - py) * 8);
     };
     const leave = () => {
-      rx(0);
-      ry(0);
+      tilt?.rx(0);
+      tilt?.ry(0);
     };
     el.addEventListener("pointermove", move);
     el.addEventListener("pointerleave", leave);

@@ -31,12 +31,15 @@ export function Hero({ t, hashtag, cta, trailer, featuredPress, chips, cursorVid
     () => {
       if (reducedMotion() || !finePointer()) return;
       const layers = Array.from(root.current!.querySelectorAll<HTMLElement>("[data-depth]"));
-      const setters = layers.map((el) => ({
-        x: gsap.quickTo(el, "x", { duration: 1.2, ease: "power3.out" }),
-        y: gsap.quickTo(el, "y", { duration: 1.2, ease: "power3.out" }),
-        d: parseFloat(el.dataset.depth || "0"),
-      }));
+      // Los quickTo se crean con el primer movimiento: crearlos lee el transform de cada capa, y al hidratar eran
+      // recálculos de estilo dentro de la tarea más larga de la carga.
+      let setters: { x: gsap.QuickToFunc; y: gsap.QuickToFunc; d: number }[] | undefined;
       const move = (e: PointerEvent) => {
+        setters ??= layers.map((el) => ({
+          x: gsap.quickTo(el, "x", { duration: 1.2, ease: "power3.out" }),
+          y: gsap.quickTo(el, "y", { duration: 1.2, ease: "power3.out" }),
+          d: parseFloat(el.dataset.depth || "0"),
+        }));
         const nx = e.clientX / window.innerWidth - 0.5;
         const ny = e.clientY / window.innerHeight - 0.5;
         setters.forEach((s) => {

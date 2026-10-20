@@ -259,6 +259,84 @@ ol {
   will-change: transform;
 }
 
+/* ---------- Animaciones al entrar en pantalla (components/motion/Reveals.tsx) ----------
+   data-anim="wait": está más abajo; la animación espera en pausa en su primer cuadro (escondido).
+   data-anim="in": entró y la animación corre. Los keyframes sólo tienen `from`: terminan en el estilo propio del
+   elemento, y al terminar Reveals saca data-anim. Lo que ya se ve al cargar la página no lleva data-anim.
+   Las curvas son las de GSAP: power3.out, expo.out y expo.inOut. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal][data-anim] {
+    animation: reveal-up 1.1s cubic-bezier(0.215, 0.61, 0.355, 1) backwards;
+  }
+  [data-reveal="left"][data-anim] {
+    animation-name: reveal-left;
+  }
+  [data-reveal="scale"][data-anim] {
+    animation-name: reveal-scale;
+  }
+  [data-reveal-stagger][data-anim] > * {
+    animation: reveal-child 0.9s cubic-bezier(0.215, 0.61, 0.355, 1) backwards;
+  }
+  [data-lines][data-anim] .ln > span {
+    animation: reveal-line 1.15s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  /* La línea dorada sigue con el brillo de .gold-text: el `animation` de arriba lo pisaría. */
+  [data-lines][data-anim] .ln > .gold-text {
+    animation: reveal-line 1.15s cubic-bezier(0.16, 1, 0.3, 1) backwards, shimmer 7s linear infinite;
+  }
+  [data-reveal-img][data-anim] {
+    animation: reveal-clip 1.4s cubic-bezier(0.87, 0, 0.13, 1) backwards;
+  }
+  [data-reveal-img][data-anim] :is(img, iframe) {
+    animation: reveal-zoom 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards;
+  }
+  /* !important: el shorthand `animation` de arriba (más específico) vuelve a poner running. Sin la pausa, la
+     animación corre mientras espera fuera de pantalla, y al pasar a "in" no se repite (el nombre no cambia). */
+  [data-anim="wait"],
+  [data-anim="wait"] * {
+    animation-play-state: paused !important;
+  }
+}
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(44px);
+  }
+}
+@keyframes reveal-left {
+  from {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+}
+@keyframes reveal-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+@keyframes reveal-child {
+  from {
+    opacity: 0;
+    transform: translateY(36px);
+  }
+}
+@keyframes reveal-line {
+  from {
+    transform: translateY(115%) rotate(3deg);
+  }
+}
+@keyframes reveal-clip {
+  from {
+    clip-path: inset(100% 0% 0% 0%);
+  }
+}
+@keyframes reveal-zoom {
+  from {
+    transform: scale(1.35);
+  }
+}
+
 .gold-text {
   background: var(--grad-gold);
   background-size: 220% auto;
