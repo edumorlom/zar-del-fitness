@@ -65,6 +65,7 @@
     "zar": { "es": "El Zar", "en": "The Zar" },
     "gym": { "es": "The VIP", "en": "The VIP" },
     "faq": { "es": "FAQ", "en": "FAQ" },
+    "blog": { "es": "Blog", "en": "Blog" },
     "podcasts": { "es": "Podcasts", "en": "Podcasts" }
   },
 
@@ -352,6 +353,29 @@
     "titulo": { "es": "Video de Zar del Fitness", "en": "Zar del Fitness video" }
   },
 
+  "blog": {
+    "antetitulo": { "es": "Blog", "en": "Blog" },
+    "titulo": {
+      "es": ["Entrenamiento,", "alimentación", "*y mitos del fitness.*"],
+      "en": ["Training,", "nutrition", "*and fitness myths.*"]
+    },
+    "bajada": {
+      "es": "Lo que hay que saber para entrenar mejor, comer mejor y no caer en promesas mágicas.",
+      "en": "What you need to know to train better, eat better and not fall for magic promises."
+    },
+    "lectura": { "es": "{minutos} min de lectura", "en": "{minutos} min read" },
+    "por": { "es": "Por", "en": "By" },
+    "sobreElAutor": { "es": "Sobre el autor", "en": "About the author" },
+    "planTitulo": { "es": "¿Querés un plan *hecho para vos?*", "en": "Want a plan *made for you?*" },
+    "planTexto": {
+      "es": "Entrenamiento, alimentación y acompañamiento personalizados, online o en Colegiales.",
+      "en": "Personalized training, nutrition and coaching, online or in Colegiales, Buenos Aires."
+    },
+    "planBoton": { "es": "Reto de los 25 días", "en": "25-Day Challenge" },
+    "verProgramas": { "es": "Ver los programas", "en": "See the programs" },
+    "masNotas": { "es": "Más *notas.*", "en": "More *posts.*" }
+  },
+
   "podcasts": {
     "antetitulo": { "es": "Podcast", "en": "Podcast" },
     "titulo": {
@@ -416,6 +440,16 @@
         "Zar del Fitness"
       ]
     },
+    "blog": {
+      "titulo": {
+        "es": "Blog de entrenamiento, alimentación y mitos del fitness",
+        "en": "Blog on training, nutrition and fitness myths"
+      },
+      "descripcion": {
+        "es": "Notas de Ronald Medina, el Zar del Fitness, y su equipo sobre entrenamiento, alimentación, suplementación y los mitos del gimnasio, explicados sin vueltas.",
+        "en": "Posts by Ronald Medina, the Zar del Fitness, and the team on training, nutrition, supplements and gym myths, explained in plain words."
+      }
+    },
     "podcasts": {
       "titulo": {
         "es": "Podcast de fitness: Detrás del Espejo",
@@ -447,6 +481,13 @@
       "titulo": { "es": "Reto de los 25 días", "en": "The 25-Day Challenge" },
       "acento": { "es": "by Ronald Medina, el Zar del Fitness", "en": "by Ronald Medina, the Zar del Fitness" }
     },
+    "imagenBlog": {
+      "alt": { "es": "Blog de Zar del Fitness: entrenamiento, alimentación y mitos", "en": "Zar del Fitness blog: training, nutrition and myths" },
+      "antetitulo": { "es": "Blog", "en": "Blog" },
+      "titulo": { "es": "Entrenamiento y alimentación", "en": "Training and nutrition" },
+      "acento": { "es": "sin mitos", "en": "without the myths" }
+    },
+    "imagenNota": { "es": "Nota del blog de Zar del Fitness", "en": "Zar del Fitness blog post" },
     "episodio": { "es": "{titulo} · Podcast", "en": "{titulo} · Podcast" },
     "imagenPodcasts": {
       "alt": { "es": "Detrás del Espejo, el podcast de Zar del Fitness", "en": "Detrás del Espejo, the Zar del Fitness podcast" },
@@ -466,6 +507,7 @@
         "en": "Hours: {dias}, {franjas} (Buenos Aires time). ~{duracion} classes; last entry {ultimoIngreso}."
       },
       "preguntas": { "es": "Preguntas frecuentes", "en": "Frequently asked questions" },
+      "blog": { "es": "notas sobre entrenamiento, alimentación y salud.", "en": "posts on training, nutrition and health." },
       "podcasts": {
         "es": "Detrás del Espejo, el podcast en video (en YouTube): charlas con especialistas sobre suplementos, péptidos, hormonas y culturismo.",
         "en": "Detrás del Espejo, the video podcast (on YouTube, in Spanish): talks with experts on supplements, peptides, hormones and bodybuilding."

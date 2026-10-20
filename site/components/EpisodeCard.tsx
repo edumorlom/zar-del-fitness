@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { VideoLink } from "./motion/VideoLink";
 import { business } from "@/lib/content";
-import { formatDate, type Episode } from "@/lib/podcasts";
-import styles from "./EpisodeCard.module.css";
+import { formatDate } from "@/lib/i18n";
+import type { Episode } from "@/lib/podcasts";
+import styles from "./Card.module.css";
 
 /**
  * Un episodio del podcast, en la lista y en "Más episodios". Es un link a su página; un click común abre el video en

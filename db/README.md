@@ -25,8 +25,9 @@ El sitio está en castellano (`zardelfitness.com.ar/`) y en inglés (`zardelfitn
 | `equipo.json` | Los entrenadores. `credenciales` son sus certificaciones una por una (`titulo` y, si se sabe, `otorgadaPor`): no se ven en el sitio, van en los datos para Google y los buscadores con IA. |
 | `textos.json` | Todos los textos del sitio, por sección, en castellano y en inglés: botones, menú, títulos, párrafos, textos alternativos de las fotos, los mensajes que se arman para WhatsApp, y el título y la descripción de cada página para Google (`seo`). |
 | `trayectoria.json` | La prensa (medio, título, tipo, link e imagen) y los premios (fecha, título y texto). |
+| `blog/` | Las notas del blog, una por archivo Markdown (ver abajo). Las traducciones al inglés, en `blog/en/`. Sólo las usa el sitio. |
 | `podcasts.json` | Los episodios del podcast, Detrás del Espejo (ver abajo). Sólo los usa el sitio. |
-| `img/` | Las imágenes del sitio. En los JSON se nombran como `/img/archivo.webp`. Las miniaturas de los podcasts van en `img/podcasts/`. |
+| `img/` | Las imágenes del sitio. En los JSON se nombran como `/img/archivo.webp`. Las del blog van en `img/blog/`, y las miniaturas de los podcasts en `img/podcasts/`. |
 
 ## Planes (`planes.json`)
 
@@ -59,6 +60,49 @@ El sitio muestra los planes `reto-online`, `premium`, `general` y `reto-internac
 - En la prensa, `link` es opcional. La `imagen` es la que aparece al pasar el mouse, y va en `db/img/`.
 - La nota con `destacadoEnInicio` aparece también en el inicio, con ese texto ("Emmy Winner 2024"). Si ninguna lo tiene, no se muestra.
 - El asistente usa todo menos los pasos del método, las introducciones de Programas y Preguntas, los links y las imágenes.
+
+## Blog (`blog/`)
+
+Cada nota es un archivo `.md` (Markdown). El nombre del archivo es el final de su URL: `blog/gluteos-de-acero.md`
+con fecha `2020-12-15` se publica en `zardelfitness.com.ar/2020/12/15/gluteos-de-acero/` (la misma URL que tenía en
+el sitio anterior). Arriba de todo lleva este encabezado, un dato por línea:
+
+```
+---
+titulo: Glúteos de acero
+fecha: 2020-12-15
+autor: Ronald Medina
+categoria: Entrenamiento
+descripcion: Lo que muestra Google debajo del título: una o dos frases, de 140 a 160 caracteres.
+imagen: /img/blog/gluteos-de-acero.webp
+---
+```
+
+- Debajo va el texto. Los subtítulos van con `##` (nunca `#`: el título ya es el de arriba), y las imágenes con
+  `![qué se ve](/img/blog/archivo.webp)`.
+- Todas las imágenes del blog van en `img/blog/` y en WebP.
+- Si el autor es `Ronald Medina`, la nota muestra su recuadro y enlaza a su sección del inicio.
+- Una nota nueva aparece sola en el blog, en "Más notas" y en el mapa del sitio para Google (`sitemap.xml`).
+
+### En inglés (`blog/en/`)
+
+La traducción de una nota es otro archivo, en `blog/en/`, con un nombre en inglés (que es el final de su URL): `blog/en/steel-glutes.md` se publica en `zardelfitness.com.ar/en/2020/12/15/steel-glutes/`. El encabezado tiene los mismos datos (en castellano los nombres, en inglés los valores) más `original`, el nombre del archivo de la nota en castellano, sin `.md`:
+
+```
+---
+titulo: Steel Glutes
+fecha: 2020-12-15
+autor: Ronald Medina
+categoria: Training
+descripcion: In English, 140 to 160 characters.
+imagen: /img/blog/gluteos-de-acero.webp
+original: gluteos-de-acero
+---
+```
+
+- `fecha`, `autor` e `imagen` son los de la nota original. Las categorías en inglés son `Training`, `Nutrition` y `Myths`.
+- Con `original`, las dos notas se enlazan entre sí: el botón "EN"/"ES" lleva de una a la otra, y Google sabe que son la misma nota.
+- Una nota en castellano sin traducir no aparece en el blog en inglés, y su botón "EN" lleva al blog en inglés.
 
 ## Podcasts (`podcasts.json`)
 

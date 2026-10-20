@@ -32,10 +32,11 @@ type PageMeta = {
   absoluteTitle?: boolean;
   /** Las búsquedas a las que apunta la página (<meta name="keywords">). Ni Google ni Bing lo usan para posicionar; Bing puede tomar una lista larga como spam. */
   keywords?: string[];
+  article?: { publishedTime: string; authors: string[]; section?: string };
 };
 
 /** Título, descripción, URL canónica y cómo se ve al compartir. La imagen sale del opengraph-image.tsx de cada página. */
-export function pageMetadata({ lang, title, description, path, alternates, absoluteTitle, keywords }: PageMeta): Metadata {
+export function pageMetadata({ lang, title, description, path, alternates, absoluteTitle, keywords, article }: PageMeta): Metadata {
   const fullTitle = absoluteTitle ? title : `${title} | ${business.name}`;
   return {
     title: absoluteTitle ? { absolute: title } : title,
@@ -49,7 +50,9 @@ export function pageMetadata({ lang, title, description, path, alternates, absol
       siteName: business.name,
       locale: locales[lang].og,
       ...(alternates && { alternateLocale: [locales[otherLang(lang)].og] }),
-      type: "website",
+      ...(article
+        ? { type: "article", publishedTime: article.publishedTime, authors: article.authors, section: article.section }
+        : { type: "website" }),
     },
     twitter: { card: "summary_large_image", title: fullTitle, description, site: xHandle && `@${xHandle}` },
   };
@@ -193,7 +196,7 @@ export function siteGraph(lang: Lang) {
   ];
 }
 
-/** La página en sí. CollectionPage para los podcasts. */
+/** La página en sí. CollectionPage para el blog y los podcasts. */
 export function webPageLd({ lang, path, name, description, type = "WebPage", about, keywords }: {
   lang: Lang;
   path: string;
@@ -237,6 +240,36 @@ export function faqLd(lang: Lang) {
     "@type": "FAQPage",
     "@id": abs(`${pages.home}#preguntas`),
     mainEntity: faqs.map(({ q, a }) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })),
+  };
+}
+
+/** Una nota del blog. */
+export function articleLd(post: {
+  lang: Lang;
+  path: string;
+  title: string;
+  description: string;
+  date: string;
+  author: string;
+  category: string;
+  image: string;
+  words: number;
+}) {
+  const ronald = content(post.lang).team.find((m) => m.id === "ronald")!;
+  return {
+    "@type": "BlogPosting",
+    "@id": abs(`${post.path}#nota`),
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: post.author === ronald.name ? { "@id": ids.ronald } : { "@type": "Person", name: post.author },
+    publisher: { "@id": ids.business },
+    image: abs(post.image),
+    mainEntityOfPage: { "@id": abs(post.path) },
+    articleSection: post.category,
+    wordCount: post.words,
+    inLanguage: locales[post.lang].html,
   };
 }
 

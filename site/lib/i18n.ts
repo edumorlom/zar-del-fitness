@@ -11,11 +11,17 @@ export const locales = {
 
 export const otherLang = (lang: Lang): Lang => (lang === "es" ? "en" : "es");
 
-/** La URL de una página en un idioma: ("en", "/podcasts/") → "/en/podcasts/". */
+/** La URL de una página en un idioma: ("en", "/blog/") → "/en/blog/". */
 export const localePath = (lang: Lang, path: string) => locales[lang].prefix + path;
 
 /** El inicio de cada idioma: "/" o "/en/". */
 export const homePath = (lang: Lang) => localePath(lang, "/");
+
+/** "2026-10-03" → "3 de octubre de 2026" (en inglés, "October 3, 2026"). Las fechas del blog y de los podcasts. */
+export const formatDate = (date: string, lang: Lang) =>
+  new Intl.DateTimeFormat(locales[lang].intl, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(
+    new Date(`${date}T12:00:00Z`)
+  );
 
 type Pair<T> = { es: T; en: T };
 

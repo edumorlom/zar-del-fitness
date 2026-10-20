@@ -1,3 +1,4 @@
+import { posts } from "@/lib/blog";
 import { content, socials } from "@/lib/content";
 import { fill, type Lang } from "@/lib/i18n";
 import { episodes } from "@/lib/podcasts";
@@ -87,6 +88,11 @@ export function GET() {
     "",
     ...faqs.map(({ q, a }) => `- ${q} ${a}`),
     "",
+    `## ${t.menu.blog}`,
+    "",
+    `- [${t.menu.blog}](${abs(pages.blog)}): ${t.seo.llms.blog}`,
+    ...posts.es.map((p) => `- [${p.title}](${abs(p.path)}): ${p.description}`),
+    "",
     `## ${t.menu.podcasts}`,
     "",
     `- [${t.menu.podcasts}](${abs(pages.podcasts)}): ${t.seo.llms.podcasts}`,
@@ -102,6 +108,7 @@ export function GET() {
     `- [${en.t.seo.llms.otroIdioma}](${abs(en.pages.home)}): ${en.t.seo.inicio.descripcion}`,
     ...programLines("en", true),
     ...gymLines("en"),
+    `- [${en.t.menu.blog}](${abs(en.pages.blog)}): ${en.t.seo.llms.blog}`,
     `- [${en.t.menu.podcasts}](${abs(en.pages.podcasts)}): ${en.t.seo.llms.podcasts}`,
     "",
     ...ronaldLines("en", "###"),
