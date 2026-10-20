@@ -1,9 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
 import { scroll } from "@/lib/scroll";
-import { Preloader } from "./Preloader";
 import { SmoothScroll } from "./SmoothScroll";
 import { Cursor } from "./Cursor";
 import { ScrollProgress } from "./ScrollProgress";
@@ -13,13 +11,11 @@ import { VideoModal } from "./VideoModal";
 export type VideoPage = { url: string; title: string };
 
 type MotionState = {
-  /** true cuando el preloader terminó y la intro del hero puede arrancar */
-  ready: boolean;
   /** Abre un video de YouTube en el modal. Con `page`, la URL pasa a ser la del video mientras está abierto. */
   openVideo: (youtubeId: string, page?: VideoPage) => void;
 };
 
-const MotionContext = createContext<MotionState>({ ready: true, openVideo: () => {} });
+const MotionContext = createContext<MotionState>({ openVideo: () => {} });
 
 export const useMotion = () => useContext(MotionContext);
 
@@ -30,22 +26,15 @@ declare global {
   }
 }
 
-/** Los textos del preloader y del video, de db/textos.json, ya en el idioma de la página. */
+/** Los textos del video, de db/textos.json, ya en el idioma de la página. */
 type MotionLabels = {
-  preloader: { reto: string; dias: string };
   video: { nombre: string; cerrar: string; titulo: string };
 };
 
-export function MotionProvider({ home, labels, children }: { home: string; labels: MotionLabels; children: React.ReactNode }) {
-  // El preloader es la intro del inicio ("/" o "/en/"): las otras páginas arrancan directo.
-  // usePathname() no trae la barra final: "/en".
-  const [intro] = useState(`${usePathname().replace(/\/$/, "")}/` === home);
-  const [ready, setReady] = useState(!intro);
+export function MotionProvider({ labels, children }: { labels: MotionLabels; children: React.ReactNode }) {
   const [video, setVideo] = useState<string | null>(null);
   // El título de la pestaña antes de abrir un video con su propia URL, para volver a ponerlo al cerrarlo.
   const pageTitle = useRef("");
-
-  const onPreloaderDone = useCallback(() => setReady(true), []);
 
   // Un video con su página (un episodio del podcast) suma una entrada al historial con su URL: se puede compartir o
   // recargar (va a su página), y "atrás" lo cierra. history.pushState lo integra al router de Next.js.
@@ -78,23 +67,22 @@ export function MotionProvider({ home, labels, children }: { home: string; label
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
-  const value = useMemo(() => ({ ready, openVideo }), [ready, openVideo]);
+  const value = useMemo(() => ({ openVideo }), [openVideo]);
 
-  // Se abrió con un #ancla (p. ej. "/#programas" desde los podcasts): scrollear hasta la sección una vez listo todo.
+  // Se abrió con un #ancla (p. ej. "/#programas" desde los podcasts): scrollear hasta la sección una vez montado todo.
   useEffect(() => {
     const hash = window.__zarHash;
-    if (!ready || !hash) return;
+    if (!hash) return;
     delete window.__zarHash;
     const target = document.getElementById(decodeURIComponent(hash.slice(1)));
     if (!target) return;
     const t = setTimeout(() => scroll.to(target), 120);
     return () => clearTimeout(t);
-  }, [ready]);
+  }, []);
 
   return (
     <MotionContext.Provider value={value}>
       <SmoothScroll />
-      {intro && <Preloader onDone={onPreloaderDone} labels={labels.preloader} />}
       <Cursor />
       <ScrollProgress />
       {children}

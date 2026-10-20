@@ -69,11 +69,6 @@
     "podcasts": { "es": "Podcasts", "en": "Podcasts" }
   },
 
-  "precarga": {
-    "reto": { "es": "Reto de los", "en": "The challenge" },
-    "dias": { "es": "días", "en": "days" }
-  },
-
   "inicio": {
     "antetitulo": { "es": "El mejor entrenamiento personal en Buenos Aires", "en": "The best personal training in Buenos Aires" },
     "titulo": {

@@ -44,19 +44,18 @@ export const rootViewport: Viewport = {
 // Siempre arrancar arriba: sin restaurar el scroll anterior ni saltar al #ancla de la URL.
 // Corre en el <head>, antes de que se parsee el body y el navegador intente scrollear.
 // Si la URL trae un #ancla (un link a "/#programas" desde otra página), se guarda: MotionProvider scrollea hasta ahí
-// cuando todo está listo, y el preloader no se muestra (data-skip-intro).
+// cuando todo está listo.
 const scrollTopScript =
-  'history.scrollRestoration="manual";if(location.hash){window.__zarHash=location.hash;document.documentElement.setAttribute("data-skip-intro","");history.replaceState(null,"",location.pathname+location.search)}';
+  'history.scrollRestoration="manual";if(location.hash){window.__zarHash=location.hash;history.replaceState(null,"",location.pathname+location.search)}';
 
 /**
  * El <html> de cada página, en su idioma. Lo usan los dos layouts raíz (app/(es)/layout.tsx y app/(en)/layout.tsx)
  * y la página 404 (app/global-not-found.tsx).
  */
 export function RootShell({ lang, children }: { lang: Lang; children: React.ReactNode }) {
-  const { t, pages } = content(lang);
+  const { t } = content(lang);
   return (
-    // suppressHydrationWarning: el script del <head> puede agregar data-skip-intro antes de hidratar.
-    <html lang={locales[lang].html} className={`${anton.variable} ${instrument.variable} ${manrope.variable}`} suppressHydrationWarning>
+    <html lang={locales[lang].html} className={`${anton.variable} ${instrument.variable} ${manrope.variable}`}>
       {/* eslint-disable-next-line @next/next/no-head-element -- es el <html> de los layouts raíz de app/, no una página */}
       <head>
         <script dangerouslySetInnerHTML={{ __html: scrollTopScript }} />
@@ -67,7 +66,7 @@ export function RootShell({ lang, children }: { lang: Lang; children: React.Reac
         <a className="skip-link" href="#main">
           {t.general.irAlContenido}
         </a>
-        <MotionProvider home={pages.home} labels={{ preloader: t.precarga, video: t.video }}>
+        <MotionProvider labels={{ video: t.video }}>
           {children}
         </MotionProvider>
         <Analytics />

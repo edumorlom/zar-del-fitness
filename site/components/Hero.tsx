@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import { Icon } from "./Icon";
 import { Sparkles } from "./Sparkles";
 import { VideoButton } from "./motion/VideoButton";
-import { useMotion } from "./motion/MotionProvider";
 import { gsap, useGSAP, reducedMotion, finePointer } from "@/lib/gsap";
 import { Lines } from "./Lines";
 import { Rich } from "./Rich";
@@ -25,13 +24,11 @@ type HeroProps = {
 
 export function Hero({ t, hashtag, cta, trailer, featuredPress, chips, cursorVideo }: HeroProps) {
   const root = useRef<HTMLElement>(null);
-  const intro = useRef<gsap.core.Timeline | null>(null);
-  const { ready } = useMotion();
 
   useGSAP(
     () => {
       if (reducedMotion()) return;
-      const tl = gsap.timeline({ paused: true, defaults: { ease: "expo.out" } });
+      const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
       tl.from(`.${styles.title} .ln > span`, { yPercent: 115, rotate: 4, duration: 1.4, stagger: 0.1 })
         .fromTo(
           `.${styles.frame}`,
@@ -42,7 +39,6 @@ export function Hero({ t, hashtag, cta, trailer, featuredPress, chips, cursorVid
         .from(`.${styles.frame} img`, { scale: 1.4, duration: 2.2 }, 0.2)
         .from(`.${styles.seal}`, { scale: 0, rotate: -120, duration: 1.4, ease: "back.out(1.6)" }, 0.8)
         .from("[data-hero-fade]", { autoAlpha: 0, y: 30, duration: 1.1, stagger: 0.08 }, 0.5);
-      intro.current = tl;
 
       // Parallax suave con el mouse
       if (!finePointer()) return;
@@ -65,10 +61,6 @@ export function Hero({ t, hashtag, cta, trailer, featuredPress, chips, cursorVid
     },
     { scope: root }
   );
-
-  useEffect(() => {
-    if (ready) intro.current?.play();
-  }, [ready]);
 
   return (
     <section className={styles.hero} id="top" ref={root}>
