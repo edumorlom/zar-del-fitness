@@ -1,5 +1,27 @@
 [
   {
+    "id": "fuerza-guiada-por-el-altruismo",
+    "video": "https://www.youtube.com/watch?v=M1eve3wrHN8",
+    "fecha": "2026-10-25",
+    "duracion": "42:00",
+    "invitado": "Iván Chirinian",
+    "titulo": { "es": "Fuerza guiada por el altruismo", "en": "Strength guided by altruism" },
+    "descripcion": {
+      "es": "Con Iván Chirinian: el hombre detrás del físico, su forma de entender el entrenamiento y la alimentación, y para qué construimos nuestra fuerza.",
+      "en": "With Iván Chirinian: the man behind the physique, how he approaches training and nutrition, and what we really build our strength for."
+    },
+    "resumen": {
+      "es": [
+        "¿Qué valor tiene ser fuerte si esa fuerza no sirve para ayudar a alguien más? En este episodio recibimos a Iván Chirinian para conocer al hombre detrás del físico: su manera de entender el entrenamiento, la alimentación y el propósito de poner lo que sabemos al servicio de los demás.",
+        "Hablamos de movimiento, de comunidad y del valor de construir una rutina que también te haga disfrutar de la vida: una conversación que invita a mirar más allá de la apariencia y a preguntarnos para qué construimos nuestra fuerza."
+      ],
+      "en": [
+        "What is strength worth if it can't help anyone else? In this episode we sit down with Iván Chirinian to meet the man behind the physique: how he approaches training and nutrition, and the purpose of putting what we know at the service of others.",
+        "We talk about movement, community and the value of building a routine that also lets you enjoy life: a conversation that invites you to look beyond appearance and ask what we really build our strength for."
+      ]
+    }
+  },
+  {
     "id": "suplementos-ciencia-o-estafa",
     "video": "https://www.youtube.com/watch?v=yQHnB0PmpZ4",
     "fecha": "2026-09-18",
