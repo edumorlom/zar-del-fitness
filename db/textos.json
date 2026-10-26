@@ -237,18 +237,6 @@
     ]
   },
 
-  "beneficios": {
-    "antetitulo": { "es": "Durante el reto vas a", "en": "During the challenge you'll" },
-    "logo": { "es": "Zar del Fitness · Ronald Medina", "en": "Zar del Fitness · Ronald Medina" },
-    "lista": [
-      { "texto": { "es": "Bajar tu % de grasa", "en": "Lower your body fat %" }, "acento": { "es": "sin sacrificar músculo", "en": "without sacrificing muscle" } },
-      { "texto": { "es": "Bajar talles de pantalón", "en": "Drop pant sizes" }, "acento": { "es": "o vestido", "en": "or dress sizes" } },
-      { "texto": { "es": "Tonificar y desarrollar", "en": "Tone up and build" }, "acento": { "es": "masa muscular", "en": "muscle mass" } },
-      { "texto": { "es": "Construir buenos", "en": "Build good" }, "acento": { "es": "hábitos alimenticios", "en": "eating habits" } },
-      { "texto": { "es": "Ganar un estilo de vida", "en": "Gain a healthy" }, "acento": { "es": "saludable", "en": "lifestyle" } }
-    ]
-  },
-
   "resultados": {
     "titulo": {
       "es": ["Ellos también", "*lo lograron.*"],

@@ -4,7 +4,6 @@ import { Marquee } from "./Marquee";
 import { About } from "./About";
 import { Programs } from "./Programs";
 import { Method } from "./Method";
-import { Benefits } from "./Benefits";
 import { Results } from "./Results";
 import { Vip } from "./Vip";
 import { Visit } from "./Visit";
@@ -66,7 +65,6 @@ export function HomePage({ lang }: { lang: Lang }) {
         <About lang={lang} />
         <Programs lang={lang} />
         <Method t={t.metodo} />
-        <Benefits lang={lang} />
         <Results t={t.resultados} hashtag={c.hashtag} shots={c.transformations} />
         <Vip lang={lang} />
         <Visit lang={lang} />
