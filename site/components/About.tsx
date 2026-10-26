@@ -22,6 +22,10 @@ export function About({ lang }: { lang: Lang }) {
               width={841}
               height={1024}
               sizes="(max-width: 900px) 90vw, 45vw"
+              // Sin lazy: la sección viene justo después del hero y, con lazy, el celular recién la pedía al llegar (y
+              // la animación de entrada mostraba el fondo negro). Con prioridad baja no compite con el hero.
+              loading="eager"
+              fetchPriority="low"
             />
           </figure>
           <div className={styles.floatWrap} data-speed="0.25">
