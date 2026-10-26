@@ -81,7 +81,14 @@ function cssReveals() {
     const visible = entered.filter((e) => e.boundingClientRect.bottom >= 0).map((e) => e.target as HTMLElement);
     const batch = visible.filter((el) => reveals.get(el)!.batch);
     const step = Math.min(0.09, 0.5 / Math.max(1, batch.length));
-    visible.forEach((el) => play(el, reveals.get(el)!, batch.includes(el) ? batch.indexOf(el) * step : 0));
+    visible.forEach((el) => {
+      const r = reveals.get(el)!;
+      const go = () => play(el, r, batch.includes(el) ? batch.indexOf(el) * step : 0);
+      // La foto que todavía no bajó se descubre cuando llega: si no, la cortina abre sobre el fondo negro.
+      const img = r.sel === "[data-reveal-img]" ? el.querySelector("img") : null;
+      if (img && !img.complete) img.decode().catch(() => {}).then(go);
+      else go();
+    });
   };
   const watch = (el: HTMLElement, bottom: string) => {
     let io = watchers.get(bottom);
