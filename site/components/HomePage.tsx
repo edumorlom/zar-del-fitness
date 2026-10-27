@@ -65,7 +65,7 @@ export function HomePage({ lang }: { lang: Lang }) {
         <About lang={lang} />
         <Programs lang={lang} />
         <Method t={t.metodo} />
-        <Results t={t.resultados} hashtag={c.hashtag} shots={c.transformations} />
+        <Results t={t.resultados} hashtag={c.hashtag} reviews={c.googleReviews} shots={c.transformations} />
         <Vip lang={lang} />
         <Visit lang={lang} />
         <Press lang={lang} />

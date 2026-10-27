@@ -1,5 +1,12 @@
 [
   {
+    "pregunta": { "es": "¿Qué es el Reto de los 25 días?", "en": "What is the 25-day challenge?" },
+    "respuesta": {
+      "es": "Es el programa online de Ronald Medina para bajar grasa sin perder músculo, en ciclos de 25 días. Al inscribirte completás un cuestionario sobre tus objetivos y con eso te arman un plan de entrenamiento, un plan de alimentación y, solo si hace falta, un plan de suplementación, todo individual. Entrenás con videos, en casa o en el gimnasio, cuando te queda cómodo. Los días 1, 15 y 25 enviás fotos y tu peso para controlar el avance, y tenés asistencia por WhatsApp todo el tiempo.",
+      "en": "It is Ronald Medina's online program to lose fat without losing muscle, in 25-day cycles. When you sign up you fill in a questionnaire about your goals, and from it they build your training plan, your nutrition plan and, only if needed, a supplementation plan, all individual. You train with videos, at home or at the gym, whenever it suits you. On days 1, 15 and 25 you send photos and your weight to track your progress, and you have support on WhatsApp the whole time."
+    }
+  },
+  {
     "pregunta": {
       "es": "¿El reto de los 25 días es para cualquier persona?",
       "en": "Is the 25-day challenge for anyone?"

@@ -3,7 +3,7 @@ titulo: The Famous Cheat Meal
 fecha: 2020-12-15
 autor: Ronald Medina
 categoria: Nutrition
-descripcion: What a cheat meal is, how to work one into a strict eating plan, and the psychological and metabolic benefits it can offer you along the way.
+descripcion: What a cheat meal is, how to work one into a strict eating plan, the psychological benefit it can offer, and what the evidence doesn't support.
 imagen: /img/blog/el-famoso-permitido.webp
 original: el-famoso-permitido
 ---
@@ -20,6 +20,6 @@ There are lots of ways to do a cheat meal: it can be one or two days a week, and
 
 As we mentioned above, a cheat meal is done within a strict eating regimen. Therefore, its main benefit is psychological: it helps us ease the anxiety caused by keeping our daily food under control and lets us treat ourselves to a small feast, which brings a certain sense of joy and calm.
 
-In addition, it can also be beneficial on a metabolic level: our body is so used to a strict diet that when we give it that boost in the form of calories, it takes in nutrients better and can promote thermogenesis, which is essential if we want to burn fat.
+What hasn't been shown is that a cheat meal speeds up your metabolism or helps you burn fat: it's just another meal, with its calories. That's why it's worth planning it and not adding it on top of, say, [a weekend of excesses](/en/2026/10/25/from-party-saturday-to-blame-tuesday/). And if the cheat meal turns into a binge or leaves you feeling guilty, it's worth looking at [your relationship with food and the mirror](/en/2021/01/21/body-image-distortion-mirror-mirror/).
 
 Finally, we must understand that a cheat meal isn’t a reward; it’s just another meal, one we choose to have fewer times a week depending on our goals. Let’s understand that junk food has consequences in the short, medium and long term. It isn’t wrong to eat it, since we know we enjoy it; the problem is when junk food outweighs healthy food.

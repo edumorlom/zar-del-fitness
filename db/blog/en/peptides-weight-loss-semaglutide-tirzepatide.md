@@ -68,7 +68,7 @@ The clinical goal thus becomes broader: assessing what health improvements a per
 
 Significant weight loss can include both fat and lean mass. Lean mass includes muscle and other tissues; that's why a measurement of lean mass isn't exactly the same as a measurement of muscle lost.
 
-During these treatments, a reduced appetite can make it hard to eat enough. A joint recommendation from nutrition and obesity societies stresses the importance of high-quality nutrition, protein intake tailored to each person, and strength training to help preserve muscle function. Eating less and less should not become the goal. [11]
+During these treatments, a reduced appetite can make it hard to eat enough. A joint recommendation from nutrition and obesity societies stresses the importance of high-quality nutrition, protein intake tailored to each person, and [strength training](/en/2021/01/04/losing-muscle-mass-from-a-sedentary-lifestyle/) to help preserve muscle function. Eating less and less should not become the goal. [11]
 
 The activity plan should be adjusted to the person's physical capacity, history, and recovery. It's worth paying attention to strength, performance, and exercise tolerance, in addition to weight. The healthcare team can assess whether persistent fatigue or a marked drop in performance calls for changes. [11]
 
@@ -94,11 +94,11 @@ Where the medication comes from matters. In Argentina, ANMAT has warned about ti
 
 ## A conversation about weight with more evidence and respect
 
-These advances make it possible to talk about obesity with better tools. For a person who meets the clinical criteria, receiving drug treatment can be a legitimate decision within their care. They deserve understandable information and support, without having to justify to others how they are managing their health.
+These advances make it possible to [talk about obesity](/en/2021/01/04/fatphobia-an-ever-present-reality/) with better tools. For a person who meets the clinical criteria, receiving drug treatment can be a legitimate decision within their care. They deserve understandable information and support, without having to justify to others how they are managing their health.
 
 At the same time, a responsible conversation recognizes the differences between people. The best plan should consider the expected benefits, preferences, tolerance, and the ability to keep up with follow-up. A brand's popularity doesn't replace that evaluation.
 
-As a trainer, my contribution is helping build an exercise practice that makes sense for the person and can be maintained. Prescribing and monitoring these medications is the doctor's job, and the nutrition strategy requires support from the appropriate professional. Working in a coordinated way gives each part of the process the attention it needs.
+As a trainer, my contribution is helping build an exercise practice that makes sense for the person and can be maintained; that's why [having the right trainer](/en/2021/10/12/importance-of-the-right-personal-trainer/) matters. Prescribing and monitoring these medications is the doctor's job, and the nutrition strategy requires support from the appropriate professional. Working in a coordinated way gives each part of the process the attention it needs.
 
 Semaglutide and tirzepatide have opened up important possibilities. Making good use of them means keeping a broad view of health and measuring progress by criteria that go beyond appearance. Everyone deserves to go through this process with information and respect for their own body.
 

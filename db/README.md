@@ -20,7 +20,7 @@ El sitio está en castellano (`zardelfitness.com.ar/`) y en inglés (`zardelfitn
 |---|---|
 | `planes.json` | Los planes: nombre, precios, formas de pago, descripción y qué incluyen. |
 | `horarios.json` | Días y turnos del gimnasio, último ingreso y duración de la clase. |
-| `gimnasio.json` | Dirección (con código postal), coordenadas del gimnasio para Google Maps, el link de su ficha en Google Maps (`googleMaps`, la de las reseñas: le dice a Google y a los asistentes con IA que el sitio y la ficha son el mismo gimnasio), WhatsApp, redes y la cantidad de personas evaluadas. |
+| `gimnasio.json` | Dirección (con código postal), coordenadas del gimnasio para Google Maps, el nombre de esa ficha tal cual figura en Google (`nombreEnGoogle`: Google cruza el negocio por nombre, dirección y teléfono), el link de su ficha en Google Maps (`googleMaps`, la de las reseñas: le dice a Google y a los asistentes con IA que el sitio y la ficha son el mismo gimnasio), WhatsApp, redes, la cantidad de personas evaluadas y la puntuación y cantidad de reseñas de la ficha de Google (`resenasGoogle`: se ven en Resultados; actualizarlas a mano de vez en cuando). |
 | `preguntas.json` | Las preguntas frecuentes. |
 | `equipo.json` | Los entrenadores. `credenciales` son sus certificaciones una por una (`titulo` y, si se sabe, `otorgadaPor`): no se ven en el sitio, van en los datos para Google y los buscadores con IA. |
 | `textos.json` | Todos los textos del sitio, por sección, en castellano y en inglés: botones, menú, títulos, párrafos, textos alternativos de las fotos, los mensajes que se arman para WhatsApp, y el título y la descripción de cada página para Google (`seo`). |

@@ -63,9 +63,10 @@ function usePreload(ref: RefObject<HTMLElement | null>) {
   }, [ref]);
 }
 
-export function Results({ t, hashtag, shots }: {
+export function Results({ t, hashtag, reviews, shots }: {
   t: Content["t"]["resultados"];
   hashtag: { text: string; href: string };
+  reviews: { text: string; href: string };
   shots: Content["transformations"];
 }) {
   const gallery = useRef<HTMLDivElement>(null);
@@ -81,15 +82,21 @@ export function Results({ t, hashtag, shots }: {
             <Lines lines={t.titulo} />
           </h2>
         </div>
-        <a className="link-arrow" href={hashtag.href} data-reveal>
-          {t.instagram} <Icon name="arrow-ur" />
-        </a>
+        <div className={styles.links} data-reveal>
+          <a className="link-arrow" href={reviews.href}>
+            {reviews.text} <Icon name="arrow-ur" />
+          </a>
+          <a className="link-arrow" href={hashtag.href}>
+            {t.instagram} <Icon name="arrow-ur" />
+          </a>
+        </div>
       </div>
 
       <div className={styles.gallery} ref={gallery} data-reveal>
         <Row shots={shots[0]} direction={-1} label={t.antesDespues} />
         <Row shots={shots[1]} direction={1} label={t.antesDespues} />
       </div>
+      <p className={`container ${styles.note}`}>{t.aclaracion}</p>
     </section>
   );
 }
