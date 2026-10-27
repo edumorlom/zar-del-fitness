@@ -1,7 +1,7 @@
 "use client";
 
 import type { RefObject } from "react";
-import { gsap, ScrollTrigger, useGSAP, reducedMotion } from "./gsap";
+import { gsap, ScrollTrigger, useGSAP, reducedMotion, finePointer } from "./gsap";
 
 type Options = {
   /** -1 hacia la izquierda, 1 hacia la derecha */
@@ -17,6 +17,10 @@ type Options = {
 /**
  * Cinta infinita que acelera y cambia de sentido con la velocidad del scroll.
  * El track debe contener el contenido duplicado dos veces.
+ *
+ * En pantallas táctiles va a velocidad fija: en el iPhone, la inercia del scroll da picos de velocidad y la cinta
+ * aceleraba, frenaba y cambiaba de sentido a los saltos; y el dedo que empieza a deslizar sobre la cinta disparaba
+ * pointerenter, que la pausaba, y pointerleave al soltar, que la volvía a arrancar.
  */
 export function useMarquee(root: RefObject<HTMLElement | null>, trackSelector: string, opts: Options = {}) {
   const { direction = -1, speed = 2.2, skew = false, pauseOnHover = false } = opts;
@@ -24,6 +28,7 @@ export function useMarquee(root: RefObject<HTMLElement | null>, trackSelector: s
   useGSAP(
     () => {
       if (reducedMotion()) return;
+      const touch = !finePointer();
       const tracks = gsap.utils.toArray<HTMLElement>(root.current!.querySelectorAll(trackSelector));
       const wrap = gsap.utils.wrap(-50, 0);
       const setters = tracks.map((t) => gsap.quickSetter(t, "xPercent"));
@@ -51,6 +56,7 @@ export function useMarquee(root: RefObject<HTMLElement | null>, trackSelector: s
         end: "bottom top",
         onToggle: (self) => (visible = self.isActive),
         onUpdate: (self) => {
+          if (touch) return;
           const vel = self.getVelocity();
           boost = Math.min(Math.abs(vel) / 90, 40);
           dir = (self.direction === 1 ? direction : -direction) as 1 | -1;
@@ -64,9 +70,9 @@ export function useMarquee(root: RefObject<HTMLElement | null>, trackSelector: s
       window.addEventListener("scroll", onScroll, { passive: true });
 
       const el = root.current!;
-      const enter = () => (paused = true);
+      const enter = (e: PointerEvent) => (paused = e.pointerType === "mouse");
       const leave = () => (paused = false);
-      if (pauseOnHover) {
+      if (pauseOnHover && !touch) {
         el.addEventListener("pointerenter", enter);
         el.addEventListener("pointerleave", leave);
       }
