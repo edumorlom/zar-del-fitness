@@ -158,12 +158,11 @@ def person(member: dict) -> str:
 
 
 def career() -> str:
-    """Ronald's awards and press."""
-    awards = [f"- {award['fecha']}: {award['titulo']}. {award['texto']}" for award in CAREER["premios"]]
+    """Ronald's press."""
     press = [
         f"- {item.get('destacadoEnInicio') or item['medio']} ({item['tipo']}): {item['titulo']}" for item in CAREER["prensa"]
     ]
-    return "\n".join(["Premios y reconocimientos:", *awards, "", "En los medios:", *press])
+    return "\n".join(["En los medios:", *press])
 
 
 def placeholders() -> dict[str, str]:
