@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 import Image from "next/image";
 import { Icon } from "./Icon";
 import { Lines } from "./Lines";
@@ -38,11 +38,38 @@ function Row({ shots, direction, label }: { shots: Shot[]; direction: 1 | -1; la
 }
 
 /** Los textos de db/textos.json (resultados) y las fotos, ya en el idioma de la página. */
+/**
+ * Baja y decodifica todas las fotos de la galería cuando la sección está a una pantalla de distancia. Con lazy, cada
+ * foto se bajaba al entrar en la cinta, ya en movimiento, y en el iPhone cada decodificación era un tirón (uno cada
+ * dos o tres segundos).
+ */
+function usePreload(ref: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        el.querySelectorAll("img").forEach((img) => {
+          img.loading = "eager";
+          img.decode().catch(() => {});
+        });
+      },
+      { rootMargin: "100% 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref]);
+}
+
 export function Results({ t, hashtag, shots }: {
   t: Content["t"]["resultados"];
   hashtag: { text: string; href: string };
   shots: Content["transformations"];
 }) {
+  const gallery = useRef<HTMLDivElement>(null);
+  usePreload(gallery);
   return (
     <section className={`section ${styles.results}`} id="resultados">
       <div className="container section-head section-head--row">
@@ -59,7 +86,7 @@ export function Results({ t, hashtag, shots }: {
         </a>
       </div>
 
-      <div className={styles.gallery} data-reveal>
+      <div className={styles.gallery} ref={gallery} data-reveal>
         <Row shots={shots[0]} direction={-1} label={t.antesDespues} />
         <Row shots={shots[1]} direction={1} label={t.antesDespues} />
       </div>
