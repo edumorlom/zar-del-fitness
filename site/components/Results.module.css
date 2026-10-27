@@ -34,10 +34,14 @@
   height: 100%;
   object-fit: cover;
   transition: transform 1s var(--ease-out), filter 0.6s;
-  filter: grayscale(0.35) brightness(0.85);
 }
 /* Sólo con mouse: en el celular, :hover queda pegado en la foto que se tocó al deslizar. */
 @media (hover: hover) {
+  /* El filtro, sólo con mouse (se saca al pasarlo): en el iPhone, 56 fotos con filtro en la cinta en movimiento
+     hacían que Safari las volviera a dibujar a los tirones. */
+  .shot img {
+    filter: grayscale(0.35) brightness(0.85);
+  }
   .shot:hover img {
     transform: scale(1.06);
     filter: none;
