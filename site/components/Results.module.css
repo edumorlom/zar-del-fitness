@@ -36,9 +36,19 @@
   transition: transform 1s var(--ease-out), filter 0.6s;
   filter: grayscale(0.35) brightness(0.85);
 }
-.shot:hover img {
-  transform: scale(1.06);
-  filter: none;
+/* Sólo con mouse: en el celular, :hover queda pegado en la foto que se tocó al deslizar. */
+@media (hover: hover) {
+  .shot:hover img {
+    transform: scale(1.06);
+    filter: none;
+  }
+  .shot:hover::after {
+    opacity: 1;
+  }
+  .shot:hover .label {
+    transform: none;
+    opacity: 1;
+  }
 }
 .shot::after {
   content: "";
@@ -48,9 +58,6 @@
   box-shadow: inset 0 0 0 1px var(--gold-light);
   opacity: 0;
   transition: opacity 0.4s;
-}
-.shot:hover::after {
-  opacity: 1;
 }
 
 .label {
@@ -72,10 +79,6 @@
 }
 .label::before {
   content: attr(data-label);
-}
-.shot:hover .label {
-  transform: none;
-  opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
