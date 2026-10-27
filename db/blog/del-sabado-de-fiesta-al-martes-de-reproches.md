@@ -37,7 +37,7 @@ Para atravesar esos días, estas son las prioridades que recomiendo desde mi lug
 
 1. **Primero, decidir si corresponde entrenar.** Si todavía hay efectos de la sustancia, mareos, palpitaciones, agotamiento marcado o una noche prácticamente sin dormir, mi recomendación es posponer la sesión. No hay una cantidad universal de horas que garantice seguridad: importan la sustancia, las mezclas, los síntomas y la salud de cada persona. Los síntomas persistentes necesitan valoración médica.
 2. **Recuperar el sueño y volver a una rutina.** Priorizo horarios regulares y tiempo suficiente para descansar. La referencia general para adultos es de siete a nueve horas por noche, pero cumplir un número no garantiza estar recuperado. También cuentan la calidad del sueño y cómo te sentís durante el día. [5]
-3. **Retomar comidas regulares e hidratarse sin excesos.** Recomiendo volver a comer de forma habitual, en lugar de intentar compensar la fiesta con ayuno o entrenamiento de castigo. Tampoco aconsejo beber litros de agua de golpe para "limpiar" el cuerpo: con MDMA, tanto la deshidratación como el exceso de agua pueden ser peligrosos. [6]
+3. **Retomar comidas regulares e hidratarse sin excesos.** Recomiendo volver a comer de forma habitual, en lugar de intentar [compensar la fiesta con ayuno](/2020/12/15/el-famoso-permitido/) o entrenamiento de castigo. Tampoco aconsejo beber litros de agua de golpe para "limpiar" el cuerpo: con MDMA, tanto la deshidratación como el exceso de agua pueden ser peligrosos. [6]
 4. **Volver con una exigencia menor cuando estés recuperado.** Si ya no hay efectos ni síntomas, dormiste, comiste y te sentís estable, una caminata tranquila o movilidad suave puede ser un primer paso. Al retomar fuerza, prefiero una sesión breve, cargas cómodas y margen antes del fallo. Dejo para después los récords, los intervalos intensos y el entrenamiento con calor. Esta es una adaptación prudente del entrenamiento, no una fórmula validada para acelerar la eliminación de drogas.
 5. **No intentar tapar el bajón con otra sustancia.** No recomiendo sumar drogas, alcohol o preentrenos estimulantes para obligarte a rendir. Tampoco automedicarte para dormir o buscar una supuesta "recarga de serotonina". Ante dudas sobre medicamentos o suplementos, corresponde consultar a un profesional de salud. [7]
 6. **Hablar y pedir ayuda cuando haga falta.** Decirme "dormí mal, consumí y hoy no me siento bien" me permite priorizar tu seguridad. Si el ánimo empeora, el malestar no mejora o este ciclo se repite y afecta tu vida, recomiendo consultar. Dolor de pecho, dificultad para respirar, temperatura muy elevada, confusión o convulsiones requieren atención urgente.
@@ -48,7 +48,7 @@ Mi objetivo no es que vengas a demostrar cuánto podés soportar. Es que entrene
 
 Tampoco voy a prometer que una buena alimentación, una caminata o una noche de sueño vuelvan inocuo el consumo. Son medidas de cuidado, no garantías. Si la fiesta te deja repetidamente varios días sin bienestar, vale la pena revisar el consumo, además de ajustar la rutina.
 
-Yo puedo ayudarte a organizar tu entrenamiento. Tu recuperación necesita tu participación.
+Yo puedo [ayudarte a organizar tu entrenamiento](/2021/10/12/la-importancia-de-contar-con-un-personal-trainer-adecuado/). Tu recuperación necesita tu participación.
 
 Porque la disciplina también se demuestra cuando decís la verdad sobre cómo estás, aceptás un ajuste y te hacés responsable de cómo tratás a quien te acompaña.
 

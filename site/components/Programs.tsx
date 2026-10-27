@@ -39,6 +39,7 @@ export function Programs({ lang }: { lang: Lang }) {
                     <span className={styles.cur}>{p.currency}</span>
                     {p.price}
                     {p.suffix && <small>{p.suffix}</small>}
+                    {p.monthly && <small>{t.programas.porMes}</small>}
                   </p>
                   <p className={styles.desc}>{p.desc}</p>
                   <ul className={styles.list}>

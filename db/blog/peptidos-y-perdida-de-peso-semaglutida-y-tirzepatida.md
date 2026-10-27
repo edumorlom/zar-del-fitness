@@ -67,7 +67,7 @@ El objetivo clínico se vuelve así más amplio: valorar qué mejoras de salud p
 
 Una pérdida importante de peso puede incluir grasa y masa magra. Esta última comprende músculo y otros tejidos; por eso, una medición de masa magra no equivale exactamente a una medición de músculo perdido.
 
-Durante estos tratamientos, el menor apetito puede dificultar una ingesta suficiente. Una recomendación conjunta de sociedades de nutrición y obesidad subraya la importancia de una alimentación de calidad, un aporte de proteínas adaptado a cada persona y entrenamiento de fuerza para ayudar a preservar la función muscular. Comer cada vez menos no debe convertirse en el objetivo. [11]
+Durante estos tratamientos, el menor apetito puede dificultar una ingesta suficiente. Una recomendación conjunta de sociedades de nutrición y obesidad subraya la importancia de una alimentación de calidad, un aporte de proteínas adaptado a cada persona y [entrenamiento de fuerza](/2021/01/04/que-pasa-cuando-se-pierde-masa-muscular-producto-del-sedentarismo/) para ayudar a preservar la función muscular. Comer cada vez menos no debe convertirse en el objetivo. [11]
 
 El plan de actividad debe ajustarse a la capacidad física, los antecedentes y la recuperación. Conviene prestar atención a la fuerza, el rendimiento y la tolerancia al ejercicio, además del peso. El equipo de salud puede evaluar si una fatiga persistente o un descenso marcado del rendimiento requieren cambios. [11]
 
@@ -93,11 +93,11 @@ La procedencia del medicamento importa. En Argentina, ANMAT ha advertido sobre p
 
 ## Una conversación sobre el peso con más evidencia y respeto
 
-Estos avances permiten hablar de la obesidad con mejores herramientas. Para una persona que cumple los criterios clínicos, recibir tratamiento farmacológico puede ser una decisión legítima dentro de su cuidado. Merece información comprensible y acompañamiento, sin tener que justificar ante otros cómo está abordando su salud.
+Estos avances permiten [hablar de la obesidad](/2021/01/04/gordofobia-una-realidad-latente/) con mejores herramientas. Para una persona que cumple los criterios clínicos, recibir tratamiento farmacológico puede ser una decisión legítima dentro de su cuidado. Merece información comprensible y acompañamiento, sin tener que justificar ante otros cómo está abordando su salud.
 
 Al mismo tiempo, una conversación responsable reconoce las diferencias entre personas. El mejor plan debe considerar los beneficios esperables, las preferencias, la tolerancia y la posibilidad de sostener el seguimiento. La popularidad de una marca no reemplaza esa evaluación.
 
-Como entrenador, mi aporte está en ayudar a construir una práctica de ejercicio que tenga sentido para la persona y pueda mantenerse. La indicación y el control de estos medicamentos corresponden al médico, y la estrategia alimentaria requiere el acompañamiento del profesional competente. Trabajar de forma coordinada permite dar a cada parte del proceso la atención que necesita.
+Como entrenador, mi aporte está en ayudar a construir una práctica de ejercicio que tenga sentido para la persona y pueda mantenerse; por eso importa [contar con un entrenador adecuado](/2021/10/12/la-importancia-de-contar-con-un-personal-trainer-adecuado/). La indicación y el control de estos medicamentos corresponden al médico, y la estrategia alimentaria requiere el acompañamiento del profesional competente. Trabajar de forma coordinada permite dar a cada parte del proceso la atención que necesita.
 
 La semaglutida y la tirzepatida han abierto posibilidades importantes. Aprovecharlas bien implica conservar una mirada amplia sobre la salud y medir el progreso con criterios que vayan más allá de la apariencia. Cada persona merece atravesar ese proceso con información y respeto por su propio cuerpo.
 

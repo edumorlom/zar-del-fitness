@@ -90,3 +90,15 @@
     overflow-x: auto;
   }
 }
+
+.note {
+  margin-top: 20px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+}

@@ -365,6 +365,8 @@ ol {
   align-items: center;
   justify-content: center;
   gap: 0.65em;
+  /* 44px: the size Apple and Google recommend for something you tap */
+  min-height: 44px;
   padding: 0.95em 1.55em;
   border-radius: 999px;
   font-size: 0.8rem;
@@ -505,8 +507,8 @@ ol {
 .socials a {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1px solid var(--line);
   color: var(--silver);

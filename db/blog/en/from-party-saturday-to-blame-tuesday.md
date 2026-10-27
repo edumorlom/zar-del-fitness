@@ -38,7 +38,7 @@ To get through those days, these are the priorities I recommend as a coach, base
 
 1. **First, decide whether you should train at all.** If you still feel the effects of the substance, dizziness, palpitations, marked exhaustion, or you barely slept, my recommendation is to postpone the session. There's no universal number of hours that guarantees safety: the substance, the combinations, the symptoms and each person's health all matter. Persistent symptoms need a medical evaluation.
 2. **Catch up on sleep and get back to a routine.** I prioritize regular schedules and enough time to rest. The general guideline for adults is seven to nine hours a night, but hitting a number doesn't guarantee you've recovered. Sleep quality and how you feel during the day count too. [5]
-3. **Go back to regular meals and hydrate without overdoing it.** I recommend eating normally again, instead of trying to make up for the party with fasting or punishment workouts. I also don't advise drinking liters of water at once to "flush" your body: with MDMA, both dehydration and too much water can be dangerous. [6]
+3. **Go back to regular meals and hydrate without overdoing it.** I recommend eating normally again, instead of trying to [make up for the party with fasting](/en/2020/12/15/the-famous-cheat-meal/) or punishment workouts. I also don't advise drinking liters of water at once to "flush" your body: with MDMA, both dehydration and too much water can be dangerous. [6]
 4. **Come back with a lighter load once you've recovered.** If the effects and symptoms are gone, you've slept, eaten and feel stable, a relaxed walk or gentle mobility work can be a first step. When you return to strength training, I prefer a short session, comfortable loads and plenty of reps in reserve. Personal records, intense intervals and training in the heat can wait. This is a cautious adjustment to training, not a validated formula for clearing drugs faster.
 5. **Don't try to cover up the slump with another substance.** I don't recommend adding drugs, alcohol or stimulant pre-workouts to force yourself to perform. Nor self-medicating to sleep or looking for a so-called "serotonin recharge". If you have questions about medications or supplements, talk to a health professional. [7]
 6. **Talk, and ask for help when you need it.** Telling me "I slept badly, I took something and I don't feel well today" lets me put your safety first. If your mood gets worse, the discomfort doesn't improve, or this cycle keeps repeating and affects your life, I recommend seeking help. Chest pain, trouble breathing, a very high temperature, confusion or seizures need urgent medical attention.
@@ -49,7 +49,7 @@ My goal isn't for you to come in and prove how much you can endure. It's for you
 
 I'm not going to promise that good nutrition, a walk or a night's sleep make drug use harmless, either. They are ways of taking care of yourself, not guarantees. If partying repeatedly leaves you feeling unwell for several days, it's worth looking at your drug use, not just adjusting your routine.
 
-I can help you organize your training. Your recovery needs your participation.
+I can [help you organize your training](/en/2021/10/12/importance-of-the-right-personal-trainer/). Your recovery needs your participation.
 
 Because discipline also shows when you tell the truth about how you are, accept an adjustment and take responsibility for how you treat the people who support you.
 

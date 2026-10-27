@@ -149,6 +149,7 @@
 
   "programas": {
     "antetitulo": { "es": "Programas", "en": "Programs" },
+    "porMes": { "es": "por mes", "en": "per month" },
     "titulo": {
       "es": ["Cuatro protocolos,", "*un solo objetivo: el tuyo.*"],
       "en": ["Four protocols,", "*one goal: yours.*"]
@@ -243,6 +244,11 @@
       "en": ["They did it", "*too.*"]
     },
     "instagram": { "es": "Ver más en Instagram", "en": "See more on Instagram" },
+    "google": { "es": "{puntaje} ★ · {cantidad} reseñas en Google", "en": "{puntaje} ★ · {cantidad} Google reviews" },
+    "aclaracion": {
+      "es": "Fotos reales de alumnos del Zar. Cada cuerpo responde distinto: el resultado depende de tu punto de partida y de tu constancia.",
+      "en": "Real photos of the Zar's clients. Every body responds differently: your result depends on your starting point and your consistency."
+    },
     "antesDespues": { "es": "Antes / Después", "en": "Before / After" },
     "fotoAlumno": { "es": "Transformación de un alumno: antes y después", "en": "A client's transformation: before and after" },
     "fotoAlumna": { "es": "Transformación de una alumna: antes y después", "en": "A client's transformation: before and after" },
@@ -373,6 +379,7 @@
     },
     "con": { "es": "Con {invitado}", "en": "With {invitado}" },
     "duracion": { "es": "{minutos} min", "en": "{minutos} min" },
+    "idioma": { "es": "En castellano", "en": "In Spanish" },
     "masEpisodios": { "es": "Más *episodios.*", "en": "More *episodes.*" }
   },
 

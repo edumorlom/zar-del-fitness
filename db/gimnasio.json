@@ -1,6 +1,7 @@
 {
   "nombre": "Zar del Fitness",
   "gimnasio": "The VIP by Zar del Fitness",
+  "nombreEnGoogle": "Zar del Fitness Gym",
   "direccion": {
     "calle": "Av. Álvarez Thomas 847",
     "barrio": "Colegiales",
@@ -16,9 +17,10 @@
   "redes": [
     { "red": "Instagram", "url": "https://www.instagram.com/zardelfitness/" },
     { "red": "Facebook", "url": "https://www.facebook.com/zardelfitness" },
-    { "red": "YouTube", "url": "https://www.youtube.com/user/MODELNUTRITION" },
-    { "red": "TikTok", "url": "https://vm.tiktok.com/ZMJbSAgWe/" },
-    { "red": "X (Twitter)", "url": "https://twitter.com/zardelfitness" }
+    { "red": "YouTube", "url": "https://www.youtube.com/@zardelfitness" },
+    { "red": "TikTok", "url": "https://www.tiktok.com/@zardelfitness" },
+    { "red": "X (Twitter)", "url": "https://x.com/zardelfitness" }
   ],
-  "personasEvaluadas": 2000
+  "personasEvaluadas": 2000,
+  "resenasGoogle": { "puntaje": 4.8, "cantidad": 171 }
 }

@@ -36,6 +36,8 @@ export const siteUrl = `https://${gimnasio.sitioWeb}`;
 export const business = {
   name: gimnasio.nombre,
   gym: gimnasio.gimnasio,
+  /** El nombre de la ficha de Google Maps, tal cual: Google cruza el negocio por nombre, dirección y teléfono. */
+  googleName: gimnasio.nombreEnGoogle,
   phone: `+${WA_NUMBER}`,
   street: calle,
   area: barrio,
@@ -84,6 +86,8 @@ type Plan = {
   nombreEnInicio?: Txt;
   etiqueta: Txt;
   precios: { monto: number; moneda: string }[];
+  /** "por mes": sólo en castellano (es del asistente). */
+  periodo?: string;
   resumen: Txt;
   descripcion?: Txt;
   destacados?: Txts;
@@ -252,6 +256,8 @@ function build(lang: Lang) {
       currency: moneda === "ARS" ? "$" : moneda,
       price: thousands(monto, lang),
       suffix: moneda === "ARS" ? "ARS" : undefined,
+      // El período de db/planes.json es sólo en castellano (lo usa el asistente); el sitio muestra el mensual.
+      monthly: p.periodo === "por mes",
       desc: text(p.resumen, lang, where(p, "resumen")),
       features: p.destacados ? text(p.destacados, lang, where(p, "destacados")) : [],
       art: { variant: art, label: t.programas.ilustraciones[art] },
@@ -358,6 +364,14 @@ function build(lang: Lang) {
     pages,
     links,
     hashtag: { text: gimnasio.hashtag, href: links.hashtag },
+    // La puntuación de la ficha de Google Maps (db/gimnasio.json), con link a las reseñas.
+    googleReviews: {
+      text: fill(t.resultados.google, {
+        puntaje: gimnasio.resenasGoogle.puntaje.toLocaleString(locales[lang].intl),
+        cantidad: gimnasio.resenasGoogle.cantidad,
+      }),
+      href: gimnasio.googleMaps,
+    },
     contact,
     nav,
     price,

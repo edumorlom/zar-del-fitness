@@ -49,8 +49,8 @@ export function PodcastIndex({ lang }: { lang: Lang }) {
       <section className="section">
         <div className="container">
           <EpisodeGrid>
-            {episodes[lang].map((e) => (
-              <EpisodeCard key={e.videoId} episode={e} cursor={t.general.cursorVideo} />
+            {episodes[lang].map((e, i) => (
+              <EpisodeCard key={e.videoId} episode={e} cursor={t.general.cursorVideo} first={i === 0} />
             ))}
           </EpisodeGrid>
         </div>

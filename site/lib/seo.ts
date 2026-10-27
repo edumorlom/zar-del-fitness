@@ -42,6 +42,8 @@ export function pageMetadata({ lang, title, description, path, alternates, absol
     title: absoluteTitle ? { absolute: title } : title,
     description,
     keywords,
+    // <meta name="author">: en las notas, el autor de la nota (el layout pone a Ronald en todas las páginas).
+    ...(article && { authors: article.authors.map((name) => ({ name })) }),
     alternates: { canonical: path, ...(alternates && { languages: languages(alternates) }) },
     openGraph: {
       title: fullTitle,
@@ -109,17 +111,16 @@ export function siteGraph(lang: Lang) {
     {
       "@type": "ExerciseGym",
       "@id": ids.business,
-      name: business.name,
-      alternateName: [business.gym, ...LANGS.map((l) => content(l).t.seo.otroNombre)],
+      name: business.googleName,
+      alternateName: [business.name, business.gym, ...LANGS.map((l) => content(l).t.seo.otroNombre)],
       description: bilingual((l) => content(l).t.seo.negocio),
       slogan: bilingual((l) => content(l).t.lema),
       // Las búsquedas a las que apunta (db/textos.json, seo.palabrasClave), en los dos idiomas.
       keywords: LANGS.flatMap((l) => content(l).t.seo.palabrasClave).join(", "),
-      // Presencial en Buenos Aires, y online (el Reto) en cualquier país.
+      // Presencial en Buenos Aires; el Reto online, en cualquier país (no hay un lugar "todo el mundo" en schema.org).
       areaServed: [
         { "@type": "City", name: "Buenos Aires" },
         { "@type": "Country", name: "Argentina" },
-        { "@type": "Place", name: "Worldwide" },
       ],
       knowsLanguage: "es",
       url: abs(pages.home),
@@ -128,7 +129,7 @@ export function siteGraph(lang: Lang) {
       telephone: business.phone,
       address: {
         "@type": "PostalAddress",
-        streetAddress: `${business.street}, ${business.area}`,
+        streetAddress: business.street,
         addressLocality: "Buenos Aires",
         addressRegion: business.city,
         postalCode: business.postalCode,
@@ -166,8 +167,16 @@ export function siteGraph(lang: Lang) {
           "@type": "Offer",
           price: p.amount,
           priceCurrency: p.currencyCode,
+          ...(p.monthly && {
+            priceSpecification: {
+              "@type": "UnitPriceSpecification",
+              price: p.amount,
+              priceCurrency: p.currencyCode,
+              referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode: "MON" },
+            },
+          }),
           url: abs(`${pages.home}#programas`),
-          itemOffered: { "@type": "Service", name: p.title, description: p.desc },
+          itemOffered: { "@type": "Service", name: p.title, description: p.desc, provider: { "@id": ids.business } },
         })),
       },
     },
@@ -183,11 +192,13 @@ export function siteGraph(lang: Lang) {
       url: abs(`${pages.home}#zar`),
       nationality: { "@type": "Country", name: "Venezuela" },
       worksFor: { "@id": ids.business },
-      sameAs: [ronald.handleHref].filter(Boolean),
+      // Su Instagram, y X y YouTube, que son de él (@zardelfitness).
+      sameAs: [ronald.handleHref, ...socials.filter((s) => s.icon === "x" || s.icon === "yt").map((s) => s.href)].filter(Boolean),
       knowsAbout: t.seo.especialidades,
       hasCredential: credentials("ronald"),
       award: [
         ...press.filter((p) => p.isAward).map((p) => `${p.src}: ${p.title}`),
+        `${t.elZar.cifras.chiquinquira} 2014`,
       ],
       subjectOf: press
         .filter((p) => p.href && !p.isAward)

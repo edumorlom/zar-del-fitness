@@ -108,6 +108,8 @@ export function BlogPost({ lang, params }: { lang: Lang; params: PostParams }) {
                   <a href={`${pages.home}#zar`}>{ronald.name}</a>
                 </p>
                 <p>{ronald.bio}</p>
+                {/* Sus certificaciones: quién escribe sobre salud y con qué formación (E-E-A-T). */}
+                {ronald.certifications && <p>{ronald.certifications}</p>}
               </div>
             </aside>
           )}

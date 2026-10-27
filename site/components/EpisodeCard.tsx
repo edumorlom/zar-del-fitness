@@ -9,7 +9,7 @@ import styles from "./Card.module.css";
  * Un episodio del podcast, en la lista y en "Más episodios". Es un link a su página; un click común abre el video en
  * el modal, sin salir de la página (components/motion/VideoLink.tsx). `cursor` es el texto del cursor ("Play").
  */
-export function EpisodeCard({ episode, cursor, heading: Heading = "h2" }: { episode: Episode; cursor: string; heading?: "h2" | "h3" }) {
+export function EpisodeCard({ episode, cursor, heading: Heading = "h2", first }: { episode: Episode; cursor: string; heading?: "h2" | "h3"; first?: boolean }) {
   return (
     <article className={styles.card} data-reveal>
       <VideoLink
@@ -19,7 +19,14 @@ export function EpisodeCard({ episode, cursor, heading: Heading = "h2" }: { epis
         className={styles.link}
       >
         <div className={styles.img}>
-          <Image src={episode.image} alt={episode.title} fill sizes="(max-width: 700px) 90vw, (max-width: 1100px) 45vw, 30vw" />
+          <Image
+            src={episode.image}
+            alt={episode.title}
+            fill
+            sizes="(max-width: 700px) 90vw, (max-width: 1100px) 45vw, 30vw"
+            // La primera de la lista es lo más grande que se ve al abrir /podcasts/ (el LCP): sin esperar al scroll.
+            {...(first && { loading: "eager", fetchPriority: "high" })}
+          />
         </div>
         <div className={styles.body}>
           <p className={styles.meta}>

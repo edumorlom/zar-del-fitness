@@ -10,7 +10,7 @@ original: gluteos-de-acero
 
 If you want your glutes to grow and look round, strong and lifted, here are 4 exercises for you.
 
-Keep in mind that the weight for these exercises will depend on your abilities. If you're a beginner, start little by little and increase the weight as you perfect your technique.
+Keep in mind that the weight for these exercises will depend on your abilities. [If you're a beginner](/en/2020/12/22/have-you-ever-felt-uncomfortable-at-the-gym/), start little by little and increase the weight as you perfect your technique.
 
 ## 1. Glute bridge
 
@@ -46,4 +46,4 @@ Stand with your feet together, take a long step forward with one leg and bend th
 
 ![Lunges](/img/blog/gluteos-de-acero-4.webp)
 
-It's always important to maintain your technique exactly as we've described it. The weight will come once you've mastered it. Never sacrifice technique for weight; that's a serious mistake.
+It's always important to maintain your technique exactly as we've described it. The weight will come once you've mastered it. Never sacrifice technique for weight; that's a serious mistake. Plus, [strength training](/en/2021/01/04/losing-muscle-mass-from-a-sedentary-lifestyle/) helps you hold on to your muscle mass over the years.

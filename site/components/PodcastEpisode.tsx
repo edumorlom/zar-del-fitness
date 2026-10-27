@@ -33,7 +33,8 @@ export function PodcastEpisode({ lang, id }: { lang: Lang; id: string }) {
     <PageShell lang={lang} alternate={alternatesOf(episode)[otherLang(lang)]}>
       <JsonLd
         data={[
-          webPageLd({ lang, path: episode.path, name: episode.pageTitle, description: episode.description }),
+          // La página trata del video: Google y los buscadores con IA lo toman como lo principal.
+          { ...webPageLd({ lang, path: episode.path, name: episode.pageTitle, description: episode.description }), mainEntity: { "@id": videoLd(episode)["@id"] } },
           breadcrumbLd(lang, [
             { name: t.menu.podcasts, path: pages.podcasts },
             { name: episode.title, path: episode.path },
@@ -61,6 +62,7 @@ export function PodcastEpisode({ lang, id }: { lang: Lang; id: string }) {
               <span className="tag">{t.podcasts.antetitulo}</span>
               <time dateTime={episode.date}>{formatDate(episode.date, lang)}</time>
               <span>{fill(t.podcasts.duracion, { minutos: Math.round(episode.seconds / 60) })}</span>
+              <span>{t.podcasts.idioma}</span>
             </p>
             <h1 className={styles.title}>{episode.title}</h1>
             <p className={styles.guest}>{fill(t.podcasts.con, { invitado: episode.guest })}</p>
