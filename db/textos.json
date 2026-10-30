@@ -119,8 +119,8 @@
         "en": "Venezuelan, based in Buenos Aires. Creator of the **25-Day Challenge**, the engine of a brand that is now a benchmark in the fitness world of Venezuela and Argentina."
       },
       {
-        "es": "Personal trainer certificado por el Instituto Panamericano de Educación Física (IPEF) en la prescripción del ejercicio en personas con obesidad y enfermedades metabólicas. Conocido como *celebrity trainer* por su trayectoria en el medio artístico, ya evaluó a casi dos mil personas y acompaña online a alumnos de Latinoamérica y el mundo.",
-        "en": "Personal trainer certified by the Pan-American Institute of Physical Education (IPEF) in exercise prescription for people with obesity and metabolic diseases. Known as a *celebrity trainer* for a career in show business, Ronald has assessed almost two thousand people and coaches clients online across Latin America and the world."
+        "es": "Personal trainer certificado por el Instituto Panamericano de Educación Física (IPEF) en la prescripción del ejercicio en personas con obesidad y enfermedades metabólicas. Conocido como *celebrity trainer* por su trayectoria en el medio artístico, ya evaluó a más de cuatro mil personas y acompaña online a alumnos de Latinoamérica y el mundo.",
+        "en": "Personal trainer certified by the Pan-American Institute of Physical Education (IPEF) in exercise prescription for people with obesity and metabolic diseases. Known as a *celebrity trainer* for a career in show business, Ronald has assessed over four thousand people and coaches clients online across Latin America and the world."
       }
     ],
     "cita": {
@@ -140,7 +140,7 @@
     "portadaPie": { "es": "Portada · Funcional Magazine", "en": "Cover · Funcional Magazine" },
     "cifras": {
       "evaluadas": { "es": "Personas evaluadas", "en": "People assessed" },
-      "casi": { "es": "casi", "en": "almost" },
+      "casi": { "es": "más de", "en": "over" },
       "ciclo": { "es": "Días por ciclo de resultados", "en": "Days per results cycle" },
       "chiquinquira": { "es": "Chiquinquirá de Oro · Trainer del año", "en": "Chiquinquirá de Oro · Trainer of the year" },
       "emmy": { "es": "Emmy Winner", "en": "Emmy Winner" }
