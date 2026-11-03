@@ -27,8 +27,9 @@ const gold = "linear-gradient(120deg, #a7892f, #e7c152 55%, #988858)";
 const appearance = {
   elements: {
     rootBox: { width: "100%" },
-    cardBox: { width: "100%", boxShadow: "none", border: "none", background: "transparent" },
-    card: { background: "transparent", boxShadow: "none", border: "none", padding: 0 },
+    // Al ancho del panel: Clerk trae 25rem fijos, más que un celular
+    cardBox: { width: "100%", maxWidth: "100%", boxShadow: "none", border: "none", background: "transparent" },
+    card: { width: "100%", maxWidth: "100%", background: "transparent", boxShadow: "none", border: "none", padding: 0 },
     // El título y el logo ya están en el panel
     header: { display: "none" },
     footer: { background: "transparent" },
