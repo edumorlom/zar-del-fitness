@@ -19,6 +19,15 @@ export const metadata: Metadata = {
   title: { default: "Mi progreso | Zar del Fitness", template: "%s | Zar del Fitness" },
   // Privado: que los buscadores no lo indexen.
   robots: { index: false, follow: false },
+  // Los mismos íconos que el sitio (site/app/favicon.ico, icon.svg, icon1.png, apple-icon.tsx), servidos desde ahí.
+  icons: {
+    icon: [
+      { url: "https://zardelfitness.com.ar/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+      { url: "https://zardelfitness.com.ar/icon.svg", sizes: "any", type: "image/svg+xml" },
+      { url: "https://zardelfitness.com.ar/icon1.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: { url: "https://zardelfitness.com.ar/apple-icon", sizes: "180x180", type: "image/png" },
+  },
 };
 
 export const viewport: Viewport = { themeColor: "#000000", colorScheme: "dark" };
