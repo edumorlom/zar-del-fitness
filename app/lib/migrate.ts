@@ -17,7 +17,7 @@ drop index if exists checkins_member;
 create table if not exists users (
   id serial primary key,
   role text not null default 'user' check (role in ('admin', 'coach', 'user')),
-  email text not null unique,
+  email text unique,
   clerk_id text unique,
   name text not null,
   coach_id int references users(id) on delete set null,
@@ -41,6 +41,34 @@ create table if not exists checkins (
   created_at timestamptz not null default now()
 );
 create index if not exists checkins_client on checkins(client_id, date);
+
+-- La ficha del cliente (importada del portal anterior o cargada por el admin). Lo de salud lo ve sólo el equipo.
+alter table users alter column email drop not null;
+alter table users add column if not exists external_id text unique;
+alter table users add column if not exists dni text;
+alter table users add column if not exists sex text check (sex in ('M', 'F'));
+alter table users add column if not exists birth_year int check (birth_year between 1900 and 2100);
+alter table users add column if not exists height_cm int check (height_cm between 80 and 250);
+alter table users add column if not exists body_type text;
+alter table users add column if not exists conditions text[] not null default '{}';
+alter table users add column if not exists medications text;
+alter table users add column if not exists notes text;
+alter table users add column if not exists active boolean not null default true;
+alter table users add column if not exists title text;
+-- Del portal anterior sólo vino la fecha y el peso de la última evaluación, sin el resto: hasta el próximo control.
+alter table users add column if not exists legacy_last_checkin date;
+alter table users add column if not exists legacy_last_weight numeric(5, 1);
+
+-- Lo demás de una evaluación, todo opcional: perímetros (cm) y lo que da la balanza.
+alter table checkins add column if not exists chest_cm numeric(5, 1);
+alter table checkins add column if not exists abdomen_cm numeric(5, 1);
+alter table checkins add column if not exists biceps_r_cm numeric(5, 1);
+alter table checkins add column if not exists biceps_l_cm numeric(5, 1);
+alter table checkins add column if not exists leg_r_cm numeric(5, 1);
+alter table checkins add column if not exists leg_l_cm numeric(5, 1);
+alter table checkins add column if not exists biological_age int;
+alter table checkins add column if not exists visceral_fat numeric(4, 1);
+alter table checkins add column if not exists bmr_kcal int;
 `;
 
 export async function migrate() {

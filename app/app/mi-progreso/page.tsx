@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Mi progreso" };
 
 export default async function MyProgressPage() {
   const viewer = await requireViewer();
-  if (viewer.role !== "user") redirect("/clientes");
+  if (viewer.role !== "user") redirect("/dashboard");
   const [client, checkins] = await Promise.all([getClient(viewer.id), getCheckins(viewer.id)]);
   if (!client) redirect("/ingresar");
   return (

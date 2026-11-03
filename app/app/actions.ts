@@ -4,6 +4,7 @@ import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { canManage, ROLES, type Role } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
+import { BODY_TYPES, CONDITIONS, MEASURES, PLANS } from "~/lib/clients";
 import { db } from "~/lib/db";
 import { fromLocalInput, todayISO } from "~/lib/format";
 
@@ -37,14 +38,20 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
   }
 
   const name = text(form, "name");
-  const email = text(form, "email").toLowerCase();
+  const email = text(form, "email").toLowerCase() || null;
   const role = text(form, "role") as Role;
   const coachId = text(form, "coach_id") ? Number(text(form, "coach_id")) : null;
   const clientSince = text(form, "client_since") || todayISO();
   const passExpires = text(form, "pass_expires") || null;
+  const plan = text(form, "plan") || null;
+  const sex = text(form, "sex") || null;
+  const ageYears = text(form, "age") ? Number(text(form, "age")) : null;
+  const height = text(form, "height_cm") ? Number(text(form, "height_cm")) : null;
+  const bodyType = text(form, "body_type") || null;
+  const conditions = form.getAll("conditions").map(String);
 
   if (!name) return { error: "Falta el nombre." };
-  if (!EMAIL.test(email)) return { error: "Revisá el correo: con él entra al portal." };
+  if (email && !EMAIL.test(email)) return { error: "Revisá el correo: con él entra al portal." };
   if (!ROLES.includes(role)) return { error: "Elegí un rol." };
   if (id === viewer.id && role !== viewer.role) return { error: "No podés cambiar tu propio rol." };
   if (coachId !== null && (!Number.isInteger(coachId) || coachId === id)) return { error: "Elegí otro coach." };
@@ -53,16 +60,30 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
     if (!rowCount) return { error: "Ese coach no existe." };
   }
   if (!DATE.test(clientSince) || (passExpires && !DATE.test(passExpires))) return { error: "Revisá las fechas." };
+  if (plan && !PLANS.some((p) => p.id === plan)) return { error: "Elegí un plan de la lista." };
+  if (sex && sex !== "M" && sex !== "F") return { error: "Elegí el sexo." };
+  if (ageYears !== null && !(Number.isInteger(ageYears) && ageYears >= 5 && ageYears <= 110))
+    return { error: "Revisá la edad." };
+  if (height !== null && !(Number.isInteger(height) && height >= 80 && height <= 250))
+    return { error: "La estatura va en centímetros, entre 80 y 250." };
+  if (bodyType && !BODY_TYPES.includes(bodyType as (typeof BODY_TYPES)[number])) return { error: "Elegí el estado físico." };
+  if (conditions.some((c) => !CONDITIONS.includes(c as (typeof CONDITIONS)[number])))
+    return { error: "Revisá las patologías." };
 
-  const fields = [name, email, role, coachId, text(form, "phone") || null, text(form, "photo_url") || null,
-    text(form, "plan") || null, clientSince, passExpires, nextControl, goal];
+  const fields = [name, email, role, coachId, text(form, "phone") || null, text(form, "photo_url") || null, plan,
+    clientSince, passExpires, nextControl, goal, text(form, "dni") || null, sex,
+    ageYears === null ? null : Number(todayISO().slice(0, 4)) - ageYears, height, bodyType, conditions,
+    text(form, "medications") || null, text(form, "notes") || null, form.get("active") === "on",
+    text(form, "title") || null];
   let created: number | undefined;
   try {
     if (id === null) {
       const { rows } = await db.query<{ id: number }>(
         `insert into users (name, email, role, coach_id, phone, photo_url, plan, client_since, pass_expires,
-                            next_control_at, goal)
-         values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) returning id`,
+                            next_control_at, goal, dni, sex, birth_year, height_cm, body_type, conditions, medications,
+                            notes, active, title)
+         values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+         returning id`,
         fields
       );
       created = rows[0].id;
@@ -70,9 +91,11 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
       // Con otro correo, se desenlaza de su cuenta de Clerk: la próxima vez entra (y se enlaza) con el nuevo.
       await db.query(
         `update users set name = $1, email = $2, role = $3, coach_id = $4, phone = $5, photo_url = $6, plan = $7,
-                client_since = $8, pass_expires = $9, next_control_at = $10, goal = $11,
-                clerk_id = case when email = $2 then clerk_id end
-         where id = $12`,
+                client_since = $8, pass_expires = $9, next_control_at = $10, goal = $11, dni = $12, sex = $13,
+                birth_year = $14, height_cm = $15, body_type = $16, conditions = $17, medications = $18, notes = $19,
+                active = $20, title = $21,
+                clerk_id = case when email is not distinct from $2 then clerk_id end
+         where id = $22`,
         [...fields, id]
       );
     }
@@ -83,6 +106,18 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
   if (created !== undefined) redirect(`/clientes/${created}`);
   refresh();
   return { ok: "Guardado." };
+}
+
+/** Sólo el admin, y nunca su propia cuenta (así siempre queda al menos un admin). Se borran también sus controles. */
+export async function deleteClient(_: FormState, form: FormData): Promise<FormState> {
+  const viewer = await requireViewer();
+  if (viewer.role !== "admin") return { error: "Sólo el admin puede borrar clientes." };
+  const id = Number(form.get("id"));
+  if (id === viewer.id) return { error: "No podés borrar tu propia cuenta." };
+  // checkins: on delete cascade; los clientes de un coach borrado quedan sin coach (on delete set null)
+  const { rowCount } = await db.query("delete from users where id = $1", [id]);
+  if (!rowCount) return { error: "Ese cliente ya no existe." };
+  redirect("/clientes");
 }
 
 // ---------- Controles ----------
@@ -102,13 +137,24 @@ export async function addCheckin(_: FormState, form: FormData): Promise<FormStat
   if (!(weight >= 20 && weight <= 400)) return { error: "El peso va en kg, entre 20 y 400." };
   if (!(fat >= 1 && fat <= 80)) return { error: "El % graso va entre 1 y 80." };
 
+  // Lo opcional: vacío queda sin medir; si viene, dentro de un rango creíble.
+  const extra: (number | null)[] = [];
+  for (const m of MEASURES) {
+    const raw = text(form, m.key);
+    const v = raw ? decimal(form, m.key) : null;
+    if (v !== null && !(v >= m.min && v <= m.max)) return { error: `${m.label}: entre ${m.min} y ${m.max}.` };
+    extra.push(v === null ? null : m.int ? Math.round(v) : v);
+  }
+
   await db.query(
-    "insert into checkins (client_id, date, weight_kg, body_fat_pct, created_by) values ($1, $2, $3, $4, $5)",
-    [clientId, date, weight, fat, viewer.id]
+    `insert into checkins (client_id, date, weight_kg, body_fat_pct, created_by, ${MEASURES.map((m) => m.key).join(", ")})
+     values ($1, $2, $3, $4, $5, ${MEASURES.map((_, i) => `$${i + 6}`).join(", ")})`,
+    [clientId, date, weight, fat, viewer.id, ...extra]
   );
   refresh();
-  return { ok: "Control cargado." };
+  return { ok: "Evaluación cargada." };
 }
+
 
 export async function deleteCheckin(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();

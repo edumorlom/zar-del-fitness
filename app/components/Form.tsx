@@ -12,6 +12,7 @@ export function Form({
   submit,
   button = "btn btn--gold",
   confirm,
+  label,
   reset = false,
   className,
   children,
@@ -20,6 +21,8 @@ export function Form({
   submit: React.ReactNode;
   button?: string;
   confirm?: string;
+  /** Para un botón que es sólo un ícono: lo que dice el lector de pantalla. */
+  label?: string;
   reset?: boolean;
   className?: string;
   children?: React.ReactNode;
@@ -44,7 +47,7 @@ export function Form({
     >
       {children}
       <div className="form-foot">
-        <button className={button} disabled={pending}>
+        <button className={button} disabled={pending} aria-label={label} title={label}>
           {submit}
         </button>
         <p className={state?.error ? "form-msg form-msg--error" : "form-msg"} role="status" aria-live="polite">
