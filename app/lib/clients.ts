@@ -54,7 +54,10 @@ export const bmi = (weightKg: number | null, heightCm: number | null) =>
 /** Lo opcional de una evaluación, en el orden del detalle: perímetros (cm) y lo que da la balanza. */
 export const MEASURES = [
   { key: "chest_cm", label: "Pecho", unit: "cm", group: "Perímetros", min: 40, max: 200, int: false },
+  { key: "bust_cm", label: "Busto", unit: "cm", group: "Perímetros", min: 40, max: 200, int: false },
+  { key: "waist_cm", label: "Cintura", unit: "cm", group: "Perímetros", min: 40, max: 220, int: false },
   { key: "abdomen_cm", label: "Abdomen", unit: "cm", group: "Perímetros", min: 40, max: 220, int: false },
+  { key: "hip_cm", label: "Cadera", unit: "cm", group: "Perímetros", min: 40, max: 220, int: false },
   { key: "biceps_r_cm", label: "Bíceps derecho", unit: "cm", group: "Perímetros", min: 10, max: 80, int: false },
   { key: "biceps_l_cm", label: "Bíceps izquierdo", unit: "cm", group: "Perímetros", min: 10, max: 80, int: false },
   { key: "leg_r_cm", label: "Pierna derecha", unit: "cm", group: "Perímetros", min: 20, max: 120, int: false },

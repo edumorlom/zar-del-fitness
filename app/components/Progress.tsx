@@ -320,6 +320,12 @@ export function Results({ checkins, you, manage, number = "01" }: { checkins: Ch
             </p>
             <Title plain={you ? "Todos tus" : "Todos sus"} accent="controles" />
           </div>
+          {you && (
+            <a className="btn btn--outline btn--sm" href="/mi-progreso/evaluaciones">
+              Ver todas mis medidas
+              <ArrowIcon />
+            </a>
+          )}
         </div>
         <div className="card table-wrap" data-reveal>
           <table className="table">

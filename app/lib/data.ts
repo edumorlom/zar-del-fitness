@@ -42,7 +42,10 @@ export type Checkin = {
   weight_kg: number;
   body_fat_pct: number;
   chest_cm: number | null;
+  bust_cm: number | null;
+  waist_cm: number | null;
   abdomen_cm: number | null;
+  hip_cm: number | null;
   biceps_r_cm: number | null;
   biceps_l_cm: number | null;
   leg_r_cm: number | null;
@@ -69,8 +72,8 @@ export async function getClient(id: number) {
 /** Las evaluaciones de un cliente, de la primera a la última. */
 export async function getCheckins(clientId: number) {
   const { rows } = await db.query<Checkin>(
-    `select id, date, weight_kg, body_fat_pct, chest_cm, abdomen_cm, biceps_r_cm, biceps_l_cm, leg_r_cm, leg_l_cm,
-            biological_age, visceral_fat, bmr_kcal
+    `select id, date, weight_kg, body_fat_pct, chest_cm, bust_cm, waist_cm, abdomen_cm, hip_cm, biceps_r_cm,
+            biceps_l_cm, leg_r_cm, leg_l_cm, biological_age, visceral_fat, bmr_kcal
      from checkins where client_id = $1 order by date, id`,
     [clientId]
   );
