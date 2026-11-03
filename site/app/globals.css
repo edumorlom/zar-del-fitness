@@ -443,6 +443,15 @@ ol {
   background: rgba(0, 0, 0, 0.88);
   color: var(--gold-light);
   letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+/* En pantallas angostas el texto baja de línea en vez de salirse (p. ej. "Start the challenge · ARS 100,000" a 320 px). */
+@media (max-width: 480px) {
+  .btn {
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+  }
 }
 
 .btn__play {

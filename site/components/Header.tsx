@@ -123,7 +123,7 @@ export function Header({ home, nav, announce, waInfo, login, labels, language }:
         </div>
       </header>
 
-      <div className={styles.menu} id="mobile-menu" data-open={open} aria-hidden={!open} inert={!open}>
+      <div className={styles.menu} id="mobile-menu" data-lenis-prevent data-open={open} aria-hidden={!open} inert={!open}>
         <nav className={styles.menuNav} aria-label={labels.navMobile}>
           {nav.map((item, i) => (
             <a key={item.href} href={item.href} onClick={closeMenu} style={{ "--i": i } as React.CSSProperties}>
