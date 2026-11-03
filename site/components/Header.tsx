@@ -13,7 +13,6 @@ type HeaderProps = {
   home: string;
   nav: { href: string; label: string }[];
   announce: { text: string; price: string; cta: string; href: string };
-  cta: string;
   waInfo: string;
   /** El acceso de los alumnos (zardelfitness.sumar.dev). */
   login: { label: string; href: string };
@@ -22,7 +21,7 @@ type HeaderProps = {
   language: { href: string; lang: Lang; label: string };
 };
 
-export function Header({ home, nav, announce, cta, waInfo, login, labels, language }: HeaderProps) {
+export function Header({ home, nav, announce, waInfo, login, labels, language }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -106,12 +105,8 @@ export function Header({ home, nav, announce, cta, waInfo, login, labels, langua
             {language.lang.toUpperCase()}
           </a>
 
-          <a className={`btn btn--ghost btn--sm ${styles.login}`} href={login.href}>
+          <a className={`btn btn--gold btn--sm ${styles.login}`} href={login.href} data-magnetic>
             <span>{login.label}</span>
-          </a>
-
-          <a className={`btn btn--gold btn--sm ${styles.cta}`} href={`${home}#programas`} data-magnetic>
-            <span>{cta}</span>
           </a>
 
           <button

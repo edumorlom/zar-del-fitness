@@ -120,7 +120,6 @@
   transform: translateY(calc(-100% - 10px));
 }
 
-.cta,
 .login {
   flex: none;
 }
@@ -263,7 +262,6 @@
 
 @media (max-width: 560px) {
   /* Sin lugar en la barra: quedan en el menú móvil. */
-  .cta,
   .login {
     display: none;
   }
