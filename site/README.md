@@ -14,7 +14,7 @@ npm run lint
 
 | Qué | Dónde |
 | --- | --- |
-| Precios, planes, horarios, contacto, redes, preguntas frecuentes, equipo | `../db/` (compartido con el asistente) |
+| Precios, planes, horarios, contacto, redes, preguntas frecuentes, equipo | `../db/` |
 | Todos los textos del sitio, en castellano y en inglés: botones, menú, títulos, SEO | `../db/textos.json` (ver `../db/README.md`) |
 | Links, fotos, qué planes se muestran | `lib/content.ts` |
 | Colores, tipografía, botones | `app/globals.css` (tokens en `:root`) |

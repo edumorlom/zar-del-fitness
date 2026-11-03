@@ -15,12 +15,14 @@ type HeaderProps = {
   announce: { text: string; price: string; cta: string; href: string };
   cta: string;
   waInfo: string;
+  /** El acceso de los alumnos (zardelfitness.sumar.dev). */
+  login: { label: string; href: string };
   labels: { logo: string; nav: string; navMobile: string; open: string; close: string; write: string };
   /** La misma página en el otro idioma. */
   language: { href: string; lang: Lang; label: string };
 };
 
-export function Header({ home, nav, announce, cta, waInfo, labels, language }: HeaderProps) {
+export function Header({ home, nav, announce, cta, waInfo, login, labels, language }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -104,6 +106,10 @@ export function Header({ home, nav, announce, cta, waInfo, labels, language }: H
             {language.lang.toUpperCase()}
           </a>
 
+          <a className={`btn btn--ghost btn--sm ${styles.login}`} href={login.href}>
+            <span>{login.label}</span>
+          </a>
+
           <a className={`btn btn--gold btn--sm ${styles.cta}`} href={`${home}#programas`} data-magnetic>
             <span>{cta}</span>
           </a>
@@ -135,6 +141,9 @@ export function Header({ home, nav, announce, cta, waInfo, labels, language }: H
           <a className="btn btn--gold" href={waInfo}>
             <Icon name="wa" />
             <span>{labels.write}</span>
+          </a>
+          <a className="btn btn--ghost" href={login.href}>
+            <span>{login.label}</span>
           </a>
         </div>
       </div>

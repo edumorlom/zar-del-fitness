@@ -1,6 +1,5 @@
 // Contenido del sitio. Todo lo que puede cambiar vive en db/, en la raíz del repo: precios, planes, horarios, contacto,
-// preguntas frecuentes y equipo (compartidos con el asistente telefónico), y todos los textos del sitio, en castellano
-// y en inglés (db/textos.json). Acá queda lo propio del sitio: links, imágenes y qué planes se muestran.
+// preguntas frecuentes, equipo y todos los textos del sitio, en castellano y en inglés (db/textos.json). Acá queda lo propio del sitio: links, imágenes y qué planes se muestran.
 // content(lang) devuelve todo ya resuelto en un idioma.
 
 import equipo from "@db/equipo.json";
@@ -75,7 +74,7 @@ checkTranslated(textos, "db/textos.json", ["numero"]);
 
 export type ProgramArtVariant = "online" | "premium" | "general" | "reto";
 
-// Un texto de db/: en los dos idiomas, o sólo en castellano si lo usa únicamente el asistente telefónico.
+// Un texto de db/, en los dos idiomas: text() avisa si falta uno.
 type Txt = string | { es: string; en: string };
 type Txts = string[] | { es: string[]; en: string[] };
 
@@ -86,7 +85,7 @@ type Plan = {
   nombreEnInicio?: Txt;
   etiqueta: Txt;
   precios: { monto: number; moneda: string }[];
-  /** "por mes": sólo en castellano (es del asistente). */
+  /** "por mes": sólo en castellano, el sitio no lo muestra. */
   periodo?: string;
   resumen: Txt;
   descripcion?: Txt;
@@ -214,6 +213,7 @@ function build(lang: Lang) {
     waInfo: wa(t.whatsapp.informacion),
     waPresencial: wa(t.whatsapp.presencial),
     waDudas: wa(t.whatsapp.dudas),
+    login: "https://zardelfitness.sumar.dev/",
   };
 
   const contact = {
@@ -256,7 +256,7 @@ function build(lang: Lang) {
       currency: moneda === "ARS" ? "$" : moneda,
       price: thousands(monto, lang),
       suffix: moneda === "ARS" ? "ARS" : undefined,
-      // El período de db/planes.json es sólo en castellano (lo usa el asistente); el sitio muestra el mensual.
+      // El sitio no muestra el período de db/planes.json: sólo marca "por mes" en los mensuales.
       monthly: p.periodo === "por mes",
       desc: text(p.resumen, lang, where(p, "resumen")),
       features: p.destacados ? text(p.destacados, lang, where(p, "destacados")) : [],

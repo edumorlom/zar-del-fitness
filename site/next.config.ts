@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   // Sin servidor que achique las fotos: las copias en WebP de cada ancho las hace scripts/copy-images.mjs en el build,
   // y lib/image-loader.ts las pone en el srcset.
   images: { loader: "custom", loaderFile: "./lib/image-loader.ts", deviceSizes, imageSizes },
-  // Los precios, planes y horarios están en db/, en la raíz del repo, compartidos con el asistente:
+  // Los precios, planes, horarios y textos están en db/, en la raíz del repo:
   // sin esto, Turbopack no lee archivos fuera de site/.
   turbopack: { root: path.join(__dirname, "..") },
   // cacheComponents / partialPrefetching (PPR) are not allowed with `output: "export"`

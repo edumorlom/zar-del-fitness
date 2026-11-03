@@ -2,14 +2,14 @@ name: Despliegue del sitio por FTP
 
 # El sitio vive en site/. Next.js exporta el sitio estático en site/out/
 # (output: "export"), junto con public/ (incluido el .htaccess). Node sólo se
-# usa durante el build. El asistente (assistant/) lo publica Railway, no esto.
+# usa durante el build.
 #
 # Las credenciales viven en GitHub → Settings → Secrets and variables →
 # Actions, nunca en este archivo.
 on:
   push:
     branches: [ main ]
-    # Sólo cuando cambia el sitio, los datos que comparte con el asistente (db/) o este workflow.
+    # Sólo cuando cambia el sitio, sus datos (db/) o este workflow.
     paths:
       - "site/**"
       - "db/**"

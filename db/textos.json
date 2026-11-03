@@ -56,7 +56,8 @@
     "boton": { "es": "Empezá el reto", "en": "Start the challenge" },
     "abrirMenu": { "es": "Abrir menú", "en": "Open menu" },
     "cerrarMenu": { "es": "Cerrar menú", "en": "Close menu" },
-    "escribinos": { "es": "Escribinos", "en": "Message us" }
+    "escribinos": { "es": "Escribinos", "en": "Message us" },
+    "ingresar": { "es": "Ingresar", "en": "Log In" }
   },
 
   "menu": {

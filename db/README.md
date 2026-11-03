@@ -1,6 +1,6 @@
 # Datos de Zar del Fitness
 
-Lo que puede cambiar, en un solo lugar: lo usan el sitio (`site/lib/content.ts`) y el asistente telefónico (`assistant/assistant/db.py`). Un cambio acá, al hacer push a `main`, vuelve a publicar los dos.
+Lo que puede cambiar, en un solo lugar: lo usa el sitio (`site/lib/content.ts`). Un cambio acá, al hacer push a `main`, vuelve a publicar el sitio.
 
 ## Castellano e inglés
 
@@ -12,21 +12,19 @@ El sitio está en castellano (`zardelfitness.com.ar/`) y en inglés (`zardelfitn
 
 - Una lista va igual: `{ "es": ["…", "…"], "en": ["…", "…"] }`. Las dos listas no tienen que tener el mismo largo.
 - Si a un texto del sitio le falta un idioma, el sitio no se construye y dice cuál es (archivo y campo).
-- Lo que sólo usa el asistente (por ejemplo `periodo`, `formasDePago` o `detalles` de los planes, o el plan Lipo, que el sitio no muestra) va sólo en castellano, como un texto común.
-- El asistente telefónico habla sólo castellano: usa el `"es"` de cada texto.
 - Los ids, precios, links, nombres de personas y de medios no se traducen: van una sola vez.
 
 | Archivo | Qué tiene |
 |---|---|
-| `planes.json` | Los planes: nombre, precios, formas de pago, descripción y qué incluyen. |
+| `planes.json` | Los planes: nombre, precio, descripción y qué incluyen. |
 | `horarios.json` | Días y turnos del gimnasio, último ingreso y duración de la clase. |
 | `gimnasio.json` | Dirección (con código postal), coordenadas del gimnasio para Google Maps, el nombre de esa ficha tal cual figura en Google (`nombreEnGoogle`: Google cruza el negocio por nombre, dirección y teléfono), el link de su ficha en Google Maps (`googleMaps`, la de las reseñas: le dice a Google y a los asistentes con IA que el sitio y la ficha son el mismo gimnasio), WhatsApp, redes, la cantidad de personas evaluadas y la puntuación y cantidad de reseñas de la ficha de Google (`resenasGoogle`: se ven en Resultados; actualizarlas a mano de vez en cuando). |
 | `preguntas.json` | Las preguntas frecuentes. |
 | `equipo.json` | Los entrenadores. `credenciales` son sus certificaciones una por una (`titulo` y, si se sabe, `otorgadaPor`): no se ven en el sitio, van en los datos para Google y los buscadores con IA. |
 | `textos.json` | Todos los textos del sitio, por sección, en castellano y en inglés: botones, menú, títulos, párrafos, textos alternativos de las fotos, los mensajes que se arman para WhatsApp, y el título y la descripción de cada página para Google (`seo`). |
-| `trayectoria.json` | La prensa (medio, título, tipo, link e imagen) y los premios (fecha, título y texto). |
-| `blog/` | Las notas del blog, una por archivo Markdown (ver abajo). Las traducciones al inglés, en `blog/en/`. Sólo las usa el sitio. |
-| `podcasts.json` | Los episodios del podcast, Detrás del Espejo (ver abajo). Sólo los usa el sitio. |
+| `trayectoria.json` | La prensa y los premios: medio, título, tipo, link e imagen. |
+| `blog/` | Las notas del blog, una por archivo Markdown (ver abajo). Las traducciones al inglés, en `blog/en/`. |
+| `podcasts.json` | Los episodios del podcast, Detrás del Espejo (ver abajo). |
 | `img/` | Las imágenes del sitio. En los JSON se nombran como `/img/archivo.webp`. Las del blog van en `img/blog/`, y las miniaturas de los podcasts en `img/podcasts/`. |
 
 ## Planes (`planes.json`)
@@ -34,17 +32,15 @@ El sitio está en castellano (`zardelfitness.com.ar/`) y en inglés (`zardelfitn
 | Campo | Qué es | Dónde se ve |
 |---|---|---|
 | `id` | Identificador del plan. No cambiarlo: el sitio lo usa para elegir qué planes muestra. | — |
-| `nombre`, `nombreCompleto` | Nombre corto, y el oficial (opcional). | Sitio: el corto. Asistente: el oficial, si hay. |
-| `nombreEnInicio` | Opcional: el nombre en los destacados de arriba del inicio ("Premium $450.000"). Si no está, va `nombre`. | Sitio (inicio). |
-| `etiqueta` | Por ejemplo "Presencial · The VIP". | Sitio y asistente. |
-| `precios` | Lista de `{ "monto": 450000, "moneda": "ARS" }`. El primero es el principal. | Sitio: el primero. Asistente: todos. |
-| `periodo` | Por ejemplo "por mes". | Asistente. |
-| `formasDePago` | Opcional. | Asistente. |
-| `resumen` | Una o dos frases. | Sitio (tarjeta) y asistente. |
-| `descripcion` | Opcional. Del Sistema Premium, es el texto de la sección The VIP. | Sitio (The VIP) y asistente. |
-| `destacados` | Lista corta de lo que incluye. | Sitio (tarjeta), y el asistente si no hay `incluye`. |
-| `incluye` | Opcional: la lista completa, de `{ "titulo": …, "texto": … }` (`texto` es opcional). | Asistente, y del Sistema Premium, la sección The VIP del sitio. |
-| `detalles` | Opcional: más información, de `{ "titulo": …, "puntos": [ … ] }`. | Asistente. |
+| `nombre` | Nombre corto. | Tarjeta. |
+| `nombreEnInicio` | Opcional: el nombre en los destacados de arriba del inicio ("Premium $450.000"). Si no está, va `nombre`. | Inicio. |
+| `etiqueta` | Por ejemplo "Presencial · The VIP". | Tarjeta. |
+| `precios` | Lista de `{ "monto": 450000, "moneda": "ARS" }`. Se muestra el primero. | Tarjeta e inicio. |
+| `periodo` | `"por mes"` en los planes mensuales. Sólo en castellano: no se muestra, marca el precio como mensual. | — |
+| `resumen` | Una o dos frases. | Tarjeta. |
+| `descripcion` | Opcional. Del Sistema Premium, es el texto de la sección The VIP. | The VIP. |
+| `destacados` | Lista corta de lo que incluye. | Tarjeta. |
+| `incluye` | Opcional: la lista completa, de `{ "titulo": …, "texto": … }` (`texto` es opcional). | Del Sistema Premium, la sección The VIP. |
 
 Los campos que se ven en el sitio van en castellano y en inglés: `nombre`, `nombreEnInicio`, `etiqueta`, `resumen` y `destacados` de los cuatro planes que muestra, y del Sistema Premium también `descripcion` e `incluye`.
 
@@ -59,7 +55,6 @@ El sitio muestra los planes `reto-online`, `premium`, `general` y `reto-internac
 - `general.leerEn` es el botón para cambiar de idioma: cada uno está en su idioma ("Leer en español", "Read in English") y se muestra en la página del otro.
 - En la prensa, `link` es opcional. La `imagen` es la que aparece al pasar el mouse, y va en `db/img/`.
 - La nota con `destacadoEnInicio` aparece también en el inicio, con ese texto ("Emmy Winner 2024"). Si ninguna lo tiene, no se muestra.
-- El asistente usa todo menos los pasos del método, las introducciones de Programas y Preguntas, los links y las imágenes.
 
 ## Blog (`blog/`)
 

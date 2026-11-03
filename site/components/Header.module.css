@@ -120,7 +120,8 @@
   transform: translateY(calc(-100% - 10px));
 }
 
-.cta {
+.cta,
+.login {
   flex: none;
 }
 
@@ -246,7 +247,8 @@
   transition-delay: 0.6s;
 }
 
-@media (max-width: 1080px) {
+/* Con el botón de ingreso, el menú completo entra desde 1260 px (en inglés es más largo). */
+@media (max-width: 1260px) {
   .nav {
     display: none;
   }
@@ -260,7 +262,9 @@
 }
 
 @media (max-width: 560px) {
-  .cta {
+  /* Sin lugar en la barra: quedan en el menú móvil. */
+  .cta,
+  .login {
     display: none;
   }
   .announceCta {
