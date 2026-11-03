@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { FILE_KEY, signedUrl } from "./storage.ts";
+import { FILE_KEY, imageType, signedUrl } from "./storage.ts";
 
 test("el enlace firmado da la firma del ejemplo de AWS (GET test.txt, 24 h)", () => {
   const url = signedUrl(
@@ -17,6 +17,13 @@ test("el enlace firmado da la firma del ejemplo de AWS (GET test.txt, 24 h)", ()
   );
   assert.equal(new URL(url).host, "examplebucket.s3.amazonaws.com");
   assert.equal(new URL(url).searchParams.get("X-Amz-Signature"), "aeeed9bbccd4d02ee5c0109b86d86835f995330da4c265957d157751f604d404");
+});
+
+test("la foto subida es JPG o PNG por su contenido, no por el nombre", () => {
+  assert.equal(imageType(new Uint8Array([0xff, 0xd8, 0xff, 0xe0])), "jpg");
+  assert.equal(imageType(new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d])), "png");
+  assert.equal(imageType(new TextEncoder().encode("<html>")), null);
+  assert.equal(imageType(new Uint8Array([])), null);
 });
 
 test("sólo se piden fotos y certificados de un cliente", () => {

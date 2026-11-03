@@ -3,6 +3,7 @@ import type { Viewer } from "~/lib/auth";
 import { age, BODY_TYPES, CONDITIONS, PLANS } from "~/lib/clients";
 import type { Client, Coach } from "~/lib/data";
 import { todayISO, toLocalInput } from "~/lib/format";
+import { PHOTO_MAX_MB } from "~/lib/storage";
 import { Form } from "./Form";
 import { initials } from "./Shell";
 import { Steps } from "./Steps";
@@ -90,8 +91,11 @@ export function ClientForm({ viewer, client, coaches }: { viewer: Viewer; client
       <Field label="Título" hint="Para coaches: se ve en el progreso de sus clientes.">
         <input name="title" defaultValue={client?.title ?? ""} placeholder="Personal trainer PREMIUM" />
       </Field>
-      <Field label="Foto (URL)" hint="Para coaches.">
-        <input name="photo_url" type="url" defaultValue={client?.photo_url ?? ""} placeholder="https://…" />
+      <Field
+        label="Foto"
+        hint={`JPG o PNG, hasta ${PHOTO_MAX_MB} MB.${client?.photo_url ? " Ya tiene una: elegí otra sólo para cambiarla." : ""}`}
+      >
+        <input name="photo" type="file" accept="image/jpeg,image/png" />
       </Field>
     </div>
   );

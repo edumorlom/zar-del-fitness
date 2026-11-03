@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // El único <Image> es el logo del menú (site/components/Header.tsx), ya chico: sin el optimizador de imágenes.
   images: { unoptimized: true },
+  // La ficha del cliente sube su foto (hasta PHOTO_MAX_MB de lib/storage.ts) con el resto del formulario.
+  experimental: { serverActions: { bodySizeLimit: "6mb" } },
 };
 
 export default nextConfig;

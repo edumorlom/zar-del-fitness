@@ -5,8 +5,10 @@ import { redirect } from "next/navigation";
 import { canManage, ROLES, type Role } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { BODY_TYPES, CONDITIONS, MEASURES, PLANS } from "~/lib/clients";
+import { randomUUID } from "node:crypto";
 import { db } from "~/lib/db";
 import { fromLocalInput, todayISO } from "~/lib/format";
+import { bucketFromEnv, imageType, PHOTO_MAX_MB, putObject } from "~/lib/storage";
 
 export type FormState = { error?: string; ok?: string } | null;
 
@@ -70,19 +72,47 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
   if (conditions.some((c) => !CONDITIONS.includes(c as (typeof CONDITIONS)[number])))
     return { error: "Revisá las patologías." };
 
-  const fields = [name, email, role, coachId, text(form, "phone") || null, text(form, "photo_url") || null, plan,
+  // La foto va al bucket antes de guardar: si no se pudo subir, no se guarda nada (y no queda un cliente repetido).
+  // Sin foto nueva queda la que tenía. La clave usa external_id, como las del portal anterior; quien no tiene, recibe uno.
+  let photoUrl: string | null = null;
+  let externalId: string | null = null;
+  const file = form.get("photo");
+  if (file instanceof File && file.size > 0) {
+    if (file.size > PHOTO_MAX_MB * 1024 * 1024) return { error: `La foto pesa más de ${PHOTO_MAX_MB} MB.` };
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const type = imageType(bytes);
+    if (!type) return { error: "La foto tiene que ser JPG o PNG." };
+    const bucket = bucketFromEnv();
+    if (!bucket) return { error: "No se pueden subir fotos: faltan las variables del bucket." };
+    if (id !== null) {
+      const { rows } = await db.query<{ external_id: string | null }>("select external_id from users where id = $1", [id]);
+      externalId = rows[0]?.external_id ?? null;
+    }
+    externalId ??= randomUUID();
+    const key = `alumnos/${externalId}/foto.${type}`;
+    try {
+      await putObject(bucket, key, bytes, type === "png" ? "image/png" : "image/jpeg");
+    } catch (e) {
+      console.error(e);
+      return { error: "No se pudo subir la foto. Probá de nuevo." };
+    }
+    // ?v=: con la misma dirección, el navegador seguiría mostrando la foto anterior.
+    photoUrl = `/archivos/${key}?v=${Date.now()}`;
+  }
+
+  const fields = [name, email, role, coachId, text(form, "phone") || null, photoUrl, plan,
     clientSince, passExpires, nextControl, goal, text(form, "dni") || null, sex,
     ageYears === null ? null : Number(todayISO().slice(0, 4)) - ageYears, height, bodyType, conditions,
     text(form, "medications") || null, text(form, "notes") || null, form.get("active") === "on",
-    text(form, "title") || null];
+    text(form, "title") || null, externalId];
   let created: number | undefined;
   try {
     if (id === null) {
       const { rows } = await db.query<{ id: number }>(
         `insert into users (name, email, role, coach_id, phone, photo_url, plan, client_since, pass_expires,
                             next_control_at, goal, dni, sex, birth_year, height_cm, body_type, conditions, medications,
-                            notes, active, title)
-         values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+                            notes, active, title, external_id)
+         values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
          returning id`,
         fields
       );
@@ -90,12 +120,13 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
     } else {
       // Con otro correo, se desenlaza de su cuenta de Clerk: la próxima vez entra (y se enlaza) con el nuevo.
       await db.query(
-        `update users set name = $1, email = $2, role = $3, coach_id = $4, phone = $5, photo_url = $6, plan = $7,
+        `update users set name = $1, email = $2, role = $3, coach_id = $4, phone = $5,
+                photo_url = coalesce($6, photo_url), plan = $7,
                 client_since = $8, pass_expires = $9, next_control_at = $10, goal = $11, dni = $12, sex = $13,
                 birth_year = $14, height_cm = $15, body_type = $16, conditions = $17, medications = $18, notes = $19,
-                active = $20, title = $21,
+                active = $20, title = $21, external_id = coalesce(external_id, $22),
                 clerk_id = case when email is not distinct from $2 then clerk_id end
-         where id = $22`,
+         where id = $23`,
         [...fields, id]
       );
     }
