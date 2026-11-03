@@ -24,6 +24,9 @@ jobs:
     # secrets del repositorio: sin declarar el entorno acá, el job no los ve
     # y la acción de FTP falla con "Input required and not supplied".
     environment: "CPanel Variables"
+    env:
+      # Token del proyecto de Railway (Project Settings → Tokens, entorno production). Sin él, el paso de Railway no corre.
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
     defaults:
       run:
         working-directory: site
@@ -67,6 +70,15 @@ jobs:
           # "zardelfitness.com.ar/").
           server-dir: ${{ secrets.FTP_SERVER_DIR || 'public_html/' }}
           local-dir: site/out/
+
+      - name: Subir a Railway
+        # El mismo build, servido por Caddy con las reglas del .htaccess (site/deploy/). Se arma fuera del repo: si no,
+        # `railway up` saltearía out/ por estar en .gitignore.
+        if: env.RAILWAY_TOKEN != ''
+        run: |
+          dir="$RUNNER_TEMP/sitio"
+          mkdir -p "$dir" && cp deploy/Dockerfile deploy/Caddyfile "$dir/" && cp -R out "$dir/out"
+          npx -y @railway/cli@5.71.0 up "$dir" --path-as-root --no-gitignore --service site --ci
 
       - name: Avisar a Bing (IndexNow)
         run: node scripts/indexnow.mjs ../sitemap-anterior.xml
