@@ -69,6 +69,27 @@ alter table checkins add column if not exists leg_l_cm numeric(5, 1);
 alter table checkins add column if not exists biological_age int;
 alter table checkins add column if not exists visceral_fat numeric(4, 1);
 alter table checkins add column if not exists bmr_kcal int;
+alter table checkins add column if not exists waist_cm numeric(5, 1);
+alter table checkins add column if not exists hip_cm numeric(5, 1);
+alter table checkins add column if not exists bust_cm numeric(5, 1);
+
+-- Los turnos de control, en el calendario de Google del Zar. El cliente pide (requested); el admin o su coach confirma,
+-- mueve o rechaza. requested_at: lo que había pedido, si se lo movieron.
+create table if not exists appointments (
+  id serial primary key,
+  client_id int not null references users(id) on delete cascade,
+  starts_at timestamptz not null,
+  ends_at timestamptz not null,
+  status text not null default 'requested' check (status in ('requested', 'confirmed', 'cancelled', 'rejected')),
+  requested_at timestamptz,
+  google_event_id text,
+  created_by int references users(id) on delete set null,
+  decided_by int references users(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+create index if not exists appointments_time on appointments(starts_at);
+-- Un solo calendario: dos turnos vivos no pueden empezar a la misma hora.
+create unique index if not exists appointments_slot on appointments(starts_at) where status in ('requested', 'confirmed');
 `;
 
 export async function migrate() {

@@ -1,5 +1,6 @@
 import { deleteCheckin } from "~/app/actions";
-import type { Checkin, Client } from "~/lib/data";
+import Link from "next/link";
+import type { Appointment, Checkin, Client } from "~/lib/data";
 import { dateOf, days, daysUntil, longDate, monthYear, num, shortDate, timeOf, todayISO } from "~/lib/format";
 import { Evolution } from "./Evolution";
 import { Form } from "./Form";
@@ -73,10 +74,12 @@ function pass(expires: string | null) {
 }
 
 /** El saludo, los datos del plan y el coach. `you`: lo ve el propio cliente (le habla de vos). */
-export function Hero({ client, checkins, you }: { client: Client; checkins: Checkin[]; you: boolean }) {
+export function Hero({ client, checkins, you, appointment }: { client: Client; checkins: Checkin[]; you: boolean; appointment?: Appointment | null }) {
   const [firstName, ...rest] = client.name.split(/\s+/);
   const w = win(checkins, you);
-  const control = nextControl(client.next_control_at, you);
+  const control = nextControl(appointment?.starts_at ?? client.next_control_at, you);
+  if (appointment?.status === "requested") control.note = `${timeOf(appointment.starts_at)} h · esperando confirmación`;
+  else if (appointment?.requested_at) control.note += " · reprogramado";
   const p = pass(client.pass_expires);
 
   return (
@@ -125,6 +128,13 @@ export function Hero({ client, checkins, you }: { client: Client; checkins: Chec
             <dt className="label">{you ? "Tu próximo control" : "Próximo control"}</dt>
             <dd className="fact">{control.fact}</dd>
             <dd className={control.warn ? "note note--warn" : "note"}>{control.note}</dd>
+            {you && (
+              <dd>
+                <Link className="link-arrow" href="/turno">
+                  {appointment ? "Ver tu turno" : "Pedí tu turno"}
+                </Link>
+              </dd>
+            )}
           </div>
           {p && (
             <div>

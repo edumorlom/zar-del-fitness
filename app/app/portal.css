@@ -1079,9 +1079,6 @@ button:disabled {
   border-radius: 0 3px 3px 0;
   background: var(--grad-gold-flat);
 }
-.side__link--quiet {
-  color: var(--muted);
-}
 .side__account {
   display: flex;
   align-items: center;

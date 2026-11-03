@@ -20,10 +20,15 @@ const ICONS = {
       <path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5M16 4.8a3.5 3.5 0 0 1 0 6.4M18.5 14.8c1.7.7 2.8 2.4 3 5.2" {...stroke} />
     </>
   ),
+  agenda: (
+    <>
+      <rect x="3" y="5" width="18" height="16" rx="2" {...stroke} />
+      <path d="M3 10h18M8 3v4M16 3v4" {...stroke} />
+    </>
+  ),
   settings: (
     <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M16 4v4M10 10v4M18 16v4" {...stroke} />
   ),
-  site: <path d="M7 17 17 7M8 7h9v9" {...stroke} />,
 } as const;
 
 export type NavItem = { href: string; label: string; icon: keyof typeof ICONS };
@@ -69,10 +74,6 @@ export function Sidebar({ items, account }: { items: NavItem[]; account: React.R
               </Link>
             );
           })}
-          <a className="side__link side__link--quiet" href="https://zardelfitness.com.ar/">
-            <Icon name="site" />
-            Ver el sitio
-          </a>
         </nav>
         <div className="side__account">{account}</div>
       </div>

@@ -176,3 +176,67 @@ export async function listUsers() {
   );
   return rows;
 }
+
+export type Appointment = {
+  id: number;
+  client_id: number;
+  starts_at: Date;
+  ends_at: Date;
+  status: "requested" | "confirmed" | "cancelled" | "rejected";
+  requested_at: Date | null;
+  google_event_id: string | null;
+  client_name: string;
+  client_email: string | null;
+  coach_id: number | null;
+  coach_name: string | null;
+};
+
+const APPT = `select a.id, a.client_id, a.starts_at, a.ends_at, a.status, a.requested_at, a.google_event_id,
+                     u.name as client_name, u.email as client_email, u.coach_id, c.name as coach_name
+              from appointments a join users u on u.id = a.client_id left join users c on c.id = u.coach_id`;
+
+/** El turno vivo de un cliente (pedido o confirmado, que todavía no pasó). */
+export async function getOpenAppointment(clientId: number) {
+  const { rows } = await db.query<Appointment>(
+    `${APPT} where a.client_id = $1 and a.status in ('requested', 'confirmed') and a.ends_at > now()
+     order by a.starts_at limit 1`,
+    [clientId]
+  );
+  return rows[0] ?? null;
+}
+
+export async function getAppointment(id: number) {
+  const { rows } = await db.query<Appointment>(`${APPT} where a.id = $1`, [id]);
+  return rows[0] ?? null;
+}
+
+/** Los turnos vivos entre dos momentos que ve alguien: el admin, todos; un coach, los de sus clientes. */
+export async function listAppointments(viewer: { id: number; role: Role }, from: Date, to: Date) {
+  const { rows } = await db.query<Appointment>(
+    `${APPT} where a.status in ('requested', 'confirmed') and a.starts_at < $2 and a.ends_at > $1
+       and ($3::int is null or u.coach_id = $3)
+     order by a.starts_at`,
+    [from, to, viewer.role === "admin" ? null : viewer.id]
+  );
+  return rows;
+}
+
+/** Los pedidos que esperan respuesta (de hoy en adelante). */
+export async function pendingRequests(viewer: { id: number; role: Role }) {
+  const { rows } = await db.query<Appointment>(
+    `${APPT} where a.status = 'requested' and a.ends_at > now() and ($1::int is null or u.coach_id = $1)
+     order by a.starts_at`,
+    [viewer.role === "admin" ? null : viewer.id]
+  );
+  return rows;
+}
+
+/** Lo ocupado por turnos del portal (de todos: es un solo calendario) entre dos momentos. */
+export async function takenIntervals(from: Date, to: Date, exceptId: number | null = null) {
+  const { rows } = await db.query<{ start: Date; end: Date }>(
+    `select starts_at as start, ends_at as "end" from appointments
+     where status in ('requested', 'confirmed') and starts_at < $2 and ends_at > $1 and ($3::int is null or id <> $3)`,
+    [from, to, exceptId]
+  );
+  return rows;
+}

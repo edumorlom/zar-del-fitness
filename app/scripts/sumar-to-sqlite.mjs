@@ -1,16 +1,18 @@
 // Pasa la exportación del portal anterior (zardelfitness.sumar.dev) a un SQLite con las mismas tablas que lib/migrate.ts
 // (users y checkins), para revisarlo y después subirlo a Postgres.
 //
-//   node scripts/sumar-to-sqlite.mjs sumar-export.json alumnos.sqlite
+//   node scripts/sumar-to-sqlite.mjs sumar-export.json alumnos.sqlite [sumar-archivos.json]
 //
 // sumar-export.json: { activos, bajas, asignaciones, coaches, detalle: { [id]: { alumno, evaluaciones } } }, armado desde
 // el portal anterior (las evaluaciones salen de la página de cada alumno). Los datos no van en el repo: son de salud.
+// sumar-archivos.json (opcional): { dietas: { [id de evaluación]: { plan } } }; los archivos que trae van al bucket aparte.
 import { readFileSync, rmSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 
-const [exportPath, outPath] = process.argv.slice(2);
+const [exportPath, outPath, filesPath] = process.argv.slice(2);
 if (!exportPath || !outPath) throw new Error("Uso: node scripts/sumar-to-sqlite.mjs sumar-export.json alumnos.sqlite");
 const X = JSON.parse(readFileSync(exportPath, "utf8"));
+const diets = filesPath ? JSON.parse(readFileSync(filesPath, "utf8")).dietas : {};
 
 // Igual que scripts/import-sumar.mjs.
 const EXPORT_YEAR = 2026;
@@ -77,12 +79,24 @@ create table checkins (
   biological_age integer,
   visceral_fat real,
   bmr_kcal integer,
-  -- Todavía no están en Postgres (lib/migrate.ts): las trae el portal anterior en parte de las evaluaciones.
+  -- Las trae el portal anterior en parte de las evaluaciones.
   waist_cm real,
   hip_cm real,
   bust_cm real
 );
 create index checkins_client on checkins(client_id, date);
+-- La dieta que se le dio en cada evaluación. Todavía no está en Postgres (lib/migrate.ts).
+create table diets (
+  id integer primary key,
+  checkin_id integer not null unique references checkins(id) on delete cascade,
+  goal text,
+  breakfast text,
+  morning_snack text,
+  lunch text,
+  afternoon_snack text,
+  dinner text,
+  supplements text
+);
 `);
 
 // Un coach que también figura como alumno (mismo correo) queda en una sola fila: sigue de coach, con la ficha de alumno.
@@ -115,7 +129,12 @@ const addCheckin = db.prepare(
      biceps_l_cm, leg_r_cm, leg_l_cm, biological_age, visceral_fat, bmr_kcal, waist_cm, hip_cm, bust_cm)
    values (?, ?, ?, ?, coalesce(?, current_timestamp), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 );
+const addDiet = db.prepare(
+  `insert into diets (checkin_id, goal, breakfast, morning_snack, lunch, afternoon_snack, dinner, supplements)
+   values (?, ?, ?, ?, ?, ?, ?, ?)`
+);
 let checkins = 0;
+let dietCount = 0;
 for (const { id } of X.activos) {
   const { alumno: a, evaluaciones = [] } = X.detalle[id] ?? {};
   if (!a) throw new Error(`Falta el detalle del alumno ${id}`);
@@ -144,12 +163,20 @@ for (const { id } of X.activos) {
     plan: PLANS[asignacion.plan] ?? null,
   });
   for (const e of evaluaciones) {
-    addCheckin.run(
+    const { lastInsertRowid } = addCheckin.run(
       userId, e.fecha, e.peso, e.porcentajeGraso, rawTime(e.fechaCruda), e.pecho, e.abdomen, e.bicepDerecho,
       e.bicepIzquierdo, e.piernaDerecha, e.piernaIzquierda, e.edadBiologica, e.grasaVisceral, e.metabolismoBasal,
       e.cintura, e.cadera, e.busto
     );
     checkins++;
+    const d = diets[e.id]?.plan;
+    if (d) {
+      addDiet.run(
+        lastInsertRowid, clean(d.objetivo), clean(d.desayuno), clean(d.colacionDesayuno), clean(d.almuerzo),
+        clean(d.colacionAlmuerzo), clean(d.cena), clean(d.suplemento)
+      );
+      dietCount++;
+    }
   }
 }
 
@@ -175,9 +202,10 @@ const expected = X.coaches.length + X.activos.length + X.bajas.length - merged;
 const evals = X.activos.reduce((n, { id }) => n + (X.detalle[id].evaluaciones?.length ?? 0), 0);
 if (count("select count(*) n from users") !== expected) throw new Error("No cierran las personas");
 if (checkins !== evals || count("select count(*) n from checkins") !== evals) throw new Error("No cierran las evaluaciones");
+if (dietCount !== Object.keys(diets).length) throw new Error("Hay dietas de evaluaciones que no vinieron");
 if (db.prepare("pragma foreign_key_check").all().length) throw new Error("Hay referencias rotas");
 
 console.log(
   `${outPath}: coaches ${X.coaches.length} · alumnos activos ${X.activos.length} · dados de baja ${X.bajas.length} · ` +
-    `evaluaciones ${evals} · sin correo ${count("select count(*) n from users where email is null")}`
+    `evaluaciones ${evals} · dietas ${dietCount} · sin correo ${count("select count(*) n from users where email is null")}`
 );

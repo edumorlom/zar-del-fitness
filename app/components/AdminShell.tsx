@@ -7,6 +7,7 @@ import { Sidebar, type NavItem } from "./Sidebar";
 export function AdminShell({ viewer, children }: { viewer: Viewer; children: React.ReactNode }) {
   const items: NavItem[] = [
     { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
+    { href: "/agenda", label: "Agenda", icon: "agenda" },
     { href: "/clientes", label: "Clientes", icon: "clients" },
     ...(viewer.role === "admin" ? [{ href: "/configuracion", label: "Configuración", icon: "settings" } as const] : []),
   ];
