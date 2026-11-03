@@ -62,7 +62,8 @@ const appearance = {
       border: "1px solid rgba(220, 220, 220, 0.12)",
       background: "rgba(255, 255, 255, 0.03)",
     },
-    formFieldInput: { minHeight: "44px" },
+    // 16px: con menos, iOS agranda la página al tocar el campo
+    formFieldInput: { minHeight: "44px", fontSize: "16px" },
   },
   variables: {
     colorPrimary: "#d6a61d",

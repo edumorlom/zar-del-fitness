@@ -162,45 +162,47 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
           </p>
           {checkins.length > 0 && (
             <>
-              <table className="table table--compact">
-                <thead>
-                  <tr>
-                    <th scope="col">Fecha</th>
-                    <th scope="col" className="right">Peso</th>
-                    <th scope="col" className="right">% Graso</th>
-                    <th scope="col" className="right">Masa magra</th>
-                    <th scope="col">
-                      <span className="sr-only">Borrar</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...checkins].reverse().map((c) => (
-                    <tr key={c.id}>
-                      <td className="mono">{shortDate(c.date)}</td>
-                      <td className="right mono">{num(c.weight_kg)} kg</td>
-                      <td className="right mono">{num(c.body_fat_pct)} %</td>
-                      <td className="right mono">{num(lean(c.weight_kg, c.body_fat_pct))} kg</td>
-                      <td className="right">
-                        <Form
-                          action={deleteCheckin}
-                          submit={
-                            <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                              <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
-                            </svg>
-                          }
-                          button="icon-btn icon-btn--sm icon-btn--danger"
-                          label={`Borrar la evaluación del ${shortDate(c.date)}`}
-                          className="inline-form"
-                          confirm={`¿Borrar la evaluación del ${shortDate(c.date)}?`}
-                        >
-                          <input type="hidden" name="id" value={c.id} />
-                        </Form>
-                      </td>
+              <div className="table-wrap">
+                <table className="table table--compact">
+                  <thead>
+                    <tr>
+                      <th scope="col">Fecha</th>
+                      <th scope="col" className="right">Peso</th>
+                      <th scope="col" className="right">% Graso</th>
+                      <th scope="col" className="right">Masa magra</th>
+                      <th scope="col">
+                        <span className="sr-only">Borrar</span>
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {[...checkins].reverse().map((c) => (
+                      <tr key={c.id}>
+                        <td className="mono">{shortDate(c.date)}</td>
+                        <td className="right mono">{num(c.weight_kg)} kg</td>
+                        <td className="right mono">{num(c.body_fat_pct)} %</td>
+                        <td className="right mono">{num(lean(c.weight_kg, c.body_fat_pct))} kg</td>
+                        <td className="right">
+                          <Form
+                            action={deleteCheckin}
+                            submit={
+                              <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+                              </svg>
+                            }
+                            button="icon-btn icon-btn--sm icon-btn--danger"
+                            label={`Borrar la evaluación del ${shortDate(c.date)}`}
+                            className="inline-form"
+                            confirm={`¿Borrar la evaluación del ${shortDate(c.date)}?`}
+                          >
+                            <input type="hidden" name="id" value={c.id} />
+                          </Form>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
               <Link className="btn btn--ghost btn--sm btn--block" href={`/clientes/${client.id}/evaluaciones`}>
                 Ver detalle completo
               </Link>

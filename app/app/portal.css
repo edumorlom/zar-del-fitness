@@ -336,6 +336,12 @@
   gap: clamp(64px, 9vw, 96px);
   padding-block: calc(var(--header-h) + 36px + 28px) 140px;
 }
+/* Los hijos de una grilla no se achican por debajo de su contenido: sin esto, una tabla ancha (que tiene su propio
+   scroll) o una fila de chips estiraban toda la página en el celular */
+.portal > *,
+.admin__main > * {
+  min-width: 0;
+}
 .back {
   justify-self: start;
   margin-bottom: calc(-1 * clamp(40px, 7vw, 72px));
@@ -379,7 +385,7 @@
 }
 @media (max-width: 920px) {
   .hero-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 .hello {
@@ -1177,6 +1183,15 @@ button:disabled {
   .admin__main {
     padding: 24px 16px 96px;
   }
+  /* El menú desplegado tapa la página, no la empuja */
+  .side[data-open="true"] .side__body {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(10, 10, 10, 0.98);
+    border-bottom: 1px solid var(--line);
+  }
   .anchor {
     scroll-margin-top: 84px;
   }
@@ -1472,10 +1487,14 @@ button:disabled {
 .dash-row > .evo {
   margin-top: 0;
 }
+/* El gráfico mide su caja para dibujarse: sin esto, la caja crecía con el gráfico y nunca volvía a achicarse */
+.dash-row > * {
+  min-width: 0;
+}
 @media (max-width: 1000px) {
   .dash-row,
   .dash-row--even {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 .evo__plot--short {
@@ -2269,4 +2288,138 @@ a.person:hover .strong {
   border-color: var(--gold);
   background: var(--gold-light);
   color: var(--black);
+}
+
+/* =========================================================
+   Celular: que todo entre en el ancho y se pueda tocar
+   ========================================================= */
+/* Las tablas con scroll propio: se desliza con el dedo, sin arrastrar la página */
+.table-wrap {
+  /* Ancla los textos sólo para lectores de pantalla (.sr-only, absolutos): si no, se escapan del scroll y ensanchan la página */
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+/* La columna de los parámetros queda fija al deslizar la tabla de evaluaciones */
+.matrix th[scope="row"] {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--ink);
+}
+.chip {
+  max-width: 100%;
+}
+.move[open] {
+  flex-basis: 100%;
+}
+@media (max-width: 760px) {
+  /* Un chip largo ("Atrasado · último control hace 352 días") baja de renglón en vez de salirse */
+  .chip {
+    white-space: normal;
+  }
+  .table:not(.table--compact) th,
+  .table:not(.table--compact) td {
+    padding: 14px;
+  }
+  .table--compact th,
+  .table--compact td {
+    padding: 12px 6px;
+  }
+  .matrix th[scope="row"] {
+    max-width: 128px;
+    white-space: normal;
+  }
+  .page-head__actions,
+  .page-head__actions > * {
+    flex: 1 1 auto;
+  }
+  .page-head__actions .btn {
+    justify-content: center;
+  }
+  .appt__actions {
+    width: 100%;
+  }
+  .stat,
+  .kpi,
+  .panel-card,
+  .profile,
+  .comp,
+  .evo {
+    padding-inline: 18px;
+  }
+  .evo__tabs {
+    width: 100%;
+  }
+  .evo__tab {
+    flex: 1 1 auto;
+  }
+  .search input {
+    width: 100%;
+  }
+  .danger {
+    padding: 18px;
+  }
+  .win {
+    padding: 18px;
+    gap: 14px;
+  }
+  .coach__body {
+    padding: 0 18px 22px;
+  }
+  .cal__head {
+    padding: 16px;
+  }
+  .cal__wd {
+    letter-spacing: 0.08em;
+  }
+  .tile {
+    padding: 14px 16px;
+  }
+}
+@media (max-width: 380px) {
+  .tiles {
+    grid-template-columns: 1fr;
+  }
+  .seg__legend {
+    grid-template-columns: 1fr;
+  }
+}
+/* iOS agranda la página al tocar un campo con letra de menos de 16px */
+@media (pointer: coarse), (max-width: 760px) {
+  .search input,
+  .field input,
+  .field select,
+  .field textarea,
+  .filters select,
+  .filters__search,
+  .move__form input {
+    font-size: 16px;
+  }
+}
+/* Los links de texto chicos ("← Clientes", "Rechazar"): más alto para el dedo, sin mover nada */
+@media (pointer: coarse) {
+  .back,
+  .link-sm,
+  .link-arrow,
+  .kpi__foot a,
+  .kpi__note a {
+    display: inline-block;
+    padding-block: 11px;
+    margin-block: -11px;
+  }
+  .back {
+    margin-block: -11px calc(-11px - clamp(40px, 7vw, 72px));
+  }
+  .admin__main .back {
+    margin-bottom: -27px;
+  }
+  .check input {
+    width: 20px;
+    height: 20px;
+  }
+  /* Sin hover en el celular: que una tarjeta no quede levantada después de tocarla */
+  .stat:hover {
+    transform: none;
+  }
 }
