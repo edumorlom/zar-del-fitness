@@ -82,6 +82,7 @@
 }
 
 /* ---------- Ingreso ---------- */
+/* Todo se achica con la altura de la pantalla (vh): entra entero en una notebook de 13" (unos 790 px visibles). */
 .login {
   position: relative;
   isolation: isolate;
@@ -89,53 +90,32 @@
   grid-template-columns: minmax(0, 1fr);
   place-items: center;
   align-content: center;
-  gap: 34px;
+  gap: clamp(14px, 3vh, 32px);
   min-height: 100svh;
-  padding: 72px var(--gutter) 180px;
+  /* Debajo del menú del sitio, que es fijo: el anuncio (36px) y la barra */
+  padding: calc(var(--header-h) + 36px + clamp(12px, 2.5vh, 40px)) var(--gutter) clamp(20px, 4vh, 64px);
   overflow: hidden;
-}
-.login::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  background: radial-gradient(60% 45% at 50% 100%, rgba(152, 136, 88, 0.24), transparent 70%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8) 65%, #000);
-}
-.login__bg {
-  position: absolute;
-  inset: 0;
-  z-index: -3;
-}
-.login__bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: grayscale(0.3) sepia(0.25) brightness(0.38);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .login__bg img {
-    animation: slow-zoom 24s var(--ease-out) both;
-  }
-}
-@keyframes slow-zoom {
-  from {
-    transform: scale(1.15);
-  }
-  to {
-    transform: scale(1.02);
-  }
+  background: radial-gradient(70% 60% at 50% 45%, #0d0b07, #000 70%);
 }
 .panel {
   position: relative;
-  width: min(100%, 440px);
-  padding: 40px clamp(20px, 6vw, 36px) 32px;
+  width: min(100%, 420px);
+  padding: clamp(22px, 3.6vh, 40px) clamp(20px, 5vw, 34px) clamp(18px, 3vh, 30px);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: rgba(19, 19, 19, 0.82);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 40px 120px -40px #000;
+  /* Sin backdrop-filter: con el blur, el panel parpadeaba al aparecer */
+  background: rgba(19, 19, 19, 0.88);
+  box-shadow: 0 40px 120px -40px #000, 0 0 0 1px rgba(152, 136, 88, 0.06);
   text-align: center;
+}
+/* El lugar del formulario de Clerk, reservado antes de que llegue: así el panel no salta de tamaño */
+.signin {
+  min-height: 300px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .signin .cl-rootBox {
+    animation: fade-in 0.6s ease both;
+  }
 }
 .panel::before {
   content: "";
@@ -146,20 +126,15 @@
   height: 1px;
   background: var(--grad-gold-flat);
 }
-.panel__logo {
-  width: 150px;
-  height: auto;
-  margin: 0 auto 22px;
-}
 .panel .eyebrow {
-  margin-bottom: 14px;
+  margin-bottom: clamp(6px, 1.2vh, 14px);
 }
 .panel .h2 {
-  font-size: clamp(2.6rem, 9vw, 3.4rem);
+  font-size: clamp(2.1rem, 6vh, 3.2rem);
 }
 .panel__lead {
   max-width: 32ch;
-  margin: 14px auto 24px;
+  margin: clamp(6px, 1.2vh, 12px) auto clamp(12px, 2.4vh, 22px);
   color: var(--muted);
   font-size: 0.95rem;
 }
@@ -173,7 +148,7 @@
 }
 .motto {
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-size: clamp(1.3rem, 3.4vh, 2.1rem);
   line-height: 1;
   text-align: center;
   text-transform: uppercase;
@@ -181,86 +156,138 @@
 .motto .serif {
   font-size: 1.1em;
 }
-.marquee {
+/* En pantallas bajas, el lema se va: primero que entre el formulario */
+@media (max-height: 860px) {
+  .motto {
+    display: none;
+  }
+}
+
+/* ---------- Fondo del ingreso: el dial (components/LoginBackdrop.tsx) ---------- */
+.backdrop {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 48px;
+  inset: 0;
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
 }
-.marquee__track {
-  display: flex;
-  width: max-content;
-  color: transparent;
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 7vw, 6rem);
-  line-height: 1;
-  text-transform: uppercase;
-  white-space: nowrap;
-  -webkit-text-stroke: 1px rgba(220, 220, 220, 0.1);
+.backdrop__glow {
+  position: absolute;
+  width: 70vmax;
+  height: 70vmax;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.55;
 }
-.marquee__set {
-  display: flex;
-  gap: 48px;
-  padding-right: 48px;
+.backdrop__glow--a {
+  top: -35vmax;
+  left: -20vmax;
+  background: radial-gradient(circle, rgba(167, 137, 47, 0.35), transparent 65%);
 }
-.marquee__spark {
-  color: rgba(152, 136, 88, 0.35);
-  -webkit-text-stroke: 0;
+.backdrop__glow--b {
+  right: -25vmax;
+  bottom: -40vmax;
+  background: radial-gradient(circle, rgba(214, 166, 29, 0.22), transparent 65%);
+}
+.dial {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(135vmin, 1150px);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+}
+.dial > * {
+  position: absolute;
+  inset: 0;
+}
+.dial__ticks {
+  width: 100%;
+  height: 100%;
+}
+.tick {
+  stroke: rgba(152, 136, 88, 0.28);
+  stroke-width: 0.35;
+  stroke-linecap: round;
+}
+.tick--major {
+  stroke: rgba(231, 193, 82, 0.55);
+  stroke-width: 0.5;
+}
+.dial__ticks--inner {
+  inset: 9%;
+  width: 82%;
+  height: 82%;
+  opacity: 0.7;
+}
+.dial__ring {
+  inset: 21%;
+  border: 1px solid rgba(152, 136, 88, 0.18);
+  border-radius: 50%;
+}
+/* El barrido: una luz dorada que da la vuelta sobre la banda de las rayitas, como la aguja de un cronómetro */
+.dial__sweep {
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 72%, rgba(214, 166, 29, 0.05) 80%, rgba(214, 166, 29, 0.32) 98%, rgba(243, 227, 173, 0.75) 100%);
+  -webkit-mask: radial-gradient(circle, transparent 39%, #000 40%, #000 50%, transparent 51%);
+  mask: radial-gradient(circle, transparent 39%, #000 40%, #000 50%, transparent 51%);
+}
+.dial__pulse {
+  inset: 30%;
+  border: 1px solid rgba(214, 166, 29, 0.5);
+  border-radius: 50%;
+  opacity: 0;
 }
 @media (prefers-reduced-motion: no-preference) {
-  .marquee__track {
-    animation: marquee 46s linear infinite;
+  .dial__ticks--outer {
+    animation: spin 120s linear infinite;
+  }
+  .dial__ticks--inner {
+    animation: spin 80s linear infinite reverse;
+  }
+  .dial__sweep {
+    animation: spin 7s linear infinite;
+  }
+  .dial__pulse {
+    animation: dial-pulse 5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  }
+  .dial__pulse--late {
+    animation-delay: 2.5s;
+  }
+  .backdrop__glow--a {
+    animation: drift 18s ease-in-out infinite alternate;
+  }
+  .backdrop__glow--b {
+    animation: drift 22s ease-in-out infinite alternate-reverse;
   }
 }
-@keyframes marquee {
+@keyframes dial-pulse {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+@keyframes drift {
   to {
-    transform: translateX(-50%);
+    transform: translate(12vmax, 8vmax);
   }
-}
-.login__foot {
-  position: absolute;
-  left: var(--gutter);
-  right: var(--gutter);
-  bottom: 18px;
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  color: var(--muted-2);
-  font-size: 0.75rem;
-}
-.login__foot a:hover {
-  color: var(--gold-light);
 }
 
-/* ---------- Encabezado ---------- */
-.top {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  border-bottom: 1px solid var(--line);
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(14px);
-}
-.top__in {
+/* ---------- Barra del portal (debajo del menú del sitio): quién entró y salir ---------- */
+.portal-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  height: var(--header-h);
+  margin-bottom: calc(-1 * clamp(40px, 7vw, 72px));
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
 }
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-.brand img {
-  width: 86px;
-  height: auto;
-}
-.brand .eyebrow {
+.portal-bar .eyebrow {
   margin: 0;
 }
 .me {
@@ -298,8 +325,7 @@
   color: var(--gold-light);
 }
 @media (max-width: 560px) {
-  .me__name,
-  .brand .eyebrow {
+  .me__name {
     display: none;
   }
 }
@@ -308,7 +334,7 @@
 .portal {
   display: grid;
   gap: clamp(64px, 9vw, 96px);
-  padding-block: 40px 140px;
+  padding-block: calc(var(--header-h) + 36px + 28px) 140px;
 }
 .back {
   justify-self: start;

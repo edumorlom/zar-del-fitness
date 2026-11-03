@@ -1,6 +1,8 @@
 import { SignIn } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { LoginBackdrop } from "~/components/LoginBackdrop";
+import { SiteHeader } from "~/components/SiteHeader";
 import { getViewer } from "~/lib/auth";
 
 export const metadata: Metadata = { title: "Ingresar" };
@@ -9,14 +11,15 @@ export const metadata: Metadata = { title: "Ingresar" };
 export default async function LoginPage() {
   if (await getViewer()) redirect("/");
   return (
+    <>
+    <SiteHeader login={{ label: "Ingresar", href: "/ingresar" }} />
     <main id="main" className="login">
-      <div className="login__bg" aria-hidden="true">
-        <img src="/img/vip-gym.webp" alt="" />
-      </div>
+      <LoginBackdrop />
 
-      <div className="panel intro">
-        <img className="panel__logo" src="/img/logo.webp" alt="Zar del Fitness" width={666} height={361} />
-        <p className="eyebrow">
+      {/* El panel no se anima: el formulario de Clerk llega después (lo baja de Clerk) y moverlo o achicarlo mientras
+          tanto se veía a los saltos. Entran el título y el texto; el formulario, en su lugar ya reservado (.signin). */}
+      <div className="panel">
+        <p className="eyebrow intro">
           <span className="dot" /> Mi progreso
         </p>
         <h1 className="h2 intro-lines">
@@ -29,8 +32,10 @@ export default async function LoginPage() {
             </span>
           </span>
         </h1>
-        <p className="panel__lead">Entrá con Google o con tu correo para ver tu progreso.</p>
-        <SignIn routing="path" path="/ingresar" withSignUp fallbackRedirectUrl="/" signUpFallbackRedirectUrl="/" />
+        <p className="panel__lead intro">Entrá con Google o con tu correo.</p>
+        <div className="signin">
+          <SignIn routing="path" path="/ingresar" withSignUp fallbackRedirectUrl="/" signUpFallbackRedirectUrl="/" />
+        </div>
       </div>
 
       <p className="motto intro-lines">
@@ -44,25 +49,7 @@ export default async function LoginPage() {
         </span>
       </p>
 
-      <div className="marquee" aria-hidden="true">
-        <div className="marquee__track">
-          {[0, 1].map((k) => (
-            <span key={k} className="marquee__set">
-              <span>Seguimiento corporal</span>
-              <span className="marquee__spark">✦</span>
-              <span>Medición a medición</span>
-              <span className="marquee__spark">✦</span>
-              <span>Resultados cada 25 días</span>
-              <span className="marquee__spark">✦</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className="login__foot">
-        <a href="https://zardelfitness.com.ar/">zardelfitness.com.ar ↗</a>
-        <span>The VIP · Colegiales</span>
-      </div>
     </main>
+    </>
   );
 }

@@ -1,7 +1,7 @@
 import { SignOutButton } from "@clerk/nextjs";
-import Link from "next/link";
 import { Reveals } from "@/components/motion/Reveals";
 import type { Viewer } from "~/lib/auth";
+import { SiteHeader } from "./SiteHeader";
 
 export const SignOut = () => (
   <SignOutButton redirectUrl="/ingresar">
@@ -22,18 +22,16 @@ export const initials = (name: string) =>
     .map((w) => w[0]?.toUpperCase())
     .join("");
 
-/** El encabezado del portal (logo, quién entró, salir) y las animaciones data-* del sitio. */
+/** Arriba, el menú del sitio; abajo, quién entró y el botón para salir. Y las animaciones data-* del sitio. */
 export function Shell({ viewer, children }: { viewer: Viewer; children: React.ReactNode }) {
   return (
     <>
-      <header className="top">
-        <div className="container top__in">
-          <Link className="brand" href="/">
-            <img src="/img/logo.webp" alt="Zar del Fitness" width={666} height={361} />
-            <span className="eyebrow">
-              <span className="num">{ROLE_LABEL[viewer.role]}</span>
-            </span>
-          </Link>
+      <SiteHeader login={{ label: viewer.role === "user" ? "Mi progreso" : "Socios", href: "/" }} />
+      <main id="main" className="container portal">
+        <div className="portal-bar">
+          <span className="eyebrow">
+            <span className="num">{ROLE_LABEL[viewer.role]}</span>
+          </span>
           <div className="me">
             <span className="avatar" aria-hidden="true">
               {initials(viewer.name)}
@@ -42,8 +40,6 @@ export function Shell({ viewer, children }: { viewer: Viewer; children: React.Re
             <SignOut />
           </div>
         </div>
-      </header>
-      <main id="main" className="container portal">
         {children}
       </main>
       {/* Último: conecta las animaciones data-* una vez montado todo el contenido */}

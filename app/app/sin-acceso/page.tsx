@@ -2,6 +2,8 @@ import { currentUser } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import gimnasio from "@db/gimnasio.json";
+import { LoginBackdrop } from "~/components/LoginBackdrop";
+import { SiteHeader } from "~/components/SiteHeader";
 import { SignOut } from "~/components/Shell";
 import { getViewer } from "~/lib/auth";
 
@@ -17,9 +19,11 @@ export default async function NoAccessPage() {
   const email = (await currentUser())?.primaryEmailAddress?.emailAddress;
 
   return (
+    <>
+    <SiteHeader login={{ label: "Ingresar", href: "/ingresar" }} />
     <main id="main" className="login">
+      <LoginBackdrop />
       <div className="panel intro">
-        <img className="panel__logo" src="/img/logo.webp" alt="Zar del Fitness" width={666} height={361} />
         <p className="eyebrow">
           <span className="dot" /> Mi progreso
         </p>
@@ -48,5 +52,6 @@ export default async function NoAccessPage() {
         </div>
       </div>
     </main>
+    </>
   );
 }
