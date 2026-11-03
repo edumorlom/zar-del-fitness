@@ -819,3 +819,141 @@ button:disabled {
   opacity: 0.6;
   cursor: progress;
 }
+
+/* ---------- Evolución (components/Evolution.tsx): una medida por vez, con su escala ---------- */
+.evo {
+  margin-top: 16px;
+  padding: 26px 28px 18px;
+}
+.evo__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin-bottom: 14px;
+}
+.evo__head .label {
+  margin-bottom: 6px;
+}
+.evo__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
+}
+.evo__tab {
+  min-height: 36px;
+  padding: 0.55em 1.05em;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: color 0.3s, background-color 0.3s;
+}
+.evo__tab:hover {
+  color: var(--white);
+}
+.evo__tab[aria-selected="true"] {
+  background: var(--grad-gold-flat);
+  color: var(--black);
+}
+.evo__plot {
+  position: relative;
+  height: 260px;
+  touch-action: pan-y;
+}
+.evo__plot svg {
+  display: block;
+  overflow: visible;
+}
+.evo__grid {
+  stroke: rgba(220, 220, 220, 0.08);
+  stroke-width: 1;
+}
+.evo__axis {
+  fill: var(--muted-2);
+  font: 600 11px var(--font-sans);
+  font-variant-numeric: tabular-nums;
+}
+.evo__line {
+  fill: none;
+  stroke: #d6a61d;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+}
+.evo__dot {
+  fill: #d6a61d;
+  stroke: var(--ink);
+  stroke-width: 2;
+  transition: r 0.2s var(--ease-out);
+}
+.evo__cross {
+  stroke: rgba(220, 220, 220, 0.35);
+  stroke-width: 1;
+}
+.evo__tip {
+  position: absolute;
+  top: 0;
+  min-width: 200px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-gold);
+  border-radius: 14px;
+  background: rgba(19, 19, 19, 0.96);
+  box-shadow: 0 20px 40px -20px #000;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.evo__tip-date {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.evo__tip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.evo__tip-row b {
+  min-width: 66px;
+  color: var(--white);
+  font-variant-numeric: tabular-nums;
+}
+.evo__key {
+  width: 12px;
+  height: 2px;
+  border-radius: 2px;
+}
+.evo__tip-row.is-active .evo__key {
+  background: #d6a61d;
+}
+.evo__tip-row.is-active span:last-child {
+  color: var(--silver);
+}
+/* La línea se dibuja al entrar la tarjeta en pantalla (data-anim de Reveals) y cada vez que se cambia de medida */
+@media (prefers-reduced-motion: no-preference) {
+  .evo__line {
+    animation: draw 1s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  }
+  .evo__area {
+    animation: fade-in 0.8s ease 0.2s backwards;
+  }
+  [data-anim="wait"] .evo__line {
+    stroke-dashoffset: 1;
+    animation: none;
+  }
+  [data-anim="wait"] .evo__area {
+    opacity: 0;
+    animation: none;
+  }
+}

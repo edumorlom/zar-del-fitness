@@ -1,6 +1,7 @@
 import { deleteCheckin } from "~/app/actions";
 import type { Checkin, Client } from "~/lib/data";
 import { dateOf, days, daysUntil, longDate, monthYear, num, shortDate, timeOf, todayISO } from "~/lib/format";
+import { Evolution } from "./Evolution";
 import { Form } from "./Form";
 import { initials } from "./Shell";
 
@@ -291,6 +292,14 @@ export function Results({ checkins, you, manage, number = "01" }: { checkins: Ch
             </p>
           </div>
         </div>
+
+        {/* La tendencia necesita al menos dos controles */}
+        {prev && (
+          <Evolution
+            you={you}
+            points={checkins.map((c) => ({ date: c.date, weight: c.weight_kg, fatPct: c.body_fat_pct, lean: lean(c), fatKg: fat(c) }))}
+          />
+        )}
       </section>
 
       <section id="controles">
