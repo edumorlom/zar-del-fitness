@@ -58,6 +58,8 @@ alter table users add column if not exists title text;
 -- Del portal anterior sólo vino la fecha y el peso de la última evaluación, sin el resto: hasta el próximo control.
 alter table users add column if not exists legacy_last_checkin date;
 alter table users add column if not exists legacy_last_weight numeric(5, 1);
+-- El certificado médico, en el bucket (/archivos/...): lo ve el cliente y quien lo maneja.
+alter table users add column if not exists certificate_url text;
 
 -- Lo demás de una evaluación, todo opcional: perímetros (cm) y lo que da la balanza.
 alter table checkins add column if not exists chest_cm numeric(5, 1);

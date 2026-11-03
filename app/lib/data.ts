@@ -27,6 +27,7 @@ export type Client = {
   active: boolean;
   legacy_last_checkin: string | null;
   legacy_last_weight: number | null;
+  certificate_url: string | null;
   linked: boolean;
   coach_name: string | null;
   coach_phone: string | null;
@@ -56,7 +57,7 @@ export async function getClient(id: number) {
     `select u.id, u.role, u.email, u.name, u.coach_id, u.phone, u.photo_url, u.title, u.plan, u.client_since,
             u.pass_expires, u.next_control_at, u.goal, u.dni, u.sex, u.birth_year, u.height_cm, u.body_type,
             u.conditions, u.medications, u.notes, u.active, u.legacy_last_checkin, u.legacy_last_weight,
-            u.clerk_id is not null as linked,
+            u.certificate_url, u.clerk_id is not null as linked,
             c.name as coach_name, c.phone as coach_phone, c.photo_url as coach_photo, c.title as coach_title
      from users u left join users c on c.id = u.coach_id
      where u.id = $1`,

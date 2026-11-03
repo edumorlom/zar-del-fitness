@@ -101,6 +101,13 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
             <Fact label="Estado físico">{client.body_type && <span className="chip chip--type">{client.body_type}</span>}</Fact>
             <Fact label="Estatura">{client.height_cm && <span className="mono">{num(client.height_cm / 100, 2)} m</span>}</Fact>
             <Fact label="IMC">{index && <span className="mono">{num(index)}</span>}</Fact>
+            <Fact label="Certificado médico">
+              {client.certificate_url && (
+                <a href={client.certificate_url} target="_blank" rel="noreferrer">
+                  Ver certificado
+                </a>
+              )}
+            </Fact>
             <Fact label="Patologías">
               {client.conditions.length > 0 && (
                 <span className="chips">

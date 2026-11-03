@@ -12,7 +12,16 @@ import { DatabaseSync } from "node:sqlite";
 const [exportPath, outPath, filesPath] = process.argv.slice(2);
 if (!exportPath || !outPath) throw new Error("Uso: node scripts/sumar-to-sqlite.mjs sumar-export.json alumnos.sqlite");
 const X = JSON.parse(readFileSync(exportPath, "utf8"));
-const diets = filesPath ? JSON.parse(readFileSync(filesPath, "utf8")).dietas : {};
+const bundle = filesPath ? JSON.parse(readFileSync(filesPath, "utf8")) : {};
+const diets = bundle.dietas ?? {};
+// Los archivos ya subidos al bucket (alumnos/<id>/foto.jpg; las HEIC pasaron a JPEG): el portal los sirve en /archivos/.
+// Con dominio completo porque el formulario del cliente pide una URL.
+const PORTAL = "https://mi.zardelfitness.com.ar";
+const fileUrl = {};
+for (const f of bundle.archivos ?? []) {
+  const ext = f.nombre.split(".").pop().toLowerCase().replace(/^(heic|jpeg)$/, "jpg");
+  fileUrl[`${f.alumnoId}/${f.tipo}`] = `${PORTAL}/archivos/alumnos/${f.alumnoId}/${f.tipo}.${ext}`;
+}
 
 // Igual que scripts/import-sumar.mjs.
 const EXPORT_YEAR = 2026;
@@ -60,7 +69,8 @@ create table users (
   active integer not null default 1,
   title text,
   legacy_last_checkin text,
-  legacy_last_weight real
+  legacy_last_weight real,
+  certificate_url text
 );
 create table checkins (
   id integer primary key,
@@ -159,6 +169,8 @@ for (const { id } of X.activos) {
     legacy_last_checkin: evaluaciones.length ? null : a.ultimaEvaluacion ?? null,
     legacy_last_weight: evaluaciones.length ? null : a.ultimoPeso ?? null,
     external_id: a.id,
+    photo_url: fileUrl[`${a.id}/foto`] ?? null,
+    certificate_url: fileUrl[`${a.id}/certificado`] ?? null,
     coach_id: coachIds[asignacion.coachId] ?? null,
     plan: PLANS[asignacion.plan] ?? null,
   });
