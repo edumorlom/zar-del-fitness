@@ -14,7 +14,7 @@ import { gsap, ScrollTrigger, useGSAP, finePointer, reducedMotion } from "@/lib/
  * Con GSAP:
  *  data-speed="0.2"      parallax (positivo sube más rápido, negativo más lento)
  *  data-words            párrafo cuyas palabras (span) se iluminan con el scroll
- *  data-count="2000"     contador animado (data-from, data-format="thousands")
+ *  data-count="2000"     contador animado (data-from, data-format="thousands" | "decimal")
  *  data-magnetic         botón magnético (sólo puntero fino)
  *
  * Las de CSS eran tweens de GSAP con un ScrollTrigger cada uno (unos 70): al hidratar, GSAP leía el estilo y la
@@ -164,8 +164,13 @@ export function Reveals() {
     });
 
     // Contadores (también con reduced-motion: muestran el valor final)
+    // data-format="decimal": con un decimal (80,9 kg en el portal de socios, app/).
     const fmt = (el: HTMLElement, v: number) =>
-      el.dataset.format === "thousands" ? Math.round(v).toLocaleString(document.documentElement.lang) : String(Math.round(v));
+      el.dataset.format === "thousands"
+        ? Math.round(v).toLocaleString(document.documentElement.lang)
+        : el.dataset.format === "decimal"
+          ? v.toLocaleString(document.documentElement.lang, { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+          : String(Math.round(v));
     const counters = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
