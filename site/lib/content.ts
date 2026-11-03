@@ -213,10 +213,7 @@ function build(lang: Lang) {
     waInfo: wa(t.whatsapp.informacion),
     waPresencial: wa(t.whatsapp.presencial),
     waDudas: wa(t.whatsapp.dudas),
-    login: "https://zardelfitness.sumar.dev/",
-    // shortcut: la dirección de Railway del portal (app/) mientras mi.zardelfitness.com.ar no resuelve; cambiarla
-    // por https://mi.zardelfitness.com.ar/ cuando el DNS del dominio esté en FreeDNS.
-    portal: "https://portal-production-9b46.up.railway.app/",
+    portal: "https://mi.zardelfitness.com.ar/",
   };
 
   const contact = {
@@ -231,7 +228,6 @@ function build(lang: Lang) {
   // portal de socios (app/components/SiteHeader.tsx).
   const nav = [
     { href: `${home}#top`, label: t.menu.principal },
-    { href: links.portal, label: t.menu.perfil },
     { href: `${home}#faq`, label: t.menu.faq },
     { href: pages.blog, label: t.menu.blog },
     { href: pages.podcasts, label: t.menu.podcasts },

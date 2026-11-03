@@ -1196,6 +1196,12 @@ button:disabled {
   letter-spacing: 0.01em;
   text-transform: uppercase;
 }
+/* Un título con su contador ("Pedidos por responder 1"): el contador al medio de las mayúsculas, no en la línea de base */
+.card-title:has(> .pill) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 .card-head {
   padding: 22px 24px 10px;
 }
@@ -1555,6 +1561,9 @@ a.person:hover .strong {
 }
 .actions > * {
   display: inline-flex;
+  /* el inline-flex le gana al grid de .icon-btn: sin esto, el ícono del link (el ojo) queda corrido */
+  align-items: center;
+  justify-content: center;
   margin-left: 6px;
   vertical-align: middle;
 }

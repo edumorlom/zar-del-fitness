@@ -14,7 +14,7 @@ type HeaderProps = {
   nav: { href: string; label: string }[];
   announce: { text: string; price: string; cta: string; href: string };
   waInfo: string;
-  /** El acceso de los alumnos (zardelfitness.sumar.dev). */
+  /** El acceso al portal (mi.zardelfitness.com.ar). */
   login: { label: string; href: string };
   labels: { logo: string; nav: string; navMobile: string; open: string; close: string; write: string };
   /** La misma página en el otro idioma. */

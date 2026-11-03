@@ -19,7 +19,7 @@ export function PageShell({ lang, alternate, children }: { lang: Lang; alternate
         nav={nav}
         announce={{ text: t.encabezado.anuncio, price: price("reto-online"), cta: t.encabezado.anuncioBoton, href: links.retoOnline }}
         waInfo={links.waInfo}
-        login={{ label: t.encabezado.ingresar, href: links.login }}
+        login={{ label: t.encabezado.ingresar, href: links.portal }}
         labels={{
           logo: t.encabezado.logo,
           nav: t.encabezado.menuPrincipal,

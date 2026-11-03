@@ -20,7 +20,7 @@ export default async function NoAccessPage() {
 
   return (
     <>
-    <SiteHeader login={{ label: "Ingresar", href: "/ingresar" }} />
+    <SiteHeader login={{ label: "Mi Portal", href: "/ingresar" }} />
     <main id="main" className="login">
       <LoginBackdrop />
       <div className="panel intro">

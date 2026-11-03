@@ -12,7 +12,7 @@ export default async function LoginPage() {
   if (await getViewer()) redirect("/");
   return (
     <>
-    <SiteHeader login={{ label: "Ingresar", href: "/ingresar" }} />
+    <SiteHeader login={{ label: "Mi Portal", href: "/ingresar" }} />
     <main id="main" className="login">
       <LoginBackdrop />
 

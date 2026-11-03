@@ -56,12 +56,11 @@
     "abrirMenu": { "es": "Abrir menú", "en": "Open menu" },
     "cerrarMenu": { "es": "Cerrar menú", "en": "Close menu" },
     "escribinos": { "es": "Escribinos", "en": "Message us" },
-    "ingresar": { "es": "Ingresar", "en": "Log In" }
+    "ingresar": { "es": "Mi Portal", "en": "My Portal" }
   },
 
   "menu": {
     "principal": { "es": "Principal", "en": "Home" },
-    "perfil": { "es": "Mi Portal", "en": "My portal" },
     "programas": { "es": "Programas", "en": "Programs" },
     "metodo": { "es": "Método", "en": "Method" },
     "resultados": { "es": "Resultados", "en": "Results" },
