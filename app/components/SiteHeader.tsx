@@ -7,15 +7,9 @@ const abs = (href: string) => (href.startsWith("/") ? SITE + href : href);
 
 /** El mismo menú que el sitio (components/Header.tsx de site/, con sus textos de db/), con el botón del portal. */
 export function SiteHeader({ login }: { login: { label: string; href: string } }) {
-  const { t, pages, links, price } = content("es");
-  // El menú del portal: menos secciones que el del sitio, y "Mi Perfil" (el portal) en lugar de las de la home.
-  const nav = [
-    { href: abs(pages.home), label: "Principal" },
-    { href: "/", label: "Mi Perfil" },
-    { href: abs(`${pages.home}#faq`), label: t.menu.faq },
-    { href: abs(pages.blog), label: t.menu.blog },
-    { href: abs(pages.podcasts), label: t.menu.podcasts },
-  ];
+  const { t, pages, nav: siteNav, links, price } = content("es");
+  // El mismo menú que el sitio; "Mi Perfil" (el link al portal) se queda en el portal, en la página de cada uno.
+  const nav = siteNav.map((item) => ({ ...item, href: item.href === links.portal ? "/" : abs(item.href) }));
   return (
     <Header
       home={abs(pages.home)}

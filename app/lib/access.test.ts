@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { canManage } from "./access.ts";
 import { days, fromLocalInput, longDate, num, shortDate, toLocalInput } from "./format.ts";
 
-test("el admin maneja a cualquiera; el coach, sólo a los suyos; el socio, a nadie", () => {
+test("el admin maneja a cualquiera; el coach, sólo a los suyos; el cliente, a nadie", () => {
   const admin = { id: 1, role: "admin" } as const;
   const coach = { id: 2, role: "coach" } as const;
   const user = { id: 3, role: "user" } as const;

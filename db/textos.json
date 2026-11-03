@@ -60,6 +60,8 @@
   },
 
   "menu": {
+    "principal": { "es": "Principal", "en": "Home" },
+    "perfil": { "es": "Mi Perfil", "en": "My profile" },
     "programas": { "es": "Programas", "en": "Programs" },
     "metodo": { "es": "Método", "en": "Method" },
     "resultados": { "es": "Resultados", "en": "Results" },

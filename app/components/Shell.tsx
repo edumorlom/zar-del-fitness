@@ -26,7 +26,7 @@ export const initials = (name: string) =>
 export function Shell({ viewer, children }: { viewer: Viewer; children: React.ReactNode }) {
   return (
     <>
-      <SiteHeader login={{ label: viewer.role === "user" ? "Mi progreso" : "Socios", href: "/" }} />
+      <SiteHeader login={{ label: viewer.role === "user" ? "Mi progreso" : "Clientes", href: "/" }} />
       <main id="main" className="container portal">
         <div className="portal-bar">
           <span className="eyebrow">

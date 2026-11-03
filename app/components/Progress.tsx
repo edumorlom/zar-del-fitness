@@ -1,5 +1,5 @@
 import { deleteCheckin } from "~/app/actions";
-import type { Checkin, Member } from "~/lib/data";
+import type { Checkin, Client } from "~/lib/data";
 import { dateOf, days, daysUntil, longDate, monthYear, num, shortDate, timeOf, todayISO } from "~/lib/format";
 import { Form } from "./Form";
 import { initials } from "./Shell";
@@ -71,12 +71,12 @@ function pass(expires: string | null) {
   return { fact: `${n < 0 ? "Venció" : "Vence"} el ${shortDate(expires).slice(0, 5)}`, note, warn: n <= 3 };
 }
 
-/** El saludo, los datos del plan y el coach. `you`: lo ve el propio socio (le habla de vos). */
-export function Hero({ member, checkins, you }: { member: Member; checkins: Checkin[]; you: boolean }) {
-  const [firstName, ...rest] = member.name.split(/\s+/);
+/** El saludo, los datos del plan y el coach. `you`: lo ve el propio cliente (le habla de vos). */
+export function Hero({ client, checkins, you }: { client: Client; checkins: Checkin[]; you: boolean }) {
+  const [firstName, ...rest] = client.name.split(/\s+/);
   const w = win(checkins, you);
-  const control = nextControl(member.next_control_at, you);
-  const p = pass(member.pass_expires);
+  const control = nextControl(client.next_control_at, you);
+  const p = pass(client.pass_expires);
 
   return (
     <div className="hero-grid">
@@ -95,9 +95,9 @@ export function Hero({ member, checkins, you }: { member: Member; checkins: Chec
           </span>
         </h1>
         <div className="meta intro">
-          {member.plan && <span className="pill">★ {member.plan}</span>}
+          {client.plan && <span className="pill">★ {client.plan}</span>}
           <span>
-            {you ? "Entrenando con nosotros" : `${member.email} · socio`} desde {monthYear(member.member_since)}
+            {you ? "Entrenando con nosotros" : `${client.email} · cliente`} desde {monthYear(client.client_since)}
           </span>
         </div>
 
@@ -118,7 +118,7 @@ export function Hero({ member, checkins, you }: { member: Member; checkins: Chec
         <dl className="facts intro">
           <div>
             <dt className="label">{you ? "Tu objetivo" : "Objetivo"}</dt>
-            <dd className="fact">{member.goal ?? (you ? "Lo definís con tu coach" : "Sin definir")}</dd>
+            <dd className="fact">{client.goal ?? (you ? "Lo definís con tu coach" : "Sin definir")}</dd>
           </div>
           <div>
             <dt className="label">{you ? "Tu próximo control" : "Próximo control"}</dt>
@@ -136,14 +136,14 @@ export function Hero({ member, checkins, you }: { member: Member; checkins: Chec
       </div>
 
       <aside className="card coach intro">
-        {member.coach_name ? (
+        {client.coach_name ? (
           <>
             <div className="coach__img">
-              {member.coach_photo ? (
-                <img src={member.coach_photo} alt={member.coach_name} />
+              {client.coach_photo ? (
+                <img src={client.coach_photo} alt={client.coach_name} />
               ) : (
                 <span className="coach__mono" aria-hidden="true">
-                  {initials(member.coach_name)}
+                  {initials(client.coach_name)}
                 </span>
               )}
             </div>
@@ -151,10 +151,10 @@ export function Hero({ member, checkins, you }: { member: Member; checkins: Chec
               <p className="eyebrow">
                 <span className="num">{you ? "Tu coach" : "Coach"}</span>
               </p>
-              <p className="coach__name">{member.coach_name}</p>
+              <p className="coach__name">{client.coach_name}</p>
               <p className="muted">Personal trainer · Zar del Fitness</p>
-              {member.coach_phone && (
-                <a className="btn btn--ghost btn--sm" href={`https://wa.me/${member.coach_phone.replace(/\D/g, "")}`} target="_blank" rel="noopener">
+              {client.coach_phone && (
+                <a className="btn btn--ghost btn--sm" href={`https://wa.me/${client.coach_phone.replace(/\D/g, "")}`} target="_blank" rel="noopener">
                   <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
                     <use href="#i-wa" />
                   </svg>

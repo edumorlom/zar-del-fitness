@@ -214,6 +214,9 @@ function build(lang: Lang) {
     waPresencial: wa(t.whatsapp.presencial),
     waDudas: wa(t.whatsapp.dudas),
     login: "https://zardelfitness.sumar.dev/",
+    // shortcut: la dirección de Railway del portal (app/) mientras mi.zardelfitness.com.ar no resuelve; cambiarla
+    // por https://mi.zardelfitness.com.ar/ cuando el DNS del dominio esté en FreeDNS.
+    portal: "https://portal-production-9b46.up.railway.app/",
   };
 
   const contact = {
@@ -224,13 +227,11 @@ function build(lang: Lang) {
     gym: `${gimnasio.gimnasio} · ${t.general.gimnasioExclusivo}`,
   };
 
-  // Con el inicio adelante ("/#programas") para que también funcionen desde las otras páginas.
+  // Con el inicio adelante ("/#faq") para que también funcionen desde las otras páginas. El mismo menú lo usa el
+  // portal de socios (app/components/SiteHeader.tsx).
   const nav = [
-    { href: `${home}#programas`, label: t.menu.programas },
-    { href: `${home}#metodo`, label: t.menu.metodo },
-    { href: `${home}#resultados`, label: t.menu.resultados },
-    { href: `${home}#zar`, label: t.menu.zar },
-    { href: `${home}#gym`, label: t.menu.gym },
+    { href: `${home}#top`, label: t.menu.principal },
+    { href: links.portal, label: t.menu.perfil },
     { href: `${home}#faq`, label: t.menu.faq },
     { href: pages.blog, label: t.menu.blog },
     { href: pages.podcasts, label: t.menu.podcasts },

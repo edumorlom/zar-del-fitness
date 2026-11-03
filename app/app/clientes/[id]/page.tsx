@@ -3,31 +3,31 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { addCheckin } from "~/app/actions";
 import { Form } from "~/components/Form";
-import { MemberForm } from "~/components/MemberForm";
+import { ClientForm } from "~/components/ClientForm";
 import { Hero, Results, Title } from "~/components/Progress";
 import { Shell } from "~/components/Shell";
 import { canManage } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
-import { getCheckins, getCoaches, getMember } from "~/lib/data";
+import { getCheckins, getCoaches, getClient } from "~/lib/data";
 import { todayISO } from "~/lib/format";
 
-export const metadata: Metadata = { title: "Socio" };
+export const metadata: Metadata = { title: "Cliente" };
 
-export default async function MemberPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ClientPage({ params }: { params: Promise<{ id: string }> }) {
   const viewer = await requireViewer();
   const id = Number((await params).id);
   if (!Number.isInteger(id)) notFound();
-  const member = await getMember(id);
-  // Un socio que no es suyo es, para el coach, un socio que no existe.
-  if (!member || !canManage(viewer, member)) notFound();
+  const client = await getClient(id);
+  // Un cliente que no es suyo es, para el coach, un cliente que no existe.
+  if (!client || !canManage(viewer, client)) notFound();
   const [checkins, coaches] = await Promise.all([getCheckins(id), viewer.role === "admin" ? getCoaches() : []]);
 
   return (
     <Shell viewer={viewer}>
-      <Link className="back" href="/socios">
-        ← Socios
+      <Link className="back" href="/clientes">
+        ← Clientes
       </Link>
-      <Hero member={member} checkins={checkins} you={false} />
+      <Hero client={client} checkins={checkins} you={false} />
 
       <section>
         <div className="block__head">
@@ -39,7 +39,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
         <Form action={addCheckin} submit="Guardar control" reset className="card form" key={checkins.length}>
-          <input type="hidden" name="member_id" value={member.id} />
+          <input type="hidden" name="client_id" value={client.id} />
           <div className="fields fields--3">
             <label className="field">
               <span className="field__label">Fecha</span>
@@ -66,10 +66,10 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
             <p className="eyebrow">
               <span className="num">{checkins.length ? "04" : "03"}</span> {viewer.role === "admin" ? "Cuenta" : "Plan"}
             </p>
-            <Title plain="Datos del" accent="socio" />
+            <Title plain="Datos del" accent="cliente" />
           </div>
         </div>
-        <MemberForm viewer={viewer} member={member} coaches={coaches} />
+        <ClientForm viewer={viewer} client={client} coaches={coaches} />
       </section>
     </Shell>
   );
