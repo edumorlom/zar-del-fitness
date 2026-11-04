@@ -1,15 +1,21 @@
-name: Despliegue del sitio por FTP
+name: Despliegue del sitio y del portal
 
-# El sitio vive en site/. Next.js exporta el sitio estático en site/out/
-# (output: "export"), junto con public/ (incluido el .htaccess). Node sólo se
-# usa durante el build.
+# El sitio y el portal son un solo proyecto de Next.js, en site/, con dos builds
+# (ver site/next.config.ts):
+# - el sitio: Next.js lo exporta estático en site/out/ (output: "export"), junto
+#   con public/ (incluido el .htaccess), y se sube por FTP a cPanel y a Railway
+#   (servicio "site"). Node sólo se usa durante el build.
+# - el portal (mi.zardelfitness.com.ar): el servidor de Next.js, en
+#   site/.next-portal/standalone/, que se sube a Railway (servicio del portal).
+# Los dos se construyen acá, antes de subir nada: si uno no compila, no se sube
+# ninguno.
 #
 # Las credenciales viven en GitHub → Settings → Secrets and variables →
 # Actions, nunca en este archivo.
 on:
   push:
     branches: [ main ]
-    # Sólo cuando cambia el sitio, sus datos (db/) o este workflow.
+    # Sólo cuando cambia el proyecto (el sitio y el portal), sus datos (db/) o este workflow.
     paths:
       - "site/**"
       - "db/**"
@@ -25,8 +31,14 @@ jobs:
     # y la acción de FTP falla con "Input required and not supplied".
     environment: "CPanel Variables"
     env:
-      # Token del proyecto de Railway (Project Settings → Tokens, entorno production). Sin él, el paso de Railway no corre.
+      # Token del proyecto de Railway (Project Settings → Tokens, entorno production). Sin él, los pasos de Railway no corren.
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      # La clave pública de Clerk (pk_live_…) va en el código del navegador del portal: hace falta al construirlo, no
+      # sólo al correrlo. Es pública: puede ser una variable (vars) o un secret. Las demás (CLERK_SECRET_KEY,
+      # DATABASE_URL, el bucket) viven sólo en las variables del servicio del portal en Railway.
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      # El nombre del servicio del portal en Railway, si no es "portal".
+      RAILWAY_PORTAL_SERVICE: ${{ vars.RAILWAY_PORTAL_SERVICE || 'portal' }}
     defaults:
       run:
         working-directory: site
@@ -48,7 +60,8 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
-      - name: Verificar y construir el sitio
+      - name: Verificar y construir el sitio y el portal
+        # Lint, las pruebas del portal, el build del sitio (out/) y el del portal (.next-portal/standalone/).
         run: npm run check
 
       - name: Guardar el sitemap publicado
@@ -82,3 +95,15 @@ jobs:
 
       - name: Avisar a Bing (IndexNow)
         run: node scripts/indexnow.mjs ../sitemap-anterior.xml
+
+      - name: Subir el portal a Railway
+        # Igual que el sitio: el build de arriba, armado fuera del repo (scripts/portal-bundle.sh) con
+        # deploy/portal.Dockerfile, y subido con `railway up`. Railway no construye nada: sólo arma la imagen.
+        if: env.RAILWAY_TOKEN != ''
+        run: |
+          if [ -z "$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" ]; then
+            echo "::error::Falta NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY (Settings → Secrets and variables → Actions): sin ella el portal no deja entrar."
+            exit 1
+          fi
+          scripts/portal-bundle.sh "$RUNNER_TEMP/portal"
+          npx -y @railway/cli@5.71.0 up "$RUNNER_TEMP/portal" --path-as-root --no-gitignore --service "$RAILWAY_PORTAL_SERVICE" --ci

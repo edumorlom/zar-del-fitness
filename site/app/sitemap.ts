@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { posts, translationOf, type Post } from "@/lib/blog";
-import { content } from "@/lib/content";
+import { content, portalLogin } from "@/lib/content";
 import { lastCommit } from "@/lib/git";
 import { LANGS, otherLang } from "@/lib/i18n";
 import { episodes, findEpisode } from "@/lib/podcasts";
@@ -20,9 +20,13 @@ const postUpdated = (p: Post) => {
 const latest = (dates: string[]) => dates.reduce((a, b) => (new Date(b) > new Date(a) ? b : a));
 // Los podcasts y sus episodios cambian cuando cambia db/podcasts.json; sin commit todavía, la fecha del último episodio.
 const podcastsUpdated = lastCommit("../db/podcasts.json") ?? episodes.es[0]?.date;
+// El ingreso al portal (mi.zardelfitness.com.ar, el build del portal de este mismo proyecto): cambia con su página y
+// los componentes del portal.
+const portalUpdated = lastCommit("app/(portal)/ingresar", "portal/components");
 
 // Todas las páginas del sitio, en los dos idiomas, para Google. Cada una dice cuál es su versión en el otro idioma
-// (como los links hreflang de la página). Una página nueva tiene que agregarse acá.
+// (como los links hreflang de la página). Una página nueva tiene que agregarse acá. Al final, el ingreso al portal: un
+// sitemap puede nombrar páginas de otro dominio porque el robots.txt del portal nombra este (app/robots.portal.ts).
 export default function sitemap(): MetadataRoute.Sitemap {
   const page = (path: string, priority: number, alternates?: Alternates, images: string[] = []) => ({
     url: abs(path),
@@ -39,7 +43,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const blog = { es: es.blog, en: en.blog };
   const podcasts = { es: es.podcasts, en: en.podcasts };
 
-  return LANGS.flatMap((lang) => {
+  const site = LANGS.flatMap((lang) => {
     const updated = posts[lang].map(postUpdated);
     return [
       {
@@ -75,4 +79,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       })),
     ];
   });
+
+  return [...site, { url: portalLogin, lastModified: portalUpdated, changeFrequency: "monthly" as const, priority: 0.5 }];
 }
