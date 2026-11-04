@@ -36,6 +36,8 @@ jobs:
         working-directory: site
     steps:
       - name: Revisar las credenciales
+        # Corre antes del checkout: site/ todavía no existe.
+        working-directory: .
         run: |
           [ -n "$RAILWAY_TOKEN" ] || { echo "::error::Falta el secret RAILWAY_TOKEN."; exit 1; }
           [ -n "$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" ] || { echo "::error::Falta NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: sin ella el portal no deja entrar."; exit 1; }
