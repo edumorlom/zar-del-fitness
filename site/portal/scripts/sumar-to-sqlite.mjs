@@ -3,7 +3,7 @@
 //
 //   node portal/scripts/sumar-to-sqlite.mjs sumar-export.json alumnos.sqlite [sumar-archivos.json]
 //
-// sumar-export.json: { activos, bajas, asignaciones, coaches, detalle: { [id]: { alumno, evaluaciones } } }, armado desde
+// sumar-export.json: { activos, bajas, asignaciones, coaches, detalle: { [id]: { alumno, evaluaciones } }, turnos }, armado desde
 // el portal anterior (las evaluaciones salen de la página de cada alumno). Los datos no van en el repo: son de salud.
 // sumar-archivos.json (opcional): { dietas: { [id de evaluación]: { plan } } }; los archivos que trae van al bucket aparte.
 import { readFileSync, rmSync } from "node:fs";
@@ -107,6 +107,20 @@ create table diets (
   dinner text,
   supplements text
 );
+-- Los turnos de la agenda. Sin el índice único por horario de Postgres: el portal anterior dejaba dos alumnos en el
+-- mismo turno, y qué hacer con eso se decide al subir.
+create table appointments (
+  id integer primary key,
+  client_id integer not null references users(id) on delete cascade,
+  starts_at text not null,
+  ends_at text not null,
+  status text not null default 'requested' check (status in ('requested', 'confirmed', 'cancelled', 'rejected')),
+  requested_at text,
+  google_event_id text,
+  created_by integer references users(id) on delete set null,
+  decided_by integer references users(id) on delete set null,
+  created_at text not null default current_timestamp
+);
 `);
 
 // Un coach que también figura como alumno (mismo correo) queda en una sola fila: sigue de coach, con la ficha de alumno.
@@ -204,6 +218,23 @@ for (const b of X.bajas) {
     external_id: b.id,
   });
 }
+
+// La agenda: fecha y hora de Argentina (UTC−3, sin horario de verano); cada turno dura SLOT_MINUTES (lib/slots.ts).
+const SLOT_MS = 30 * 60_000;
+const STATUS = { pendiente: "requested", confirmado: "confirmed", cancelado: "cancelled", rechazado: "rejected" };
+const at = (fecha, hora) => new Date(`${fecha}T${hora}:00-03:00`);
+const addAppointment = db.prepare(
+  `insert into appointments (client_id, starts_at, ends_at, status, requested_at, created_at)
+   values ((select id from users where external_id = ?), ?, ?, ?, ?, ?)`
+);
+for (const t of X.turnos ?? []) {
+  if (!STATUS[t.estado]) throw new Error(`Estado de turno desconocido: ${t.estado}`);
+  const start = at(t.fecha, t.hora);
+  addAppointment.run(
+    t.alumnoId, start.toISOString(), new Date(start.getTime() + SLOT_MS).toISOString(), STATUS[t.estado],
+    t.pedido ? at(t.pedido.fecha, t.pedido.hora).toISOString() : null, t.creadoEn
+  );
+}
 db.exec("commit");
 
 // Control: cada persona y cada evaluación de la exportación quedó una vez, y las referencias cierran.
@@ -215,9 +246,10 @@ const evals = X.activos.reduce((n, { id }) => n + (X.detalle[id].evaluaciones?.l
 if (count("select count(*) n from users") !== expected) throw new Error("No cierran las personas");
 if (checkins !== evals || count("select count(*) n from checkins") !== evals) throw new Error("No cierran las evaluaciones");
 if (dietCount !== Object.keys(diets).length) throw new Error("Hay dietas de evaluaciones que no vinieron");
+if (count("select count(*) n from appointments") !== (X.turnos?.length ?? 0)) throw new Error("No cierran los turnos");
 if (db.prepare("pragma foreign_key_check").all().length) throw new Error("Hay referencias rotas");
 
 console.log(
   `${outPath}: coaches ${X.coaches.length} · alumnos activos ${X.activos.length} · dados de baja ${X.bajas.length} · ` +
-    `evaluaciones ${evals} · dietas ${dietCount} · sin correo ${count("select count(*) n from users where email is null")}`
+    `evaluaciones ${evals} · dietas ${dietCount} · turnos ${X.turnos?.length ?? 0} · sin correo ${count("select count(*) n from users where email is null")}`
 );

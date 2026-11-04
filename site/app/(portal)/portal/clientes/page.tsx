@@ -111,9 +111,13 @@ export default async function ClientsPage({
                   <tr key={r.id}>
                     <td data-label="Cliente">
                       <Link className="person" href={`/clientes/${r.id}`}>
-                        <span className="avatar avatar--sm" aria-hidden="true">
-                          {initials(r.name)}
-                        </span>
+                        {r.photo_url ? (
+                          <img className="person__img" src={r.photo_url} alt="" />
+                        ) : (
+                          <span className="avatar avatar--sm" aria-hidden="true">
+                            {initials(r.name)}
+                          </span>
+                        )}
                         <span>
                           <span className="strong">{r.name}</span>
                           {r.plan === "Premium" && <span className="tag-star" title="Premium"> ★</span>}

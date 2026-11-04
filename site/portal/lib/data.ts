@@ -84,6 +84,7 @@ export type ClientRow = {
   id: number;
   name: string;
   email: string | null;
+  photo_url: string | null;
   dni: string | null;
   role: Role;
   plan: string | null;
@@ -115,7 +116,7 @@ export type ClientFilters = { q?: string; coach?: number | null; plan?: string; 
 export async function listClients(viewer: { id: number; role: Role }, f: ClientFilters = {}) {
   const coach = viewer.role === "admin" ? (f.coach ?? null) : viewer.id;
   const { rows } = await db.query<ClientRow>(
-    `select u.id, u.name, u.email, u.dni, u.role, u.plan, u.sex, u.birth_year, u.height_cm, u.body_type, u.conditions,
+    `select u.id, u.name, u.email, u.photo_url, u.dni, u.role, u.plan, u.sex, u.birth_year, u.height_cm, u.body_type, u.conditions,
             u.active, u.pass_expires, u.client_since, u.coach_id, c.name as coach_name, c.photo_url as coach_photo,
             coalesce(l.date, u.legacy_last_checkin) as last_date,
             coalesce(l.weight_kg, u.legacy_last_weight) as last_weight,
