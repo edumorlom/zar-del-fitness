@@ -10,3 +10,6 @@ cp -R .next/standalone "$out/app"
 mkdir -p "$out/app/site/.next/static" "$out/app/site/public"
 cp -R .next/static/. "$out/app/site/.next/static/"
 cp -R public/. "$out/app/site/public/"
+# `railway up` no sube ninguna carpeta node_modules, ni con --no-gitignore (railwayapp/cli, src/controllers/upload.rs):
+# el servidor va en un solo .tar, que el Dockerfile abre con ADD.
+tar -C "$out/app" -cf "$out/app.tar" . && rm -rf "$out/app"
