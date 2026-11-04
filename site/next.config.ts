@@ -2,50 +2,58 @@ import path from "node:path";
 import type { NextConfig } from "next";
 import { deviceSizes, imageSizes } from "./lib/image-variants.mjs";
 
-// Un solo proyecto, dos builds:
-// - el sitio (`npm run build`): páginas estáticas en out/, para cPanel (Apache) y Railway (Caddy). Sin servidor.
-// - el portal (`npm run build:portal`, PORTAL=1): mi.zardelfitness.com.ar, con servidor (Clerk, Postgres, formularios)
-//   en .next-portal/standalone/, para Railway.
-// Cada build toma sus propios archivos de Next.js (page, layout, route, proxy, instrumentation) por su extensión
-// (pageExtensions): los del sitio son page.tsx, los del portal page.portal.tsx (en app/(portal)/). El resto (componentes,
-// lib/, estilos, db/) es uno solo y lo usan los dos.
-const portal = process.env.PORTAL === "1";
-
-// Los precios, planes, horarios y textos están en db/, en la raíz del repo: sin esto, Turbopack no lee archivos fuera
-// de site/.
+// Un solo build para el sitio (zardelfitness.com.ar) y el portal (mi.zardelfitness.com.ar), servido por un solo
+// servidor de Next.js en Railway (deploy/Dockerfile). Las páginas del sitio se generan estáticas en el build; las del
+// portal, en cada pedido. Qué dominio ve qué páginas lo decide proxy.ts.
 const root = path.join(__dirname, "..");
 
-const site: NextConfig = {
-  // Static export to `out/` for plain hosting (cPanel/Apache)
-  output: "export",
-  // Sólo page.tsx, layout.tsx…: page.portal.tsx no es una página para este build (y el portal no se puede exportar).
-  pageExtensions: ["tsx", "ts"],
-  trailingSlash: true,
-  // Sin servidor que achique las fotos: las copias en WebP de cada ancho las hace scripts/copy-images.mjs en el build,
-  // y lib/image-loader.ts las pone en el srcset.
-  images: { loader: "custom", loaderFile: "./lib/image-loader.ts", deviceSizes, imageSizes },
-  turbopack: { root },
-  // cacheComponents / partialPrefetching (PPR) are not allowed with `output: "export"`
-  // Dos layouts raíz (app/(es) y app/(en), uno por idioma): la 404 va aparte, en app/global-not-found.tsx.
-  // experimental.inlineCss no conviene: Next.js pone el CSS dos veces en el HTML (en <style> y en los datos de React),
-  // la página pesa el doble comprimida y Lighthouse dio peor primera pintada (1,7 s contra 1,5 s) el 2026-10-12.
-  experimental: { globalNotFound: true },
-};
-
-const portalConfig: NextConfig = {
-  // El servidor con sólo lo que usa (server.js y sus node_modules), para la imagen de deploy/portal.Dockerfile.
+const nextConfig: NextConfig = {
+  // El servidor con sólo lo que usa (server.js y sus node_modules), en .next/standalone/, para deploy/Dockerfile.
   output: "standalone",
-  // Aparte de .next/, para que un build no pise al otro.
-  distDir: ".next-portal",
-  // Sólo page.portal.tsx, layout.portal.tsx…: las páginas del sitio no son parte del portal.
-  pageExtensions: ["portal.tsx", "portal.ts"],
+  // Las URLs del sitio terminan en "/" (/blog/), como las tenía WordPress: así las conoce Google.
+  trailingSlash: true,
+  // …pero la redirección a la URL con "/" la hace proxy.ts, sólo en el sitio: las del portal (/clientes, /ingresar y
+  // los pasos de Clerk) no la llevan.
+  skipTrailingSlashRedirect: true,
+  // Las copias en WebP de cada ancho las hace scripts/copy-images.mjs en el build, y lib/image-loader.ts las pone en
+  // el srcset: sin el optimizador de imágenes de Next.js.
+  images: { loader: "custom", loaderFile: "./lib/image-loader.ts", deviceSizes, imageSizes },
+  // Los precios, planes, horarios y textos están en db/, en la raíz del repo: sin esto, Turbopack no lee archivos fuera
+  // de site/.
   turbopack: { root },
   outputFileTracingRoot: root,
+  // lib/blog.ts lee db/blog/ con fs (para las notas que no se generaron en el build): Next.js copia todo el proyecto al
+  // servidor por las dudas. sharp sólo lo usa scripts/copy-images.mjs en el build, no el servidor.
+  outputFileTracingExcludes: { "*": ["node_modules/sharp/**", "node_modules/@img/**", "site/public/**"] },
   poweredByHeader: false,
-  // El único <Image> es el logo del menú (components/Header.tsx), ya chico: sin el optimizador de imágenes.
-  images: { unoptimized: true },
-  // La ficha del cliente sube su foto (hasta PHOTO_MAX_MB de portal/lib/storage.ts) con el resto del formulario.
-  experimental: { serverActions: { bodySizeLimit: "6mb" } },
+  // En desarrollo, el portal es http://mi.localhost:3000.
+  allowedDevOrigins: ["mi.localhost"],
+  // Tres layouts raíz (app/(es), app/(en) y app/(portal)): la 404 va aparte, en app/global-not-found.tsx.
+  // experimental.inlineCss no conviene: Next.js pone el CSS dos veces en el HTML (en <style> y en los datos de React),
+  // la página pesa el doble comprimida y Lighthouse dio peor primera pintada (1,7 s contra 1,5 s) el 2026-10-12.
+  experimental: {
+    globalNotFound: true,
+    // La ficha del cliente sube su foto (hasta PHOTO_MAX_MB de portal/lib/storage.ts) con el resto del formulario.
+    serverActions: { bodySizeLimit: "6mb" },
+  },
+  // Los mismos encabezados de seguridad que tenía el .htaccess. HSTS sin includeSubDomains. Permissions-Policy no toca
+  // fullscreen ni autoplay: los necesitan los videos de YouTube.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "Strict-Transport-Security", value: "max-age=31536000" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()" },
+        ],
+      },
+      // Las fotos (public/img/) cambian poco: una semana, como en cPanel. Los .js y .css ya llevan un año (con hash).
+      { source: "/img/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=604800" }] },
+    ];
+  },
 };
 
-export default portal ? portalConfig : site;
+export default nextConfig;

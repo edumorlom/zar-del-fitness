@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 // El ícono para la pantalla de inicio del iPhone (no acepta SVG): el mismo dibujo que app/icon.svg.
-// Se exporta sin extensión (out/apple-icon): el .htaccess lo sirve como image/png.
+// Sin extensión (/apple-icon): Next.js lo sirve como image/png.
 export const dynamic = "force-static";
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";

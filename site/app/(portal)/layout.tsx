@@ -21,8 +21,8 @@ export const metadata: Metadata = {
   title: { default: "Mi progreso | Zar del Fitness", template: "%s | Zar del Fitness" },
   // Privado: que los buscadores no lo indexen. Sólo /ingresar, la entrada, se indexa (y está en el sitemap del sitio).
   robots: { index: false, follow: false },
-  // Los mismos íconos que el sitio. app/favicon.ico ya lo agrega Next.js (es parte de los dos builds); icon.svg,
-  // icon1.png y apple-icon.tsx (que es sólo del build del sitio) se sirven desde el sitio.
+  // Los mismos íconos que el sitio. app/favicon.ico ya lo agrega Next.js; icon.svg, icon1.png y apple-icon.tsx son
+  // del layout del sitio, y se sirven desde ahí.
   icons: {
     icon: [
       { url: `${siteUrl}/icon.svg`, sizes: "any", type: "image/svg+xml" },

@@ -1,7 +1,7 @@
 // Las imágenes para compartir (WhatsApp, Instagram, Facebook, X, Google Discover): una por página, generadas
 // en el build con las tipografías del sitio. Cada página tiene su opengraph-image.tsx que llama a ogImage().
 // Salen en JPEG porque WhatsApp no muestra la vista previa si la imagen pesa más de ~300 KB (en PNG, con la
-// foto, pesan casi 1 MB). Se exportan sin extensión (out/…/opengraph-image): el .htaccess las sirve como JPEG.
+// foto, pesan casi 1 MB). Van sin extensión (…/opengraph-image): Next.js las sirve como JPEG.
 // Las notas del blog van sin la foto de Ronald; los episodios del podcast usan la miniatura de su video.
 
 import { readFile } from "node:fs/promises";
