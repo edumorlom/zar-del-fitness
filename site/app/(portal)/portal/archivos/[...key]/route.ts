@@ -4,7 +4,8 @@ import { db } from "~/lib/db";
 import { bucketFromEnv, FILE_KEY, signedUrl } from "~/lib/storage";
 
 // Un archivo del bucket (/archivos/alumnos/<id del portal anterior>/foto.jpg): si quien pide puede verlo, lo manda al
-// enlace firmado. La foto la ve el cliente y todo el equipo; el certificado, el cliente y quien lo maneja.
+// enlace firmado. La foto de un cliente la ve él y todo el equipo; la de alguien del equipo, cualquiera con cuenta (el
+// cliente ve la de su coach). El certificado, el cliente y quien lo maneja.
 export async function GET(_req: Request, { params }: { params: Promise<{ key: string[] }> }) {
   const key = (await params).key.join("/");
   const match = FILE_KEY.exec(key);
@@ -17,7 +18,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ key: st
   );
   const owner = rows[0];
   const allowed =
-    owner && (viewer.id === owner.id || (match[2] === "foto" ? viewer.role !== "user" : canManage(viewer, owner)));
+    owner && (viewer.id === owner.id || (match[2] === "foto" ? viewer.role !== "user" || owner.role !== "user" : canManage(viewer, owner)));
   // Lo que no puede ver es, para él, un archivo que no existe.
   if (!allowed) return new Response("No encontrado", { status: 404 });
 
