@@ -23,8 +23,8 @@ const nextConfig: NextConfig = {
   turbopack: { root },
   outputFileTracingRoot: root,
   // lib/blog.ts lee db/blog/ con fs (para las notas que no se generaron en el build): Next.js copia todo el proyecto al
-  // servidor por las dudas. sharp sólo lo usa scripts/copy-images.mjs en el build, no el servidor.
-  outputFileTracingExcludes: { "*": ["node_modules/sharp/**", "node_modules/@img/**", "site/public/**"] },
+  // servidor por las dudas. sharp sí va: lib/og.tsx lo usa y las imágenes para compartir se pueden generar en un pedido.
+  outputFileTracingExcludes: { "*": ["site/public/**"] },
   poweredByHeader: false,
   // En desarrollo, el portal es http://mi.localhost:3000.
   allowedDevOrigins: ["mi.localhost"],
