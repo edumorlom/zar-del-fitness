@@ -6,6 +6,7 @@ import { esUY } from "@clerk/localizations";
 import { ui } from "@clerk/ui";
 import type { Metadata, Viewport } from "next";
 import { Anton, Instrument_Serif, Manrope } from "next/font/google";
+import Script from "next/script";
 import { IconSprite } from "@/components/Icon";
 import { portalUrl, siteUrl } from "@/lib/content";
 import { Cursor } from "@/components/motion/Cursor";
@@ -99,6 +100,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Cursor />
           {children}
         </ClerkProvider>
+        {/* El chat de digui.ai, en todas las páginas del portal (no en las del sitio). */}
+        <Script src="https://digui.ai/chat.js" data-receptionist="zardelfitness-com-ar-a6ee069f50c6145f" strategy="afterInteractive" />
       </body>
     </html>
   );
