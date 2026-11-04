@@ -1,13 +1,20 @@
-# Zar del Fitness — sitio
+# Zar del Fitness — sitio y portal
 
 Rediseño de [zardelfitness.com.ar](https://zardelfitness.com.ar/) con Next.js 16 (App Router), GSAP + ScrollTrigger y Lenis.
 Mantiene la paleta original: negro `#000 / #131313 / #1B1B1B`, dorado `#988858 / #A7892F / #D6A61D`, plata `#DCDCDC`.
 
+En el mismo proyecto está el portal de los clientes, [mi.zardelfitness.com.ar](https://mi.zardelfitness.com.ar/) (ver
+[Portal](#portal)): una sola instalación de Next.js (`package.json`, `node_modules`, `next.config.ts`) con dos builds.
+
 ```bash
 npm install
-npm run dev      # http://localhost:3000
-npm run build    # build de producción (página 100% estática)
+npm run dev            # el sitio, en http://localhost:3000
+npm run dev:portal     # el portal, en http://localhost:3001 (con .env.local: ver Portal)
+npm run build          # build del sitio (página 100% estática, en out/)
+npm run build:portal   # build del portal (servidor, en .next-portal/standalone/)
 npm run lint
+npm test               # pruebas del portal
+npm run check          # todo lo anterior, como en el despliegue
 ```
 
 ## Dónde editar
@@ -75,6 +82,37 @@ y bajan a la sección (ver `components/RootShell.tsx` y `components/motion/Motio
   reaccionan a la velocidad del scroll, sección "Cómo funciona" fijada con scroll horizontal y contador de días,
   galería de transformaciones con lightbox, lista de prensa con preview que sigue al cursor.
 - Respeta `prefers-reduced-motion`: sin scroll suave, contenido visible de inmediato.
+
+## Portal
+
+El portal de los clientes y del equipo (progreso, evaluaciones, turnos, fichas), en
+[mi.zardelfitness.com.ar](https://mi.zardelfitness.com.ar/). Necesita servidor (Clerk para el ingreso, Postgres, un
+bucket para las fotos), así que no se puede exportar como el sitio: es otro build del mismo proyecto.
+
+- `next.config.ts` elige el build con `PORTAL=1` (`npm run build:portal`). Cada uno toma sus archivos de Next.js por
+  la extensión (`pageExtensions`): los del sitio son `page.tsx`, `layout.tsx`, `route.ts`…; los del portal,
+  `page.portal.tsx`, `layout.portal.tsx`, `route.portal.ts`, `proxy.portal.ts` (Clerk) e `instrumentation.portal.ts`
+  (crea las tablas al arrancar). Un archivo nuevo del portal tiene que terminar en `.portal.tsx` o `.portal.ts`: si no,
+  es del sitio.
+- Las páginas del portal están en `app/(portal)/`, con su layout raíz; sus componentes, `lib/`, los formularios
+  (`actions.ts`, `agenda-actions.ts`) y los scripts de importación, en `portal/`, importados con `~/`. Usa los estilos,
+  el menú, las animaciones y los datos del sitio (`@/`, `@db/`).
+- Las variables (`.env.local` para `npm run dev:portal`; en producción, las del servicio del portal en Railway):
+  `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `DATABASE_URL`, `ADMIN_EMAIL` (el primer admin) y las del
+  bucket (`BUCKET_ENDPOINT`, `BUCKET_NAME`, `BUCKET_ACCESS_KEY_ID`, `BUCKET_SECRET_ACCESS_KEY`).
+- Sólo `/ingresar` se indexa, y está en el `sitemap.xml` del sitio (`app/sitemap.ts`); el `robots.txt` del portal
+  (`app/robots.portal.ts`) nombra ese sitemap, que es lo que le permite nombrar una página de otro dominio.
+
+## Despliegue
+
+`.github/workflows/ftp-deploy.yml`, en cada push a `main` que cambie `site/` o `db/`: `npm run check` (lint, pruebas y
+los dos builds; si uno falla, no se sube nada), y después:
+
+1. el sitio (`out/`) a cPanel por FTP y a Railway (servicio `site`, Caddy: `deploy/Dockerfile` y `deploy/Caddyfile`);
+2. el aviso a Bing de las páginas que cambiaron (`scripts/indexnow.mjs`);
+3. el portal a Railway (servicio `portal`, o el de la variable `RAILWAY_PORTAL_SERVICE`): `scripts/portal-bundle.sh`
+   arma el servidor con `deploy/portal.Dockerfile` y se sube con `railway up`, como el sitio. Railway no construye:
+   la clave pública de Clerk tiene que estar en GitHub (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, variable o secret).
 
 ## Pendientes
 

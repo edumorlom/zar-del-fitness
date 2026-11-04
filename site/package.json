@@ -1,32 +1,39 @@
 {
-  "name": "zar-del-fitness-site",
+  "name": "zar-del-fitness",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "images": "node scripts/copy-images.mjs",
     "predev": "npm run images",
     "dev": "next dev",
+    "dev:portal": "npm run images && PORTAL=1 next dev --port 3001",
     "prebuild": "npm run images",
     "build": "next build",
-    "start": "next start",
+    "build:portal": "npm run images && PORTAL=1 next build",
     "lint": "eslint",
-    "check": "npm run lint && npm run build"
+    "test": "node --test portal/lib/*.test.ts",
+    "check": "npm run lint && npm test && npm run build && npm run build:portal"
   },
   "dependencies": {
+    "@clerk/localizations": "4.24.0",
+    "@clerk/nextjs": "7.9.17",
+    "@clerk/ui": "1.41.0",
     "@gsap/react": "^2.1.2",
     "gsap": "^3.15.0",
     "lenis": "^1.3.26",
     "marked": "^18.0.14",
-    "next": "16.4.0",
+    "next": "16.4.3",
+    "pg": "8.23.1",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/pg": "8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.4.0",
+    "eslint-config-next": "16.4.3",
     "sharp": "^0.35.5",
     "typescript": "^5"
   }

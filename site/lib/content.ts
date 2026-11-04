@@ -30,6 +30,10 @@ const mapsQuery = encodeURIComponent(`${calle}, ${barrio}, Buenos Aires`);
 
 // "https://zardelfitness.com.ar", de db/gimnasio.json.
 export const siteUrl = `https://${gimnasio.sitioWeb}`;
+/** El portal de los clientes (app/(portal)/, portal/): mismo proyecto, otro build y otro dominio. */
+export const portalUrl = `https://mi.${gimnasio.sitioWeb}`;
+/** El ingreso al portal: la única página suya que se indexa y que está en el sitemap del sitio (app/sitemap.ts). */
+export const portalLogin = `${portalUrl}/ingresar`;
 
 // Los datos del negocio para Google (datos estructurados), de db/gimnasio.json.
 export const business = {
@@ -213,7 +217,7 @@ function build(lang: Lang) {
     waInfo: wa(t.whatsapp.informacion),
     waPresencial: wa(t.whatsapp.presencial),
     waDudas: wa(t.whatsapp.dudas),
-    portal: "https://mi.zardelfitness.com.ar/",
+    portal: `${portalUrl}/`,
   };
 
   const contact = {
@@ -225,7 +229,7 @@ function build(lang: Lang) {
   };
 
   // Con el inicio adelante ("/#faq") para que también funcionen desde las otras páginas. El mismo menú lo usa el
-  // portal de socios (app/components/SiteHeader.tsx).
+  // portal de socios (portal/components/SiteHeader.tsx).
   const nav = [
     { href: `${home}#top`, label: t.menu.principal },
     { href: `${home}#faq`, label: t.menu.faq },

@@ -7,7 +7,9 @@
 // ver app/sitemap.ts) y las que ya no están (responden 410 o redirigen: así Bing las saca antes). Sin el sitemap
 // anterior, avisa todas. Con --dry-run sólo muestra cuáles avisaría.
 //
-// La clave es el archivo public/<clave>.txt: Bing lo lee en el sitio para comprobar que el aviso es nuestro.
+// La clave es el archivo public/<clave>.txt: Bing lo lee en el sitio para comprobar que el aviso es nuestro. Por eso
+// sólo se avisan las páginas del sitio: el ingreso al portal (mi.zardelfitness.com.ar) también está en el sitemap, pero
+// la clave no está publicada en ese dominio.
 // Si el aviso falla, el despliegue no falla (el sitio ya está publicado): queda un aviso en GitHub Actions.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 
@@ -28,6 +30,8 @@ function read(file) {
 
 const now = read(new URL("../out/sitemap.xml", import.meta.url).pathname);
 const old = before ? read(before) : {};
+const { origin, host } = new URL(Object.keys(now)[0]);
+for (const pages of [now, old]) for (const url of Object.keys(pages)) if (new URL(url).host !== host) delete pages[url];
 const changed = [...Object.keys(now).filter((url) => old[url] !== now[url]), ...Object.keys(old).filter((url) => !(url in now))];
 
 const keyFile = readdirSync(new URL("../public", import.meta.url)).find((f) => /^[0-9a-f]{32}\.txt$/.test(f));
@@ -38,7 +42,6 @@ if (!changed.length) {
   console.log("IndexNow: ninguna página cambió.");
   process.exit(0);
 }
-const { origin, host } = new URL(changed[0]);
 console.log(`IndexNow: ${changed.length} página(s)${dryRun ? " (--dry-run, no se avisa)" : ""}:\n${changed.join("\n")}`);
 if (dryRun) process.exit(0);
 

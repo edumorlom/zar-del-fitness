@@ -1,7 +1,0 @@
-/node_modules
-/.next/
-next-env.d.ts
-*.tsbuildinfo
-.env*
-# copiadas de db/img/ antes de dev y build (ver package.json)
-/public/img/
