@@ -4,14 +4,12 @@ import { redirect } from "next/navigation";
 import { LoginBackdrop } from "~/components/LoginBackdrop";
 import { SiteHeader } from "~/components/SiteHeader";
 import { getViewer } from "~/lib/auth";
-import { portalLogin } from "@/lib/content";
 
 // La única página del portal que se indexa: está en el sitemap del sitio (app/sitemap.ts), para que quien busque
-// "Zar del Fitness portal" o "mi progreso" llegue al ingreso. Las demás piden sesión y no se indexan (layout.portal.tsx).
+// "Zar del Fitness portal" o "mi progreso" llegue al ingreso. Las demás piden sesión y no se indexan (app/(portal)/layout.tsx).
 export const metadata: Metadata = {
   title: "Ingresar",
   description: "Mi Portal de Zar del Fitness: tu progreso, tus evaluaciones y tus turnos con tu coach. Entrá con Google o con tu correo.",
-  alternates: { canonical: portalLogin },
   robots: { index: true, follow: false },
 };
 

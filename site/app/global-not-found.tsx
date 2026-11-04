@@ -4,7 +4,7 @@ import { RootShell, rootMetadata, rootViewport } from "@/components/RootShell";
 import { NotFoundPage } from "@/components/NotFoundPage";
 import { business, content } from "@/lib/content";
 
-// La 404 de todo el sitio (out/404.html). Con dos layouts raíz (uno por idioma), Next.js la necesita aparte:
+// La 404 de todo el sitio. Con varios layouts raíz (uno por idioma y el del portal), Next.js la necesita aparte:
 // no pasa por ningún layout, así que arma su propio <html> con RootShell.
 export const metadata: Metadata = {
   ...rootMetadata,

@@ -3,7 +3,7 @@
 //
 // Lo corre el workflow de despliegue después de subir el sitio, con el sitemap que estaba publicado antes:
 //   node scripts/indexnow.mjs ../sitemap-anterior.xml
-// Compara ese sitemap con el nuevo (out/sitemap.xml) y avisa las páginas nuevas, las que tienen otra fecha (lastmod,
+// Compara ese sitemap con el nuevo (.next/server/app/sitemap.xml.body, el que generó `npm run build`) y avisa las páginas nuevas, las que tienen otra fecha (lastmod,
 // ver app/sitemap.ts) y las que ya no están (responden 410 o redirigen: así Bing las saca antes). Sin el sitemap
 // anterior, avisa todas. Con --dry-run sólo muestra cuáles avisaría.
 //
@@ -28,7 +28,7 @@ function read(file) {
   return pages;
 }
 
-const now = read(new URL("../out/sitemap.xml", import.meta.url).pathname);
+const now = read(new URL("../.next/server/app/sitemap.xml.body", import.meta.url).pathname);
 const old = before ? read(before) : {};
 const { origin, host } = new URL(Object.keys(now)[0]);
 for (const pages of [now, old]) for (const url of Object.keys(pages)) if (new URL(url).host !== host) delete pages[url];

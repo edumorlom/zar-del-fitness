@@ -30,7 +30,7 @@ const mapsQuery = encodeURIComponent(`${calle}, ${barrio}, Buenos Aires`);
 
 // "https://zardelfitness.com.ar", de db/gimnasio.json.
 export const siteUrl = `https://${gimnasio.sitioWeb}`;
-/** El portal de los clientes (app/(portal)/, portal/): mismo proyecto, otro build y otro dominio. */
+/** El portal de los clientes (app/(portal)/, portal/): mismo build, otro dominio (ver proxy.ts). */
 export const portalUrl = `https://mi.${gimnasio.sitioWeb}`;
 /** El ingreso al portal: la única página suya que se indexa y que está en el sitemap del sitio (app/sitemap.ts). */
 export const portalLogin = `${portalUrl}/ingresar`;

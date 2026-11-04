@@ -20,13 +20,13 @@ const postUpdated = (p: Post) => {
 const latest = (dates: string[]) => dates.reduce((a, b) => (new Date(b) > new Date(a) ? b : a));
 // Los podcasts y sus episodios cambian cuando cambia db/podcasts.json; sin commit todavía, la fecha del último episodio.
 const podcastsUpdated = lastCommit("../db/podcasts.json") ?? episodes.es[0]?.date;
-// El ingreso al portal (mi.zardelfitness.com.ar, el build del portal de este mismo proyecto): cambia con su página y
+// El ingreso al portal (mi.zardelfitness.com.ar, servido por este mismo build): cambia con su página y
 // los componentes del portal.
-const portalUpdated = lastCommit("app/(portal)/ingresar", "portal/components");
+const portalUpdated = lastCommit("app/(portal)/portal/ingresar", "portal/components");
 
 // Todas las páginas del sitio, en los dos idiomas, para Google. Cada una dice cuál es su versión en el otro idioma
 // (como los links hreflang de la página). Una página nueva tiene que agregarse acá. Al final, el ingreso al portal: un
-// sitemap puede nombrar páginas de otro dominio porque el robots.txt del portal nombra este (app/robots.portal.ts).
+// sitemap puede nombrar páginas de otro dominio porque el robots.txt del portal nombra este (app/(portal)/portal/robots.txt/route.ts).
 export default function sitemap(): MetadataRoute.Sitemap {
   const page = (path: string, priority: number, alternates?: Alternates, images: string[] = []) => ({
     url: abs(path),

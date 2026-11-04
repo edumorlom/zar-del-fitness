@@ -4,9 +4,9 @@ import { Rich } from "./Rich";
 import { content } from "@/lib/content";
 import styles from "./NotFoundPage.module.css";
 
-// La página 404 (out/404.html), una sola para todo el sitio: en castellano, con una línea en inglés que lleva al
+// La página 404, una sola para todo el sitio: en castellano, con una línea en inglés que lleva al
 // sitio en inglés. También la ven los links viejos del sitio anterior que ya no existen (tienda, carrito, mi cuenta…;
-// ver public/.htaccess), así que muestra a dónde ir.
+// ver proxy.ts), así que muestra a dónde ir.
 export function NotFoundPage() {
   const { t, pages, links } = content("es");
   const en = content("en");

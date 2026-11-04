@@ -6,13 +6,12 @@
     "images": "node scripts/copy-images.mjs",
     "predev": "npm run images",
     "dev": "next dev",
-    "dev:portal": "npm run images && PORTAL=1 next dev --port 3001",
     "prebuild": "npm run images",
     "build": "next build",
-    "build:portal": "npm run images && PORTAL=1 next build",
+    "start": "node .next/standalone/site/server.js",
     "lint": "eslint",
     "test": "node --test portal/lib/*.test.ts",
-    "check": "npm run lint && npm test && npm run build && npm run build:portal"
+    "check": "npm run lint && npm test && npm run build"
   },
   "dependencies": {
     "@clerk/localizations": "4.24.0",
