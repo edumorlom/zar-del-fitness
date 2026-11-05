@@ -2,7 +2,7 @@
 // visitante no lo cambie. Lo verifica assistant/visitors.py en el repo de Digui.
 import { createHmac } from "node:crypto";
 
-/** La recepcionista de Zar en Digui: el chat que carga app/(portal)/layout.tsx. */
+/** La recepcionista de Zar en Digui: el chat que carga portal/components/DiguiChat.tsx. */
 export const DIGUI_RECEPTIONIST = "zardelfitness-com-ar-a6ee069f50c6145f";
 
 /**

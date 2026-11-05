@@ -102,7 +102,7 @@ el dominio:
   `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `DATABASE_URL`, `ADMIN_EMAIL` (el primer admin) y las del
   bucket (`BUCKET_ENDPOINT`, `BUCKET_NAME`, `BUCKET_ACCESS_KEY_ID`, `BUCKET_SECRET_ACCESS_KEY`). `DIGUI_SIGNING_SECRET`
   (el secreto de firma de la cuenta de Digui): con ella, el chat de Digui sabe quién entró (cliente, coach o admin)
-  (`portal/components/DiguiChat.tsx`); sin ella, el chat sigue, pero sin saberlo.
+  (`portal/components/DiguiChat.tsx`, que carga el chat sólo cuando alguien entró); sin ella, no hay chat.
 - Sólo `/ingresar` se indexa, y está en el `sitemap.xml` del sitio (`app/sitemap.ts`); el `robots.txt` del portal
   (`app/(portal)/portal/robots.txt/route.ts`) nombra ese sitemap, que es lo que le permite nombrar una página de otro
   dominio.

@@ -6,9 +6,9 @@ type Chat = { identify: (params: Record<string, string>, exp: number, signature:
 type Props = { params: Record<string, string>; exp: number; signature: string };
 
 /**
- * chat.js lo carga el layout una sola vez, y entre páginas (o al entrar con Clerk) no se recarga: por eso el cliente se
- * pasa con diguiChat.identify, que vale para el próximo chat. Al salir de la página se borra, para que otra cuenta en
- * la misma pestaña no chatee como este cliente.
+ * chat.js lo carga DiguiChat una sola vez, y entre páginas (o con otra cuenta en la misma pestaña) no se recarga: por
+ * eso el cliente también se pasa con diguiChat.identify, que vale para el próximo chat. Al salir de la página se borra,
+ * para que otra cuenta en la misma pestaña no chatee como este cliente.
  */
 export function DiguiIdentify({ params, exp, signature }: Props) {
   const customerId = params.customer_id;
