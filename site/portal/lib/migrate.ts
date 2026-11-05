@@ -93,8 +93,8 @@ create index if not exists appointments_time on appointments(starts_at);
 -- Un solo calendario: dos turnos vivos no pueden empezar a la misma hora.
 create unique index if not exists appointments_slot on appointments(starts_at) where status in ('requested', 'confirmed');
 
--- Las fotos de progreso del cliente, en el bucket (/archivos/alumnos/<external_id>/progreso/<uuid>.jpg). Las suben el
--- cliente o quien lo maneja; las ven él, su coach y el admin.
+-- Las fotos de progreso del cliente, en el bucket (/archivos/alumnos/<external_id>/progreso/<uuid>.jpg). Las suben su
+-- coach o el admin; las ven él, su coach y el admin.
 create table if not exists progress_photos (
   id serial primary key,
   client_id int not null references users(id) on delete cascade,

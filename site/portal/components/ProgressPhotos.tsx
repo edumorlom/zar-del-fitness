@@ -76,39 +76,42 @@ export function ProgressPhotos({ clientId, photos, you }: { clientId: number; ph
 
   return (
     <div className="photos">
-      <div className="card photos__upload">
-        <label className="field">
-          <span className="field__label">Fecha de las fotos</span>
-          <input type="date" value={date} max={todayISO()} required onChange={(e) => setDate(e.target.value)} />
-        </label>
-        <div className="form-foot">
-          <button type="button" className="btn btn--gold btn--sm" disabled={uploading || !date} onClick={() => input.current?.click()}>
-            {uploading ? "Subiendo…" : "Subir fotos"}
-          </button>
-          <p className={status?.error ? "form-msg form-msg--error" : "form-msg"} role="status" aria-live="polite">
-            {status?.text}
-          </p>
+      {/* Las fotos las sube el coach o el admin; el cliente sólo las ve. */}
+      {!you && (
+        <div className="card photos__upload">
+          <label className="field">
+            <span className="field__label">Fecha de las fotos</span>
+            <input type="date" value={date} max={todayISO()} required onChange={(e) => setDate(e.target.value)} />
+          </label>
+          <div className="form-foot">
+            <button type="button" className="btn btn--gold btn--sm" disabled={uploading || !date} onClick={() => input.current?.click()}>
+              {uploading ? "Subiendo…" : "Subir fotos"}
+            </button>
+            <p className={status?.error ? "form-msg form-msg--error" : "form-msg"} role="status" aria-live="polite">
+              {status?.text}
+            </p>
+          </div>
+          <input
+            ref={input}
+            type="file"
+            accept="image/*"
+            multiple
+            hidden
+            onChange={(e) => {
+              const files = [...(e.target.files ?? [])];
+              e.target.value = ""; // para poder volver a elegir las mismas
+              if (files.length) upload(files);
+            }}
+          />
         </div>
-        <input
-          ref={input}
-          type="file"
-          accept="image/*"
-          multiple
-          hidden
-          onChange={(e) => {
-            const files = [...(e.target.files ?? [])];
-            e.target.value = ""; // para poder volver a elegir las mismas
-            if (files.length) upload(files);
-          }}
-        />
-      </div>
+      )}
 
       {photos.length === 0 ? (
         <div className="card empty">
           <p className="fact">Todavía no hay fotos</p>
           <p className="muted">
             {you
-              ? "Sacate siempre la misma foto (misma pose, mismo lugar, misma luz): acá vas a ver la primera al lado de la última."
+              ? "Tu coach las saca en los controles: acá vas a ver la primera al lado de la última."
               : "Subí la del día del control, siempre con la misma pose: acá se ve la primera al lado de la última."}
           </p>
         </div>
@@ -135,13 +138,23 @@ export function ProgressPhotos({ clientId, photos, you }: { clientId: number; ph
         </>
       )}
 
-      {open !== null && shown[open] && <Viewer photos={shown} index={open} onIndex={setOpen} onClose={() => setOpen(null)} />}
+      {open !== null && shown[open] && <Viewer photos={shown} index={open} canDelete={!you} onIndex={setOpen} onClose={() => setOpen(null)} />}
     </div>
   );
 }
 
 /** Una foto a pantalla completa, con flechas (o el teclado) para pasar de la primera a la última. */
-function Viewer({ photos, index, onIndex, onClose }: { photos: Shown[]; index: number; onIndex: (i: number) => void; onClose: () => void }) {
+function Viewer({
+  photos,
+  index,
+  canDelete,
+  onIndex,
+  onClose,
+}: {
+  photos: Shown[];
+  index: number;
+  canDelete: boolean;
+  onIndex: (i: number) => void; onClose: () => void }) {
   const ref = useRef<HTMLDialogElement>(null);
   const [deleting, startDelete] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -183,9 +196,11 @@ function Viewer({ photos, index, onIndex, onClose }: { photos: Shown[]; index: n
         <p className="viewer__date">
           {photo.label} <span className="muted">· {shortDate(photo.taken_on)}</span>
         </p>
-        <button type="button" className="btn btn--sm btn--danger" onClick={remove} disabled={deleting}>
-          {deleting ? "Borrando…" : "Borrar"}
-        </button>
+        {canDelete && (
+          <button type="button" className="btn btn--sm btn--danger" onClick={remove} disabled={deleting}>
+            {deleting ? "Borrando…" : "Borrar"}
+          </button>
+        )}
         <button type="button" className="icon-btn" onClick={onClose} aria-label="Cerrar" title="Cerrar">
           <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
             <path d="M6 6l12 12M18 6L6 18" />

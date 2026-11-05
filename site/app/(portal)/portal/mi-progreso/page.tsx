@@ -29,7 +29,7 @@ export default async function MyProgressPage() {
               <span className="num">{checkins.length ? "03" : "02"}</span> Fotos
             </p>
             <Title plain="Tu progreso" accent="en fotos" />
-            <p className="sub">Las ven sólo vos, tu coach y el admin.</p>
+            <p className="sub">Las sube tu coach en los controles. Las ven sólo vos, tu coach y el admin.</p>
           </div>
         </div>
         <ProgressPhotos clientId={viewer.id} photos={photos} you />

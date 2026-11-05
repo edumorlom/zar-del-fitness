@@ -206,7 +206,7 @@ export async function deleteCheckin(_: FormState, form: FormData): Promise<FormS
 
 // ---------- Fotos de progreso ----------
 
-/** Las sube el mismo cliente o quien lo maneja (su coach o el admin), y las mismas personas las pueden borrar. */
+/** Las suben y las borran sólo quienes manejan al cliente (su coach o el admin); el cliente sólo las ve. */
 async function photoOwner(clientId: number) {
   const viewer = await requireViewer();
   const { rows } = await db.query<{ id: number; coach_id: number | null; external_id: string | null }>(
@@ -214,7 +214,7 @@ async function photoOwner(clientId: number) {
     [clientId]
   );
   const client = rows[0];
-  return client && (viewer.id === client.id || canManage(viewer, client)) ? { viewer, client } : null;
+  return client && canManage(viewer, client) ? { viewer, client } : null;
 }
 
 /**
