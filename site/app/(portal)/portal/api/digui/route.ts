@@ -1,8 +1,10 @@
+import { portalUrl } from "@/lib/content";
+
 // Las instrucciones de la API para Digui (sin clave: no dicen nada secreto).
 export const dynamic = "force-dynamic";
 
 const DOCS = `API de turnos de Zar del Fitness, para Digui
-Base: https://mi.zardelfitness.com.ar/api/digui
+Base: ${portalUrl}/api/digui
 
 Clave: las rutas con clave piden el encabezado
   Authorization: Bearer <clave>

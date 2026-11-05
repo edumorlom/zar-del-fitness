@@ -20,7 +20,7 @@ const DAY = new Intl.DateTimeFormat("es-AR", { weekday: "short", day: "numeric",
 /** El cliente pide su control: elige un día y un horario libre. Lo confirma el Zar o su coach. */
 export default async function BookingPage({ searchParams }: { searchParams: Promise<{ dia?: string }> }) {
   const viewer = await requireViewer();
-  if (viewer.role !== "user") redirect("/agenda");
+  if (viewer.role !== "user") redirect("/portal/agenda");
   const sp = await searchParams;
   const open = await getOpenAppointment(viewer.id);
 
@@ -48,7 +48,7 @@ export default async function BookingPage({ searchParams }: { searchParams: Prom
               <input type="hidden" name="id" value={open.id} />
             </Form>
           </div>
-          <Link className="back" href="/mi-progreso">
+          <Link className="back" href="/portal/mi-progreso">
             ← Mi progreso
           </Link>
         </section>
@@ -82,7 +82,7 @@ export default async function BookingPage({ searchParams }: { searchParams: Prom
 
         <nav className="days" aria-label="Día">
           {days.map((d) => (
-            <Link key={d} className="days__chip" href={`/turno?dia=${d}`} aria-current={d === day ? "date" : undefined}>
+            <Link key={d} className="days__chip" href={`/portal/turno?dia=${d}`} aria-current={d === day ? "date" : undefined}>
               {DAY.format(new Date(`${d}T12:00:00Z`)).replace(/\./g, "")}
             </Link>
           ))}

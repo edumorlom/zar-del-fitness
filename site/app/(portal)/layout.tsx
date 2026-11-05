@@ -19,7 +19,7 @@ const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
 export const metadata: Metadata = {
   metadataBase: new URL(portalUrl),
   title: { default: "Mi progreso | Zar del Fitness", template: "%s | Zar del Fitness" },
-  // Privado: que los buscadores no lo indexen. Sólo /ingresar, la entrada, se indexa (y está en el sitemap del sitio).
+  // Privado: que los buscadores no lo indexen. Sólo /portal/ingresar, la entrada, se indexa (y está en el sitemap del sitio).
   robots: { index: false, follow: false },
   // Los mismos íconos que el sitio. app/favicon.ico ya lo agrega Next.js; icon.svg, icon1.png y apple-icon.tsx son
   // del layout del sitio, y se sirven desde ahí.
@@ -90,7 +90,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         {/* esUY: castellano rioplatense (con vos), lo más cercano a Argentina que trae Clerk */}
         {/* ui: la versión del formulario de Clerk queda fija con la del portal (sus estilos no se rompen solos) */}
-        <ClerkProvider ui={ui} appearance={appearance} localization={esUY} signInUrl="/ingresar" signUpUrl="/ingresar">
+        <ClerkProvider ui={ui} appearance={appearance} localization={esUY} signInUrl="/portal/ingresar" signUpUrl="/portal/ingresar">
           <IconSprite />
           <a className="skip-link" href="#main">
             Ir al contenido

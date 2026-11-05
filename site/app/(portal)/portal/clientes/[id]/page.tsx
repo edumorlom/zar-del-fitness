@@ -46,7 +46,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
 
   return (
     <AdminShell viewer={viewer}>
-      <Link className="back" href="/clientes">
+      <Link className="back" href="/portal/clientes">
         ← Clientes
       </Link>
       <PageHead
@@ -203,7 +203,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
                   </tbody>
                 </table>
               </div>
-              <Link className="btn btn--ghost btn--sm btn--block" href={`/clientes/${client.id}/evaluaciones`}>
+              <Link className="btn btn--ghost btn--sm btn--block" href={`/portal/clientes/${client.id}/evaluaciones`}>
                 Ver detalle completo
               </Link>
             </>

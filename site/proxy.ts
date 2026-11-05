@@ -1,24 +1,37 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { type NextFetchEvent, type NextRequest, NextResponse } from "next/server";
-import { siteUrl } from "@/lib/content";
+import { portalUrl, siteUrl } from "@/lib/content";
 
-// Un solo servidor para los dos dominios:
-// - mi.zardelfitness.com.ar (o mi.localhost en desarrollo): el portal. Sus páginas viven en app/(portal)/portal/ y acá
-//   se les antepone /portal: /clientes → /portal/clientes. Clerk lee la sesión en cada pedido; qué puede ver cada uno
-//   se decide en las páginas y las acciones (portal/lib/auth.ts).
-// - cualquier otro (zardelfitness.com.ar): el sitio, con las reglas que tenía el .htaccess de cPanel antes de Railway (las URLs del
-//   WordPress anterior, la "/" final).
+// Un solo servidor para el sitio y el portal:
+// - /portal/… (en cualquier dominio): el portal, en app/(portal)/portal/. Clerk lee la sesión en cada pedido; qué puede
+//   ver cada uno se decide en las páginas y las acciones (portal/lib/auth.ts). /archivos/… también es del portal: así
+//   guarda la base las fotos y los certificados.
+// - mi.zardelfitness.com.ar (o mi.localhost en desarrollo), el dominio de antes del portal, sin /portal en las URLs:
+//   lleva a /portal/…, salvo la API de Digui.
+// - el resto: el sitio, con las reglas que tenía el .htaccess de cPanel antes de Railway (las URLs del WordPress
+//   anterior, la "/" final).
 
 /** El dominio que pidió el navegador (Railway lo pasa en Host; req.nextUrl tiene el del servidor). */
 const hostOf = (req: NextRequest) =>
   (req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "").split(",")[0].trim().replace(/:\d+$/, "").toLowerCase();
-const isPortal = (req: NextRequest) => hostOf(req).startsWith("mi.");
+const isMi = (req: NextRequest) => hostOf(req).startsWith("mi.");
+/** En desarrollo (localhost) las redirecciones se quedan en localhost; en producción, a los dominios de verdad. */
+const localOrigin = (req: NextRequest) => {
+  const host = req.headers.get("host") ?? "";
+  return /^(mi\.)?localhost(:\d+)?$/.test(host) ? `http://${host}` : null;
+};
+const PORTAL = /^\/(portal|archivos)(\/|$)/;
+// La API de Digui la llama el servidor de Digui con su clave, no una persona con sesión: va al portal sin Clerk.
+const DIGUI = /^(\/portal)?\/api\/digui(\/|$)/;
 
-const clerk = clerkMiddleware((_auth, req) => {
+/** La ruta en app/(portal)/: /archivos/… y /api/digui/… (en mi.) llevan /portal adelante. */
+function toPortal(req: NextRequest) {
   const url = req.nextUrl.clone();
-  url.pathname = url.pathname === "/" ? "/portal" : `/portal${url.pathname}`;
-  return NextResponse.rewrite(url);
-});
+  if (!url.pathname.startsWith("/portal")) url.pathname = `/portal${url.pathname}`;
+  return url;
+}
+
+const clerk = clerkMiddleware((_auth, req) => NextResponse.rewrite(toPortal(req)));
 
 // Lo que el sitio anterior tenía y este no (la tienda, WordPress, los archivos por fecha, dos notas borradas): 410, para
 // que Google lo saque rápido.
@@ -46,17 +59,11 @@ async function gone(req: NextRequest) {
 async function site(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
   const hostname = hostOf(req);
-  // En desarrollo (localhost) las redirecciones se quedan en localhost; en producción, al dominio del sitio.
-  const host = req.headers.get("host") ?? "";
-  const local = /^(mi\.)?localhost(:\d+)?$/.test(host);
-  const origin = local ? `http://${host}` : siteUrl;
+  const origin = localOrigin(req) ?? siteUrl;
   const to = (path: string) => NextResponse.redirect(new URL(path, origin), 301);
 
   // El .com y los www van al dominio principal, con la misma ruta.
   if (/^(www\.)?zardelfitness\.com$/.test(hostname) || hostname.startsWith("www.")) return to(pathname + search);
-  // El portal es otro dominio: /portal/… del sitio lleva ahí.
-  if (pathname === "/portal" || pathname.startsWith("/portal/"))
-    return NextResponse.redirect(new URL(pathname.slice("/portal".length) || "/", local ? `http://mi.${host}` : `https://mi.${new URL(siteUrl).host}`), 301);
 
   let m: RegExpMatchArray | null;
   // Idiomas: /es/… sin el prefijo; /spanish/ y /english/ fueron los prefijos unas horas el 2026-10-11.
@@ -76,16 +83,19 @@ async function site(req: NextRequest) {
   return NextResponse.next();
 }
 
-// La API de Digui la llama el servidor de Digui con su clave, no una persona con sesión: va al portal sin Clerk.
-const isDigui = (pathname: string) => pathname === "/api/digui" || pathname.startsWith("/api/digui/");
-
 export default function proxy(req: NextRequest, event: NextFetchEvent) {
-  if (!isPortal(req)) return site(req);
-  if (isDigui(req.nextUrl.pathname)) {
-    const url = req.nextUrl.clone();
-    url.pathname = `/portal${url.pathname}`;
-    return NextResponse.rewrite(url);
+  const { pathname, search } = req.nextUrl;
+  if (!PORTAL.test(pathname)) {
+    if (!isMi(req)) return site(req);
+    // A portalUrl, que hoy está en mi. porque zardelfitness.com.ar sigue en cPanel. shortcut: cuando pase a Railway y
+    // portalUrl a `${siteUrl}/portal`, mi./portal/… también tiene que llevar ahí (menos /archivos/…: la base tiene fotos
+    // con https://mi.…/archivos/, de portal/scripts/). La API de Digui no: su servidor la llama acá, y un POST no sigue
+    // una redirección.
+    const local = localOrigin(req);
+    if (!DIGUI.test(pathname))
+      return NextResponse.redirect(`${local ? `${local}/portal` : portalUrl}${pathname === "/" ? "" : pathname}${search}`, 308);
   }
+  if (DIGUI.test(pathname)) return NextResponse.rewrite(toPortal(req));
   return clerk(req, event);
 }
 
@@ -95,5 +105,6 @@ export const config = {
     // terminan en .jpg/.png, pero pasan: el portal revisa quién los pide.
     "/((?!_next/static|_next/image|[^?]*\\.(?:css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|webmanifest)$).*)",
     "/archivos/(.*)",
+    "/portal/archivos/(.*)",
   ],
 };

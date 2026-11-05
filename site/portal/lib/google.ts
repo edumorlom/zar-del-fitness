@@ -1,5 +1,6 @@
 import "server-only";
 import { clerkClient } from "@clerk/nextjs/server";
+import { portalUrl } from "@/lib/content";
 import { db } from "./db";
 import type { Interval } from "./slots";
 
@@ -65,7 +66,7 @@ type Event = { start: Date; end: Date; client: string; email: string | null; coa
 
 const eventBody = (e: Event) => ({
   summary: `Control · ${e.client}`,
-  description: `Control de Mi progreso${e.coach ? ` (coach: ${e.coach})` : ""}. Turno desde mi.zardelfitness.com.ar.`,
+  description: `Control de Mi progreso${e.coach ? ` (coach: ${e.coach})` : ""}. Turno desde ${portalUrl.replace("https://", "")}.`,
   start: { dateTime: e.start.toISOString(), timeZone: TZ },
   end: { dateTime: e.end.toISOString(), timeZone: TZ },
   // Como invitado: Google le manda el aviso al cliente (y los cambios y la cancelación)

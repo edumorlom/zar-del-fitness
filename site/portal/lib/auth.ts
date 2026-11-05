@@ -35,7 +35,7 @@ export const getViewer = cache(async (): Promise<Viewer | "unregistered" | null>
 /** El usuario logueado. Sin sesión, a /ingresar; con sesión pero sin cuenta en el portal, a /sin-acceso. */
 export async function requireViewer() {
   const viewer = await getViewer();
-  if (!viewer) redirect("/ingresar");
-  if (viewer === "unregistered") redirect("/sin-acceso");
+  if (!viewer) redirect("/portal/ingresar");
+  if (viewer === "unregistered") redirect("/portal/sin-acceso");
   return viewer;
 }

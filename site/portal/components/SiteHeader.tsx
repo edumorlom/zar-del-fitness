@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header";
 import { content, siteUrl } from "@/lib/content";
 
-// El portal vive en mi.zardelfitness.com.ar: los links del menú van al sitio, con su dominio.
+// Los links del menú van al sitio con su dominio: el portal también se abre en mi. (ver proxy.ts).
 const abs = (href: string) => (href.startsWith("/") ? siteUrl + href : href);
 
 /** El mismo menú que el sitio (components/Header.tsx, con sus textos de db/), con el botón del portal. */

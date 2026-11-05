@@ -2,9 +2,9 @@ import path from "node:path";
 import type { NextConfig } from "next";
 import { deviceSizes, imageSizes } from "./lib/image-variants.mjs";
 
-// Un solo build para el sitio (zardelfitness.com.ar) y el portal (mi.zardelfitness.com.ar), servido por un solo
+// Un solo build para el sitio (zardelfitness.com.ar) y el portal (zardelfitness.com.ar/portal/), servido por un solo
 // servidor de Next.js en Railway (deploy/Dockerfile). Las páginas del sitio se generan estáticas en el build; las del
-// portal, en cada pedido. Qué dominio ve qué páginas lo decide proxy.ts.
+// portal, en cada pedido. Qué ruta va a cuál lo decide proxy.ts.
 const root = path.join(__dirname, "..");
 
 const nextConfig: NextConfig = {
@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
   // servidor por las dudas. sharp sí va: lib/og.tsx lo usa y las imágenes para compartir se pueden generar en un pedido.
   outputFileTracingExcludes: { "*": ["site/public/**"] },
   poweredByHeader: false,
-  // En desarrollo, el portal es http://mi.localhost:3000.
+  // En desarrollo, el portal es http://localhost:3000/portal (http://mi.localhost:3000 lleva ahí).
   allowedDevOrigins: ["mi.localhost"],
   // Tres layouts raíz (app/(es), app/(en) y app/(portal)): la 404 va aparte, en app/global-not-found.tsx.
   // experimental.inlineCss no conviene: Next.js pone el CSS dos veces en el HTML (en <style> y en los datos de React),

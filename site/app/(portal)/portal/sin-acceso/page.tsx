@@ -14,13 +14,13 @@ const wa = `https://wa.me/${gimnasio.whatsapp.replace(/\D/g, "")}?text=${encodeU
 // Entró con Clerk, pero su correo no está cargado en el portal.
 export default async function NoAccessPage() {
   const viewer = await getViewer();
-  if (!viewer) redirect("/ingresar");
-  if (viewer !== "unregistered") redirect("/");
+  if (!viewer) redirect("/portal/ingresar");
+  if (viewer !== "unregistered") redirect("/portal");
   const email = (await currentUser())?.primaryEmailAddress?.emailAddress;
 
   return (
     <>
-    <SiteHeader login={{ label: "Mi Portal", href: "/ingresar" }} />
+    <SiteHeader login={{ label: "Mi Portal", href: "/portal/ingresar" }} />
     <main id="main" className="login">
       <LoginBackdrop />
       <div className="panel intro">

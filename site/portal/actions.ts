@@ -134,7 +134,7 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
     if ((e as { code?: string }).code === "23505") return { error: "Ese correo ya lo tiene otra cuenta." };
     throw e;
   }
-  if (created !== undefined) redirect(`/clientes/${created}`);
+  if (created !== undefined) redirect(`/portal/clientes/${created}`);
   refresh();
   return { ok: "Guardado." };
 }
@@ -148,7 +148,7 @@ export async function deleteClient(_: FormState, form: FormData): Promise<FormSt
   // checkins: on delete cascade; los clientes de un coach borrado quedan sin coach (on delete set null)
   const { rowCount } = await db.query("delete from users where id = $1", [id]);
   if (!rowCount) return { error: "Ese cliente ya no existe." };
-  redirect("/clientes");
+  redirect("/portal/clientes");
 }
 
 // ---------- Controles ----------

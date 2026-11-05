@@ -13,7 +13,7 @@ export default async function NewClientPage() {
   if (viewer.role !== "admin") notFound();
   return (
     <AdminShell viewer={viewer}>
-      <Link className="back" href="/clientes">
+      <Link className="back" href="/portal/clientes">
         ← Clientes
       </Link>
       <PageHead title="Nuevo" accent="cliente" sub="Con el correo que cargues entra al portal: con Google o con un código que le llega ahí." />

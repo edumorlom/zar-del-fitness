@@ -21,7 +21,7 @@ export default async function ClientsPage({
   searchParams: Promise<{ q?: string; coach?: string; plan?: string; estado?: string; bajas?: string }>;
 }) {
   const viewer = await requireViewer();
-  if (viewer.role === "user") redirect("/mi-progreso");
+  if (viewer.role === "user") redirect("/portal/mi-progreso");
   const sp = await searchParams;
   const admin = viewer.role === "admin";
   const inactive = sp.bajas === "1";
@@ -37,11 +37,11 @@ export default async function ClientsPage({
   return (
     <AdminShell viewer={viewer}>
       <PageHead title={inactive ? "Dados de" : admin ? "Todos los" : "Tus"} accent={inactive ? "baja" : "clientes"} sub={`${rows.length} ${rows.length === 1 ? "cliente" : "clientes"}`}>
-        <Link className="btn btn--ghost btn--sm" href={inactive ? "/clientes" : "/clientes?bajas=1"}>
+        <Link className="btn btn--ghost btn--sm" href={inactive ? "/portal/clientes" : "/portal/clientes?bajas=1"}>
           {inactive ? "Ver activos" : "Dados de baja"}
         </Link>
         {admin && (
-          <Link className="btn btn--gold btn--sm" href="/clientes/nuevo">
+          <Link className="btn btn--gold btn--sm" href="/portal/clientes/nuevo">
             Nuevo cliente
             <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
               <use href="#i-plus" />
@@ -110,7 +110,7 @@ export default async function ClientsPage({
                 return (
                   <tr key={r.id}>
                     <td data-label="Cliente">
-                      <Link className="person" href={`/clientes/${r.id}`}>
+                      <Link className="person" href={`/portal/clientes/${r.id}`}>
                         {r.photo_url ? (
                           <img className="person__img" src={r.photo_url} alt="" />
                         ) : (
@@ -174,7 +174,7 @@ export default async function ClientsPage({
                       </span>
                     </td>
                     <td className="right actions">
-                      <Link className="icon-btn icon-btn--sm" href={`/clientes/${r.id}`} aria-label={`Ver a ${r.name}`} title="Ver ficha">
+                      <Link className="icon-btn icon-btn--sm" href={`/portal/clientes/${r.id}`} aria-label={`Ver a ${r.name}`} title="Ver ficha">
                         <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                           <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
                           <circle cx="12" cy="12" r="3" />

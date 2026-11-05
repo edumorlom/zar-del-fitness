@@ -1,8 +1,8 @@
 name: Despliegue del sitio y del portal
 
-# El sitio (zardelfitness.com.ar) y el portal (mi.zardelfitness.com.ar) son un solo proyecto de Next.js, en site/, con
+# El sitio (zardelfitness.com.ar) y el portal (zardelfitness.com.ar/portal/) son un solo proyecto de Next.js, en site/, con
 # un solo build: el servidor de Next.js en site/.next/standalone/, que se sube a Railway. Las páginas del sitio salen
-# estáticas en el build; las del portal, en cada pedido. Qué dominio ve qué páginas lo decide site/proxy.ts.
+# estáticas en el build; las del portal, en cada pedido. Qué ruta va a cuál lo decide site/proxy.ts.
 # La base de datos y el bucket del portal son servicios aparte en Railway.
 #
 # Las credenciales viven en GitHub → Settings → Secrets and variables → Actions, nunca en este archivo.

@@ -12,13 +12,13 @@ export const metadata: Metadata = { title: "Mis medidas" };
 /** Todas las medidas del cliente que entró (sólo las suyas: el id sale de la sesión, no de la dirección). */
 export default async function MyMeasuresPage() {
   const viewer = await requireViewer();
-  if (viewer.role !== "user") redirect("/dashboard");
+  if (viewer.role !== "user") redirect("/portal/dashboard");
   const checkins = (await getCheckins(viewer.id)).reverse(); // la última primero
 
   return (
     <Shell viewer={viewer}>
       <section>
-        <Link className="back" href="/mi-progreso">
+        <Link className="back" href="/portal/mi-progreso">
           ← Mi progreso
         </Link>
         <div className="block__head">

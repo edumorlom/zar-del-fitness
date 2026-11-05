@@ -33,7 +33,7 @@ function Delta({ now, before, unit = "" }: { now: number; before: number; unit?:
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ coach?: string; plan?: string }> }) {
   const viewer = await requireViewer();
-  if (viewer.role === "user") redirect("/mi-progreso");
+  if (viewer.role === "user") redirect("/portal/mi-progreso");
   const sp = await searchParams;
   const admin = viewer.role === "admin";
   const coach = admin && sp.coach ? Number(sp.coach) : null;
@@ -100,7 +100,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           </ul>
           <p className="kpi__note">
             Midiendo a los {d.by["por-vencer"]} que están por vencer, la cobertura llega a <b>{d.coverageWithDue} %</b>. Los
-            atrasados son la lista de llamados: <Link href="/clientes?estado=atrasado">verlos</Link>.
+            atrasados son la lista de llamados: <Link href="/portal/clientes?estado=atrasado">verlos</Link>.
           </p>
         </section>
         <section className="card kpi">
@@ -139,7 +139,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <span data-count={d.by.atrasado}>{d.by.atrasado}</span>
           </p>
           <p className="kpi__foot">
-            <Link href="/clientes?estado=atrasado">Ver la lista</Link>
+            <Link href="/portal/clientes?estado=atrasado">Ver la lista</Link>
           </p>
         </section>
       </div>
@@ -192,7 +192,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               {d.perCoach.map((c) => (
                 <tr key={c.id ?? "-"}>
                   <td data-label="Coach">
-                    <Link className="person" href={c.id ? `/clientes?coach=${c.id}` : "/clientes"}>
+                    <Link className="person" href={c.id ? `/portal/clientes?coach=${c.id}` : "/portal/clientes"}>
                       {c.photo ? <img className="person__img" src={c.photo} alt="" /> : <span className="avatar avatar--sm">{initials(c.name)}</span>}
                       <span className="strong">{c.name}</span>
                     </Link>

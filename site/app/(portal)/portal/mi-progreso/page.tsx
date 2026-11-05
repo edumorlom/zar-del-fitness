@@ -9,9 +9,9 @@ export const metadata: Metadata = { title: "Mi progreso" };
 
 export default async function MyProgressPage() {
   const viewer = await requireViewer();
-  if (viewer.role !== "user") redirect("/dashboard");
+  if (viewer.role !== "user") redirect("/portal/dashboard");
   const [client, checkins, appointment] = await Promise.all([getClient(viewer.id), getCheckins(viewer.id), getOpenAppointment(viewer.id)]);
-  if (!client) redirect("/ingresar");
+  if (!client) redirect("/portal/ingresar");
   return (
     <Shell viewer={viewer}>
       <Hero client={client} checkins={checkins} you appointment={appointment} />

@@ -40,7 +40,7 @@ function Row({ a, pending }: { a: Appointment; pending?: boolean }) {
       <div className="appt__main">
         <span className={`st-dot ${a.status === "requested" ? "st--por-vencer" : "st--gold"}`} aria-hidden="true" />
         <span>
-          <Link className="strong" href={`/clientes/${a.client_id}`}>
+          <Link className="strong" href={`/portal/clientes/${a.client_id}`}>
             {a.client_name}
           </Link>
           <span className="person__sub">
@@ -74,7 +74,7 @@ function Row({ a, pending }: { a: Appointment; pending?: boolean }) {
 
 export default async function AgendaPage({ searchParams }: { searchParams: Promise<{ mes?: string; dia?: string }> }) {
   const viewer = await requireViewer();
-  if (viewer.role === "user") redirect("/turno");
+  if (viewer.role === "user") redirect("/portal/turno");
   const sp = await searchParams;
   const today = todayISO();
   const month = /^\d{4}-\d{2}$/.test(sp.mes ?? "") ? sp.mes! : today.slice(0, 7);
@@ -86,7 +86,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
   const byDay = new Map<string, Appointment[]>();
   for (const a of appts) byDay.set(dateOf(a.starts_at), [...(byDay.get(dateOf(a.starts_at)) ?? []), a]);
   const title = MONTH.format(new Date(`${month}-15T12:00:00Z`));
-  const href = (m: string, d?: string) => `/agenda?mes=${m}${d ? `&dia=${d}` : ""}`;
+  const href = (m: string, d?: string) => `/portal/agenda?mes=${m}${d ? `&dia=${d}` : ""}`;
 
   return (
     <AdminShell viewer={viewer}>

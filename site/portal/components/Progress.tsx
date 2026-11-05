@@ -130,7 +130,7 @@ export function Hero({ client, checkins, you, appointment }: { client: Client; c
             <dd className={control.warn ? "note note--warn" : "note"}>{control.note}</dd>
             {you && (
               <dd>
-                <Link className="link-arrow" href="/turno">
+                <Link className="link-arrow" href="/portal/turno">
                   {appointment ? "Ver tu turno" : "Pedí tu turno"}
                 </Link>
               </dd>
@@ -321,7 +321,7 @@ export function Results({ checkins, you, manage, number = "01" }: { checkins: Ch
             <Title plain={you ? "Todos tus" : "Todos sus"} accent="controles" />
           </div>
           {you && (
-            <a className="btn btn--outline btn--sm" href="/mi-progreso/evaluaciones">
+            <a className="btn btn--outline btn--sm" href="/portal/mi-progreso/evaluaciones">
               Ver todas mis medidas
               <ArrowIcon />
             </a>

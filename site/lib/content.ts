@@ -30,8 +30,10 @@ const mapsQuery = encodeURIComponent(`${calle}, ${barrio}, Buenos Aires`);
 
 // "https://zardelfitness.com.ar", de db/gimnasio.json.
 export const siteUrl = `https://${gimnasio.sitioWeb}`;
-/** El portal de los clientes (app/(portal)/, portal/): mismo build, otro dominio (ver proxy.ts). */
-export const portalUrl = `https://mi.${gimnasio.sitioWeb}`;
+/** El portal de los clientes (app/(portal)/, portal/): mismo build, en /portal/ (ver proxy.ts). */
+// shortcut: en mi. mientras zardelfitness.com.ar siga en cPanel; cuando pase a Railway, `${siteUrl}/portal` (y el
+// shortcut de proxy.ts).
+export const portalUrl = `https://mi.${gimnasio.sitioWeb}/portal`;
 /** El ingreso al portal: la única página suya que se indexa y que está en el sitemap del sitio (app/sitemap.ts). */
 export const portalLogin = `${portalUrl}/ingresar`;
 

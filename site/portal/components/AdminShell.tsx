@@ -8,10 +8,10 @@ import { SiteHeader } from "./SiteHeader";
 /** El panel del equipo (admin y coaches): arriba el menú del sitio, como los clientes (Shell); al costado el del panel. */
 export function AdminShell({ viewer, children }: { viewer: Viewer; children: React.ReactNode }) {
   const items: NavItem[] = [
-    { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
-    { href: "/agenda", label: "Agenda", icon: "agenda" },
-    { href: "/clientes", label: "Clientes", icon: "clients" },
-    ...(viewer.role === "admin" ? [{ href: "/configuracion", label: "Configuración", icon: "settings" } as const] : []),
+    { href: "/portal/dashboard", label: "Dashboard", icon: "dashboard" },
+    { href: "/portal/agenda", label: "Agenda", icon: "agenda" },
+    { href: "/portal/clientes", label: "Clientes", icon: "clients" },
+    ...(viewer.role === "admin" ? [{ href: "/portal/configuracion", label: "Configuración", icon: "settings" } as const] : []),
   ];
   return (
     <>

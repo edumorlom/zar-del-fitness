@@ -8,8 +8,8 @@
 // anterior, avisa todas. Con --dry-run sólo muestra cuáles avisaría.
 //
 // La clave es el archivo public/<clave>.txt: Bing lo lee en el sitio para comprobar que el aviso es nuestro. Por eso
-// sólo se avisan las páginas del sitio: el ingreso al portal (mi.zardelfitness.com.ar) también está en el sitemap, pero
-// la clave no está publicada en ese dominio.
+// sólo se avisan las páginas de este dominio: el ingreso al portal, mientras esté en mi., también está en el sitemap,
+// pero la clave no está publicada en ese dominio.
 // Si el aviso falla, el despliegue no falla (el sitio ya está publicado): queda un aviso en GitHub Actions.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 

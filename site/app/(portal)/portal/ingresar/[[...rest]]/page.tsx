@@ -13,12 +13,12 @@ export const metadata: Metadata = {
   robots: { index: true, follow: false },
 };
 
-// [[...rest]]: los pasos de Clerk (el código por correo, la vuelta de Google) viven bajo /ingresar/….
+// [[...rest]]: los pasos de Clerk (el código por correo, la vuelta de Google) viven bajo /portal/ingresar/….
 export default async function LoginPage() {
-  if (await getViewer()) redirect("/");
+  if (await getViewer()) redirect("/portal");
   return (
     <>
-    <SiteHeader login={{ label: "Mi Portal", href: "/ingresar" }} />
+    <SiteHeader login={{ label: "Mi Portal", href: "/portal/ingresar" }} />
     <main id="main" className="login">
       <LoginBackdrop />
 
@@ -40,7 +40,7 @@ export default async function LoginPage() {
         </h1>
         <p className="panel__lead intro">Entrá con Google o con tu correo.</p>
         <div className="signin">
-          <SignIn routing="path" path="/ingresar" withSignUp fallbackRedirectUrl="/" signUpFallbackRedirectUrl="/" />
+          <SignIn routing="path" path="/portal/ingresar" withSignUp fallbackRedirectUrl="/portal" signUpFallbackRedirectUrl="/portal" />
         </div>
       </div>
 

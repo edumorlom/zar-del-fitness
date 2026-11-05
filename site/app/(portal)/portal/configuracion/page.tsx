@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { portalUrl } from "@/lib/content";
 import { notFound } from "next/navigation";
 import { AdminShell, PageHead } from "~/components/AdminShell";
 import { Filters } from "~/components/Filters";
@@ -28,7 +29,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   for (const u of all) counts[u.role]++;
   const waiting = all.filter((u) => u.email && !u.linked && u.active).length;
   const noEmail = all.filter((u) => !u.email).length;
-  const tab = (r: Role | null) => `/configuracion${r ? `?rol=${r}` : ""}`;
+  const tab = (r: Role | null) => `/portal/configuracion${r ? `?rol=${r}` : ""}`;
 
   return (
     <AdminShell viewer={viewer}>
@@ -51,7 +52,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             {waiting} {waiting === 1 ? "cuenta todavía no entró" : "cuentas todavía no entraron"} al portal
           </p>
           <p className="muted">
-            Entran con Google o con el código que les llega a su correo, en mi.zardelfitness.com.ar: alcanza con avisarles.
+            Entran con Google o con el código que les llega a su correo, en {portalUrl.replace("https://", "")}: alcanza con avisarles.
             {noEmail > 0 && ` ${noEmail} no ${noEmail === 1 ? "tiene" : "tienen"} correo: completalo en su ficha para que puedan entrar.`}
           </p>
         </div>
@@ -62,7 +63,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           {role && <input type="hidden" name="rol" value={role} />}
           <input className="filters__search" name="q" type="search" defaultValue={q} placeholder="Buscar por nombre o correo" aria-label="Buscar" />
         </Filters>
-        <Link className="btn btn--gold btn--sm" href="/clientes/nuevo">
+        <Link className="btn btn--gold btn--sm" href="/portal/clientes/nuevo">
           Nuevo usuario
           <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
             <use href="#i-plus" />
@@ -87,7 +88,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             {users.map((u) => (
               <tr key={u.id} className={u.active ? undefined : "is-off"}>
                 <td data-label="Cuenta">
-                  <Link className="person" href={`/clientes/${u.id}`}>
+                  <Link className="person" href={`/portal/clientes/${u.id}`}>
                     {u.photo_url ? <img className="person__img" src={u.photo_url} alt="" /> : <span className="avatar avatar--sm">{initials(u.name)}</span>}
                     <span>
                       <span className="strong">{u.name}</span>
@@ -114,7 +115,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                   {u.role === "user" ? (u.coach_name ? `Coach: ${u.coach_name}` : "Sin coach") : u.role === "admin" ? (u.title ?? "Acceso completo") : (u.title ?? "Coach")}
                 </td>
                 <td className="right actions">
-                  <Link className="icon-btn icon-btn--sm" href={`/clientes/${u.id}#editar`} aria-label={`Editar a ${u.name}`} title="Editar">
+                  <Link className="icon-btn icon-btn--sm" href={`/portal/clientes/${u.id}#editar`} aria-label={`Editar a ${u.name}`} title="Editar">
                     <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" />
                     </svg>

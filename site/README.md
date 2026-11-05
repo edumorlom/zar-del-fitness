@@ -4,12 +4,11 @@ Rediseño de [zardelfitness.com.ar](https://zardelfitness.com.ar/) con Next.js 1
 Mantiene la paleta original: negro `#000 / #131313 / #1B1B1B`, dorado `#988858 / #A7892F / #D6A61D`, plata `#DCDCDC`.
 
 En el mismo proyecto y el mismo build está el portal de los clientes,
-[mi.zardelfitness.com.ar](https://mi.zardelfitness.com.ar/) (ver [Portal](#portal)): un solo servidor de Next.js en
-Railway sirve los dos dominios.
+en `/portal/` (ver [Portal](#portal)): un solo servidor de Next.js en Railway sirve los dos.
 
 ```bash
 npm install
-npm run dev      # el sitio en http://localhost:3000 y el portal en http://mi.localhost:3000 (con .env.local: ver Portal)
+npm run dev      # el sitio en http://localhost:3000 y el portal en http://localhost:3000/portal (con .env.local: ver Portal)
 npm run build    # el build de producción (servidor en .next/standalone/; las páginas del sitio, estáticas)
 npm start        # ese build, en http://localhost:3000
 npm run lint
@@ -85,15 +84,16 @@ y bajan a la sección (ver `components/RootShell.tsx` y `components/motion/Motio
 
 ## Portal
 
-El portal de los clientes y del equipo (progreso, evaluaciones, turnos, fichas), en
-[mi.zardelfitness.com.ar](https://mi.zardelfitness.com.ar/). Es parte del mismo build que el sitio; lo que lo separa es
-el dominio:
+El portal de los clientes y del equipo (progreso, evaluaciones, turnos, fichas), en `/portal/`. Es parte del mismo
+build que el sitio; lo que lo separa es la ruta. Mientras `zardelfitness.com.ar` siga en cPanel, se abre en
+[mi.zardelfitness.com.ar/portal](https://mi.zardelfitness.com.ar/portal) (`portalUrl` en `lib/content.ts`):
 
-- `proxy.ts` mira el dominio de cada pedido. En `mi.` (o `mi.localhost` en desarrollo) le antepone `/portal` a la ruta
-  (`/clientes` → `/portal/clientes`) y pasa por Clerk; en el resto, aplica las reglas del sitio (las URLs viejas de
-  WordPress, la `/` final, el `.com` y los `www`). `/portal/…` en el sitio lleva a `mi.`.
+- `proxy.ts`: `/portal/…` y `/archivos/…` (las fotos y certificados, así guardados en la base) van al portal, con
+  Clerk, en cualquier dominio. `mi.` (o `mi.localhost` en desarrollo), el dominio de antes, sin `/portal` en las URLs,
+  lleva a `/portal/…` (`/clientes` → `/portal/clientes`), salvo `/api/digui/…`. El resto, las reglas del sitio (las
+  URLs viejas de WordPress, la `/` final, el `.com` y los `www`).
 - Las páginas del portal están en `app/(portal)/portal/`, con su layout raíz en `app/(portal)/layout.tsx`. Adentro,
-  los links y las redirecciones van sin `/portal` (`/clientes`), que es la URL que se ve. Sus componentes, `lib/`, los
+  los links y las redirecciones llevan `/portal` (`/portal/clientes`). Sus componentes, `lib/`, los
   formularios (`actions.ts`, `agenda-actions.ts`) y los scripts de importación están en `portal/`, importados con `~/`.
   Usa los estilos, el menú, las animaciones y los datos del sitio (`@/`, `@db/`).
 - `instrumentation.ts` crea las tablas que falten al arrancar el servidor. Si la base no responde, el servidor arranca
@@ -103,10 +103,10 @@ el dominio:
   bucket (`BUCKET_ENDPOINT`, `BUCKET_NAME`, `BUCKET_ACCESS_KEY_ID`, `BUCKET_SECRET_ACCESS_KEY`). `DIGUI_SIGNING_SECRET`
   (el secreto de firma de la cuenta de Digui): con ella, el chat de Digui sabe quién entró (cliente, coach o admin)
   (`portal/components/DiguiChat.tsx`, que carga el chat sólo cuando alguien entró); sin ella, no hay chat.
-  `DIGUI_API_KEY`: la clave que Digui manda como `Authorization: Bearer …` a la API de turnos (`/api/digui/…` en el
-  portal, sin Clerk: ver `proxy.ts`); sin ella, esas rutas responden 401. Sirve para que Digui consulte horarios libres,
-  vea los turnos de quien chatea y los pida. Las instrucciones para Digui están en `https://mi.zardelfitness.com.ar/api/digui`.
-- Sólo `/ingresar` se indexa, y está en el `sitemap.xml` del sitio (`app/sitemap.ts`); el `robots.txt` del portal
+  `DIGUI_API_KEY`: la clave que Digui manda como `Authorization: Bearer …` a la API de turnos (`/portal/api/digui/…`,
+  y `/api/digui/…` en `mi.`, sin Clerk: ver `proxy.ts`); sin ella, esas rutas responden 401. Sirve para que Digui consulte horarios libres,
+  vea los turnos de quien chatea y los pida. Las instrucciones para Digui están en `<portalUrl>/api/digui`.
+- Sólo `/portal/ingresar` se indexa, y está en el `sitemap.xml` del sitio (`app/sitemap.ts`); el `robots.txt` del portal
   (`app/(portal)/portal/robots.txt/route.ts`) nombra ese sitemap, que es lo que le permite nombrar una página de otro
   dominio.
 

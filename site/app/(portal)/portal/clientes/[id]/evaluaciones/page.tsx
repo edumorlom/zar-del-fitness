@@ -20,7 +20,7 @@ export default async function EvaluationsPage({ params }: { params: Promise<{ id
 
   return (
     <AdminShell viewer={viewer}>
-      <Link className="back" href={`/clientes/${client.id}`}>
+      <Link className="back" href={`/portal/clientes/${client.id}`}>
         ← {client.name}
       </Link>
       <PageHead title="Detalle de" accent="evaluaciones" sub={`${client.name} · todos los parámetros, con la variación contra la evaluación anterior`} />

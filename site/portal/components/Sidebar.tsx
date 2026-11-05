@@ -41,8 +41,7 @@ const Icon = ({ name }: { name: keyof typeof ICONS }) => (
 
 /** El menú del panel del equipo: a la izquierda en la compu; arriba, con un botón que lo despliega, en el celular. */
 export function Sidebar({ items, account }: { items: NavItem[]; account: React.ReactNode }) {
-  // Sin el /portal que le antepone proxy.ts: la URL que se ve en el navegador.
-  const path = usePathname().replace(/^\/portal(?=\/|$)/, "") || "/";
+  const path = usePathname();
   // Abierto en la página donde se abrió: al ir a otra, se cierra solo.
   const [openOn, setOpenOn] = useState<string | null>(null);
   const open = openOn === path;
