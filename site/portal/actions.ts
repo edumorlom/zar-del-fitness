@@ -8,7 +8,7 @@ import { BODY_TYPES, CONDITIONS, MEASURES, PLANS } from "~/lib/clients";
 import { randomUUID } from "node:crypto";
 import { db } from "~/lib/db";
 import { fromLocalInput, todayISO } from "~/lib/format";
-import { bucketFromEnv, imageType, PHOTO_MAX_MB, putObject } from "~/lib/storage";
+import { bucketFromEnv, deleteObject, imageType, PHOTO_MAX_MB, putObject } from "~/lib/storage";
 
 export type FormState = { error?: string; ok?: string } | null;
 
@@ -145,9 +145,13 @@ export async function deleteClient(_: FormState, form: FormData): Promise<FormSt
   if (viewer.role !== "admin") return { error: "Sólo el admin puede borrar clientes." };
   const id = Number(form.get("id"));
   if (id === viewer.id) return { error: "No podés borrar tu propia cuenta." };
-  // checkins: on delete cascade; los clientes de un coach borrado quedan sin coach (on delete set null)
+  // checkins y fotos: on delete cascade; los clientes de un coach borrado quedan sin coach (on delete set null)
+  const photos = await db.query<{ key: string }>("select key from progress_photos where client_id = $1", [id]);
   const { rowCount } = await db.query("delete from users where id = $1", [id]);
   if (!rowCount) return { error: "Ese cliente ya no existe." };
+  // Las fotos de progreso, también del bucket: no quedan fotos de alguien que ya no está en el portal.
+  const bucket = bucketFromEnv();
+  if (bucket) await Promise.all(photos.rows.map((p) => deleteObject(bucket, p.key).catch((e) => console.error(e))));
   redirect("/portal/clientes");
 }
 
@@ -196,6 +200,78 @@ export async function deleteCheckin(_: FormState, form: FormData): Promise<FormS
   );
   if (!rows[0] || !canManage(viewer, rows[0])) return { error: "No podés borrar este control." };
   await db.query("delete from checkins where id = $1", [id]);
+  refresh();
+  return null;
+}
+
+// ---------- Fotos de progreso ----------
+
+/** Las sube el mismo cliente o quien lo maneja (su coach o el admin), y las mismas personas las pueden borrar. */
+async function photoOwner(clientId: number) {
+  const viewer = await requireViewer();
+  const { rows } = await db.query<{ id: number; coach_id: number | null; external_id: string | null }>(
+    "select id, coach_id, external_id from users where id = $1",
+    [clientId]
+  );
+  const client = rows[0];
+  return client && (viewer.id === client.id || canManage(viewer, client)) ? { viewer, client } : null;
+}
+
+/**
+ * Una foto por llamada: el navegador ya la achicó (PhotoUpload) y así cada una entra en serverActions.bodySizeLimit
+ * aunque se elijan varias juntas.
+ */
+export async function addProgressPhoto(_: FormState, form: FormData): Promise<FormState> {
+  const access = await photoOwner(Number(form.get("client_id")));
+  if (!access) return { error: "No podés subir fotos de este cliente." };
+  const takenOn = text(form, "taken_on") || todayISO();
+  if (!DATE.test(takenOn) || takenOn > todayISO()) return { error: "Revisá la fecha: no puede ser futura." };
+
+  const file = form.get("photo");
+  if (!(file instanceof File) || file.size === 0) return { error: "Elegí una foto." };
+  if (file.size > PHOTO_MAX_MB * 1024 * 1024) return { error: `La foto pesa más de ${PHOTO_MAX_MB} MB.` };
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const type = imageType(bytes);
+  if (!type) return { error: "La foto tiene que ser JPG o PNG." };
+  const bucket = bucketFromEnv();
+  if (!bucket) return { error: "No se pueden subir fotos: faltan las variables del bucket." };
+
+  // La carpeta del cliente usa su external_id, como la foto de la ficha; quien no tiene, recibe uno.
+  let externalId = access.client.external_id;
+  if (!externalId) {
+    const { rows } = await db.query<{ external_id: string }>(
+      "update users set external_id = coalesce(external_id, $1) where id = $2 returning external_id",
+      [randomUUID(), access.client.id]
+    );
+    externalId = rows[0].external_id;
+  }
+  const key = `alumnos/${externalId}/progreso/${randomUUID()}.${type}`;
+  try {
+    await putObject(bucket, key, bytes, type === "png" ? "image/png" : "image/jpeg");
+  } catch (e) {
+    console.error(e);
+    return { error: "No se pudo subir la foto. Probá de nuevo." };
+  }
+  await db.query("insert into progress_photos (client_id, key, taken_on, uploaded_by) values ($1, $2, $3, $4)", [
+    access.client.id,
+    key,
+    takenOn,
+    access.viewer.id,
+  ]);
+  refresh();
+  return { ok: "Foto subida." };
+}
+
+export async function deleteProgressPhoto(_: FormState, form: FormData): Promise<FormState> {
+  const { rows } = await db.query<{ client_id: number; key: string }>("select client_id, key from progress_photos where id = $1", [
+    Number(form.get("id")),
+  ]);
+  const photo = rows[0];
+  if (!photo || !(await photoOwner(photo.client_id))) return { error: "No podés borrar esta foto." };
+  await db.query("delete from progress_photos where id = $1", [Number(form.get("id"))]);
+  // Si el bucket falla, la foto ya no aparece en el portal: queda un archivo suelto, nada más.
+  const bucket = bucketFromEnv();
+  if (bucket) await deleteObject(bucket, photo.key).catch((e) => console.error(e));
   refresh();
   return null;
 }

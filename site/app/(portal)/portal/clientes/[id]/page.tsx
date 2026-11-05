@@ -6,11 +6,12 @@ import { AdminShell, PageHead } from "~/components/AdminShell";
 import { ClientForm } from "~/components/ClientForm";
 import { Evolution } from "~/components/Evolution";
 import { Form } from "~/components/Form";
+import { ProgressPhotos } from "~/components/ProgressPhotos";
 import { initials } from "~/components/Shell";
 import { canManage } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { age, bmi, controlStatus, daysBetween, MEASURES, STATUS_LABEL } from "~/lib/clients";
-import { getCheckins, getClient, getCoaches } from "~/lib/data";
+import { getCheckins, getClient, getCoaches, getProgressPhotos } from "~/lib/data";
 import { days, num, shortDate, todayISO } from "~/lib/format";
 
 export const metadata: Metadata = { title: "Cliente" };
@@ -33,7 +34,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
   const client = await getClient(id);
   // Un cliente que no es suyo es, para el coach, un cliente que no existe.
   if (!client || !canManage(viewer, client)) notFound();
-  const [checkins, coaches] = await Promise.all([getCheckins(id), viewer.role === "admin" ? getCoaches() : []]);
+  const [checkins, coaches, photos] = await Promise.all([getCheckins(id), viewer.role === "admin" ? getCoaches() : [], getProgressPhotos(id)]);
 
   const today = todayISO();
   const last = checkins[checkins.length - 1];
@@ -68,6 +69,9 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
           </span>
         }
       >
+        <a className="btn btn--ghost btn--sm" href="#fotos">
+          Fotos{photos.length > 0 && ` (${photos.length})`}
+        </a>
         <a className="btn btn--ghost btn--sm" href="#editar">
           Editar
         </a>
@@ -252,6 +256,11 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         </Form>
       </section>
 
+      <section id="fotos" className="anchor">
+        <h2 className="section-title">Fotos de progreso</h2>
+        <ProgressPhotos clientId={client.id} photos={photos} you={false} />
+      </section>
+
       <section id="editar" className="anchor">
         <h2 className="section-title">{viewer.role === "admin" ? "Editar ficha" : "Objetivo y próximo control"}</h2>
         <ClientForm viewer={viewer} client={client} coaches={coaches} />
@@ -261,7 +270,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
             submit="Borrar cliente"
             button="btn btn--sm btn--danger"
             className="card danger"
-            confirm={`¿Borrar a ${client.name}? Se borran su cuenta y sus ${checkins.length} evaluaciones${client.role === "coach" ? ", y sus clientes quedan sin coach" : ""}. No se puede deshacer.`}
+            confirm={`¿Borrar a ${client.name}? Se borran su cuenta, sus ${checkins.length} evaluaciones y sus fotos${client.role === "coach" ? ", y sus clientes quedan sin coach" : ""}. No se puede deshacer.`}
           >
             <input type="hidden" name="id" value={client.id} />
             <div>

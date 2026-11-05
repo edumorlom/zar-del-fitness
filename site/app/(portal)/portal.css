@@ -2301,6 +2301,144 @@ a.person:hover .strong {
   color: var(--black);
 }
 
+/* ---------- Fotos de progreso ---------- */
+.photos {
+  display: grid;
+  gap: 20px;
+}
+.photos__upload {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px 24px;
+  padding: clamp(18px, 3vw, 28px);
+}
+.photos__upload .field {
+  flex: 0 1 220px;
+}
+.photos__upload .form-foot {
+  flex: 1 1 260px;
+  margin: 0;
+  min-height: 48px;
+}
+.photos__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100% / 2 - 6px, 180px), 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* La primera y la última, lado a lado: dos columnas también en el celular */
+.photos__grid--pair {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 760px;
+}
+.photos__label {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--gold-light);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.photos__count {
+  font-size: 0.85rem;
+}
+.photos__item {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--ink-2);
+  cursor: zoom-in;
+  transition: border-color 0.3s;
+}
+.photos__item:hover,
+.photos__item:focus-visible {
+  border-color: var(--gold);
+}
+.photos__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-out);
+}
+.photos__item:hover img {
+  transform: scale(1.04);
+}
+.photos__date {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 28px 12px 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: var(--white);
+  font-size: 0.8rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+
+/* El visor: la foto a pantalla completa sobre fondo negro */
+.viewer {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--white);
+}
+.viewer[open] {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+.viewer::backdrop {
+  background: rgba(0, 0, 0, 0.94);
+}
+.viewer__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px max(16px, env(safe-area-inset-right)) 12px max(16px, env(safe-area-inset-left));
+}
+.viewer__date {
+  flex: 1;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.viewer__error {
+  padding: 0 16px;
+}
+.viewer__img {
+  align-self: center;
+  justify-self: center;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  padding: 0 16px max(16px, env(safe-area-inset-bottom));
+}
+.viewer__nav {
+  position: fixed;
+  top: 50%;
+  translate: 0 -50%;
+  background: rgba(0, 0, 0, 0.55);
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.viewer__nav--prev {
+  left: 12px;
+}
+.viewer__nav--next {
+  right: 12px;
+}
+
 /* =========================================================
    Celular: que todo entre en el ancho y se pueda tocar
    ========================================================= */
