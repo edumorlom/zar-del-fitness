@@ -37,7 +37,8 @@ const nextConfig: NextConfig = {
     serverActions: { bodySizeLimit: "6mb" },
   },
   // Los mismos encabezados de seguridad que tenía el .htaccess. HSTS sin includeSubDomains. Permissions-Policy no toca
-  // fullscreen ni autoplay: los necesitan los videos de YouTube. El micrófono, sólo para el chat de digui.ai (sus llamadas).
+  // fullscreen ni autoplay: los necesitan los videos de YouTube. El micrófono, para el chat de digui.ai (sus llamadas):
+  // sin self no alcanza, porque el navegador sólo se lo pasa al iframe si la página también lo tiene.
   async headers() {
     return [
       {
@@ -47,7 +48,7 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          { key: "Permissions-Policy", value: 'camera=(), microphone=("https://digui.ai"), geolocation=(), payment=(), usb=()' },
+          { key: "Permissions-Policy", value: 'camera=(), microphone=(self "https://digui.ai"), geolocation=(), payment=(), usb=()' },
         ],
       },
       // Las fotos (public/img/) cambian poco: una semana, como en cPanel. Los .js y .css ya llevan un año (con hash).
