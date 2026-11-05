@@ -5,7 +5,7 @@ import { bucketFromEnv, FILE_KEY, signedUrl } from "~/lib/storage";
 
 // Un archivo del bucket (/archivos/alumnos/<id del portal anterior>/foto.jpg): si quien pide puede verlo, lo manda al
 // enlace firmado. La foto de un cliente la ve él y todo el equipo; la de alguien del equipo, cualquiera con cuenta (el
-// cliente ve la de su coach). El certificado, el cliente y quien lo maneja.
+// cliente ve la de su coach). El certificado y las fotos de progreso, el cliente y quien lo maneja (su coach o el admin).
 // Cloudflare guarda un 404 de un .jpg unos minutos si no se le dice nada: el que no puede verlo no tiene que tapárselo
 // al que sí.
 const notFound = () => new Response("No encontrado", { status: 404, headers: { "Cache-Control": "private, no-store" } });

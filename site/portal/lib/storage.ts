@@ -16,15 +16,18 @@ export function bucketFromEnv(): Bucket | null {
   };
 }
 
-/** Las claves que puede pedir el portal: la foto o el certificado de un cliente, por su id del portal anterior. */
-export const FILE_KEY = /^alumnos\/([0-9a-f-]{36})\/(foto|certificado)\.(jpg|jpeg|png|pdf)$/;
+/**
+ * Las claves que puede pedir el portal, por el id del portal anterior del cliente: su foto, su certificado o una de sus
+ * fotos de progreso (progreso/<uuid>).
+ */
+export const FILE_KEY = /^alumnos\/([0-9a-f-]{36})\/(foto|certificado|progreso\/[0-9a-f-]{36})\.(jpg|jpeg|png|pdf)$/;
 
 const encode = (s: string) => encodeURIComponent(s).replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 const hmac = (key: string | Buffer, s: string) => createHmac("sha256", key).update(s).digest();
 
 /** Un enlace firmado (query string, como "aws s3 presign") al objeto `key`, con el bucket en el subdominio. */
-export function signedUrl(bucket: Bucket, key: string, now = new Date(), expiresSeconds = 300, method: "GET" | "PUT" = "GET") {
+export function signedUrl(bucket: Bucket, key: string, now = new Date(), expiresSeconds = 300, method: "GET" | "PUT" | "DELETE" = "GET") {
   const host = `${bucket.name}.${new URL(bucket.endpoint).host}`;
   const amzDate = now.toISOString().replace(/[-:]|\.\d{3}/g, ""); // 20130524T000000Z
   const date = amzDate.slice(0, 8);
@@ -65,4 +68,10 @@ export async function putObject(bucket: Bucket, key: string, body: Uint8Array<Ar
     headers: { "Content-Type": contentType },
   });
   if (!res.ok) throw new Error(`Bucket PUT ${key}: ${res.status} ${await res.text()}`);
+}
+
+/** Borra un archivo del bucket con un DELETE firmado. */
+export async function deleteObject(bucket: Bucket, key: string) {
+  const res = await fetch(signedUrl(bucket, key, new Date(), 300, "DELETE"), { method: "DELETE" });
+  if (!res.ok && res.status !== 404) throw new Error(`Bucket DELETE ${key}: ${res.status} ${await res.text()}`);
 }

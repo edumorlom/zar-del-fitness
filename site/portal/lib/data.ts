@@ -80,6 +80,18 @@ export async function getCheckins(clientId: number) {
   return rows;
 }
 
+export type ProgressPhoto = { id: number; url: string; taken_on: string };
+
+/** Las fotos de progreso de un cliente, la más nueva primero. Se sirven por /archivos/ (que revisa quién las pide). */
+export async function getProgressPhotos(clientId: number) {
+  const { rows } = await db.query<ProgressPhoto>(
+    `select id, '/archivos/' || key as url, taken_on from progress_photos
+     where client_id = $1 order by taken_on desc, id desc`,
+    [clientId]
+  );
+  return rows;
+}
+
 export type ClientRow = {
   id: number;
   name: string;
