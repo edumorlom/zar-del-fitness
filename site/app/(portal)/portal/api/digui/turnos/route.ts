@@ -12,14 +12,14 @@ type Who = { id: number } | Response;
 
 /** El cliente de customer_id o, si no viene, del teléfono; una Response si falta o no hay ficha. */
 async function who(customer_id: unknown, telefono: unknown): Promise<Who> {
-  const byId = customer_id != null && customer_id !== "";
   const id = customerId(customer_id);
-  if (byId && id !== null) {
+  if (id !== null) {
     const c = await clientById(id);
     return c ? { id: c } : fail(NO_FILE_ID);
   }
-  if (typeof telefono === "string" && telefono.trim()) {
-    const c = await clientByPhone(telefono);
+  const tel = typeof telefono === "number" && Number.isFinite(telefono) ? String(telefono) : telefono;
+  if (typeof tel === "string" && tel.trim()) {
+    const c = await clientByPhone(tel);
     return c ? { id: c } : fail(NO_FILE_PHONE);
   }
   return fail("Falta el teléfono o el customer_id.", 400);

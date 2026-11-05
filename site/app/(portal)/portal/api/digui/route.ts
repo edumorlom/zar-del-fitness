@@ -31,6 +31,7 @@ POST /turnos   (con clave, cuerpo JSON)
   {"telefono": "...", "customer_id": 123, "inicio": "AAAA-MM-DDTHH:MM"}
   Pide un turno (queda "pedido" hasta que el Zar lo confirme). "inicio" tiene que ser un horario libre de /horarios.
   Respuesta: {"ok": true, "mensaje": "Pedido: ..."} o {"ok": false, "mensaje": "..."}
+  Cancelar o mover un turno no se puede por la API: se hace desde el portal o escribiéndole al Zar.
 `;
 
 export function GET() {

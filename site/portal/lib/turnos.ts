@@ -58,8 +58,7 @@ export async function clientByPhone(phone: string): Promise<number | null> {
   if (!tail) return null;
   const { rows } = await db.query<{ id: number }>(
     `select id from users
-     where role = 'user' and length(regexp_replace(phone, '\\D', '', 'g')) >= 7
-       and right(regexp_replace(phone, '\\D', '', 'g'), 7) = $1
+     where role = 'user' and right(regexp_replace(phone, '\\D', '', 'g'), 7) = $1
      limit 2`,
     [tail]
   );
