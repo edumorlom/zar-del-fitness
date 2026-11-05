@@ -103,6 +103,9 @@ el dominio:
   bucket (`BUCKET_ENDPOINT`, `BUCKET_NAME`, `BUCKET_ACCESS_KEY_ID`, `BUCKET_SECRET_ACCESS_KEY`). `DIGUI_SIGNING_SECRET`
   (el secreto de firma de la cuenta de Digui): con ella, el chat de Digui sabe quién entró (cliente, coach o admin)
   (`portal/components/DiguiChat.tsx`, que carga el chat sólo cuando alguien entró); sin ella, no hay chat.
+  `DIGUI_API_KEY`: la clave que Digui manda como `Authorization: Bearer …` a la API de turnos (`/api/digui/…` en el
+  portal, sin Clerk: ver `proxy.ts`); sin ella, esas rutas responden 401. Sirve para que Digui consulte horarios libres,
+  vea los turnos de quien chatea y los pida. Las instrucciones para Digui están en `https://mi.zardelfitness.com.ar/api/digui`.
 - Sólo `/ingresar` se indexa, y está en el `sitemap.xml` del sitio (`app/sitemap.ts`); el `robots.txt` del portal
   (`app/(portal)/portal/robots.txt/route.ts`) nombra ese sitemap, que es lo que le permite nombrar una página de otro
   dominio.

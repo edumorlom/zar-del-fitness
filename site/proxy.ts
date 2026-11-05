@@ -76,8 +76,17 @@ async function site(req: NextRequest) {
   return NextResponse.next();
 }
 
+// La API de Digui la llama el servidor de Digui con su clave, no una persona con sesión: va al portal sin Clerk.
+const isDigui = (pathname: string) => pathname === "/api/digui" || pathname.startsWith("/api/digui/");
+
 export default function proxy(req: NextRequest, event: NextFetchEvent) {
-  return isPortal(req) ? clerk(req, event) : site(req);
+  if (!isPortal(req)) return site(req);
+  if (isDigui(req.nextUrl.pathname)) {
+    const url = req.nextUrl.clone();
+    url.pathname = `/portal${url.pathname}`;
+    return NextResponse.rewrite(url);
+  }
+  return clerk(req, event);
 }
 
 export const config = {
