@@ -1,28 +1,15 @@
 "use server";
 
-import horarios from "@db/horarios.json";
 import { refresh } from "next/cache";
 import { canManage } from "~/lib/access";
 import { requireViewer, type Viewer } from "~/lib/auth";
 import { db } from "~/lib/db";
-import { getAppointment, takenIntervals, type Appointment } from "~/lib/data";
+import { getAppointment, type Appointment } from "~/lib/data";
 import { dateOf, fromLocalInput, longDate, timeOf } from "~/lib/format";
-import { busy, createEvent, deleteEvent, moveEvent } from "~/lib/google";
-import { freeSlots, hoursFrom, SLOT_MINUTES } from "~/lib/slots";
+import { createEvent, deleteEvent, moveEvent } from "~/lib/google";
+import { SLOT_MINUTES } from "~/lib/slots";
+import { requestSlot, slotError } from "~/lib/turnos";
 import type { FormState } from "./actions";
-
-const HOURS = hoursFrom(horarios);
-
-/** ¿Se puede dar ese turno? Tiene que ser uno de los tramos libres del día (gimnasio, portal y Google). */
-async function slotError(start: Date, exceptId: number | null = null) {
-  if (Number.isNaN(start.getTime())) return "Elegí un horario.";
-  const day = dateOf(start);
-  const from = new Date(`${day}T00:00:00-03:00`);
-  const to = new Date(from.getTime() + 86_400_000);
-  const taken = [...(await takenIntervals(from, to, exceptId)), ...((await busy(from, to)) ?? [])];
-  const ok = freeSlots(day, HOURS, taken, new Date()).some((s) => s.start.getTime() === start.getTime());
-  return ok ? null : "Ese horario ya no está libre: elegí otro.";
-}
 
 const event = (a: Appointment, start: Date, end: Date) => ({
   start,
@@ -45,26 +32,10 @@ async function load(viewer: Viewer, id: number, ownerOk: boolean) {
 export async function requestAppointment(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();
   if (viewer.role !== "user") return { error: "Los turnos los pide el cliente desde su cuenta." };
-  const start = new Date(String(form.get("start") ?? ""));
-  const { rowCount } = await db.query(
-    "select 1 from appointments where client_id = $1 and status in ('requested', 'confirmed') and ends_at > now()",
-    [viewer.id]
-  );
-  if (rowCount) return { error: "Ya tenés un turno pedido. Si querés otro horario, cancelalo primero." };
-  const err = await slotError(start);
-  if (err) return { error: err };
-  try {
-    await db.query(
-      `insert into appointments (client_id, starts_at, ends_at, created_by)
-       values ($1, $2, $2::timestamptz + make_interval(mins => $3), $1)`,
-      [viewer.id, start, SLOT_MINUTES]
-    );
-  } catch (e) {
-    if ((e as { code?: string }).code === "23505") return { error: "Justo lo pidió otra persona: elegí otro horario." };
-    throw e;
-  }
+  const r = await requestSlot(viewer.id, new Date(String(form.get("start") ?? "")));
+  if (!r.ok) return { error: r.mensaje };
   refresh();
-  return { ok: `Pedido: ${longDate(dateOf(start))} a las ${timeOf(start)} h. Te avisamos cuando esté confirmado.` };
+  return { ok: r.mensaje };
 }
 
 export async function cancelAppointment(_: FormState, form: FormData): Promise<FormState> {
