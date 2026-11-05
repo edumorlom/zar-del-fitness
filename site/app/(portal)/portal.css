@@ -2329,6 +2329,23 @@ a.person:hover .strong {
   padding: 0;
   list-style: none;
 }
+/* La primera y la última, lado a lado: dos columnas también en el celular */
+.photos__grid--pair {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 760px;
+}
+.photos__label {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--gold-light);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.photos__count {
+  font-size: 0.85rem;
+}
 .photos__item {
   position: relative;
   display: block;
