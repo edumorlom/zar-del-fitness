@@ -1,6 +1,6 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { type NextFetchEvent, type NextRequest, NextResponse } from "next/server";
-import { portalUrl, siteUrl } from "@/lib/content";
+import { siteUrl } from "@/lib/content";
 
 // Un solo servidor para el sitio y el portal:
 // - /portal/… (en cualquier dominio): el portal, en app/(portal)/portal/. Clerk lee la sesión en cada pedido; qué puede
@@ -87,13 +87,15 @@ export default function proxy(req: NextRequest, event: NextFetchEvent) {
   const { pathname, search } = req.nextUrl;
   if (!PORTAL.test(pathname)) {
     if (!isMi(req)) return site(req);
-    // A portalUrl, que hoy está en mi. porque zardelfitness.com.ar sigue en cPanel. shortcut: cuando pase a Railway y
-    // portalUrl a `${siteUrl}/portal`, mi./portal/… también tiene que llevar ahí (menos /archivos/…: la base tiene fotos
-    // con https://mi.…/archivos/, de portal/scripts/). La API de Digui no: su servidor la llama acá, y un POST no sigue
-    // una redirección.
-    const local = localOrigin(req);
+    // shortcut: a /portal/… en el mismo mi., porque el DNS viejo (cPanel, con NS de TTL 1.800.000 s) puede seguir
+    // mandando zardelfitness.com.ar a cPanel unos días desde el cambio a Cloudflare (2026-11-05). Desde ~2026-11-12, que
+    // todo mi. lleve a portalUrl, menos /archivos/… (la base tiene fotos con https://mi.…/archivos/, de portal/scripts/)
+    // y la API de Digui (su servidor la llama acá, y un POST no sigue una redirección).
     if (!DIGUI.test(pathname))
-      return NextResponse.redirect(`${local ? `${local}/portal` : portalUrl}${pathname === "/" ? "" : pathname}${search}`, 308);
+      return NextResponse.redirect(
+        `${localOrigin(req) ?? `https://${hostOf(req)}`}/portal${pathname === "/" ? "" : pathname}${search}`,
+        308
+      );
   }
   if (DIGUI.test(pathname)) return NextResponse.rewrite(toPortal(req));
   return clerk(req, event);

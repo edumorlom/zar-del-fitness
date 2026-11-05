@@ -85,12 +85,13 @@ y bajan a la sección (ver `components/RootShell.tsx` y `components/motion/Motio
 ## Portal
 
 El portal de los clientes y del equipo (progreso, evaluaciones, turnos, fichas), en `/portal/`. Es parte del mismo
-build que el sitio; lo que lo separa es la ruta. Mientras `zardelfitness.com.ar` siga en cPanel, se abre en
-[mi.zardelfitness.com.ar/portal](https://mi.zardelfitness.com.ar/portal) (`portalUrl` en `lib/content.ts`):
+build que el sitio; lo que lo separa es la ruta: [zardelfitness.com.ar/portal](https://zardelfitness.com.ar/portal)
+(`portalUrl` en `lib/content.ts`). El DNS de `zardelfitness.com.ar` está en Cloudflare, con el proxy (nube naranja) y
+SSL "Full", delante de Railway:
 
 - `proxy.ts`: `/portal/…` y `/archivos/…` (las fotos y certificados, así guardados en la base) van al portal, con
   Clerk, en cualquier dominio. `mi.` (o `mi.localhost` en desarrollo), el dominio de antes, sin `/portal` en las URLs,
-  lleva a `/portal/…` (`/clientes` → `/portal/clientes`), salvo `/api/digui/…`. El resto, las reglas del sitio (las
+  lleva a `/portal/…` en `mi.` (`/clientes` → `/portal/clientes`), salvo `/api/digui/…`. El resto, las reglas del sitio (las
   URLs viejas de WordPress, la `/` final, el `.com` y los `www`).
 - Las páginas del portal están en `app/(portal)/portal/`, con su layout raíz en `app/(portal)/layout.tsx`. Adentro,
   los links y las redirecciones llevan `/portal` (`/portal/clientes`). Sus componentes, `lib/`, los
