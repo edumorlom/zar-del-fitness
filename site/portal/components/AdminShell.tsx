@@ -1,5 +1,6 @@
 import { Reveals } from "@/components/motion/Reveals";
 import type { Viewer } from "~/lib/auth";
+import { DiguiChat } from "./DiguiChat";
 import { initials, SignOut } from "./Shell";
 import { Sidebar, type NavItem } from "./Sidebar";
 
@@ -31,6 +32,7 @@ export function AdminShell({ viewer, children }: { viewer: Viewer; children: Rea
       <main id="main" className="admin__main">
         {children}
       </main>
+      <DiguiChat customerId={viewer.id} />
       {/* Último: conecta las animaciones data-* una vez montado todo el contenido */}
       <Reveals />
     </div>

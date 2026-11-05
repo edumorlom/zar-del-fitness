@@ -1,7 +1,7 @@
 import { DIGUI_RECEPTIONIST, signVisitor } from "~/lib/digui";
 import { DiguiIdentify } from "./DiguiIdentify";
 
-/** Le pasa al chat de Digui el customer_id del cliente que entró (su id en users), firmado. Sin DIGUI_SIGNING_SECRET, nada. */
+/** Le pasa al chat de Digui el customer_id de quien entró (su id en users; cliente, coach o admin), firmado. Sin DIGUI_SIGNING_SECRET, nada. */
 export function DiguiChat({ customerId }: { customerId: number }) {
   const secret = process.env.DIGUI_SIGNING_SECRET;
   if (!secret) return null;
