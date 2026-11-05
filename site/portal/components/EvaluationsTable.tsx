@@ -1,6 +1,7 @@
 import { MEASURES } from "~/lib/clients";
 import type { Checkin } from "~/lib/data";
 import { num, shortDate } from "~/lib/format";
+import { ScrollTable } from "./ScrollTable";
 
 type Param = { label: string; unit: string; group: string; of: (c: Checkin) => number | null; digits: number };
 
@@ -28,7 +29,7 @@ export function EvaluationsTable({ checkins }: { checkins: Checkin[] }) {
   const shown = PARAMS.filter((p) => checkins.some((c) => p.of(c) !== null));
   const groups = [...new Set(shown.map((p) => p.group))];
   return (
-    <div className="card table-wrap" data-reveal>
+    <ScrollTable>
       <table className="table matrix">
         <thead>
           <tr>
@@ -83,6 +84,6 @@ export function EvaluationsTable({ checkins }: { checkins: Checkin[] }) {
           </tbody>
         ))}
       </table>
-    </div>
+    </ScrollTable>
   );
 }

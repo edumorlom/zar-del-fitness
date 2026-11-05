@@ -2311,6 +2311,51 @@ a.person:hover .strong {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
 }
+/* Degradado en el borde que todavía tiene columnas: avisa que la tabla se desliza (ScrollTable) */
+.table-scroll {
+  position: relative;
+  overflow: hidden;
+}
+.table-scroll::before,
+.table-scroll::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 56px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.table-scroll::before {
+  left: 0;
+  background: linear-gradient(to right, var(--ink), transparent);
+}
+.table-scroll::after {
+  right: 0;
+  background: linear-gradient(to left, var(--ink) 15%, transparent);
+}
+.table-scroll[data-more-right]::after {
+  opacity: 1;
+}
+/* Con la primera columna fija, el degradado izquierdo va pegado a ella y no encima */
+.table-scroll[data-more-left]:not(:has(.table--pin, .matrix))::before {
+  opacity: 1;
+}
+.table-scroll[data-more-left] .table--pin th:first-child,
+.table-scroll[data-more-left] .table--pin td:first-child,
+.table-scroll[data-more-left] .matrix th[scope="row"] {
+  box-shadow: 12px 0 16px -8px rgba(0, 0, 0, 0.85);
+}
+/* La fecha queda fija al deslizar la tabla de controles */
+.table--pin th:first-child,
+.table--pin td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--ink);
+}
 /* La columna de los parámetros queda fija al deslizar la tabla de evaluaciones */
 .matrix th[scope="row"] {
   position: sticky;

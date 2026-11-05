@@ -5,6 +5,7 @@ import { dateOf, days, daysUntil, longDate, monthYear, num, shortDate, timeOf, t
 import { Evolution } from "./Evolution";
 import { Form } from "./Form";
 import { initials } from "./Shell";
+import { ScrollTable } from "./ScrollTable";
 
 const lean = (c: Checkin) => c.weight_kg * (1 - c.body_fat_pct / 100);
 const fat = (c: Checkin) => (c.weight_kg * c.body_fat_pct) / 100;
@@ -327,8 +328,8 @@ export function Results({ checkins, you, manage, number = "01" }: { checkins: Ch
             </a>
           )}
         </div>
-        <div className="card table-wrap" data-reveal>
-          <table className="table">
+        <ScrollTable>
+          <table className="table table--pin">
             <thead>
               <tr>
                 <th scope="col">Fecha</th>
@@ -358,7 +359,7 @@ export function Results({ checkins, you, manage, number = "01" }: { checkins: Ch
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollTable>
       </section>
     </>
   );
