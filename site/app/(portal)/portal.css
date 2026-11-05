@@ -1023,6 +1023,15 @@ button:disabled {
 /* =========================================================
    Panel del equipo (admin y coaches): AdminShell, Sidebar y sus páginas
    ========================================================= */
+/* El menú del sitio (components/Header.tsx) es fijo; en el panel queda arriba y se va con el scroll, para no tapar el menú
+   del costado. La caja guarda su alto: si no, la página saltaba cuando el anuncio se cierra al bajar. */
+.admin-header {
+  position: relative;
+  height: calc(var(--header-h) + 36px);
+}
+.admin-header > header {
+  position: absolute;
+}
 .admin {
   display: grid;
   grid-template-columns: 248px minmax(0, 1fr);
@@ -1044,9 +1053,14 @@ button:disabled {
   padding: 20px 20px 16px;
   border-bottom: 1px solid var(--line);
 }
-.side__logo img {
-  width: 92px;
-  height: auto;
+.side__top .eyebrow {
+  margin: 0;
+}
+/* En la compu sólo tenía el logo, que ya está en el menú del sitio */
+@media (min-width: 901px) {
+  .side__top {
+    display: none;
+  }
 }
 .side__burger {
   display: none;
@@ -1164,9 +1178,6 @@ button:disabled {
   .side__top {
     padding: 10px 16px;
     border-bottom: 0;
-  }
-  .side__logo img {
-    width: 76px;
   }
   .side__burger {
     display: grid;

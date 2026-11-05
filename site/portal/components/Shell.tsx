@@ -14,6 +14,9 @@ export const SignOut = () => (
   </SignOutButton>
 );
 
+/** El botón dorado del menú del sitio, con la sesión iniciada (app/(portal)/portal/salir). */
+export const SIGN_OUT = { label: "Cerrar sesión", href: "/salir" };
+
 const ROLE_LABEL = { admin: "Admin", coach: "Coach", user: "Mi progreso" } as const;
 
 export const initials = (name: string) =>
@@ -27,7 +30,7 @@ export const initials = (name: string) =>
 export function Shell({ viewer, children }: { viewer: Viewer; children: React.ReactNode }) {
   return (
     <>
-      <SiteHeader login={{ label: viewer.role === "user" ? "Mi progreso" : "Clientes", href: "/" }} />
+      <SiteHeader login={SIGN_OUT} />
       <main id="main" className="container portal">
         <div className="portal-bar">
           <span className="eyebrow">

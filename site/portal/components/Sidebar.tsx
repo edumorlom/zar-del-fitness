@@ -46,13 +46,15 @@ export function Sidebar({ items, account }: { items: NavItem[]; account: React.R
   // Abierto en la página donde se abrió: al ir a otra, se cierra solo.
   const [openOn, setOpenOn] = useState<string | null>(null);
   const open = openOn === path;
+  const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
 
   return (
     <aside className="side" data-open={open}>
       <div className="side__top">
-        <Link className="side__logo" href="/">
-          <img src="/img/logo.webp" alt="Zar del Fitness" width={666} height={361} />
-        </Link>
+        {/* El logo ya está en el menú del sitio, arriba: en el celular, al lado del botón, la sección donde está */}
+        <span className="eyebrow">
+          <span className="num">{items.find((it) => isCurrent(it.href))?.label ?? "Panel"}</span>
+        </span>
         <button
           className="side__burger"
           type="button"
@@ -68,7 +70,7 @@ export function Sidebar({ items, account }: { items: NavItem[]; account: React.R
       <div className="side__body" id="side-nav">
         <nav className="side__nav" aria-label="Panel">
           {items.map((it) => {
-            const current = path === it.href || path.startsWith(`${it.href}/`);
+            const current = isCurrent(it.href);
             return (
               <Link key={it.href} href={it.href} className="side__link" aria-current={current ? "page" : undefined}>
                 <Icon name={it.icon} />

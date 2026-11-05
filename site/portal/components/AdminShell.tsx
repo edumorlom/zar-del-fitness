@@ -1,10 +1,11 @@
 import { Reveals } from "@/components/motion/Reveals";
 import type { Viewer } from "~/lib/auth";
 import { DiguiChat } from "./DiguiChat";
-import { initials, SignOut } from "./Shell";
+import { initials, SIGN_OUT, SignOut } from "./Shell";
 import { Sidebar, type NavItem } from "./Sidebar";
+import { SiteHeader } from "./SiteHeader";
 
-/** El panel del equipo (admin y coaches): el menú al costado y la página. Los clientes ven Shell, con el menú del sitio. */
+/** El panel del equipo (admin y coaches): arriba el menú del sitio, como los clientes (Shell); al costado el del panel. */
 export function AdminShell({ viewer, children }: { viewer: Viewer; children: React.ReactNode }) {
   const items: NavItem[] = [
     { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
@@ -13,29 +14,34 @@ export function AdminShell({ viewer, children }: { viewer: Viewer; children: Rea
     ...(viewer.role === "admin" ? [{ href: "/configuracion", label: "Configuración", icon: "settings" } as const] : []),
   ];
   return (
-    <div className="admin">
-      <Sidebar
-        items={items}
-        account={
-          <>
-            <span className="avatar" aria-hidden="true">
-              {initials(viewer.name)}
-            </span>
-            <span className="side__who">
-              <span className="strong">{viewer.name}</span>
-              <span className="side__role">{viewer.role === "admin" ? "Admin" : "Coach"}</span>
-            </span>
-            <SignOut />
-          </>
-        }
-      />
-      <main id="main" className="admin__main">
-        {children}
-      </main>
-      <DiguiChat customerId={viewer.id} />
-      {/* Último: conecta las animaciones data-* una vez montado todo el contenido */}
-      <Reveals />
-    </div>
+    <>
+      <div className="admin-header">
+        <SiteHeader login={SIGN_OUT} />
+      </div>
+      <div className="admin">
+        <Sidebar
+          items={items}
+          account={
+            <>
+              <span className="avatar" aria-hidden="true">
+                {initials(viewer.name)}
+              </span>
+              <span className="side__who">
+                <span className="strong">{viewer.name}</span>
+                <span className="side__role">{viewer.role === "admin" ? "Admin" : "Coach"}</span>
+              </span>
+              <SignOut />
+            </>
+          }
+        />
+        <main id="main" className="admin__main">
+          {children}
+        </main>
+        <DiguiChat customerId={viewer.id} />
+        {/* Último: conecta las animaciones data-* una vez montado todo el contenido */}
+        <Reveals />
+      </div>
+    </>
   );
 }
 
