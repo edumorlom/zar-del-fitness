@@ -8,6 +8,14 @@ export const BAD_DAY = "Ese día no se puede pedir: elegí uno entre mañana y l
 
 const sha = (s: string) => createHash("sha256").update(s).digest();
 
+// Dónde está la API, para sus instrucciones: el dominio en que se pidieron (Railway lo pasa en Host). En mi. las URLs
+// no llevan /portal; en el dominio principal, sí.
+export function apiBase(host: string): string {
+  const name = host.split(",")[0].trim().toLowerCase();
+  const scheme = /^(mi\.)?localhost(:\d+)?$/.test(name) ? "http" : "https";
+  return `${scheme}://${name}${name.startsWith("mi.") ? "" : "/portal"}/api/digui`;
+}
+
 // Se hashean ambos lados para que timingSafeEqual compare largos iguales y no filtre el de la clave.
 export function keyOk(header: string | null, key: string | undefined): boolean {
   if (!key || header === null) return false;

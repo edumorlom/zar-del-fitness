@@ -1,10 +1,11 @@
 import { portalUrl } from "@/lib/content";
+import { apiBase } from "@/portal/lib/digui-api";
 
 // Las instrucciones de la API para Digui (sin clave: no dicen nada secreto).
 export const dynamic = "force-dynamic";
 
-const DOCS = `API de turnos de Zar del Fitness, para Digui
-Base: ${portalUrl}/api/digui
+const docs = (base: string) => `API de turnos de Zar del Fitness, para Digui
+Base: ${base}
 
 Clave: las rutas con clave piden el encabezado
   Authorization: Bearer <clave>
@@ -36,6 +37,7 @@ POST /turnos   (con clave, cuerpo JSON)
   Cancelar o mover un turno no se puede por la API: se hace desde el portal o escribiéndole al Zar.
 `;
 
-export function GET() {
-  return new Response(DOCS, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+export function GET(req: Request) {
+  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+  return new Response(docs(host ? apiBase(host) : `${portalUrl}/api/digui`), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
 }

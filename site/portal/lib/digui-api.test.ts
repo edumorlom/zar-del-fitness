@@ -1,6 +1,14 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { customerId, keyOk, parseDay, parseStart, phoneTail } from "./digui-api.ts";
+import { apiBase, customerId, keyOk, parseDay, parseStart, phoneTail } from "./digui-api.ts";
+
+test("la base de la API: el dominio en que se pidieron las instrucciones (mi. sin /portal)", () => {
+  assert.equal(apiBase("mi.zardelfitness.com.ar"), "https://mi.zardelfitness.com.ar/api/digui");
+  assert.equal(apiBase("zardelfitness.com.ar"), "https://zardelfitness.com.ar/portal/api/digui");
+  assert.equal(apiBase("MI.zardelfitness.com.ar, proxy.internal"), "https://mi.zardelfitness.com.ar/api/digui");
+  assert.equal(apiBase("mi.localhost:3000"), "http://mi.localhost:3000/api/digui");
+  assert.equal(apiBase("localhost:3000"), "http://localhost:3000/portal/api/digui");
+});
 
 test("la clave: solo Bearer con la clave exacta, y nunca sin clave configurada", () => {
   assert.equal(keyOk("Bearer s3cret", "s3cret"), true);
