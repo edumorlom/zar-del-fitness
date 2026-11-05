@@ -100,7 +100,9 @@ el dominio:
   igual: el sitio no depende de ella.
 - Las variables (`.env.local` para `npm run dev`; en producción, las del servicio en Railway):
   `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `DATABASE_URL`, `ADMIN_EMAIL` (el primer admin) y las del
-  bucket (`BUCKET_ENDPOINT`, `BUCKET_NAME`, `BUCKET_ACCESS_KEY_ID`, `BUCKET_SECRET_ACCESS_KEY`).
+  bucket (`BUCKET_ENDPOINT`, `BUCKET_NAME`, `BUCKET_ACCESS_KEY_ID`, `BUCKET_SECRET_ACCESS_KEY`). `DIGUI_SIGNING_SECRET`
+  (el secreto de firma de la cuenta de Digui): con ella, el chat de Digui sabe qué cliente es
+  (`portal/components/DiguiChat.tsx`); sin ella, el chat sigue, pero sin saberlo.
 - Sólo `/ingresar` se indexa, y está en el `sitemap.xml` del sitio (`app/sitemap.ts`); el `robots.txt` del portal
   (`app/(portal)/portal/robots.txt/route.ts`) nombra ese sitemap, que es lo que le permite nombrar una página de otro
   dominio.

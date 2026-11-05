@@ -10,6 +10,7 @@ import Script from "next/script";
 import { IconSprite } from "@/components/Icon";
 import { portalUrl, siteUrl } from "@/lib/content";
 import { Cursor } from "@/components/motion/Cursor";
+import { DIGUI_RECEPTIONIST } from "~/lib/digui";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 
 // Las mismas tipografías que components/RootShell.tsx.
@@ -101,7 +102,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </ClerkProvider>
         {/* El chat de digui.ai, en todas las páginas del portal (no en las del sitio). */}
-        <Script src="https://digui.ai/chat.js" data-receptionist="zardelfitness-com-ar-a6ee069f50c6145f" strategy="afterInteractive" />
+        {/* Quién es el cliente se lo pasa portal/components/DiguiChat.tsx, en sus páginas. */}
+        <Script src="https://digui.ai/chat.js" data-receptionist={DIGUI_RECEPTIONIST} strategy="afterInteractive" />
       </body>
     </html>
   );

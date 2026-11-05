@@ -1,6 +1,7 @@
 import { SignOutButton } from "@clerk/nextjs";
 import { Reveals } from "@/components/motion/Reveals";
 import type { Viewer } from "~/lib/auth";
+import { DiguiChat } from "./DiguiChat";
 import { SiteHeader } from "./SiteHeader";
 
 export const SignOut = () => (
@@ -42,6 +43,7 @@ export function Shell({ viewer, children }: { viewer: Viewer; children: React.Re
         </div>
         {children}
       </main>
+      {viewer.role === "user" && <DiguiChat customerId={viewer.id} />}
       {/* Último: conecta las animaciones data-* una vez montado todo el contenido */}
       <Reveals />
     </>
