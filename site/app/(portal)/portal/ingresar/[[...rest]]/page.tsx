@@ -1,6 +1,7 @@
 import { SignIn } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { DiguiChat } from "~/components/DiguiChat";
 import { LoginBackdrop } from "~/components/LoginBackdrop";
 import { SiteHeader } from "~/components/SiteHeader";
 import { getViewer } from "~/lib/auth";
@@ -56,6 +57,7 @@ export default async function LoginPage() {
       </p>
 
     </main>
+    <DiguiChat />
     </>
   );
 }

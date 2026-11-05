@@ -2,6 +2,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import gimnasio from "@db/gimnasio.json";
+import { DiguiChat } from "~/components/DiguiChat";
 import { LoginBackdrop } from "~/components/LoginBackdrop";
 import { SiteHeader } from "~/components/SiteHeader";
 import { SignOut } from "~/components/Shell";
@@ -52,6 +53,7 @@ export default async function NoAccessPage() {
         </div>
       </div>
     </main>
+    <DiguiChat />
     </>
   );
 }

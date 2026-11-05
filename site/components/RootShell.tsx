@@ -9,6 +9,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { business, content, siteUrl } from "@/lib/content";
 import { locales, type Lang } from "@/lib/i18n";
 import { siteGraph } from "@/lib/seo";
+import { DiguiChat } from "~/components/DiguiChat";
 
 const anton = Anton({ weight: "400", subsets: ["latin"], variable: "--font-anton" });
 // Sólo la cursiva: la serif siempre va en cursiva (.serif y las demás), y cada estilo es un archivo más que se
@@ -71,6 +72,7 @@ export function RootShell({ lang, children }: { lang: Lang; children: React.Reac
           {children}
         </MotionProvider>
         <Analytics />
+        <DiguiChat />
       </body>
     </html>
   );
