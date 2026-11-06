@@ -1,12 +1,11 @@
 import { Header } from "./Header";
 import { Footer } from "./Footer";
-import { WhatsAppFloat } from "./WhatsAppFloat";
 import { Reveals } from "./motion/Reveals";
 import { content } from "@/lib/content";
 import { otherLang, type Lang } from "@/lib/i18n";
 
 /**
- * Lo que rodea a cada página: menú, pie, WhatsApp y las animaciones data-*. `alternate` es la URL de la misma
+ * Lo que rodea a cada página: menú, pie y las animaciones data-*. `alternate` es la URL de la misma
  * página en el otro idioma (el botón "EN"/"ES" del menú); si no está traducida, el inicio del otro idioma.
  */
 export function PageShell({ lang, alternate, children }: { lang: Lang; alternate: string; children: React.ReactNode }) {
@@ -33,7 +32,6 @@ export function PageShell({ lang, alternate, children }: { lang: Lang; alternate
       />
       <main id="main">{children}</main>
       <Footer lang={lang} />
-      <WhatsAppFloat href={links.waInfo} label={t.whatsapp.botonFlotante} cursor={t.general.cursorChat} />
       {/* Último: conecta las animaciones data-* una vez montado todo el contenido */}
       <Reveals />
     </>
