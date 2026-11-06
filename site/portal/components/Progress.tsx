@@ -197,7 +197,7 @@ function Spark({ values }: { values: number[] }) {
   const [x, y] = pts[pts.length - 1];
   return (
     <svg className="spark" viewBox="0 0 120 40" preserveAspectRatio="none" aria-hidden="true">
-      <polyline pathLength={1} points={pts.map((p) => p.map((n) => n.toFixed(1)).join(",")).join(" ")} />
+      <polyline points={pts.map((p) => p.map((n) => n.toFixed(1)).join(",")).join(" ")} />
       <path className="spark__dot" d={`M${x} ${y.toFixed(1)}h0`} />
     </svg>
   );
