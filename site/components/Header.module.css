@@ -243,6 +243,10 @@
   opacity: 0;
   transition: opacity 0.5s 0.1s;
 }
+.menuFoot {
+  /* El chat de Digui flota abajo a la derecha: que no tape los botones. */
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+}
 .menu[data-open="true"] .menuFoot {
   opacity: 1;
   transition-delay: 0.6s;
@@ -263,11 +267,34 @@
 }
 
 @media (max-width: 560px) {
-  /* Sin lugar en la barra: quedan en el menú móvil. */
+  .bar {
+    gap: 10px;
+  }
+  /* Mi Portal sigue en la barra, más chico: en el menú quedaba abajo a la derecha, tapado por el chat de Digui. */
   .login {
-    display: none;
+    min-height: 40px;
+    padding: 0.7em 1em;
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+  }
+  .lang {
+    margin-right: 0;
+  }
+  .burger {
+    flex: none;
   }
   .announceCta {
     display: none;
+  }
+}
+
+/* Los celulares más angostos (320 px): el logo un poco más chico para que entren EN, Mi Portal y el menú. */
+@media (max-width: 359px) {
+  .logo,
+  .header[data-scrolled="true"] .logo {
+    width: 80px;
+  }
+  .bar {
+    gap: 8px;
   }
 }
