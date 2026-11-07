@@ -15,6 +15,8 @@ import { siteUrl } from "@/lib/content";
 const hostOf = (req: NextRequest) =>
   (req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "").split(",")[0].trim().replace(/:\d+$/, "").toLowerCase();
 const isMi = (req: NextRequest) => hostOf(req).startsWith("mi.");
+/** El .com y los www: van al dominio principal (siteUrl), con la misma ruta. */
+const isAlias = (req: NextRequest) => /^(www\.)?zardelfitness\.com$/.test(hostOf(req)) || hostOf(req).startsWith("www.");
 /** En desarrollo (localhost) las redirecciones se quedan en localhost; en producción, a los dominios de verdad. */
 const localOrigin = (req: NextRequest) => {
   const host = req.headers.get("host") ?? "";
@@ -58,12 +60,10 @@ async function gone(req: NextRequest) {
 /** Las reglas del sitio, en orden: la primera que coincide gana. */
 async function site(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
-  const hostname = hostOf(req);
   const origin = localOrigin(req) ?? siteUrl;
   const to = (path: string) => NextResponse.redirect(new URL(path, origin), 301);
 
-  // El .com y los www van al dominio principal, con la misma ruta.
-  if (/^(www\.)?zardelfitness\.com$/.test(hostname) || hostname.startsWith("www.")) return to(pathname + search);
+  if (isAlias(req)) return to(pathname + search);
 
   let m: RegExpMatchArray | null;
   // Idiomas: /es/… sin el prefijo; /spanish/ y /english/ fueron los prefijos unas horas el 2026-10-11.
@@ -98,6 +98,9 @@ export default function proxy(req: NextRequest, event: NextFetchEvent) {
       );
   }
   if (DIGUI.test(pathname)) return NextResponse.rewrite(toPortal(req));
+  // El portal también, en el dominio del sitio: la sesión de Clerk y la cookie del chat de Digui (portal/lib/digui-cookie.ts)
+  // son de un dominio, y el sitio no vería las del .com.
+  if (isAlias(req)) return NextResponse.redirect(new URL(pathname + search, siteUrl), 308);
   return clerk(req, event);
 }
 
