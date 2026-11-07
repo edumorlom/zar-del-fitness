@@ -277,7 +277,7 @@
   }
 }
 
-/* ---------- Barra del portal (debajo del menú del sitio): quién entró y salir ---------- */
+/* ---------- Barra del portal (debajo del menú del sitio): qué parte del portal es ---------- */
 .portal-bar {
   display: flex;
   align-items: center;
@@ -289,13 +289,6 @@
 }
 .portal-bar .eyebrow {
   margin: 0;
-}
-.me {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 0.9rem;
-  font-weight: 600;
 }
 .avatar {
   display: grid;
@@ -323,11 +316,6 @@
 .icon-btn:hover {
   border-color: var(--gold);
   color: var(--gold-light);
-}
-@media (max-width: 560px) {
-  .me__name {
-    display: none;
-  }
 }
 
 /* ---------- Páginas ---------- */

@@ -26,7 +26,7 @@ export const initials = (name: string) =>
     .map((w) => w[0]?.toUpperCase())
     .join("");
 
-/** Arriba, el menú del sitio; abajo, quién entró y el botón para salir. Y las animaciones data-* del sitio. */
+/** Arriba, el menú del sitio (con "Cerrar sesión"); abajo, qué parte del portal es. Y las animaciones data-* del sitio. */
 export function Shell({ viewer, children }: { viewer: Viewer; children: React.ReactNode }) {
   return (
     <>
@@ -36,13 +36,6 @@ export function Shell({ viewer, children }: { viewer: Viewer; children: React.Re
           <span className="eyebrow">
             <span className="num">{ROLE_LABEL[viewer.role]}</span>
           </span>
-          <div className="me">
-            <span className="avatar" aria-hidden="true">
-              {initials(viewer.name)}
-            </span>
-            <span className="me__name">{viewer.name}</span>
-            <SignOut />
-          </div>
         </div>
         {children}
       </main>
