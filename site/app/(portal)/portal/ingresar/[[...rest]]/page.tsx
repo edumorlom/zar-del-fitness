@@ -57,7 +57,7 @@ export default async function LoginPage() {
       </p>
 
     </main>
-    <DiguiChat />
+    <DiguiChat forget />
     </>
   );
 }

@@ -103,7 +103,8 @@ SSL "Full", delante de Railway:
   `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `DATABASE_URL`, `ADMIN_EMAIL` (el primer admin) y las del
   bucket (`BUCKET_ENDPOINT`, `BUCKET_NAME`, `BUCKET_ACCESS_KEY_ID`, `BUCKET_SECRET_ACCESS_KEY`). `DIGUI_SIGNING_SECRET`
   (el secreto de firma de la cuenta de Digui): con ella, el chat de Digui sabe quién entró (cliente, coach o admin)
-  (`portal/components/DiguiChat.tsx`, que carga el chat sólo cuando alguien entró); sin ella, no hay chat.
+  (`portal/components/DiguiChat.tsx`), en el portal y también en el sitio, con una cookie que deja el portal
+  (`portal/lib/digui-cookie.ts`; se borra al cerrar la sesión); sin ella, el chat es anónimo.
   `DIGUI_API_KEY`: la clave que Digui manda como `Authorization: Bearer …` a la API de turnos (`/portal/api/digui/…`,
   y `/api/digui/…` en `mi.`, sin Clerk: ver `proxy.ts`); sin ella, esas rutas responden 401. Sirve para que Digui consulte horarios libres,
   vea los turnos de quien chatea y los pida. Las instrucciones para Digui están en `<portalUrl>/api/digui`. Con la misma clave, `<portalUrl>/api/digui/mcp` es un servidor MCP (Streamable HTTP, sin sesión; `portal/lib/mcp.ts`) con lo mismo como herramientas, más la ficha (sin datos de salud ni DNI) y las evaluaciones de la persona y la información del gimnasio, para conectarle a Digui u otro agente.

@@ -53,7 +53,7 @@ export default async function NoAccessPage() {
         </div>
       </div>
     </main>
-    <DiguiChat />
+    <DiguiChat forget />
     </>
   );
 }
