@@ -35,6 +35,12 @@ POST /turnos   (con clave, cuerpo JSON)
   Pide un turno (queda "pedido" hasta que el Zar lo confirme). "inicio" tiene que ser un horario libre de /horarios.
   Respuesta: {"ok": true, "mensaje": "Pedido: ..."} o {"ok": false, "mensaje": "..."}
   Cancelar o mover un turno no se puede por la API: se hace desde el portal o escribiéndole al Zar.
+
+MCP: ${base}/mcp   (con clave, Streamable HTTP, sin sesión)
+  Lo mismo como herramientas MCP, más la ficha y las evaluaciones de la persona y la información del gimnasio:
+  info_gimnasio, ver_cliente, ver_evaluaciones, ver_horarios_libres, ver_turnos, pedir_turno.
+  La persona va igual: customer_id o telefono, del servidor del agente. La ficha no trae datos de salud ni el DNI, y
+  no hay herramienta para buscar o listar clientes.
 `;
 
 export function GET(req: Request) {

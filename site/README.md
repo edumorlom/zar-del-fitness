@@ -106,7 +106,7 @@ SSL "Full", delante de Railway:
   (`portal/components/DiguiChat.tsx`, que carga el chat sólo cuando alguien entró); sin ella, no hay chat.
   `DIGUI_API_KEY`: la clave que Digui manda como `Authorization: Bearer …` a la API de turnos (`/portal/api/digui/…`,
   y `/api/digui/…` en `mi.`, sin Clerk: ver `proxy.ts`); sin ella, esas rutas responden 401. Sirve para que Digui consulte horarios libres,
-  vea los turnos de quien chatea y los pida. Las instrucciones para Digui están en `<portalUrl>/api/digui`.
+  vea los turnos de quien chatea y los pida. Las instrucciones para Digui están en `<portalUrl>/api/digui`. Con la misma clave, `<portalUrl>/api/digui/mcp` es un servidor MCP (Streamable HTTP, sin sesión; `portal/lib/mcp.ts`) con lo mismo como herramientas, más la ficha (sin datos de salud ni DNI) y las evaluaciones de la persona y la información del gimnasio, para conectarle a Digui u otro agente.
 - Sólo `/portal/ingresar` se indexa, y está en el `sitemap.xml` del sitio (`app/sitemap.ts`); el `robots.txt` del portal
   (`app/(portal)/portal/robots.txt/route.ts`) nombra ese sitemap, que es lo que le permite nombrar una página de otro
   dominio.
