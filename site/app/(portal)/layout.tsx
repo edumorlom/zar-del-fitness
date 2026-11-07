@@ -5,16 +5,11 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { esUY } from "@clerk/localizations";
 import { ui } from "@clerk/ui";
 import type { Metadata, Viewport } from "next";
-import { Anton, Instrument_Serif, Manrope } from "next/font/google";
 import { IconSprite } from "@/components/Icon";
-import { portalUrl, siteUrl } from "@/lib/content";
-import { Cursor } from "@/components/motion/Cursor";
-import { SmoothScroll } from "@/components/motion/SmoothScroll";
-
-// Las mismas tipografías que components/RootShell.tsx.
-const anton = Anton({ weight: "400", subsets: ["latin"], variable: "--font-anton" });
-const instrument = Instrument_Serif({ weight: "400", style: "italic", subsets: ["latin"], variable: "--font-instrument" });
-const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
+import { MotionProvider } from "@/components/motion/MotionProvider";
+import { fonts } from "@/components/RootShell";
+import { Sparkles } from "@/components/Sparkles";
+import { content, portalUrl, siteUrl } from "@/lib/content";
 
 export const metadata: Metadata = {
   metadataBase: new URL(portalUrl),
@@ -86,7 +81,7 @@ const appearance = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es-AR" className={`${anton.variable} ${instrument.variable} ${manrope.variable}`}>
+    <html lang="es-AR" className={fonts}>
       <body>
         {/* esUY: castellano rioplatense (con vos), lo más cercano a Argentina que trae Clerk */}
         {/* ui: la versión del formulario de Clerk queda fija con la del portal (sus estilos no se rompen solos) */}
@@ -95,9 +90,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <a className="skip-link" href="#main">
             Ir al contenido
           </a>
-          <SmoothScroll />
-          <Cursor />
-          {children}
+          {/* El fondo del sitio (el del inicio, components/Hero.tsx): los destellos y el brillo dorado, quietos detrás de todo */}
+          <div className="site-backdrop" aria-hidden="true">
+            <Sparkles />
+          </div>
+          {/* Lo mismo que el sitio: el scroll suave, el cursor dorado y la barra de progreso arriba */}
+          <MotionProvider labels={{ video: content("es").t.video }}>{children}</MotionProvider>
         </ClerkProvider>
       </body>
     </html>

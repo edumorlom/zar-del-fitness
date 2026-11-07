@@ -64,6 +64,32 @@
   color: var(--muted);
 }
 
+/* ---------- El fondo del sitio (app/(portal)/layout.tsx): los destellos (components/Sparkles.tsx) y el brillo dorado
+   del hero, fijos detrás de todo. El <html> no tiene fondo: el negro del body es el de la ventana, y esto va encima. ---------- */
+.site-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.site-backdrop canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.site-backdrop::before {
+  content: "";
+  position: absolute;
+  right: -15%;
+  top: -10%;
+  width: 70vw;
+  height: 70vw;
+  max-width: 900px;
+  max-height: 900px;
+  background: radial-gradient(circle, rgba(152, 136, 88, 0.26) 0%, rgba(167, 137, 47, 0.07) 35%, transparent 65%);
+  filter: blur(20px);
+}
+
 /* ---------- Entrada al cargar la página (lo de arriba no espera al scroll, como el hero del sitio) ---------- */
 @media (prefers-reduced-motion: no-preference) {
   .intro {
@@ -95,7 +121,8 @@
   /* Debajo del menú del sitio, que es fijo: el anuncio (36px) y la barra */
   padding: calc(var(--header-h) + 36px + clamp(12px, 2.5vh, 40px)) var(--gutter) clamp(20px, 4vh, 64px);
   overflow: hidden;
-  background: radial-gradient(70% 60% at 50% 45%, #0d0b07, #000 70%);
+  /* Hacia afuera, transparente: alrededor se ven los destellos del fondo del sitio (.site-backdrop) */
+  background: radial-gradient(70% 60% at 50% 45%, #0d0b07, transparent 70%);
 }
 .panel {
   position: relative;

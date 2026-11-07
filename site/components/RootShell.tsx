@@ -21,6 +21,8 @@ const instrument = Instrument_Serif({
   variable: "--font-instrument",
 });
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
+/** Las clases de las tipografías, para el <html>: también las usa el del portal (app/(portal)/layout.tsx). */
+export const fonts = `${anton.variable} ${instrument.variable} ${manrope.variable}`;
 
 // Lo común a todas las páginas. El título, la descripción y la URL canónica de cada una van en su page.tsx
 // (con pageMetadata() de lib/seo.ts), y la imagen para compartir en su opengraph-image.tsx.
@@ -57,7 +59,7 @@ const scrollTopScript =
 export function RootShell({ lang, children }: { lang: Lang; children: React.ReactNode }) {
   const { t } = content(lang);
   return (
-    <html lang={locales[lang].html} className={`${anton.variable} ${instrument.variable} ${manrope.variable}`}>
+    <html lang={locales[lang].html} className={fonts}>
       {/* eslint-disable-next-line @next/next/no-head-element -- es el <html> de los layouts raíz de app/, no una página */}
       <head>
         <script dangerouslySetInnerHTML={{ __html: scrollTopScript }} />
