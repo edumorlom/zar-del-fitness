@@ -1,11 +1,11 @@
-import { Header } from "@/components/Header";
+import { Header, type PortalMenu } from "@/components/Header";
 import { content, siteUrl } from "@/lib/content";
 
 // Los links del menú van al sitio con su dominio: el portal también se abre en mi. (ver proxy.ts).
 const abs = (href: string) => (href.startsWith("/") ? siteUrl + href : href);
 
 /** El mismo menú que el sitio (components/Header.tsx, con sus textos de db/), con el botón del portal. */
-export function SiteHeader({ login }: { login: { label: string; href: string } }) {
+export function SiteHeader({ login, portal }: { login: { label: string; href: string }; portal?: PortalMenu }) {
   const { t, pages, nav: siteNav, links, price } = content("es");
   const nav = siteNav.map((item) => ({ ...item, href: abs(item.href) }));
   return (
@@ -15,6 +15,7 @@ export function SiteHeader({ login }: { login: { label: string; href: string } }
       announce={{ text: t.encabezado.anuncio, price: price("reto-online"), cta: t.encabezado.anuncioBoton, href: links.retoOnline }}
       waInfo={links.waInfo}
       login={login}
+      portal={portal}
       labels={{
         logo: t.encabezado.logo,
         nav: t.encabezado.menuPrincipal,

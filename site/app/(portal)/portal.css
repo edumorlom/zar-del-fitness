@@ -1070,44 +1070,6 @@ button:disabled {
   border-right: 1px solid var(--line);
   background: linear-gradient(180deg, var(--ink), #0b0b0b);
 }
-.side__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 20px 16px;
-  border-bottom: 1px solid var(--line);
-}
-.side__top .eyebrow {
-  margin: 0;
-}
-/* En la compu sólo tenía el logo, que ya está en el menú del sitio */
-@media (min-width: 901px) {
-  .side__top {
-    display: none;
-  }
-}
-.side__burger {
-  display: none;
-  place-content: center;
-  gap: 6px;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-}
-.side__burger span {
-  display: block;
-  width: 18px;
-  height: 1.5px;
-  background: var(--white);
-  transition: transform 0.3s var(--ease-out);
-}
-.side[data-open="true"] .side__burger span:first-child {
-  transform: translateY(3.75px) rotate(45deg);
-}
-.side[data-open="true"] .side__burger span:last-child {
-  transform: translateY(-3.75px) rotate(-45deg);
-}
 .side__body {
   display: flex;
   flex: 1;
@@ -1188,44 +1150,27 @@ button:disabled {
   margin-bottom: -16px;
 }
 @media (max-width: 900px) {
+  .admin-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: auto;
+  }
+  .admin-header > header {
+    position: relative;
+    background: var(--black);
+  }
+  .admin-header > header[data-hidden] {
+    transform: none;
+  }
   .admin {
     grid-template-columns: 1fr;
   }
   .side {
-    z-index: 30;
-    height: auto;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-    background: rgba(10, 10, 10, 0.94);
-    backdrop-filter: blur(14px);
-  }
-  .side__top {
-    padding: 10px 16px;
-    border-bottom: 0;
-  }
-  .side__burger {
-    display: grid;
-  }
-  .side__body {
     display: none;
-  }
-  .side[data-open="true"] .side__body {
-    display: flex;
-    max-height: calc(100svh - 66px);
-    overflow: auto;
-    border-top: 1px solid var(--line);
   }
   .admin__main {
     padding: 24px 16px 96px;
-  }
-  /* El menú desplegado tapa la página, no la empuja */
-  .side[data-open="true"] .side__body {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: rgba(10, 10, 10, 0.98);
-    border-bottom: 1px solid var(--line);
   }
   .anchor {
     scroll-margin-top: 84px;

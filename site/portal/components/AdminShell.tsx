@@ -5,7 +5,7 @@ import { initials, SIGN_OUT, SignOut } from "./Shell";
 import { Sidebar, type NavItem } from "./Sidebar";
 import { SiteHeader } from "./SiteHeader";
 
-/** El panel del equipo (admin y coaches): arriba el menú del sitio, como los clientes (Shell); al costado el del panel. */
+/** El equipo usa el menú unificado en el celular y conserva el panel lateral en la compu. */
 export function AdminShell({ viewer, children }: { viewer: Viewer; children: React.ReactNode }) {
   const items: NavItem[] = [
     { href: "/portal/dashboard", label: "Dashboard", icon: "dashboard" },
@@ -16,7 +16,7 @@ export function AdminShell({ viewer, children }: { viewer: Viewer; children: Rea
   return (
     <>
       <div className="admin-header">
-        <SiteHeader login={SIGN_OUT} />
+        <SiteHeader login={SIGN_OUT} portal={{ items, name: viewer.name, role: viewer.role === "admin" ? "Admin" : "Coach" }} />
       </div>
       <div className="admin">
         <Sidebar

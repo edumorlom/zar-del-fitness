@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 
 const stroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round" } as const;
 const ICONS = {
@@ -39,33 +38,13 @@ const Icon = ({ name }: { name: keyof typeof ICONS }) => (
   </svg>
 );
 
-/** El menú del panel del equipo: a la izquierda en la compu; arriba, con un botón que lo despliega, en el celular. */
+/** El menú lateral del equipo en escritorio; en móvil los links están en SiteHeader. */
 export function Sidebar({ items, account }: { items: NavItem[]; account: React.ReactNode }) {
   const path = usePathname();
-  // Abierto en la página donde se abrió: al ir a otra, se cierra solo.
-  const [openOn, setOpenOn] = useState<string | null>(null);
-  const open = openOn === path;
   const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
 
   return (
-    <aside className="side" data-open={open}>
-      <div className="side__top">
-        {/* El logo ya está en el menú del sitio, arriba: en el celular, al lado del botón, la sección donde está */}
-        <span className="eyebrow">
-          <span className="num">{items.find((it) => isCurrent(it.href))?.label ?? "Panel"}</span>
-        </span>
-        <button
-          className="side__burger"
-          type="button"
-          aria-expanded={open}
-          aria-controls="side-nav"
-          aria-label={open ? "Cerrar menú" : "Abrir menú"}
-          onClick={() => setOpenOn(open ? null : path)}
-        >
-          <span />
-          <span />
-        </button>
-      </div>
+    <aside className="side">
       <div className="side__body" id="side-nav">
         <nav className="side__nav" aria-label="Panel">
           {items.map((it) => {

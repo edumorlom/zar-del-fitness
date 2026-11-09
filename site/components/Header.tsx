@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "./Icon";
 import type { Lang } from "@/lib/i18n";
@@ -9,6 +10,8 @@ import { scroll } from "@/lib/scroll";
 import styles from "./Header.module.css";
 
 /** Los textos y links del menú, ya en el idioma de la página (los arma components/PageShell.tsx). */
+export type PortalMenu = { items: { href: string; label: string }[]; name: string; role: string };
+
 type HeaderProps = {
   home: string;
   nav: { href: string; label: string }[];
@@ -19,14 +22,19 @@ type HeaderProps = {
   labels: { logo: string; nav: string; navMobile: string; open: string; close: string; write: string };
   /** La misma página en el otro idioma. */
   language: { href: string; lang: Lang; label: string };
+  /** En el panel del equipo, el único menú móvil reúne el portal y el sitio. */
+  portal?: PortalMenu;
 };
 
-export function Header({ home, nav, announce, waInfo, login, labels, language }: HeaderProps) {
+export function Header({ home, nav, announce, waInfo, login, labels, language, portal }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
   // usePathname() no trae la barra final: "/en".
-  const isHome = `${usePathname().replace(/\/$/, "")}/` === home;
+  const path = usePathname();
+  const isHome = `${path.replace(/\/$/, "")}/` === home;
+  const burger = useRef<HTMLButtonElement>(null);
+  const menu = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let last = window.scrollY;
@@ -47,7 +55,24 @@ export function Header({ home, nav, announce, waInfo, login, labels, language }:
     if (!open) return;
     scroll.lock();
     released.current = false;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        burger.current?.focus();
+      }
+      if (e.key === "Tab") {
+        const targets = [burger.current, ...Array.from(menu.current?.querySelectorAll<HTMLElement>("a[href], button") ?? [])].filter((el): el is HTMLElement => Boolean(el));
+        const first = targets[0];
+        const last = targets.at(-1);
+        if (e.shiftKey && (document.activeElement === first || !targets.includes(document.activeElement as HTMLElement))) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && (document.activeElement === last || !targets.includes(document.activeElement as HTMLElement))) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
     window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("keydown", onKey);
@@ -70,6 +95,7 @@ export function Header({ home, nav, announce, waInfo, login, labels, language }:
         data-scrolled={scrolled}
         data-hidden={hidden && !open}
         data-open={open}
+        data-portal={portal ? true : undefined}
       >
         <a className={styles.announce} href={announce.href}>
           <Icon name="spark" />
@@ -110,6 +136,7 @@ export function Header({ home, nav, announce, waInfo, login, labels, language }:
           </a>
 
           <button
+            ref={burger}
             className={styles.burger}
             type="button"
             aria-label={open ? labels.close : labels.open}
@@ -123,21 +150,41 @@ export function Header({ home, nav, announce, waInfo, login, labels, language }:
         </div>
       </header>
 
-      <div className={styles.menu} id="mobile-menu" data-lenis-prevent data-open={open} aria-hidden={!open} inert={!open}>
-        <nav className={styles.menuNav} aria-label={labels.navMobile}>
-          {nav.map((item, i) => (
-            <a key={item.href} href={item.href} onClick={closeMenu} style={{ "--i": i } as React.CSSProperties}>
-              <small>0{i + 1}</small>
-              {item.label}
-            </a>
-          ))}
-        </nav>
+      <div ref={menu} className={styles.menu} id="mobile-menu" data-lenis-prevent data-open={open} data-portal={portal ? true : undefined} aria-hidden={!open} inert={!open}>
+        <div className={styles.menuSections}>
+          {portal && (
+            <section className={styles.portalSection} aria-labelledby="portal-menu-label">
+              <div className={styles.portalAccount}>
+                <h2 id="portal-menu-label">Tu panel</h2>
+                <span>{portal.name} · {portal.role}</span>
+              </div>
+              <nav className={styles.portalNav} aria-label="Panel">
+                {portal.items.map((item) => (
+                  <Link key={item.href} href={item.href} onClick={closeMenu} aria-current={path === item.href || path.startsWith(`${item.href}/`) ? "page" : undefined}>
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            </section>
+          )}
+          <div>
+            {portal && <p className={styles.menuLabel}>Zar del Fitness</p>}
+            <nav className={styles.menuNav} aria-label={labels.navMobile}>
+              {nav.map((item, i) => (
+                <a key={item.href} href={item.href} onClick={closeMenu} style={{ "--i": i } as React.CSSProperties}>
+                  {!portal && <small>0{i + 1}</small>}
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+          </div>
+        </div>
         <div className={styles.menuFoot}>
-          <a className="btn btn--gold" href={waInfo}>
+          <a className="btn btn--gold" href={waInfo} onClick={closeMenu}>
             <Icon name="wa" />
             <span>{labels.write}</span>
           </a>
-          <a className="btn btn--ghost" href={login.href}>
+          <a className="btn btn--ghost" href={login.href} onClick={closeMenu}>
             <span>{login.label}</span>
           </a>
         </div>
