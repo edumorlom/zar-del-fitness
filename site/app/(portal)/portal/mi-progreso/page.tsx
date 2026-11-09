@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Hero, Results, Title } from "~/components/Progress";
 import { ProgressPhotos } from "~/components/ProgressPhotos";
 import { Shell } from "~/components/Shell";
+import { homeOf } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { getCheckins, getClient, getOpenAppointment, getProgressPhotos } from "~/lib/data";
 
@@ -10,7 +11,7 @@ export const metadata: Metadata = { title: "Mi progreso" };
 
 export default async function MyProgressPage() {
   const viewer = await requireViewer();
-  if (viewer.role !== "user") redirect("/portal/dashboard");
+  if (!viewer.scopes.includes("user")) redirect(homeOf(viewer));
   const [client, checkins, appointment, photos] = await Promise.all([
     getClient(viewer.id),
     getCheckins(viewer.id),

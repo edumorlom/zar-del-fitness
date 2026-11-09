@@ -5,40 +5,39 @@ import { notFound } from "next/navigation";
 import { AdminShell, PageHead } from "~/components/AdminShell";
 import { Filters } from "~/components/Filters";
 import { initials } from "~/components/Shell";
-import { ROLES, type Role } from "~/lib/access";
+import { SCOPE_LABEL, SCOPES, type Scope } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { listUsers } from "~/lib/data";
 
 export const metadata: Metadata = { title: "Configuración" };
 
-const ROLE_LABEL: Record<Role, string> = { admin: "Admin", coach: "Coach", user: "Cliente" };
-const ROLE_PLURAL: Record<Role, string> = { admin: "Admins", coach: "Coaches", user: "Clientes" };
+const SCOPE_PLURAL: Record<Scope, string> = { admin: "Admins", coach: "Coaches", user: "Clientes", receptionist: "Recepción" };
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ q?: string; rol?: string }> }) {
   const viewer = await requireViewer();
-  if (viewer.role !== "admin") notFound();
+  if (!viewer.scopes.includes("admin")) notFound();
   const sp = await searchParams;
-  const role = ROLES.includes(sp.rol as Role) ? (sp.rol as Role) : null;
+  const role = SCOPES.includes(sp.rol as Scope) ? (sp.rol as Scope) : null;
   const q = sp.q ?? "";
   const all = await listUsers();
   const needle = q.trim().toLowerCase();
   const users = all.filter(
-    (u) => (!role || u.role === role) && (!needle || u.name.toLowerCase().includes(needle) || u.email?.includes(needle))
+    (u) => (!role || u.scopes.includes(role)) && (!needle || u.name.toLowerCase().includes(needle) || u.email?.includes(needle))
   );
-  const counts = { admin: 0, coach: 0, user: 0 };
-  for (const u of all) counts[u.role]++;
+  const counts = { admin: 0, coach: 0, user: 0, receptionist: 0 };
+  for (const u of all) for (const s of u.scopes) counts[s]++;
   const waiting = all.filter((u) => u.email && !u.linked && u.active).length;
   const noEmail = all.filter((u) => !u.email).length;
-  const tab = (r: Role | null) => `/portal/configuracion${r ? `?rol=${r}` : ""}`;
+  const tab = (r: Scope | null) => `/portal/configuracion${r ? `?rol=${r}` : ""}`;
 
   return (
     <AdminShell viewer={viewer}>
       <PageHead title="Configuración" sub="Quién entra al portal, con qué rol, y quiénes son los coaches." />
 
       <nav className="tiles" aria-label="Roles">
-        {([null, "admin", "coach", "user"] as const).map((r) => (
+        {[null, ...SCOPES].map((r) => (
           <Link key={r ?? "all"} className="card tile" href={tab(r)} aria-current={role === r ? "page" : undefined}>
-            <span className="label">{r ? ROLE_PLURAL[r] : "Todos"}</span>
+            <span className="label">{r ? SCOPE_PLURAL[r] : "Todos"}</span>
             <span className="tile__n" data-count={r ? counts[r] : all.length}>
               {r ? counts[r] : all.length}
             </span>
@@ -97,7 +96,13 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                   </Link>
                 </td>
                 <td data-label="Rol">
-                  <span className={u.role === "user" ? "pill pill--quiet" : "pill"}>{ROLE_LABEL[u.role]}</span>
+                  <span className="chips">
+                    {u.scopes.map((s) => (
+                      <span key={s} className={s === "user" ? "pill pill--quiet" : "pill"}>
+                        {SCOPE_LABEL[s]}
+                      </span>
+                    ))}
+                  </span>
                 </td>
                 <td data-label="Acceso">
                   {!u.email ? (
@@ -112,7 +117,15 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                   {!u.active && <span className="person__sub">Dado de baja</span>}
                 </td>
                 <td data-label="Detalle" className="muted">
-                  {u.role === "user" ? (u.coach_name ? `Coach: ${u.coach_name}` : "Sin coach") : u.role === "admin" ? (u.title ?? "Acceso completo") : (u.title ?? "Coach")}
+                  {u.scopes.includes("admin")
+                    ? (u.title ?? "Acceso completo")
+                    : u.scopes.includes("coach")
+                      ? (u.title ?? "Coach")
+                      : u.scopes.includes("user")
+                        ? u.coach_name
+                          ? `Coach: ${u.coach_name}`
+                          : "Sin coach"
+                        : "Crea clientes"}
                 </td>
                 <td className="right actions">
                   <Link className="icon-btn icon-btn--sm" href={`/portal/clientes/${u.id}#editar`} aria-label={`Editar a ${u.name}`} title="Editar">

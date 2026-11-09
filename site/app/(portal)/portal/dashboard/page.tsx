@@ -5,6 +5,7 @@ import { AdminShell, PageHead } from "~/components/AdminShell";
 import { Filters } from "~/components/Filters";
 import { LineChart } from "~/components/LineChart";
 import { initials } from "~/components/Shell";
+import { homeOf, isTeam } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { PLANS, STATUS_LABEL, type ControlStatus } from "~/lib/clients";
 import { checkinDates, getCoaches, listClients } from "~/lib/data";
@@ -33,9 +34,9 @@ function Delta({ now, before, unit = "" }: { now: number; before: number; unit?:
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ coach?: string; plan?: string }> }) {
   const viewer = await requireViewer();
-  if (viewer.role === "user") redirect("/portal/mi-progreso");
+  if (!isTeam(viewer)) redirect(homeOf(viewer));
   const sp = await searchParams;
-  const admin = viewer.role === "admin";
+  const admin = viewer.scopes.includes("admin");
   const coach = admin && sp.coach ? Number(sp.coach) : null;
   const plan = sp.plan ?? "";
   const today = todayISO();

@@ -106,7 +106,7 @@ export async function clientByPhone(phone: string): Promise<number | null> {
   if (!tail) return null;
   const { rows } = await db.query<{ id: number }>(
     `select id from users
-     where role = 'user' and right(regexp_replace(phone, '\\D', '', 'g'), 7) = $1
+     where 'user' = any(scopes) and right(regexp_replace(phone, '\\D', '', 'g'), 7) = $1
      limit 2`,
     [tail]
   );
@@ -116,7 +116,7 @@ export async function clientByPhone(phone: string): Promise<number | null> {
 /** El id si es un cliente. users.id es int4: uno más grande haría fallar la consulta, así que ni se consulta. */
 export async function clientById(id: number): Promise<number | null> {
   if (id > 2_147_483_647) return null;
-  const { rows } = await db.query<{ id: number }>("select id from users where id = $1 and role = 'user'", [id]);
+  const { rows } = await db.query<{ id: number }>("select id from users where id = $1 and 'user' = any(scopes)", [id]);
   return rows[0]?.id ?? null;
 }
 

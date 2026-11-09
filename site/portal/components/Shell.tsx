@@ -1,5 +1,7 @@
 import { SignOutButton } from "@clerk/nextjs";
+import Link from "next/link";
 import { Reveals } from "@/components/motion/Reveals";
+import { homeOf } from "~/lib/access";
 import type { Viewer } from "~/lib/auth";
 import { DiguiChat } from "./DiguiChat";
 import { SiteHeader } from "./SiteHeader";
@@ -17,8 +19,6 @@ export const SignOut = () => (
 /** El botón dorado del menú del sitio, con la sesión iniciada (app/(portal)/portal/salir). */
 export const SIGN_OUT = { label: "Cerrar sesión", href: "/portal/salir" };
 
-const ROLE_LABEL = { admin: "Admin", coach: "Coach", user: "Mi progreso" } as const;
-
 export const initials = (name: string) =>
   name
     .split(/\s+/)
@@ -28,14 +28,20 @@ export const initials = (name: string) =>
 
 /** Arriba, el menú del sitio (con "Cerrar sesión"); abajo, qué parte del portal es. Y las animaciones data-* del sitio. */
 export function Shell({ viewer, children }: { viewer: Viewer; children: React.ReactNode }) {
+  const home = homeOf(viewer);
   return (
     <>
       <SiteHeader login={SIGN_OUT} />
       <main id="main" className="container portal">
         <div className="portal-bar">
           <span className="eyebrow">
-            <span className="num">{ROLE_LABEL[viewer.role]}</span>
+            <span className="num">Mi progreso</span>
           </span>
+          {home !== "/portal/mi-progreso" && (
+            <Link className="btn btn--ghost btn--sm" href={home}>
+              Volver al panel
+            </Link>
+          )}
         </div>
         {children}
       </main>

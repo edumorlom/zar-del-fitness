@@ -1,4 +1,5 @@
 import { saveClient } from "~/actions";
+import { SCOPE_LABEL, SCOPES } from "~/lib/access";
 import type { Viewer } from "~/lib/auth";
 import { age, BODY_TYPES, CONDITIONS, PLANS } from "~/lib/clients";
 import type { Client, Coach } from "~/lib/data";
@@ -34,10 +35,11 @@ function Plan({ client }: { client?: Client }) {
 
 /**
  * La ficha de un cliente (o de un coach o un admin: son la misma cuenta). El admin edita todo, en pasos, y crea cuentas
- * (sin `client`); el coach, el objetivo y el próximo control de sus clientes.
+ * (sin `client`); recepción también las crea, sin elegir roles; el coach, el objetivo y el próximo control de sus clientes.
  */
 export function ClientForm({ viewer, client, coaches }: { viewer: Viewer; client?: Client; coaches: Coach[] }) {
-  if (viewer.role !== "admin")
+  const admin = viewer.scopes.includes("admin");
+  if (client && !admin)
     return (
       <Form action={saveClient} submit="Guardar cambios" className="card form">
         {client && <input type="hidden" name="id" value={client.id} />}
@@ -74,13 +76,19 @@ export function ClientForm({ viewer, client, coaches }: { viewer: Viewer; client
       <Field label="Correo" hint="Con este correo entra al portal: con Google o con un código que le llega ahí." wide>
         <input name="email" type="email" defaultValue={client?.email ?? ""} autoComplete="off" autoCapitalize="none" />
       </Field>
-      <Field label="Rol">
-        <select name="role" defaultValue={client?.role ?? "user"}>
-          <option value="user">Cliente</option>
-          <option value="coach">Coach</option>
-          <option value="admin">Admin</option>
-        </select>
-      </Field>
+      {admin && (
+        <fieldset className="choice field--wide">
+          <legend className="field__label">Roles</legend>
+          <div className="checks">
+            {SCOPES.map((s) => (
+              <label key={s} className="check">
+                <input type="checkbox" name="scopes" value={s} defaultChecked={(client?.scopes ?? ["user"]).includes(s)} />
+                <span>{SCOPE_LABEL[s]}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )}
       <label className="check check--field">
         <input type="checkbox" name="active" defaultChecked={client?.active ?? true} />
         <span>
@@ -136,7 +144,7 @@ export function ClientForm({ viewer, client, coaches }: { viewer: Viewer; client
                 {c.photo_url ? <img className="person__img" src={c.photo_url} alt="" /> : <span className="avatar avatar--sm">{initials(c.name)}</span>}
                 <span>
                   <span className="strong">{c.name}</span>
-                  <span className="person__sub">{c.title ?? (c.role === "admin" ? "Coach master" : "Coach")}</span>
+                  <span className="person__sub">{c.title ?? (c.scopes.includes("admin") ? "Coach master" : "Coach")}</span>
                 </span>
               </label>
             ))}

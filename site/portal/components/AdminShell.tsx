@@ -1,4 +1,5 @@
 import { Reveals } from "@/components/motion/Reveals";
+import { isTeam, SCOPE_LABEL } from "~/lib/access";
 import type { Viewer } from "~/lib/auth";
 import { DiguiChat } from "./DiguiChat";
 import { initials, SIGN_OUT, SignOut } from "./Shell";
@@ -7,16 +8,21 @@ import { SiteHeader } from "./SiteHeader";
 
 /** El equipo usa el menú unificado en el celular y conserva el panel lateral en la compu. */
 export function AdminShell({ viewer, children }: { viewer: Viewer; children: React.ReactNode }) {
-  const items: NavItem[] = [
-    { href: "/portal/dashboard", label: "Dashboard", icon: "dashboard" },
-    { href: "/portal/agenda", label: "Agenda", icon: "agenda" },
-    { href: "/portal/clientes", label: "Clientes", icon: "clients" },
-    ...(viewer.role === "admin" ? [{ href: "/portal/configuracion", label: "Configuración", icon: "settings" } as const] : []),
-  ];
+  const items: NavItem[] = [];
+  if (isTeam(viewer))
+    items.push(
+      { href: "/portal/dashboard", label: "Dashboard", icon: "dashboard" },
+      { href: "/portal/agenda", label: "Agenda", icon: "agenda" },
+      { href: "/portal/clientes", label: "Clientes", icon: "clients" }
+    );
+  else if (viewer.scopes.includes("receptionist")) items.push({ href: "/portal/clientes/nuevo", label: "Nuevo cliente", icon: "clients" });
+  if (viewer.scopes.includes("admin")) items.push({ href: "/portal/configuracion", label: "Configuración", icon: "settings" });
+  if (viewer.scopes.includes("user")) items.push({ href: "/portal/mi-progreso", label: "Mi progreso", icon: "progress" });
+  const role = viewer.scopes.map((s) => SCOPE_LABEL[s]).join(" · ");
   return (
     <>
       <div className="admin-header">
-        <SiteHeader login={SIGN_OUT} portal={{ items, name: viewer.name, role: viewer.role === "admin" ? "Admin" : "Coach" }} />
+        <SiteHeader login={SIGN_OUT} portal={{ items, name: viewer.name, role }} />
       </div>
       <div className="admin">
         <Sidebar
@@ -28,7 +34,7 @@ export function AdminShell({ viewer, children }: { viewer: Viewer; children: Rea
               </span>
               <span className="side__who">
                 <span className="strong">{viewer.name}</span>
-                <span className="side__role">{viewer.role === "admin" ? "Admin" : "Coach"}</span>
+                <span className="side__role">{role}</span>
               </span>
               <SignOut />
             </>

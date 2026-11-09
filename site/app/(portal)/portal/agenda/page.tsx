@@ -5,6 +5,7 @@ import { cancelAppointment, confirmAppointment, moveAppointment, rejectAppointme
 import { AdminShell, PageHead } from "~/components/AdminShell";
 import { ConnectCalendar } from "~/components/ConnectCalendar";
 import { Form } from "~/components/Form";
+import { homeOf, isTeam } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { listAppointments, pendingRequests, type Appointment } from "~/lib/data";
 import { dateOf, longDate, shortDate, timeOf, todayISO, toLocalInput } from "~/lib/format";
@@ -74,7 +75,7 @@ function Row({ a, pending }: { a: Appointment; pending?: boolean }) {
 
 export default async function AgendaPage({ searchParams }: { searchParams: Promise<{ mes?: string; dia?: string }> }) {
   const viewer = await requireViewer();
-  if (viewer.role === "user") redirect("/portal/turno");
+  if (!isTeam(viewer)) redirect(viewer.scopes.includes("user") ? "/portal/turno" : homeOf(viewer));
   const sp = await searchParams;
   const today = todayISO();
   const month = /^\d{4}-\d{2}$/.test(sp.mes ?? "") ? sp.mes! : today.slice(0, 7);

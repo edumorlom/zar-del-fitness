@@ -61,6 +61,15 @@ alter table users add column if not exists legacy_last_weight numeric(5, 1);
 -- El certificado médico, en el bucket (/archivos/...): lo ve el cliente y quien lo maneja.
 alter table users add column if not exists certificate_url text;
 
+-- Una cuenta puede tener varios scopes. La columna role ya no se usa: queda para no romper la versión anterior en el deploy.
+do $$ begin
+  if not exists (select 1 from information_schema.columns where table_name = 'users' and column_name = 'scopes') then
+    alter table users add column scopes text[] not null default '{user}'
+      check (scopes <> '{}' and scopes <@ array['admin', 'coach', 'user', 'receptionist']);
+    update users set scopes = array[role];
+  end if;
+end $$;
+
 -- Lo demás de una evaluación, todo opcional: perímetros (cm) y lo que da la balanza.
 alter table checkins add column if not exists chest_cm numeric(5, 1);
 alter table checkins add column if not exists abdomen_cm numeric(5, 1);
@@ -114,8 +123,8 @@ export async function migrate() {
   const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
   if (email) {
     await db.query(
-      `insert into users (role, email, name)
-       select 'admin', $1, 'Admin' where not exists (select 1 from users where role = 'admin')
+      `insert into users (scopes, email, name)
+       select '{admin}'::text[], $1, 'Admin' where not exists (select 1 from users where 'admin' = any(scopes))
        on conflict (email) do nothing`,
       [email]
     );

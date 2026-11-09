@@ -34,7 +34,8 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
   const client = await getClient(id);
   // Un cliente que no es suyo es, para el coach, un cliente que no existe.
   if (!client || !canManage(viewer, client)) notFound();
-  const [checkins, coaches, photos] = await Promise.all([getCheckins(id), viewer.role === "admin" ? getCoaches() : [], getProgressPhotos(id)]);
+  const admin = viewer.scopes.includes("admin");
+  const [checkins, coaches, photos] = await Promise.all([getCheckins(id), admin ? getCoaches() : [], getProgressPhotos(id)]);
 
   const today = todayISO();
   const last = checkins[checkins.length - 1];
@@ -262,15 +263,15 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
       </section>
 
       <section id="editar" className="anchor">
-        <h2 className="section-title">{viewer.role === "admin" ? "Editar ficha" : "Objetivo y próximo control"}</h2>
+        <h2 className="section-title">{admin ? "Editar ficha" : "Objetivo y próximo control"}</h2>
         <ClientForm viewer={viewer} client={client} coaches={coaches} />
-        {viewer.role === "admin" && viewer.id !== client.id && (
+        {admin && viewer.id !== client.id && (
           <Form
             action={deleteClient}
             submit="Borrar cliente"
             button="btn btn--sm btn--danger"
             className="card danger"
-            confirm={`¿Borrar a ${client.name}? Se borran su cuenta, sus ${checkins.length} evaluaciones y sus fotos${client.role === "coach" ? ", y sus clientes quedan sin coach" : ""}. No se puede deshacer.`}
+            confirm={`¿Borrar a ${client.name}? Se borran su cuenta, sus ${checkins.length} evaluaciones y sus fotos${client.scopes.includes("coach") ?", y sus clientes quedan sin coach" : ""}. No se puede deshacer.`}
           >
             <input type="hidden" name="id" value={client.id} />
             <div>

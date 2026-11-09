@@ -1,20 +1,49 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { canManage } from "./access.ts";
+import { canCreate, canManage, homeOf, isTeam, scopesToSave } from "./access.ts";
 import { age, bmi, controlStatus } from "./clients.ts";
 import { bookableDays, daySlots, freeSlots, hoursFrom, monthGrid, shiftMonth } from "./slots.ts";
 import { dashboard } from "./stats.ts";
 import { days, fromLocalInput, longDate, num, shortDate, toLocalInput } from "./format.ts";
 
 test("el admin maneja a cualquiera; el coach, sólo a los suyos; el cliente, a nadie", () => {
-  const admin = { id: 1, role: "admin" } as const;
-  const coach = { id: 2, role: "coach" } as const;
-  const user = { id: 3, role: "user" } as const;
+  const admin = { id: 1, scopes: ["admin" as const] };
+  const coach = { id: 2, scopes: ["coach" as const] };
+  const user = { id: 3, scopes: ["user" as const] };
   assert.equal(canManage(admin, { coach_id: null }), true);
   assert.equal(canManage(coach, { coach_id: 2 }), true);
   assert.equal(canManage(coach, { coach_id: 9 }), false);
   assert.equal(canManage(coach, { coach_id: null }), false);
   assert.equal(canManage(user, { coach_id: 3 }), false);
+});
+
+test("recepción crea cuentas de cliente y no ve nada más, aunque pida otros scopes", () => {
+  const front = { id: 4, scopes: ["receptionist" as const] };
+  assert.equal(canCreate(front), true);
+  assert.equal(isTeam(front), false);
+  assert.equal(canManage(front, { coach_id: 4 }), false);
+  assert.equal(homeOf(front), "/portal/clientes/nuevo");
+  assert.deepEqual(scopesToSave(front, ["admin", "coach"]), ["user"]);
+});
+
+test("los scopes se suman", () => {
+  const coachAndFront = { id: 5, scopes: ["coach" as const, "receptionist" as const] };
+  assert.equal(canCreate(coachAndFront), true);
+  assert.equal(canManage(coachAndFront, { coach_id: 5 }), true);
+  assert.equal(canManage(coachAndFront, { coach_id: 9 }), false);
+  assert.equal(homeOf(coachAndFront), "/portal/dashboard");
+  assert.equal(homeOf({ scopes: ["user", "admin"] }), "/portal/dashboard");
+  assert.equal(homeOf({ scopes: ["user"] }), "/portal/mi-progreso");
+  assert.equal(canCreate({ scopes: ["coach"] }), false);
+  assert.equal(canCreate({ scopes: ["user"] }), false);
+});
+
+test("sólo el admin elige scopes, y tienen que ser válidos", () => {
+  const admin = { scopes: ["admin" as const] };
+  assert.deepEqual(scopesToSave(admin, ["coach", "user"]), ["coach", "user"]);
+  assert.equal(scopesToSave(admin, []), null);
+  assert.equal(scopesToSave(admin, ["coach", "dueño"]), null);
+  assert.deepEqual(scopesToSave({ scopes: ["coach"] }, ["admin"]), ["user"]);
 });
 
 test("estado del seguimiento: al día hasta 30 días, por vencer hasta 45, después atrasado", () => {

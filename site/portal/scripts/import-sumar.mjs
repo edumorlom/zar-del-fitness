@@ -36,18 +36,18 @@ try {
   for (const c of coaches) {
     const master = c.nivel === "master";
     await db.query(
-      `insert into users (role, email, name, phone, title, photo_url, external_id, active)
+      `insert into users (scopes, email, name, phone, title, photo_url, external_id, active)
        values ($1, $2, $3, $4, $5, $6, $7, $8)
        on conflict (email) do update set
-         role = case when users.role = 'admin' then 'admin' else excluded.role end,
-         name = case when users.role = 'admin' then users.name else excluded.name end,
+         scopes = case when excluded.scopes <@ users.scopes then users.scopes else users.scopes || excluded.scopes end,
+         name = case when 'admin' = any(users.scopes) then users.name else excluded.name end,
          phone = coalesce(excluded.phone, users.phone),
          title = excluded.title,
          photo_url = coalesce(users.photo_url, excluded.photo_url),
          external_id = coalesce(users.external_id, excluded.external_id),
          active = excluded.active`,
       [
-        master ? "admin" : "coach",
+        [master ? "admin" : "coach"],
         mail(c.email),
         master ? "Ronald Medina" : titleCase(clean(c.nombre)),
         clean(c.telefono),
@@ -64,7 +64,7 @@ try {
   const { rows } = await db.query("select id from users where email = $1", [MASTER_EMAIL]);
   const zarId = rows[0]?.id ?? null;
 
-  const cols = `role, name, email, dni, phone, sex, birth_year, height_cm, body_type, conditions, medications, notes,
+  const cols = `scopes, name, email, dni, phone, sex, birth_year, height_cm, body_type, conditions, medications, notes,
                 active, client_since, legacy_last_checkin, legacy_last_weight, external_id, coach_id`;
   // El rol no se toca (un coach o un admin que también figura como cliente lo sigue siendo), ni el coach ya asignado.
   const update = `name = excluded.name, dni = excluded.dni, phone = coalesce(excluded.phone, users.phone),
@@ -78,7 +78,7 @@ try {
     const email = mail(a.email);
     if (!email) count.noEmail++;
     const values = [
-      "user",
+      ["user"],
       clean(a.nombreCompleto) ?? `${a.nombre} ${a.apellido}`.trim(),
       email,
       clean(a.dni),

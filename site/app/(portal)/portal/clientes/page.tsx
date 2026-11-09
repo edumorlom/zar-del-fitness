@@ -6,6 +6,7 @@ import { AdminShell, PageHead } from "~/components/AdminShell";
 import { Filters } from "~/components/Filters";
 import { Form } from "~/components/Form";
 import { initials } from "~/components/Shell";
+import { canCreate, homeOf, isTeam } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { age, bmi, controlStatus, daysBetween, PLANS, STATUS_LABEL, type ControlStatus } from "~/lib/clients";
 import { getCoaches, listClients } from "~/lib/data";
@@ -21,9 +22,9 @@ export default async function ClientsPage({
   searchParams: Promise<{ q?: string; coach?: string; plan?: string; estado?: string; bajas?: string }>;
 }) {
   const viewer = await requireViewer();
-  if (viewer.role === "user") redirect("/portal/mi-progreso");
+  if (!isTeam(viewer)) redirect(homeOf(viewer));
   const sp = await searchParams;
-  const admin = viewer.role === "admin";
+  const admin = viewer.scopes.includes("admin");
   const inactive = sp.bajas === "1";
   const today = todayISO();
   const [all, coaches] = await Promise.all([
@@ -40,7 +41,7 @@ export default async function ClientsPage({
         <Link className="btn btn--ghost btn--sm" href={inactive ? "/portal/clientes" : "/portal/clientes?bajas=1"}>
           {inactive ? "Ver activos" : "Dados de baja"}
         </Link>
-        {admin && (
+        {canCreate(viewer) && (
           <Link className="btn btn--gold btn--sm" href="/portal/clientes/nuevo">
             Nuevo cliente
             <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">

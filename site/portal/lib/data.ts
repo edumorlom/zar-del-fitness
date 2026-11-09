@@ -1,11 +1,11 @@
 import "server-only";
 import type { PoolClient } from "pg";
 import { db } from "./db";
-import type { Role } from "./access";
+import type { Scope } from "./access";
 
 export type Client = {
   id: number;
-  role: Role;
+  scopes: Scope[];
   email: string | null;
   name: string;
   coach_id: number | null;
@@ -58,7 +58,7 @@ export type Checkin = {
 
 export async function getClient(id: number) {
   const { rows } = await db.query<Client>(
-    `select u.id, u.role, u.email, u.name, u.coach_id, u.phone, u.photo_url, u.title, u.plan, u.client_since,
+    `select u.id, u.scopes, u.email, u.name, u.coach_id, u.phone, u.photo_url, u.title, u.plan, u.client_since,
             u.pass_expires, u.next_control_at, u.goal, u.dni, u.sex, u.birth_year, u.height_cm, u.body_type,
             u.conditions, u.medications, u.notes, u.active, u.legacy_last_checkin, u.legacy_last_weight,
             u.certificate_url, u.clerk_id is not null as linked,
@@ -99,7 +99,6 @@ export type ClientRow = {
   email: string | null;
   photo_url: string | null;
   dni: string | null;
-  role: Role;
   plan: string | null;
   sex: "M" | "F" | null;
   birth_year: number | null;
@@ -126,10 +125,10 @@ export type ClientFilters = { q?: string; coach?: number | null; plan?: string; 
  * Los clientes que ve alguien (sólo rol cliente): el admin, todos; un coach, los suyos. Con su última evaluación, para
  * la lista y el dashboard.
  */
-export async function listClients(viewer: { id: number; role: Role }, f: ClientFilters = {}) {
-  const coach = viewer.role === "admin" ? (f.coach ?? null) : viewer.id;
+export async function listClients(viewer: { id: number; scopes: Scope[] }, f: ClientFilters = {}) {
+  const coach = viewer.scopes.includes("admin") ? (f.coach ?? null) : viewer.id;
   const { rows } = await db.query<ClientRow>(
-    `select u.id, u.name, u.email, u.photo_url, u.dni, u.role, u.plan, u.sex, u.birth_year, u.height_cm, u.body_type, u.conditions,
+    `select u.id, u.name, u.email, u.photo_url, u.dni, u.plan, u.sex, u.birth_year, u.height_cm, u.body_type, u.conditions,
             u.active, u.pass_expires, u.client_since, u.coach_id, c.name as coach_name, c.photo_url as coach_photo,
             coalesce(l.date, u.legacy_last_checkin) as last_date,
             coalesce(l.weight_kg, u.legacy_last_weight) as last_weight,
@@ -141,7 +140,7 @@ export async function listClients(viewer: { id: number; role: Role }, f: ClientF
                         order by date desc, id desc limit 1) l on true
      left join lateral (select body_fat_pct from checkins where client_id = u.id
                         order by date desc, id desc offset 1 limit 1) p on true
-     where u.role = 'user'
+     where 'user' = any(u.scopes)
        and ($1::int is null or u.coach_id = $1)
        and ($2::text = '' or u.name ilike '%' || $2 || '%' or u.dni ilike $2 || '%' or u.email ilike '%' || $2 || '%')
        and ($3::text = '' or ($3 = '-' and u.plan is null) or u.plan = $3)
@@ -153,21 +152,21 @@ export async function listClients(viewer: { id: number; role: Role }, f: ClientF
 }
 
 /** Las fechas de evaluación de los clientes que ve alguien desde `since`, para contar por semana. */
-export async function checkinDates(viewer: { id: number; role: Role }, since: string, coach: number | null = null) {
+export async function checkinDates(viewer: { id: number; scopes: Scope[] }, since: string, coach: number | null = null) {
   const { rows } = await db.query<{ date: string; client_id: number }>(
     `select ch.date, ch.client_id from checkins ch join users u on u.id = ch.client_id
-     where ch.date >= $1 and u.role = 'user' and ($2::int is null or u.coach_id = $2)`,
-    [since, viewer.role === "admin" ? coach : viewer.id]
+     where ch.date >= $1 and 'user' = any(u.scopes) and ($2::int is null or u.coach_id = $2)`,
+    [since, viewer.scopes.includes("admin") ? coach : viewer.id]
   );
   return rows;
 }
 
-export type Coach = { id: number; name: string; role: Role; title: string | null; photo_url: string | null };
+export type Coach = { id: number; name: string; scopes: Scope[]; title: string | null; photo_url: string | null };
 
 /** Quienes pueden ser coach de un cliente: los coaches y los admins (el Zar es admin y coach). */
 export async function getCoaches() {
   const { rows } = await db.query<Coach>(
-    "select id, name, role, title, photo_url from users where role in ('coach', 'admin') and active order by role = 'admin' desc, name"
+    "select id, name, scopes, title, photo_url from users where scopes && array['coach', 'admin'] and active order by 'admin' = any(scopes) desc, name"
   );
   return rows;
 }
@@ -176,7 +175,7 @@ export type UserRow = {
   id: number;
   name: string;
   email: string | null;
-  role: Role;
+  scopes: Scope[];
   photo_url: string | null;
   title: string | null;
   active: boolean;
@@ -187,10 +186,10 @@ export type UserRow = {
 /** Todas las cuentas, para Configuración (sólo el admin). */
 export async function listUsers() {
   const { rows } = await db.query<UserRow>(
-    `select u.id, u.name, u.email, u.role, u.photo_url, u.title, u.active, u.clerk_id is not null as linked,
+    `select u.id, u.name, u.email, u.scopes, u.photo_url, u.title, u.active, u.clerk_id is not null as linked,
             c.name as coach_name
      from users u left join users c on c.id = u.coach_id
-     order by case u.role when 'admin' then 0 when 'coach' then 1 else 2 end, u.name`
+     order by case when 'admin' = any(u.scopes) then 0 when 'coach' = any(u.scopes) then 1 else 2 end, u.name`
   );
   return rows;
 }
@@ -229,22 +228,22 @@ export async function getAppointment(id: number) {
 }
 
 /** Los turnos vivos entre dos momentos que ve alguien: el admin, todos; un coach, los de sus clientes. */
-export async function listAppointments(viewer: { id: number; role: Role }, from: Date, to: Date) {
+export async function listAppointments(viewer: { id: number; scopes: Scope[] }, from: Date, to: Date) {
   const { rows } = await db.query<Appointment>(
     `${APPT} where a.status in ('requested', 'confirmed') and a.starts_at < $2 and a.ends_at > $1
        and ($3::int is null or u.coach_id = $3)
      order by a.starts_at`,
-    [from, to, viewer.role === "admin" ? null : viewer.id]
+    [from, to, viewer.scopes.includes("admin") ? null : viewer.id]
   );
   return rows;
 }
 
 /** Los pedidos que esperan respuesta (de hoy en adelante). */
-export async function pendingRequests(viewer: { id: number; role: Role }) {
+export async function pendingRequests(viewer: { id: number; scopes: Scope[] }) {
   const { rows } = await db.query<Appointment>(
     `${APPT} where a.status = 'requested' and a.ends_at > now() and ($1::int is null or u.coach_id = $1)
      order by a.starts_at`,
-    [viewer.role === "admin" ? null : viewer.id]
+    [viewer.scopes.includes("admin") ? null : viewer.id]
   );
   return rows;
 }

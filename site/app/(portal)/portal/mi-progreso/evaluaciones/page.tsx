@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { EvaluationsTable } from "~/components/EvaluationsTable";
 import { Title } from "~/components/Progress";
 import { Shell } from "~/components/Shell";
+import { homeOf } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { getCheckins } from "~/lib/data";
 
@@ -12,7 +13,7 @@ export const metadata: Metadata = { title: "Mis medidas" };
 /** Todas las medidas del cliente que entró (sólo las suyas: el id sale de la sesión, no de la dirección). */
 export default async function MyMeasuresPage() {
   const viewer = await requireViewer();
-  if (viewer.role !== "user") redirect("/portal/dashboard");
+  if (!viewer.scopes.includes("user")) redirect(homeOf(viewer));
   const checkins = (await getCheckins(viewer.id)).reverse(); // la última primero
 
   return (

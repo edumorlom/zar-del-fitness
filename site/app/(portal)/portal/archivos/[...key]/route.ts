@@ -1,4 +1,4 @@
-import { canManage, type Role } from "~/lib/access";
+import { canManage, isTeam, type Scope } from "~/lib/access";
 import { getViewer } from "~/lib/auth";
 import { db } from "~/lib/db";
 import { bucketFromEnv, FILE_KEY, signedUrl } from "~/lib/storage";
@@ -16,13 +16,13 @@ export async function GET(_req: Request, { params }: { params: Promise<{ key: st
   const viewer = await getViewer();
   if (!match || !viewer || viewer === "unregistered") return notFound();
 
-  const { rows } = await db.query<{ id: number; role: Role; coach_id: number | null }>(
-    "select id, role, coach_id from users where external_id = $1",
+  const { rows } = await db.query<{ id: number; scopes: Scope[]; coach_id: number | null }>(
+    "select id, scopes, coach_id from users where external_id = $1",
     [match[1]]
   );
   const owner = rows[0];
   const allowed =
-    owner && (viewer.id === owner.id || (match[2] === "foto" ? viewer.role !== "user" || owner.role !== "user" : canManage(viewer, owner)));
+    owner && (viewer.id === owner.id || (match[2] === "foto" ? isTeam(viewer) || isTeam(owner) : canManage(viewer, owner)));
   // Lo que no puede ver es, para él, un archivo que no existe.
   if (!allowed) return notFound();
 

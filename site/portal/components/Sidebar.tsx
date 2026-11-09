@@ -28,6 +28,7 @@ const ICONS = {
   settings: (
     <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M16 4v4M10 10v4M18 16v4" {...stroke} />
   ),
+  progress: <path d="M3 18l6-7 4 4 8-9" {...stroke} />,
 } as const;
 
 export type NavItem = { href: string; label: string; icon: keyof typeof ICONS };

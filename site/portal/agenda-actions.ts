@@ -24,14 +24,14 @@ async function load(viewer: Viewer, id: number, ownerOk: boolean) {
   const a = await getAppointment(id);
   if (!a) return null;
   if (ownerOk && a.client_id === viewer.id) return a;
-  return viewer.role !== "user" && canManage(viewer, { coach_id: a.coach_id }) ? a : null;
+  return canManage(viewer, { coach_id: a.coach_id }) ? a : null;
 }
 
 // ---------- El cliente ----------
 
 export async function requestAppointment(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();
-  if (viewer.role !== "user") return { error: "Los turnos los pide el cliente desde su cuenta." };
+  if (!viewer.scopes.includes("user")) return { error: "Los turnos los pide el cliente desde su cuenta." };
   const r = await requestSlot(viewer.id, new Date(String(form.get("start") ?? "")));
   if (!r.ok) return { error: r.mensaje };
   refresh();

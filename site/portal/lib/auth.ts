@@ -3,10 +3,10 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { db } from "./db";
-import type { Role } from "./access";
+import type { Scope } from "./access";
 
-export type Viewer = { id: number; role: Role; name: string; email: string };
-const COLS = "id, role, name, email";
+export type Viewer = { id: number; scopes: Scope[]; name: string; email: string };
+const COLS = "id, scopes, name, email";
 
 /**
  * Quién entró: su cuenta de Clerk (Google o código por correo) con su fila en users. La primera vez se enlazan por

@@ -26,11 +26,12 @@ const columns = async (table, skip) => {
 // SQLite no tiene arrays ni booleanos: conditions viene como JSON y active como 0/1.
 const value = (col, v) => (col === "conditions" ? JSON.parse(v ?? "[]") : col === "active" ? v !== 0 : v);
 
-const userCols = await columns("users", ["id", "created_at", "coach_id"]);
+// En el SQLite cada persona tiene un rol; en Postgres, una lista de scopes.
+const userCols = (await columns("users", ["id", "created_at", "coach_id"])).map((c) => (c === "role" ? "scopes" : c));
 const checkinCols = await columns("checkins", ["id", "client_id", "created_by"]);
 const set = (c) =>
-  c === "role"
-    ? "role = case when users.role = 'admin' or excluded.role = 'user' then users.role else excluded.role end"
+  c === "scopes"
+    ? "scopes = case when excluded.scopes = '{user}' or excluded.scopes <@ users.scopes then users.scopes else users.scopes || excluded.scopes end"
     : c.startsWith("legacy_") // con el historial completo, el "último control" suelto deja de hacer falta
       ? `${c} = excluded.${c}`
       : `${c} = coalesce(excluded.${c}, users.${c})`;
@@ -45,7 +46,7 @@ try {
   // Primero los que no tienen coach (los coaches), así el coach de cada alumno ya tiene su id en Postgres.
   for (const u of lite.prepare("select * from users order by coach_id is not null, id").all()) {
     const cols = [...userCols, "coach_id"];
-    const values = [...userCols.map((c) => value(c, u[c])), u.coach_id == null ? null : ids[u.coach_id]];
+    const values = [...userCols.map((c) => (c === "scopes" ? [u.role] : value(c, u[c]))), u.coach_id == null ? null : ids[u.coach_id]];
     if (u.coach_id != null && values.at(-1) == null) throw new Error(`El coach de ${u.name} no se subió antes`);
     const { rows } = await db.query(
       `insert into users (${cols}) values (${cols.map((_, i) => `$${i + 1}`)})

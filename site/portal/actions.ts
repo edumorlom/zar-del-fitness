@@ -2,7 +2,7 @@
 
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
-import { canManage, ROLES, type Role } from "~/lib/access";
+import { canCreate, canManage, scopesToSave } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { BODY_TYPES, CONDITIONS, MEASURES, PLANS } from "~/lib/clients";
 import { randomUUID } from "node:crypto";
@@ -21,7 +21,7 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export async function saveClient(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();
   const id = form.get("id") ? Number(form.get("id")) : null;
-  if (id === null && viewer.role !== "admin") return { error: "Sólo el admin puede crear clientes." };
+  if (id === null && !canCreate(viewer)) return { error: "No podés crear clientes." };
   if (id !== null) {
     const { rows } = await db.query<{ coach_id: number | null }>("select coach_id from users where id = $1", [id]);
     if (!rows[0] || !canManage(viewer, rows[0])) return { error: "No podés editar este cliente." };
@@ -32,8 +32,8 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
   const nextControl = fromLocalInput(next);
   if (next && Number.isNaN(nextControl?.getTime())) return { error: "Revisá la fecha del próximo control." };
 
-  // El coach sólo cambia el objetivo y el próximo control de sus clientes.
-  if (viewer.role === "coach") {
+  // Sin ser admin, de una cuenta que ya existe sólo se cambia el objetivo y el próximo control (el coach, de sus clientes).
+  if (id !== null && !viewer.scopes.includes("admin")) {
     await db.query("update users set goal = $1, next_control_at = $2 where id = $3", [goal, nextControl, id]);
     refresh();
     return { ok: "Guardado." };
@@ -41,7 +41,7 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
 
   const name = text(form, "name");
   const email = text(form, "email").toLowerCase() || null;
-  const role = text(form, "role") as Role;
+  const scopes = scopesToSave(viewer, form.getAll("scopes").map(String));
   const coachId = text(form, "coach_id") ? Number(text(form, "coach_id")) : null;
   const clientSince = text(form, "client_since") || todayISO();
   const passExpires = text(form, "pass_expires") || null;
@@ -54,11 +54,11 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
 
   if (!name) return { error: "Falta el nombre." };
   if (email && !EMAIL.test(email)) return { error: "Revisá el correo: con él entra al portal." };
-  if (!ROLES.includes(role)) return { error: "Elegí un rol." };
-  if (id === viewer.id && role !== viewer.role) return { error: "No podés cambiar tu propio rol." };
+  if (!scopes) return { error: "Elegí al menos un rol." };
+  if (id === viewer.id && !scopes.includes("admin")) return { error: "No podés quitarte el rol de admin." };
   if (coachId !== null && (!Number.isInteger(coachId) || coachId === id)) return { error: "Elegí otro coach." };
   if (coachId !== null) {
-    const { rowCount } = await db.query("select 1 from users where id = $1 and role in ('coach', 'admin')", [coachId]);
+    const { rowCount } = await db.query("select 1 from users where id = $1 and scopes && array['coach', 'admin']", [coachId]);
     if (!rowCount) return { error: "Ese coach no existe." };
   }
   if (!DATE.test(clientSince) || (passExpires && !DATE.test(passExpires))) return { error: "Revisá las fechas." };
@@ -100,7 +100,7 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
     photoUrl = `/archivos/${key}?v=${Date.now()}`;
   }
 
-  const fields = [name, email, role, coachId, text(form, "phone") || null, photoUrl, plan,
+  const fields = [name, email, scopes, coachId, text(form, "phone") || null, photoUrl, plan,
     clientSince, passExpires, nextControl, goal, text(form, "dni") || null, sex,
     ageYears === null ? null : Number(todayISO().slice(0, 4)) - ageYears, height, bodyType, conditions,
     text(form, "medications") || null, text(form, "notes") || null, form.get("active") === "on",
@@ -109,7 +109,7 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
   try {
     if (id === null) {
       const { rows } = await db.query<{ id: number }>(
-        `insert into users (name, email, role, coach_id, phone, photo_url, plan, client_since, pass_expires,
+        `insert into users (name, email, scopes, coach_id, phone, photo_url, plan, client_since, pass_expires,
                             next_control_at, goal, dni, sex, birth_year, height_cm, body_type, conditions, medications,
                             notes, active, title, external_id)
          values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
@@ -120,7 +120,7 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
     } else {
       // Con otro correo, se desenlaza de su cuenta de Clerk: la próxima vez entra (y se enlaza) con el nuevo.
       await db.query(
-        `update users set name = $1, email = $2, role = $3, coach_id = $4, phone = $5,
+        `update users set name = $1, email = $2, scopes = $3, coach_id = $4, phone = $5,
                 photo_url = coalesce($6, photo_url), plan = $7,
                 client_since = $8, pass_expires = $9, next_control_at = $10, goal = $11, dni = $12, sex = $13,
                 birth_year = $14, height_cm = $15, body_type = $16, conditions = $17, medications = $18, notes = $19,
@@ -134,7 +134,8 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
     if ((e as { code?: string }).code === "23505") return { error: "Ese correo ya lo tiene otra cuenta." };
     throw e;
   }
-  if (created !== undefined) redirect(`/portal/clientes/${created}`);
+  // Recepción no puede abrir la ficha que creó: vuelve al formulario, vacío para cargar otro.
+  if (created !== undefined) redirect(canManage(viewer, { coach_id: coachId }) ? `/portal/clientes/${created}` : `/portal/clientes/nuevo?creado=${created}`);
   refresh();
   return { ok: "Guardado." };
 }
@@ -142,7 +143,7 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
 /** Sólo el admin, y nunca su propia cuenta (así siempre queda al menos un admin). Se borran también sus controles. */
 export async function deleteClient(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();
-  if (viewer.role !== "admin") return { error: "Sólo el admin puede borrar clientes." };
+  if (!viewer.scopes.includes("admin")) return { error: "Sólo el admin puede borrar clientes." };
   const id = Number(form.get("id"));
   if (id === viewer.id) return { error: "No podés borrar tu propia cuenta." };
   // checkins y fotos: on delete cascade; los clientes de un coach borrado quedan sin coach (on delete set null)
