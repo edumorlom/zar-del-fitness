@@ -55,25 +55,29 @@ test("dashboard: cobertura, controles por semana, mejoras y por coach", () => {
   assert.deepEqual(d.perCoach[0], { id: 7, name: "Zar", photo: null, clients: 4, coverage: 25, checkins30: 1, late: 1 });
 });
 
-test("turnos: tramos del gimnasio, sin lo ocupado ni lo de dentro de 12 horas", () => {
+test("turnos: viernes en los tramos del gimnasio, sin lo ocupado ni lo de dentro de 12 horas", () => {
   const hours = hoursFrom({ dias: ["lunes", "martes", "miércoles", "jueves", "viernes"], turnos: [{ abre: "08:00", cierra: "12:00" }, { abre: "14:30", cierra: "21:00" }] });
-  assert.deepEqual(hours.days, [1, 2, 3, 4, 5]);
+  assert.deepEqual(hours.days, [5]);
   assert.equal(daySlots("2026-11-07", hours).length, 0); // sábado: cerrado
-  const monday = daySlots("2026-11-09", hours);
-  assert.equal(monday.length, 8 + 13); // 08:00–12:00 y 14:30–21:00 de a 30 minutos
-  assert.equal(monday[0].start.toISOString(), "2026-11-09T11:00:00.000Z"); // 08:00 en Buenos Aires
-  assert.equal(monday.at(-1)!.start.toISOString(), "2026-11-09T23:30:00.000Z"); // el último arranca 20:30
+  for (const day of ["2026-11-08", "2026-11-09", "2026-11-10", "2026-11-11", "2026-11-12", "2026-11-14"]) {
+    assert.deepEqual(daySlots(day, hours), [], day);
+  }
+  const friday = daySlots("2026-11-13", hours);
+  assert.equal(friday.length, 8 + 13); // 08:00–12:00 y 14:30–21:00 de a 30 minutos
+  assert.equal(friday[0].start.toISOString(), "2026-11-13T11:00:00.000Z"); // 08:00 en Buenos Aires
+  assert.equal(friday.at(-1)!.start.toISOString(), "2026-11-13T23:30:00.000Z"); // el último arranca 20:30
   // Ocupado de 08:15 a 09:00 (Google) y el turno de las 15:00 (portal): se van 08:00, 08:30 y 15:00
   const taken = [
-    { start: new Date("2026-11-09T11:15:00Z"), end: new Date("2026-11-09T12:00:00Z") },
-    { start: new Date("2026-11-09T18:00:00Z"), end: new Date("2026-11-09T18:30:00Z") },
+    { start: new Date("2026-11-13T11:15:00Z"), end: new Date("2026-11-13T12:00:00Z") },
+    { start: new Date("2026-11-13T18:00:00Z"), end: new Date("2026-11-13T18:30:00Z") },
   ];
-  const free = freeSlots("2026-11-09", hours, taken, new Date("2026-11-08T12:00:00Z"));
-  assert.equal(free.length, monday.length - 3);
-  // Con "ahora" el lunes 05:00, no entra nada antes de las 17:00
-  const late = freeSlots("2026-11-09", hours, [], new Date("2026-11-09T08:00:00Z"));
-  assert.equal(late[0].start.toISOString(), "2026-11-09T20:00:00.000Z");
-  assert.deepEqual(bookableDays("2026-11-06", hours).slice(0, 3), ["2026-11-09", "2026-11-10", "2026-11-11"]);
+  const free = freeSlots("2026-11-13", hours, taken, new Date("2026-11-08T12:00:00Z"));
+  assert.equal(free.length, friday.length - 3);
+  // Con "ahora" el viernes 05:00, no entra nada antes de las 17:00
+  const late = freeSlots("2026-11-13", hours, [], new Date("2026-11-13T08:00:00Z"));
+  assert.equal(late[0].start.toISOString(), "2026-11-13T20:00:00.000Z");
+  assert.deepEqual(bookableDays("2026-11-06", hours), ["2026-11-13", "2026-11-20", "2026-11-27", "2026-12-04"]);
+  assert.deepEqual(bookableDays("2026-11-06", hoursFrom({ dias: ["lunes"], turnos: [{ abre: "08:00", cierra: "12:00" }] })), []);
   const grid = monthGrid("2026-11"); // noviembre 2026 empieza un domingo
   assert.equal(grid.length, 42);
   assert.equal(grid[0], "2026-10-26"); // el lunes anterior

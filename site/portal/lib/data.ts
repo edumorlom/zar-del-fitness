@@ -1,4 +1,5 @@
 import "server-only";
+import type { PoolClient } from "pg";
 import { db } from "./db";
 import type { Role } from "./access";
 
@@ -249,8 +250,8 @@ export async function pendingRequests(viewer: { id: number; role: Role }) {
 }
 
 /** Lo ocupado por turnos del portal (de todos: es un solo calendario) entre dos momentos. */
-export async function takenIntervals(from: Date, to: Date, exceptId: number | null = null) {
-  const { rows } = await db.query<{ start: Date; end: Date }>(
+export async function takenIntervals(from: Date, to: Date, exceptId: number | null = null, connection: Pick<PoolClient, "query"> = db) {
+  const { rows } = await connection.query<{ start: Date; end: Date }>(
     `select starts_at as start, ends_at as "end" from appointments
      where status in ('requested', 'confirmed') and starts_at < $2 and ends_at > $1 and ($3::int is null or id <> $3)`,
     [from, to, exceptId]

@@ -22,13 +22,13 @@ se busca por el teléfono (sólo si un único cliente lo tiene). Si no hay ficha
 Horas: todas son de Argentina (sin zona horaria), en 24 h.
 
 GET /horarios?dia=AAAA-MM-DD   (con clave)
-  Los horarios libres de un día. Sólo sirven los días que se pueden pedir (desde mañana, hasta 30 días, cuando abre el
-  gimnasio); otro día es ok false.
+  Los horarios libres de un viernes (desde mañana, hasta 30 días), en el horario del gimnasio. Otro día es ok false.
+  Hay un máximo de 5 turnos pedidos o confirmados por día; al completar el cupo no se ofrecen horarios.
   Respuesta: {"ok": true, "mensaje": "...", "horarios": ["09:00", "09:30"]}
 
 GET /turnos?telefono=...  o  ?customer_id=...   (con clave)
   Los turnos pedidos o confirmados de la persona.
-  Respuesta: {"ok": true, "mensaje": "...", "turnos": [{"dia": "2026-11-10", "hora": "09:00", "estado": "pedido"}]}
+  Respuesta: {"ok": true, "mensaje": "...", "turnos": [{"dia": "2026-11-13", "hora": "09:00", "estado": "pedido"}]}
 
 POST /turnos   (con clave, cuerpo JSON)
   {"telefono": "...", "customer_id": 123, "inicio": "AAAA-MM-DDTHH:MM"}

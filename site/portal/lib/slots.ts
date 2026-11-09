@@ -1,4 +1,4 @@
-// Los turnos que se pueden pedir: los días y horarios del gimnasio (db/horarios.json), en tramos fijos, sin lo ocupado
+// Los turnos que se pueden pedir: sólo los viernes, en el horario del gimnasio (db/horarios.json), sin lo ocupado
 // (turnos del portal y lo que tenga el Zar en su Google Calendar). Sin base ni Google: se puede probar solo.
 
 export type Interval = { start: Date; end: Date };
@@ -6,14 +6,17 @@ export type Hours = { days: number[]; windows: { from: string; to: string }[] };
 
 export const SLOT_MINUTES = 30;
 export const DAYS_AHEAD = 30;
+export const MAX_DAILY_APPOINTMENTS = 5;
+export const ONLY_FRIDAYS = "Los turnos se agendan únicamente los viernes.";
+export const DAILY_LIMIT_MESSAGE = `Ese viernes ya tiene ${MAX_DAILY_APPOINTMENTS} turnos: elegí otro.`;
 /** No se pide para dentro de menos de 12 horas: el turno lo tiene que confirmar alguien. */
 export const MIN_HOURS_AHEAD = 12;
 
 const WEEKDAYS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
 
-/** De db/horarios.json ({ dias: ["lunes", …], turnos: [{ abre, cierra }] }) a días de la semana (0 = domingo) y tramos. */
+/** Horarios de control: sólo el viernes, si el gimnasio abre, con sus mismos tramos. */
 export const hoursFrom = (h: { dias: string[]; turnos: { abre: string; cierra: string }[] }): Hours => ({
-  days: h.dias.map((d) => WEEKDAYS.indexOf(d)).filter((d) => d >= 0),
+  days: h.dias.map((d) => WEEKDAYS.indexOf(d)).filter((d) => d === 5),
   windows: h.turnos.map((t) => ({ from: t.abre, to: t.cierra })),
 });
 
@@ -35,8 +38,9 @@ export function daySlots(date: string, hours: Hours): Interval[] {
 
 const overlaps = (a: Interval, b: Interval) => a.start < b.end && b.start < a.end;
 
-/** Los tramos libres de un día: sin pisar lo ocupado y desde dentro de MIN_HOURS_AHEAD. */
-export function freeSlots(date: string, hours: Hours, taken: Interval[], now: Date): Interval[] {
+/** Los tramos libres: hasta 5 turnos del portal por día; Google sólo bloquea horarios, no consume cupo. */
+export function freeSlots(date: string, hours: Hours, taken: Interval[], now: Date, appointmentCount = 0): Interval[] {
+  if (appointmentCount >= MAX_DAILY_APPOINTMENTS) return [];
   const earliest = now.getTime() + MIN_HOURS_AHEAD * 3_600_000;
   return daySlots(date, hours).filter((s) => s.start.getTime() >= earliest && !taken.some((t) => overlaps(s, t)));
 }

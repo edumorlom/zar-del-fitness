@@ -97,6 +97,9 @@ SSL "Full", delante de Railway:
   los links y las redirecciones llevan `/portal` (`/portal/clientes`). Sus componentes, `lib/`, los
   formularios (`actions.ts`, `agenda-actions.ts`) y los scripts de importación están en `portal/`, importados con `~/`.
   Usa los estilos, el menú, las animaciones y los datos del sitio (`@/`, `@db/`).
+- Los turnos de control se piden y se mueven sólo a viernes, con un máximo de 5 pedidos o confirmados por día para
+  todo el gimnasio. Cancelados y rechazados liberan cupo. Portal, API y MCP comparten la disponibilidad; un bloqueo
+  transaccional por fecha impide superar el cupo con reservas simultáneas. Los horarios de apertura del gimnasio siguen en `db/horarios.json`.
 - `instrumentation.ts` crea las tablas que falten al arrancar el servidor. Si la base no responde, el servidor arranca
   igual: el sitio no depende de ella.
 - Las variables (`.env.local` para `npm run dev`; en producción, las del servicio en Railway):

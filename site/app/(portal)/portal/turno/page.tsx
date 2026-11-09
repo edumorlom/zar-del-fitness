@@ -1,4 +1,3 @@
-import horarios from "@db/horarios.json";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -7,14 +6,13 @@ import { Form } from "~/components/Form";
 import { Title } from "~/components/Progress";
 import { Shell } from "~/components/Shell";
 import { requireViewer } from "~/lib/auth";
-import { getOpenAppointment, takenIntervals } from "~/lib/data";
+import { getOpenAppointment } from "~/lib/data";
 import { dateOf, longDate, timeOf, todayISO } from "~/lib/format";
-import { busy } from "~/lib/google";
-import { bookableDays, freeSlots, hoursFrom } from "~/lib/slots";
+import { bookableDays } from "~/lib/slots";
+import { availableSlots, HOURS } from "~/lib/turnos";
 
 export const metadata: Metadata = { title: "Pedir turno" };
 
-const HOURS = hoursFrom(horarios);
 const DAY = new Intl.DateTimeFormat("es-AR", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
 
 /** El cliente pide su control: elige un día y un horario libre. Lo confirma el Zar o su coach. */
@@ -58,10 +56,7 @@ export default async function BookingPage({ searchParams }: { searchParams: Prom
   const today = todayISO();
   const days = bookableDays(today, HOURS);
   const day = days.includes(sp.dia ?? "") ? sp.dia! : days[0];
-  const from = new Date(`${day}T00:00:00-03:00`);
-  const to = new Date(from.getTime() + 86_400_000);
-  const taken = [...(await takenIntervals(from, to)), ...((await busy(from, to)) ?? [])];
-  const slots = freeSlots(day, HOURS, taken, new Date());
+  const slots = await availableSlots(day);
   const groups = [
     { label: "Mañana", list: slots.filter((s) => Number(timeOf(s.start).slice(0, 2)) < 13) },
     { label: "Tarde", list: slots.filter((s) => Number(timeOf(s.start).slice(0, 2)) >= 13) },
@@ -76,7 +71,7 @@ export default async function BookingPage({ searchParams }: { searchParams: Prom
               <span className="dot" /> Tu próximo control
             </p>
             <Title as="h1" plain="Pedí tu" accent="turno" className="h2" />
-            <p className="sub">Elegí un día y un horario. Lo confirma el Zar y te llega la invitación a tu correo.</p>
+            <p className="sub">Los controles se agendan los viernes, con un máximo de 5 turnos por día. Elegí un horario; lo confirma el Zar y te llega la invitación a tu correo.</p>
           </div>
         </div>
 

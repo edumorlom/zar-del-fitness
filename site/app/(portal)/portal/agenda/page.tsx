@@ -27,7 +27,7 @@ function Move({ a }: { a: Appointment }) {
         <label className="field">
           <span className="field__label">Nuevo horario</span>
           <input name="start" type="datetime-local" step={1800} defaultValue={toLocalInput(a.starts_at)} />
-          <span className="field__hint">De lunes a viernes, en el horario del gimnasio, a las y media o en punto.</span>
+          <span className="field__hint">Sólo los viernes, hasta 5 turnos por día, en el horario del gimnasio, a las y media o en punto.</span>
         </label>
       </Form>
     </details>
@@ -90,7 +90,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
 
   return (
     <AdminShell viewer={viewer}>
-      <PageHead title="Agenda" sub="Los turnos de control que piden los clientes desde su panel. Van al Google Calendar del Zar." />
+      <PageHead title="Agenda" sub="Controles los viernes, con un máximo de 5 turnos por día. Van al Google Calendar del Zar." />
 
       {status !== "connected" && (
         <div className="card notice notice--row" data-reveal>
@@ -98,7 +98,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
             <p className="strong">El Google Calendar del Zar no está conectado</p>
             <p className="muted">
               {status === "not-signed-in"
-                ? `El Zar tiene que entrar al portal con ${CALENDAR_OWNER} y conectarlo acá. Mientras tanto se ofrece todo el horario del gimnasio y los turnos no van al calendario.`
+                ? `El Zar tiene que entrar al portal con ${CALENDAR_OWNER} y conectarlo acá. Mientras tanto se ofrecen los viernes, hasta 5 turnos por día, y los turnos no van al calendario.`
                 : "Falta darle permiso al portal para ver lo ocupado y crear los turnos en su calendario."}
             </p>
           </div>

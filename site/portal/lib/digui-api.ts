@@ -4,7 +4,7 @@ import { fromLocalInput } from "./format.ts";
 
 export const NO_FILE_PHONE = "No encontramos tu ficha con este número: pedí el turno desde el portal o escribile al Zar.";
 export const NO_FILE_ID = "No encontramos tu ficha: pedí el turno desde el portal o escribile al Zar.";
-export const BAD_DAY = "Ese día no se puede pedir: elegí uno entre mañana y los próximos 30 días en que abre el gimnasio.";
+export const BAD_DAY = "Ese día no se puede pedir: elegí un viernes entre mañana y los próximos 30 días.";
 
 const sha = (s: string) => createHash("sha256").update(s).digest();
 

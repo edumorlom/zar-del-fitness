@@ -8,7 +8,7 @@ import { getAppointment, type Appointment } from "~/lib/data";
 import { dateOf, fromLocalInput, longDate, timeOf } from "~/lib/format";
 import { createEvent, deleteEvent, moveEvent } from "~/lib/google";
 import { SLOT_MINUTES } from "~/lib/slots";
-import { requestSlot, slotError } from "~/lib/turnos";
+import { appointmentDayError, requestSlot, withAvailableSlot } from "~/lib/turnos";
 import type { FormState } from "./actions";
 
 const event = (a: Appointment, start: Date, end: Date) => ({
@@ -55,6 +55,8 @@ export async function confirmAppointment(_: FormState, form: FormData): Promise<
   const viewer = await requireViewer();
   const a = await load(viewer, Number(form.get("id")), false);
   if (!a || a.status !== "requested") return { error: "Ese pedido ya no está." };
+  const error = await appointmentDayError(a.starts_at, a.id);
+  if (error) return { error };
   const eventId = await createEvent(event(a, a.starts_at, a.ends_at));
   await db.query("update appointments set status = 'confirmed', google_event_id = $2, decided_by = $3 where id = $1", [
     a.id,
@@ -72,24 +74,20 @@ export async function moveAppointment(_: FormState, form: FormData): Promise<For
   if (!a || (a.status !== "requested" && a.status !== "confirmed")) return { error: "Ese turno ya no está." };
   const start = fromLocalInput(String(form.get("start") ?? "")) ?? new Date(NaN);
   if (start.getTime() === a.starts_at.getTime()) return { error: "Es el mismo horario." };
-  const err = await slotError(start, a.id);
-  if (err) return { error: err };
   const end = new Date(start.getTime() + SLOT_MINUTES * 60_000);
-  let eventId = a.google_event_id;
-  if (eventId) await moveEvent(eventId, event(a, start, end));
-  else eventId = await createEvent(event(a, start, end));
-  try {
-    await db.query(
+  const result = await withAvailableSlot(start, a.id, async (connection) => {
+    let eventId = a.google_event_id;
+    if (eventId) await moveEvent(eventId, event(a, start, end), connection);
+    else eventId = await createEvent(event(a, start, end), connection);
+    await connection.query(
       `update appointments set starts_at = $2, ends_at = $3, status = 'confirmed', google_event_id = $4, decided_by = $5,
               requested_at = coalesce(requested_at, starts_at)
        where id = $1`,
       [a.id, start, end, eventId, viewer.id]
     );
-  } catch (e) {
-    if ((e as { code?: string }).code === "23505") return { error: "Ese horario ya está tomado: elegí otro." };
-    throw e;
-  }
-  await db.query("update users set next_control_at = $2 where id = $1", [a.client_id, start]);
+    await connection.query("update users set next_control_at = $2 where id = $1", [a.client_id, start]);
+  });
+  if (!result.ok) return { error: result.mensaje };
   refresh();
   return { ok: `Movido al ${longDate(dateOf(start))} a las ${timeOf(start)} h y confirmado.` };
 }

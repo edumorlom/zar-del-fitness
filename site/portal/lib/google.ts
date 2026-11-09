@@ -1,4 +1,5 @@
 import "server-only";
+import type { PoolClient } from "pg";
 import { clerkClient } from "@clerk/nextjs/server";
 import { portalUrl } from "@/lib/content";
 import { db } from "./db";
@@ -16,8 +17,8 @@ const TZ = "America/Argentina/Buenos_Aires";
 
 export type CalendarStatus = "connected" | "not-signed-in" | "no-permission";
 
-async function token(): Promise<{ status: CalendarStatus; token?: string }> {
-  const { rows } = await db.query<{ clerk_id: string | null }>("select clerk_id from users where email = $1", [CALENDAR_OWNER]);
+async function token(connection: Pick<PoolClient, "query"> = db): Promise<{ status: CalendarStatus; token?: string }> {
+  const { rows } = await connection.query<{ clerk_id: string | null }>("select clerk_id from users where email = $1", [CALENDAR_OWNER]);
   const clerkId = rows[0]?.clerk_id;
   if (!clerkId) return { status: "not-signed-in" };
   try {
@@ -34,8 +35,8 @@ export async function calendarStatus() {
   return (await token()).status;
 }
 
-async function call(method: string, path: string, body?: unknown) {
-  const t = await token();
+async function call(method: string, path: string, body?: unknown, connection: Pick<PoolClient, "query"> = db) {
+  const t = await token(connection);
   if (!t.token) return null;
   const res = await fetch(`${API}${path}`, {
     method,
@@ -51,13 +52,13 @@ async function call(method: string, path: string, body?: unknown) {
 }
 
 /** Lo ocupado en el calendario del Zar entre dos momentos. null: sin conexión (se ofrece todo el horario). */
-export async function busy(from: Date, to: Date): Promise<Interval[] | null> {
+export async function busy(from: Date, to: Date, connection: Pick<PoolClient, "query"> = db): Promise<Interval[] | null> {
   const r = await call("POST", "/freeBusy", {
     timeMin: from.toISOString(),
     timeMax: to.toISOString(),
     timeZone: TZ,
     items: [{ id: "primary" }],
-  });
+  }, connection);
   const list = r?.calendars?.primary?.busy as { start: string; end: string }[] | undefined;
   return list ? list.map((b) => ({ start: new Date(b.start), end: new Date(b.end) })) : null;
 }
@@ -74,13 +75,13 @@ const eventBody = (e: Event) => ({
 });
 
 /** Crea el evento y devuelve su id (null si no hay conexión o falló). */
-export async function createEvent(e: Event): Promise<string | null> {
-  const r = await call("POST", "/calendars/primary/events?sendUpdates=all", eventBody(e));
+export async function createEvent(e: Event, connection: Pick<PoolClient, "query"> = db): Promise<string | null> {
+  const r = await call("POST", "/calendars/primary/events?sendUpdates=all", eventBody(e), connection);
   return (r?.id as string | undefined) ?? null;
 }
 
-export async function moveEvent(id: string, e: Event) {
-  return Boolean(await call("PATCH", `/calendars/primary/events/${encodeURIComponent(id)}?sendUpdates=all`, eventBody(e)));
+export async function moveEvent(id: string, e: Event, connection: Pick<PoolClient, "query"> = db) {
+  return Boolean(await call("PATCH", `/calendars/primary/events/${encodeURIComponent(id)}?sendUpdates=all`, eventBody(e), connection));
 }
 
 export async function deleteEvent(id: string) {

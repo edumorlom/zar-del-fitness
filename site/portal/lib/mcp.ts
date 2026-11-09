@@ -148,7 +148,7 @@ export function portalMcp() {
     {
       title: "Horarios libres",
       description:
-        "Los horarios libres para un turno un día (desde mañana, hasta 30 días, cuando abre el gimnasio). Horas de Argentina.",
+        "Los horarios libres para un turno los viernes (desde mañana, hasta 30 días), con un máximo de 5 turnos pedidos o confirmados por día. Horas de Argentina.",
       inputSchema: { dia: z.string().describe("AAAA-MM-DD") },
       annotations: readOnly,
     },
