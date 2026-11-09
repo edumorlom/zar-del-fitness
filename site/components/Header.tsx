@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,8 +17,8 @@ type HeaderProps = {
   nav: { href: string; label: string }[];
   announce: { text: string; price: string; cta: string; href: string };
   waInfo: string;
-  /** El acceso al portal (/portal/). */
-  login: { label: string; href: string };
+  /** El acceso al portal (/portal/). `signedInLabel`: el texto si el navegador ya tiene la sesión iniciada. */
+  login: { label: string; signedInLabel?: string; href: string };
   labels: { logo: string; nav: string; navMobile: string; open: string; close: string; write: string };
   /** La misma página en el otro idioma. */
   language: { href: string; lang: Lang; label: string };
@@ -26,7 +26,14 @@ type HeaderProps = {
   portal?: PortalMenu;
 };
 
+// El sitio es estático y Clerk sólo corre en /portal: clerk-js deja esta cookie en todo el dominio ("0" = sin sesión).
+// shortcut: si la sesión venció sin volver al portal, sigue diciendo "Mi Portal" (el botón lleva al ingreso), cargar Clerk en el sitio si molesta.
+const hasSession = () => /(?:^|; )__client_uat=[1-9]/.test(document.cookie);
+const noop = () => () => {};
+
 export function Header({ home, nav, announce, waInfo, login, labels, language, portal }: HeaderProps) {
+  const signedIn = useSyncExternalStore(noop, hasSession, () => false);
+  const loginLabel = (signedIn && login.signedInLabel) || login.label;
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
@@ -132,7 +139,7 @@ export function Header({ home, nav, announce, waInfo, login, labels, language, p
           </a>
 
           <a className={`btn btn--gold btn--sm ${styles.login}`} href={login.href} data-magnetic>
-            <span>{login.label}</span>
+            <span>{loginLabel}</span>
           </a>
 
           <button
@@ -185,7 +192,7 @@ export function Header({ home, nav, announce, waInfo, login, labels, language, p
             <span>{labels.write}</span>
           </a>
           <a className="btn btn--ghost" href={login.href} onClick={closeMenu}>
-            <span>{login.label}</span>
+            <span>{loginLabel}</span>
           </a>
         </div>
       </div>

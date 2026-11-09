@@ -5,7 +5,7 @@ import gimnasio from "@db/gimnasio.json";
 import { DiguiChat } from "~/components/DiguiChat";
 import { LoginBackdrop } from "~/components/LoginBackdrop";
 import { SiteHeader } from "~/components/SiteHeader";
-import { SignOut } from "~/components/Shell";
+import { SIGN_OUT, SignOut } from "~/components/Shell";
 import { getViewer } from "~/lib/auth";
 
 export const metadata: Metadata = { title: "Sin acceso" };
@@ -21,7 +21,7 @@ export default async function NoAccessPage() {
 
   return (
     <>
-    <SiteHeader login={{ label: "Iniciar sesión", href: "/portal/ingresar" }} />
+    <SiteHeader login={SIGN_OUT} />
     <main id="main" className="login">
       <LoginBackdrop />
       <div className="panel intro">
