@@ -492,16 +492,34 @@
         "en": "Personal training with Ronald Medina at The VIP ({direccion}) and the online 25-Day Challenge, from any country. Sign-ups and questions go through WhatsApp: {telefono} ({link})."
       },
       "programas": { "es": "Programas", "en": "Programs" },
+      "servicios": { "es": "Servicios, productos y precios", "en": "Services, products and prices" },
+      "pagos": {
+        "es": "Se puede pagar en persona, con tarjeta, en efectivo, por transferencia o con Mercado Pago.",
+        "en": "You can pay in person, by card, in cash, by bank transfer or with Mercado Pago."
+      },
+      "supervision": {
+        "es": "No se puede entrenar por cuenta propia: siempre hay un entrenador personal supervisando.",
+        "en": "You can't train on your own: a personal trainer always supervises the session."
+      },
+      "visitas": {
+        "es": "No se puede conocer el local ni las instalaciones sin ser miembro.",
+        "en": "You can't visit the gym or its facilities unless you are a member."
+      },
+      "incluye": { "es": "Incluye", "en": "Includes" },
+      "porMes": { "es": "por mes", "en": "per month" },
       "gimnasio": { "es": "El gimnasio", "en": "The gym" },
       "horario": {
         "es": "Horario: {dias}, {franjas} (hora de Buenos Aires). Clases de ~{duracion}; último ingreso {ultimoIngreso}.",
         "en": "Hours: {dias}, {franjas} (Buenos Aires time). ~{duracion} classes; last entry {ultimoIngreso}."
       },
       "preguntas": { "es": "Preguntas frecuentes", "en": "Frequently asked questions" },
-      "blog": { "es": "notas sobre entrenamiento, alimentación y salud.", "en": "posts on training, nutrition and health." },
+      "blog": {
+        "es": "notas sobre entrenamiento, alimentación y mitos del fitness.",
+        "en": "posts on training, nutrition and fitness myths."
+      },
       "podcasts": {
-        "es": "Detrás del Espejo, el podcast en video (en YouTube): charlas con especialistas sobre suplementos, péptidos, hormonas y culturismo.",
-        "en": "Detrás del Espejo, the video podcast (on YouTube, in Spanish): talks with experts on supplements, peptides, hormones and bodybuilding."
+        "es": "Detrás del Espejo, el podcast en video (en YouTube): charlas con médicos, especialistas y atletas sobre fitness, suplementos, péptidos, hormonas y culturismo.",
+        "en": "Detrás del Espejo, the video podcast (on YouTube, in Spanish): talks with doctors, experts and athletes about fitness, supplements, peptides, hormones and bodybuilding."
       },
       "otroIdioma": { "es": "El sitio en castellano", "en": "The site in English" },
       "lgbt": {

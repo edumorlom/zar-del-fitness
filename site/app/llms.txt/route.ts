@@ -6,13 +6,15 @@ import { abs } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
-// Los planes, en un idioma: "- [Reto de los 25 días](…/#programas): $100.000 ARS. Entrená en casa…".
+// Los planes, en un idioma: "- [Reto de los 25 días](…/#programas): $100.000 ARS por mes. Entrená en casa… Incluye: …".
 function programLines(lang: Lang, withTag = false) {
-  const { programs, pages } = content(lang);
-  return programs.map(
-    (p) =>
-      `- [${p.title}](${abs(`${pages.home}#programas`)})${withTag ? ` (${p.tag})` : ""}: ${p.currency === "$" ? "$" : `${p.currency} `}${p.price}${p.suffix ? ` ${p.suffix}` : ""}. ${p.desc}`
-  );
+  const { programs, pages, t } = content(lang);
+  return programs.map((p) => {
+    const price = `${p.currency === "$" ? "$" : `${p.currency} `}${p.price}${p.suffix ? ` ${p.suffix}` : ""}`;
+    const monthly = p.monthly ? ` ${t.seo.llms.porMes}` : "";
+    const includes = p.features.length ? ` ${t.seo.llms.incluye}: ${p.features.join("; ")}.` : "";
+    return `- [${p.title}](${abs(`${pages.home}#programas`)})${withTag ? ` (${p.tag})` : ""}: ${price}${monthly}. ${p.desc}${includes}`;
+  });
 }
 
 // The VIP: la dirección y el horario, en un idioma.
@@ -74,7 +76,11 @@ export function GET() {
     "",
     t.seo.llms.lgbt,
     "",
-    `## ${t.seo.llms.programas}`,
+    `## ${t.seo.llms.servicios}`,
+    "",
+    `- ${t.seo.llms.pagos}`,
+    `- ${t.seo.llms.supervision}`,
+    `- ${t.seo.llms.visitas}`,
     "",
     ...programLines("es"),
     "",
@@ -106,7 +112,15 @@ export function GET() {
     en.t.seo.llms.lgbt,
     "",
     `- [${en.t.seo.llms.otroIdioma}](${abs(en.pages.home)}): ${en.t.seo.inicio.descripcion}`,
+    "",
+    `### ${en.t.seo.llms.servicios}`,
+    "",
+    `- ${en.t.seo.llms.pagos}`,
+    `- ${en.t.seo.llms.supervision}`,
+    `- ${en.t.seo.llms.visitas}`,
+    "",
     ...programLines("en", true),
+    "",
     ...gymLines("en"),
     `- [${en.t.menu.blog}](${abs(en.pages.blog)}): ${en.t.seo.llms.blog}`,
     `- [${en.t.menu.podcasts}](${abs(en.pages.podcasts)}): ${en.t.seo.llms.podcasts}`,
