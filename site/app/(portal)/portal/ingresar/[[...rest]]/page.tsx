@@ -19,7 +19,7 @@ export default async function LoginPage() {
   if (await getViewer()) redirect("/portal");
   return (
     <>
-    <SiteHeader login={{ label: "Mi Portal", href: "/portal/ingresar" }} />
+    <SiteHeader login={{ label: "Iniciar sesión", href: "/portal/ingresar" }} />
     <main id="main" className="login">
       <LoginBackdrop />
 

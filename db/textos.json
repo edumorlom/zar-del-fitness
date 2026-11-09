@@ -54,7 +54,7 @@
     "abrirMenu": { "es": "Abrir menú", "en": "Open menu" },
     "cerrarMenu": { "es": "Cerrar menú", "en": "Close menu" },
     "escribinos": { "es": "Escribinos", "en": "Message us" },
-    "ingresar": { "es": "Mi Portal", "en": "My Portal" }
+    "ingresar": { "es": "Iniciar sesión", "en": "Sign in" }
   },
 
   "menu": {
