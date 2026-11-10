@@ -7,6 +7,8 @@ WORKDIR /srv
 # ADD abre el .tar en /srv.
 ADD app.tar /srv
 ENV NODE_ENV=production
+# Todo en hora argentina: el reloj del servidor (logs, fechas de Node) también, no el UTC de Railway.
+ENV TZ=America/Argentina/Buenos_Aires
 # Railway pone el puerto ($PORT); el servidor tiene que escuchar en todas las interfaces, no sólo en localhost.
 ENV HOSTNAME=0.0.0.0
 CMD ["node", "site/server.js"]

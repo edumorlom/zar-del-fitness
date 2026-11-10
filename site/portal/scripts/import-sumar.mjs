@@ -99,7 +99,7 @@ try {
     ];
     const { rows: r } = await db.query(
       `insert into users (${cols})
-       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, coalesce($14::date, current_date), $15, $16, $17, $18)
+       values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, coalesce($14::date, (now() at time zone 'America/Argentina/Buenos_Aires')::date), $15, $16, $17, $18)
        on conflict (${email ? "email" : "external_id"}) do update set ${update}
        returning (xmax = 0) as inserted`,
       values

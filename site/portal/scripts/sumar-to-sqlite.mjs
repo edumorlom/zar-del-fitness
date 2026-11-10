@@ -23,6 +23,9 @@ for (const f of bundle.archivos ?? []) {
   fileUrl[`${f.alumnoId}/${f.tipo}`] = `${PORTAL}/archivos/alumnos/${f.alumnoId}/${f.tipo}.${ext}`;
 }
 
+// Hoy en Buenos Aires, "AAAA-MM-DD" (toISOString da el día en UTC, que de 21 a 24 h ya es mañana).
+const TODAY = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Argentina/Buenos_Aires" }).format(new Date());
+
 // Igual que import-sumar.mjs.
 const EXPORT_YEAR = 2026;
 const MASTER_EMAIL = "zardelfitnessgym@gmail.com";
@@ -52,7 +55,7 @@ create table users (
   phone text,
   photo_url text,
   plan text,
-  client_since text not null default current_date,
+  client_since text not null default (date('now', '-3 hours')), -- hoy en Argentina (UTC-3 fijo)
   pass_expires text,
   next_control_at text,
   goal text,
@@ -178,7 +181,7 @@ for (const { id } of X.activos) {
     medications: clean(a.medicamentos),
     notes: clean(a.observaciones),
     active: a.activo === false ? 0 : 1,
-    client_since: a.fechaAlta ?? new Date().toISOString().slice(0, 10),
+    client_since: a.fechaAlta ?? TODAY,
     // Con el historial completo no hace falta el "último control" suelto; queda sólo si no vino ninguna evaluación.
     legacy_last_checkin: evaluaciones.length ? null : a.ultimaEvaluacion ?? null,
     legacy_last_weight: evaluaciones.length ? null : a.ultimoPeso ?? null,
@@ -212,7 +215,7 @@ for (const b of X.bajas) {
     role: "user",
     name: clean(b.nombreCompleto),
     dni: clean(b.dni),
-    client_since: b.fechaAlta ?? new Date().toISOString().slice(0, 10),
+    client_since: b.fechaAlta ?? TODAY,
     active: 0,
     notes: b.fechaBaja ? `Dado de baja el ${b.fechaBaja} en el portal anterior.` : null,
     external_id: b.id,
