@@ -1,7 +1,7 @@
-// Quién chatea en el sitio: el cliente que entró al portal en este navegador. El sitio es estático y no lee la sesión de
-// Clerk, así que el portal deja su customer_id firmado (lo mismo que ya va en la página del portal) en una cookie, y el
-// chat del sitio lo pasa a Digui. Digui verifica la firma: cambiar el id la rompe. La escribe y la lee
-// portal/components/DiguiIdentify.tsx.
+// Quién chatea en el sitio: el cliente que entró al portal en este navegador. El sitio es estático: Clerk dice en el
+// navegador si hay sesión (components/Session.tsx), pero no quién es en la base (users.id), así que el portal deja su
+// customer_id firmado (lo mismo que ya va en la página del portal) en una cookie, y el chat del sitio lo pasa a Digui.
+// Digui verifica la firma: cambiar el id la rompe. La escribe y la lee portal/components/DiguiIdentify.tsx.
 const NAME = "digui_visitor";
 
 /** La cookie con lo firmado, hasta que vence la firma. */

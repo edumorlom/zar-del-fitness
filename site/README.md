@@ -97,6 +97,10 @@ SSL "Full", delante de Railway:
   los links y las redirecciones llevan `/portal` (`/portal/clientes`). Sus componentes, `lib/`, los
   formularios (`actions.ts`, `agenda-actions.ts`) y los scripts de importación están en `portal/`, importados con `~/`.
   Usa los estilos, el menú, las animaciones y los datos del sitio (`@/`, `@db/`).
+- El sitio también sabe si hay sesión: el botón del menú dice "Mi Portal" o "Iniciar sesión" según Clerk, que se
+  pregunta en el navegador al terminar la página (`components/Session.tsx`; el sitio es estático). Sólo se carga si la
+  cookie `__client_uat` de Clerk dice que hubo sesión en este navegador: sin ella, Clerk ni se baja. Si Clerk no
+  responde, queda lo que dice esa cookie.
 - Los turnos de control se piden y se mueven sólo a viernes, con un máximo de 5 pedidos o confirmados por día para
   todo el gimnasio. Cancelados y rechazados liberan cupo. Portal, API y MCP comparten la disponibilidad; un bloqueo
   transaccional por fecha impide superar el cupo con reservas simultáneas. Los horarios de apertura del gimnasio siguen en `db/horarios.json`.

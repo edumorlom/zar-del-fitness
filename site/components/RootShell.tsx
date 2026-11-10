@@ -5,6 +5,7 @@ import { Anton, Instrument_Serif, Manrope } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
 import { IconSprite } from "@/components/Icon";
 import { MotionProvider } from "@/components/motion/MotionProvider";
+import { SiteSession } from "@/components/Session";
 import { JsonLd } from "@/components/JsonLd";
 import { business, content, siteUrl } from "@/lib/content";
 import { locales, type Lang } from "@/lib/i18n";
@@ -65,16 +66,19 @@ export function RootShell({ lang, children }: { lang: Lang; children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: scrollTopScript }} />
       </head>
       <body>
-        <JsonLd data={siteGraph(lang)} />
-        <IconSprite />
-        <a className="skip-link" href="#main">
-          {t.general.irAlContenido}
-        </a>
-        <MotionProvider labels={{ video: t.video }}>
-          {children}
-        </MotionProvider>
-        <Analytics />
-        <DiguiChat />
+        {/* La sesión del portal, también acá: el botón del menú y el chat saben si hay alguien adentro */}
+        <SiteSession>
+          <JsonLd data={siteGraph(lang)} />
+          <IconSprite />
+          <a className="skip-link" href="#main">
+            {t.general.irAlContenido}
+          </a>
+          <MotionProvider labels={{ video: t.video }}>
+            {children}
+          </MotionProvider>
+          <Analytics />
+          <DiguiChat />
+        </SiteSession>
       </body>
     </html>
   );

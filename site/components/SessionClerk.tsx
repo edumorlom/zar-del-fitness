@@ -1,0 +1,24 @@
+"use client";
+
+import { ClerkProvider, useAuth } from "@clerk/nextjs";
+import { useEffect } from "react";
+
+// Clerk en el sitio, sólo para preguntar si hay sesión. Va aparte (lo carga components/Session.tsx cuando hace falta):
+// así su código no viaja con cada página a quien nunca entró al portal.
+
+function Report({ onChange }: { onChange: (signedIn: boolean) => void }) {
+  const { isLoaded, isSignedIn } = useAuth();
+  useEffect(() => {
+    if (isLoaded) onChange(Boolean(isSignedIn));
+  }, [isLoaded, isSignedIn, onChange]);
+  return null;
+}
+
+export default function SessionClerk({ onChange }: { onChange: (signedIn: boolean) => void }) {
+  return (
+    // Sin los formularios de Clerk (prefetchUI), que en el sitio no se muestran
+    <ClerkProvider prefetchUI={false} signInUrl="/portal/ingresar" signUpUrl="/portal/ingresar">
+      <Report onChange={onChange} />
+    </ClerkProvider>
+  );
+}

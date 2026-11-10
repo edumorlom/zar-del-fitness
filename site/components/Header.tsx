@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "./Icon";
+import { useSignedIn } from "./Session";
 import type { Lang } from "@/lib/i18n";
 import { scroll } from "@/lib/scroll";
 import styles from "./Header.module.css";
@@ -26,13 +27,9 @@ type HeaderProps = {
   portal?: PortalMenu;
 };
 
-// El sitio es estático y Clerk sólo corre en /portal: clerk-js deja esta cookie en todo el dominio ("0" = sin sesión).
-// shortcut: si la sesión venció sin volver al portal, sigue diciendo "Mi Portal" (el botón lleva al ingreso), cargar Clerk en el sitio si molesta.
-const hasSession = () => /(?:^|; )__client_uat=[1-9]/.test(document.cookie);
-const noop = () => () => {};
-
 export function Header({ home, nav, announce, waInfo, login, labels, language, portal }: HeaderProps) {
-  const signedIn = useSyncExternalStore(noop, hasSession, () => false);
+  // Lo que dice Clerk (components/Session.tsx), también en el sitio.
+  const signedIn = useSignedIn();
   const loginLabel = (signedIn && login.signedInLabel) || login.label;
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);

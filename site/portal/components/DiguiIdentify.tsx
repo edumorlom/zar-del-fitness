@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useClerkSignedIn } from "@/components/Session";
 import { FORGET_VISITOR, readVisitor, sharedDomain, signedIn, visitorCookie } from "~/lib/digui-cookie";
 
 type Chat = { identify: (params: Record<string, string>, exp: number, signature: string) => void };
@@ -35,17 +36,18 @@ export function DiguiIdentify({ params, exp, signature }: Props) {
 
 /**
  * Sin sesión a la vista (el sitio, o el portal sin sesión): el cliente que guardó DiguiIdentify en este navegador, sólo
- * si Clerk dice que la sesión sigue iniciada. forget (el ingreso, adonde lleva cerrar la sesión, y sin-acceso) la
- * borra: otra cuenta no chatea como ese cliente.
+ * si Clerk dice que la sesión sigue iniciada (su cookie y, en el sitio, lo que responde: components/Session.tsx). forget
+ * (el ingreso, adonde lleva cerrar la sesión, y sin-acceso) la borra: otra cuenta no chatea como ese cliente.
  */
 export function DiguiVisitor({ forget }: { forget?: boolean }) {
+  const clerk = useClerkSignedIn();
   useEffect(() => {
-    if (forget || !signedIn(document.cookie)) {
+    if (forget || !(clerk ?? signedIn(document.cookie))) {
       for (const forget of FORGET_VISITOR) document.cookie = forget;
       return;
     }
     const saved = readVisitor(document.cookie);
     return saved ? identify(saved.params.customer_id, saved.exp, saved.signature) : undefined;
-  }, [forget]);
+  }, [forget, clerk]);
   return null;
 }
