@@ -3,8 +3,8 @@
 import { ClerkProvider, useAuth } from "@clerk/nextjs";
 import { useEffect } from "react";
 
-// Clerk en el sitio, sólo para preguntar si hay sesión. Va aparte (lo carga components/Session.tsx cuando hace falta):
-// así su código no viaja con cada página a quien nunca entró al portal.
+// Clerk en el sitio, sólo para preguntar si hay sesión. Va aparte (lo carga components/Session.tsx al terminar la
+// página): así su código no se suma al de cada página.
 
 function Report({ onChange }: { onChange: (signedIn: boolean) => void }) {
   const { isLoaded, isSignedIn } = useAuth();

@@ -5,9 +5,10 @@ import { signedIn } from "~/lib/digui-cookie";
 
 // La sesión del portal (Clerk) en el sitio, que es estático: su servidor no la lee, la pregunta el navegador.
 //
-// Clerk deja __client_uat en el dominio: "0" o nada es sin sesión, y así lo decide también su servidor (sin revisar
-// nada más). Con la cookie, Clerk se carga al terminar la página (como el chat y Analytics) y dice si la sesión sigue:
-// si venció, el menú vuelve a "Iniciar sesión". Sin ella, no hay nada que preguntarle: ni se carga.
+// Clerk se carga al terminar la página (como el chat y Analytics) y dice si hay sesión, lo mismo que vería el portal:
+// si venció, el menú vuelve a "Iniciar sesión"; si sigue, "Mi Portal". Mientras tanto (o si Clerk no responde), vale lo
+// que dice __client_uat, la cookie que Clerk deja en el dominio ("0" o nada = sin sesión). Se le pregunta aunque no
+// esté: puede faltar con la sesión iniciada (y entonces el botón decía "Iniciar sesión" y el portal te dejaba entrar).
 
 const KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -17,7 +18,7 @@ const ClerkSays = createContext<boolean | null>(null);
 const noop = () => () => {};
 const cookieSays = () => signedIn(document.cookie);
 
-// Clerk, en un archivo aparte que sólo se baja si hay que preguntarle.
+// Clerk, en un archivo aparte: se baja después de la página, sin demorarla.
 const SessionClerk = lazy(() => import("./SessionClerk"));
 
 /** Si Clerk falla (no se baja, no carga bien, cambia algo suyo), no se cae la página: queda lo que dice la cookie. */
@@ -37,7 +38,7 @@ export function SiteSession({ children }: { children: React.ReactNode }) {
   const [load, setLoad] = useState(false);
 
   useEffect(() => {
-    if (!KEY || !cookieSays()) return;
+    if (!KEY) return;
     let live = true;
     const start = () => (window.requestIdleCallback ?? window.setTimeout)(() => live && setLoad(true));
     if (document.readyState === "complete") start();
