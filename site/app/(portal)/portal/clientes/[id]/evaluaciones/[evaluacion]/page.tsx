@@ -34,7 +34,13 @@ export default async function EditCheckinPage({ params }: { params: Promise<{ id
         className="card form"
         ask={
           client.active && client.email
-            ? `¿Le mandamos de nuevo el correo con la evaluación a ${client.name}?\n\nAceptar: se lo manda.\nCancelar: guarda los cambios sin mandarlo.`
+            ? {
+                title: "¿Volver a enviar",
+                accent: "la evaluación?",
+                text: `A ${client.name} le llega de nuevo el correo con el resumen y el plan. Si no, se guardan los cambios sin mandarlo.`,
+                yes: "Volver a enviar",
+                no: "No volver a enviar",
+              }
             : undefined
         }
       >

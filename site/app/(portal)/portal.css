@@ -853,6 +853,10 @@
 .field .field__hint {
   margin-top: 0;
 }
+/* Una aclaración arriba de los campos (el plan de alimentación): el aire va abajo, el mismo que entre campos */
+.field__hint:has(+ .fields) {
+  margin: 0 0 20px;
+}
 .form-foot {
   display: flex;
   flex-wrap: wrap;
@@ -2355,6 +2359,27 @@ a.person:hover .strong {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   text-align: left;
+}
+
+/* La pregunta antes de guardar (Form con ask): un cartel del portal en el centro, sobre fondo oscuro */
+.ask {
+  width: min(460px, calc(100vw - 32px));
+  margin: auto;
+  padding: 28px;
+  color: var(--white);
+}
+.ask::backdrop {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+.ask .muted {
+  margin-top: 12px;
+}
+.ask__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
 }
 
 /* El visor: la foto a pantalla completa sobre fondo negro */

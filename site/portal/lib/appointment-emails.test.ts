@@ -1,6 +1,14 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { renderConfirmedEmail, renderRequestEmail } from "./appointment-emails.ts";
+import { renderConfirmedEmail, renderRequestEmail, waNumber } from "./appointment-emails.ts";
+
+test("WhatsApp: a los números de acá sin país les pone 549", () => {
+  assert.equal(waNumber("1161250214"), "5491161250214");
+  assert.equal(waNumber("011 6125-0214"), "5491161250214");
+  assert.equal(waNumber("+54 11 6125 0214"), "5491161250214");
+  assert.equal(waNumber("+54 9 11 6125-0214"), "5491161250214");
+  assert.equal(waNumber("+44 7700 900123"), "447700900123");
+});
 
 const start = new Date("2026-11-13T13:00:00Z"); // viernes 13, 10:00 en Buenos Aires
 

@@ -22,8 +22,11 @@ export function Form({
   submit: React.ReactNode;
   button?: string;
   confirm?: string;
-  /** Una pregunta que no frena el envío: con "Aceptar" el formulario lleva notify=1. */
-  ask?: string;
+  /**
+   * Una pregunta que no frena el envío, en un cartel con el diseño del sitio: con `yes` el formulario lleva notify=1,
+   * con `no` se manda igual sin eso. Esc o tocar afuera no mandan nada.
+   */
+  ask?: { title: string; accent: string; text: string; yes: string; no: string };
   /** Para un botón que es sólo un ícono: lo que dice el lector de pantalla. */
   label?: string;
   reset?: boolean;
@@ -32,6 +35,8 @@ export function Form({
 }) {
   const [state, formAction, pending] = useActionState(action, null);
   const ref = useRef<HTMLFormElement>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const asked = useRef<FormData | null>(null);
   useEffect(() => {
     if (reset && state?.ok) ref.current?.reset();
   }, [reset, state]);
@@ -45,11 +50,38 @@ export function Form({
         e.preventDefault();
         if (confirm && !window.confirm(confirm)) return;
         const data = new FormData(e.currentTarget);
-        if (ask && window.confirm(ask)) data.set("notify", "1");
-        startTransition(() => formAction(data));
+        if (!ask) return startTransition(() => formAction(data));
+        asked.current = data;
+        dialog.current?.showModal();
       }}
     >
       {children}
+      {ask && (
+        <dialog ref={dialog} className="ask card" onClick={(e) => e.target === e.currentTarget && dialog.current?.close()} aria-labelledby="ask-title">
+          <h2 id="ask-title" className="h2 h2--sm">
+            {ask.title} <em className="serif gold-text">{ask.accent}</em>
+          </h2>
+          <p className="muted">{ask.text}</p>
+          <div className="ask__actions">
+            {[true, false].map((notify) => (
+              <button
+                key={String(notify)}
+                type="button"
+                className={notify ? "btn btn--gold btn--sm" : "btn btn--ghost btn--sm"}
+                onClick={() => {
+                  const data = asked.current;
+                  dialog.current?.close();
+                  if (!data) return;
+                  if (notify) data.set("notify", "1");
+                  startTransition(() => formAction(data));
+                }}
+              >
+                {notify ? ask.yes : ask.no}
+              </button>
+            ))}
+          </div>
+        </dialog>
+      )}
       <div className="form-foot">
         <button className={button} disabled={pending} aria-label={label} title={label}>
           {submit}

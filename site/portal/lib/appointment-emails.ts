@@ -16,11 +16,19 @@ const whenRow = (label: string, d: Date) =>
 const fact = (label: string, value: string) =>
   `<div style="${F};font-size:15px;line-height:26px;color:#a3a3a3">${label}: <span style="color:#ffffff">${value}</span></div>`;
 
+/** El número para wa.me: los de acá se guardan sin país ("1161250214", "011…") y WhatsApp los quiere con 549. */
+export function waNumber(phone: string) {
+  const d = phone.replace(/\D/g, "").replace(/^0+/, "");
+  if (d.length === 10) return `549${d}`;
+  if (d.length === 12 && d.startsWith("54") && !d.startsWith("549")) return `549${d.slice(2)}`;
+  return d; // ya trae 549 o es de afuera
+}
+
 export type RequestEmail = { name: string; email: string | null; phone: string | null; coach: string | null; start: Date };
 
 /** Al Zar: alguien pidió un turno. Lo que viene de la base va escapado. */
 export function renderRequestEmail(r: RequestEmail) {
-  const phone = r.phone?.replace(/\D/g, "");
+  const phone = r.phone && waNumber(r.phone);
   const facts = [
     r.email && fact("Correo", `<a class="nc" href="mailto:${esc(r.email)}" style="color:#e7c152">${esc(r.email)}</a>`),
     r.phone && fact("Teléfono", phone ? `<a class="nc" href="https://wa.me/${phone}" style="color:#e7c152">${esc(r.phone)}</a>` : esc(r.phone)),
