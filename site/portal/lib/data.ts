@@ -71,14 +71,14 @@ export async function getClient(id: number) {
   return rows[0] ?? null;
 }
 
+const CHECKIN_COLS = `c.id, c.date, c.weight_kg, c.body_fat_pct, c.chest_cm, c.bust_cm, c.waist_cm, c.abdomen_cm, c.hip_cm,
+  c.biceps_r_cm, c.biceps_l_cm, c.leg_r_cm, c.leg_l_cm, c.biological_age, c.visceral_fat, c.bmr_kcal`;
+
 /** Las evaluaciones de un cliente, de la primera a la última. */
 export async function getCheckins(clientId: number) {
-  const { rows } = await db.query<Checkin>(
-    `select id, date, weight_kg, body_fat_pct, chest_cm, bust_cm, waist_cm, abdomen_cm, hip_cm, biceps_r_cm,
-            biceps_l_cm, leg_r_cm, leg_l_cm, biological_age, visceral_fat, bmr_kcal
-     from checkins where client_id = $1 order by date, id`,
-    [clientId]
-  );
+  const { rows } = await db.query<Checkin>(`select ${CHECKIN_COLS} from checkins c where c.client_id = $1 order by c.date, c.id`, [
+    clientId,
+  ]);
   return rows;
 }
 
@@ -95,7 +95,18 @@ export async function getDiet(clientId: number) {
   return rows[0] ?? null;
 }
 
-export type ProgressPhoto ={ id: number; url: string; taken_on: string };
+/** Una evaluación con su plan de alimentación (si se le dio uno), para editarla. */
+export async function getCheckin(id: number) {
+  const { rows } = await db.query<Checkin & Omit<Diet, "date"> & { client_id: number; has_diet: boolean }>(
+    `select ${CHECKIN_COLS}, c.client_id, d.id is not null as has_diet, d.goal, ${MEALS.map((m) => `d.${m.key}`).join(", ")}
+     from checkins c left join diets d on d.checkin_id = c.id where c.id = $1`,
+    [id]
+  );
+  const r = rows[0];
+  return r ? { checkin: r as Checkin, clientId: r.client_id, diet: r.has_diet ? (r as Diet) : null } : null;
+}
+
+export type ProgressPhoto = { id: number; url: string; taken_on: string };
 
 /** Las fotos de progreso de un cliente, la más nueva primero. Se sirven por /archivos/ (que revisa quién las pide). */
 export async function getProgressPhotos(clientId: number) {

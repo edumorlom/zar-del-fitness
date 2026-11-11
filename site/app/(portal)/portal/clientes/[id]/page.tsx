@@ -10,8 +10,9 @@ import { ProgressPhotos } from "~/components/ProgressPhotos";
 import { initials } from "~/components/Shell";
 import { canManage } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
+import { CheckinFields } from "~/components/CheckinFields";
 import { DietCard } from "~/components/Diet";
-import { age, bmi, controlStatus, daysBetween, MEALS, MEASURES, STATUS_LABEL } from "~/lib/clients";
+import { age, bmi, controlStatus, daysBetween, STATUS_LABEL } from "~/lib/clients";
 import { getCheckins, getClient, getCoaches, getDiet, getProgressPhotos } from "~/lib/data";
 import { days, num, shortDate, todayISO } from "~/lib/format";
 
@@ -160,7 +161,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
             </div>
           </section>
         )}
-        <section className="card panel-card">
+        <section id="historico" className="card panel-card anchor">
           <h2 className="card-title">Histórico</h2>
           <p className="kpi__sub">
             {checkins.length} {checkins.length === 1 ? "evaluación cargada" : "evaluaciones cargadas"}
@@ -177,7 +178,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
                       <th scope="col" className="right">% Graso</th>
                       <th scope="col" className="right">Masa magra</th>
                       <th scope="col">
-                        <span className="sr-only">Borrar</span>
+                        <span className="sr-only">Editar o borrar</span>
                       </th>
                     </tr>
                   </thead>
@@ -189,6 +190,12 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
                         <td className="right mono">{num(c.body_fat_pct)} %</td>
                         <td className="right mono">{num(lean(c.weight_kg, c.body_fat_pct))} kg</td>
                         <td className="right">
+                          <span className="row-actions">
+                          <Link className="icon-btn icon-btn--sm" href={`/portal/clientes/${client.id}/evaluaciones/${c.id}`} aria-label={`Editar la evaluación del ${shortDate(c.date)}`} title={`Editar la evaluación del ${shortDate(c.date)}`}>
+                            <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                              <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                            </svg>
+                          </Link>
                           <Form
                             action={deleteCheckin}
                             submit={
@@ -203,6 +210,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
                           >
                             <input type="hidden" name="id" value={c.id} />
                           </Form>
+                          </span>
                         </td>
                       </tr>
                     ))}
@@ -228,57 +236,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         <h2 className="section-title">Nueva evaluación</h2>
         <Form action={addCheckin} submit="Guardar evaluación" reset className="card form" key={checkins.length}>
           <input type="hidden" name="client_id" value={client.id} />
-          <div className="fields fields--3">
-            <label className="field">
-              <span className="field__label">Fecha</span>
-              <input name="date" type="date" required defaultValue={today} max={today} />
-            </label>
-            <label className="field">
-              <span className="field__label">Peso (kg)</span>
-              <input name="weight_kg" required inputMode="decimal" placeholder="80,9" pattern="\d{2,3}([.,]\d)?" />
-            </label>
-            <label className="field">
-              <span className="field__label">% Graso</span>
-              <input name="body_fat_pct" required inputMode="decimal" placeholder="14,2" pattern="\d{1,2}([.,]\d)?" />
-            </label>
-          </div>
-          <details className="more">
-            <summary>Perímetros y balanza (opcional)</summary>
-            {(["Perímetros", "Balanza"] as const).map((g) => (
-              <fieldset key={g} className="more__group">
-                <legend className="field__label">{g}</legend>
-                <div className="fields fields--3">
-                  {MEASURES.filter((m) => m.group === g).map((m) => (
-                    <label key={m.key} className="field">
-                      <span className="field__label">
-                        {m.label}
-                        {m.unit && ` (${m.unit})`}
-                      </span>
-                      <input name={m.key} inputMode="decimal" />
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-            ))}
-          </details>
-          <details className="more">
-            <summary>Plan de alimentación (opcional)</summary>
-            <p className="field__hint">
-              {diet ? `Viene con el plan vigente (del ${shortDate(diet.date)}): cambiá sólo lo que cambia.` : "Lo ve el cliente en Mi progreso."}
-            </p>
-            <div className="fields">
-              {[{ key: "goal", label: "Objetivo" } as const, ...MEALS].map((m) => (
-                <label key={m.key} className="field">
-                  <span className="field__label">{m.label}</span>
-                  {m.key === "goal" ? (
-                    <input name="diet_goal" defaultValue={diet?.goal ?? ""} />
-                  ) : (
-                    <textarea name={`diet_${m.key}`} rows={2} defaultValue={diet?.[m.key] ?? ""} />
-                  )}
-                </label>
-              ))}
-            </div>
-          </details>
+          <CheckinFields diet={diet} today={today} />
           <p className="field__hint">La masa magra y la grasa en kg se calculan solas.</p>
         </Form>
       </section>

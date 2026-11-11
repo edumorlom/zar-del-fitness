@@ -160,12 +160,11 @@ export async function deleteClient(_: FormState, form: FormData): Promise<FormSt
 
 const decimal = (form: FormData, key: string) => Number(text(form, key).replace(",", "."));
 
-export async function addCheckin(_: FormState, form: FormData): Promise<FormState> {
-  const viewer = await requireViewer();
-  const clientId = Number(form.get("client_id"));
-  const { rows } = await db.query<{ coach_id: number | null }>("select coach_id from users where id = $1", [clientId]);
-  if (!rows[0] || !canManage(viewer, rows[0])) return { error: "No podés cargar controles de este cliente." };
+const DIET_COLS = ["goal", ...MEALS.map((m) => m.key)];
+const MEASURE_COLS = MEASURES.map((m) => m.key);
 
+/** Lo que se carga en una evaluación, validado: lo mismo al cargarla que al editarla. */
+function readCheckin(form: FormData) {
   const date = text(form, "date");
   const weight = decimal(form, "weight_kg");
   const fat = decimal(form, "body_fat_pct");
@@ -181,23 +180,60 @@ export async function addCheckin(_: FormState, form: FormData): Promise<FormStat
     if (v !== null && !(v >= m.min && v <= m.max)) return { error: `${m.label}: entre ${m.min} y ${m.max}.` };
     extra.push(v === null ? null : m.int ? Math.round(v) : v);
   }
+  // El plan de alimentación, opcional: todo vacío es sin plan.
+  const diet = DIET_COLS.map((k) => text(form, `diet_${k}`) || null);
+  return { values: [date, weight, fat, ...extra], diet, hasDiet: diet.some(Boolean) };
+}
 
-  // El plan de alimentación, opcional: va con la evaluación, en la misma consulta para que no quede una sin la otra.
-  const diet = ["goal", ...MEALS.map((m) => m.key)].map((k) => text(form, `diet_${k}`) || null);
-  const n = 6 + MEASURES.length;
+const params = (from: number, n: number) => Array.from({ length: n }, (_, i) => `$${from + i}`).join(", ");
+
+export async function addCheckin(_: FormState, form: FormData): Promise<FormState> {
+  const viewer = await requireViewer();
+  const clientId = Number(form.get("client_id"));
+  const { rows } = await db.query<{ coach_id: number | null }>("select coach_id from users where id = $1", [clientId]);
+  if (!rows[0] || !canManage(viewer, rows[0])) return { error: "No podés cargar controles de este cliente." };
+  const c = readCheckin(form);
+  if ("error" in c) return c;
+
+  // La evaluación y su plan en la misma consulta, para que no quede una sin la otra.
+  const n = 3 + c.values.length;
   await db.query(
     `with c as (
-       insert into checkins (client_id, date, weight_kg, body_fat_pct, created_by, ${MEASURES.map((m) => m.key).join(", ")})
-       values ($1, $2, $3, $4, $5, ${MEASURES.map((_, i) => `$${i + 6}`).join(", ")}) returning id
+       insert into checkins (client_id, created_by, date, weight_kg, body_fat_pct, ${MEASURE_COLS.join(", ")})
+       values ($1, $2, ${params(3, c.values.length)}) returning id
      )
-     insert into diets (checkin_id, goal, ${MEALS.map((m) => m.key).join(", ")})
-     select id, ${diet.map((_, i) => `$${n + i}`).join(", ")} from c where $${n + diet.length}`,
-    [clientId, date, weight, fat, viewer.id, ...extra, ...diet, diet.some(Boolean)]
+     insert into diets (checkin_id, ${DIET_COLS.join(", ")})
+     select id, ${params(n, c.diet.length)} from c where $${n + c.diet.length}`,
+    [clientId, viewer.id, ...c.values, ...c.diet, c.hasDiet]
   );
   refresh();
   return { ok: "Evaluación cargada." };
 }
 
+export async function updateCheckin(_: FormState, form: FormData): Promise<FormState> {
+  const viewer = await requireViewer();
+  const id = Number(form.get("id"));
+  const { rows } = await db.query<{ coach_id: number | null; client_id: number }>(
+    "select u.coach_id, c.client_id from checkins c join users u on u.id = c.client_id where c.id = $1",
+    [id]
+  );
+  if (!rows[0] || !canManage(viewer, rows[0])) return { error: "No podés editar esta evaluación." };
+  const c = readCheckin(form);
+  if ("error" in c) return c;
+
+  // Todo en una consulta: la evaluación, y el plan se guarda, se cambia o (si quedó vacío) se borra.
+  const cols = ["date", "weight_kg", "body_fat_pct", ...MEASURE_COLS];
+  const n = 2 + c.values.length;
+  await db.query(
+    `with c as (update checkins set ${cols.map((k, i) => `${k} = $${i + 2}`).join(", ")} where id = $1 returning id),
+          gone as (delete from diets where checkin_id = $1 and not $${n + c.diet.length})
+     insert into diets (checkin_id, ${DIET_COLS.join(", ")})
+     select id, ${params(n, c.diet.length)} from c where $${n + c.diet.length}
+     on conflict (checkin_id) do update set ${DIET_COLS.map((k) => `${k} = excluded.${k}`).join(", ")}`,
+    [id, ...c.values, ...c.diet, c.hasDiet]
+  );
+  redirect(`/portal/clientes/${rows[0].client_id}#historico`);
+}
 
 export async function deleteCheckin(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();

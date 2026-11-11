@@ -2,6 +2,24 @@ import { MEALS } from "~/lib/clients";
 import type { Diet } from "~/lib/data";
 import { longDate } from "~/lib/format";
 
+/** Los campos del plan (diet_goal, diet_breakfast, …), con el plan vigente de entrada. */
+export function DietFields({ diet }: { diet: Diet | null }) {
+  return (
+    <div className="fields">
+      {[{ key: "goal", label: "Objetivo" } as const, ...MEALS].map((m) => (
+        <label key={m.key} className="field">
+          <span className="field__label">{m.label}</span>
+          {m.key === "goal" ? (
+            <input name="diet_goal" defaultValue={diet?.goal ?? ""} />
+          ) : (
+            <textarea name={`diet_${m.key}`} rows={2} defaultValue={diet?.[m.key] ?? ""} />
+          )}
+        </label>
+      ))}
+    </div>
+  );
+}
+
 /** El plan de alimentación vigente, comida por comida. Lo que no se cargó no aparece. */
 export function DietCard({ diet }: { diet: Diet }) {
   return (
