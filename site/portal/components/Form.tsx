@@ -12,6 +12,7 @@ export function Form({
   submit,
   button = "btn btn--gold",
   confirm,
+  ask,
   label,
   reset = false,
   className,
@@ -21,6 +22,8 @@ export function Form({
   submit: React.ReactNode;
   button?: string;
   confirm?: string;
+  /** Una pregunta que no frena el envío: con "Aceptar" el formulario lleva notify=1. */
+  ask?: string;
   /** Para un botón que es sólo un ícono: lo que dice el lector de pantalla. */
   label?: string;
   reset?: boolean;
@@ -42,6 +45,7 @@ export function Form({
         e.preventDefault();
         if (confirm && !window.confirm(confirm)) return;
         const data = new FormData(e.currentTarget);
+        if (ask && window.confirm(ask)) data.set("notify", "1");
         startTransition(() => formAction(data));
       }}
     >

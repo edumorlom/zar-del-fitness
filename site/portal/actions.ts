@@ -2,11 +2,13 @@
 
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { canCreate, canManage, scopesToSave } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { BODY_TYPES, CONDITIONS, MEALS, MEASURES, PLANS } from "~/lib/clients";
 import { randomUUID } from "node:crypto";
 import { db } from "~/lib/db";
+import { type EvaluationEmail, IMAGES, renderEvaluationEmail, SUBJECT } from "~/lib/evaluation-email";
 import { fromLocalInput, todayISO } from "~/lib/format";
 import { bucketFromEnv, deleteObject, imageType, PHOTO_MAX_MB, putObject } from "~/lib/storage";
 
@@ -219,17 +221,68 @@ export async function addCheckin(_: FormState, form: FormData): Promise<FormStat
 
   // La evaluación y su plan en la misma consulta, para que no quede una sin la otra.
   const n = 3 + c.values.length;
-  await db.query(
+  const created = await db.query<{ id: number }>(
     `with c as (
        insert into checkins (client_id, created_by, date, weight_kg, body_fat_pct, ${MEASURE_COLS.join(", ")})
        values ($1, $2, ${params(3, c.values.length)}) returning id
+     ),
+     d as (
+       insert into diets (checkin_id, ${DIET_COLS.join(", ")})
+       select id, ${params(n, c.diet.length)} from c where $${n + c.diet.length}
      )
-     insert into diets (checkin_id, ${DIET_COLS.join(", ")})
-     select id, ${params(n, c.diet.length)} from c where $${n + c.diet.length}`,
+     select id from c`,
     [clientId, viewer.id, ...c.values, ...c.diet, c.hasDiet]
   );
+  sendEvaluationEmail(created.rows[0].id);
   refresh();
   return { ok: "Evaluación cargada." };
+}
+
+/**
+ * Le avisa al cliente por correo (Resend) que su evaluación ya está, con el resumen y el plan. Corre después de
+ * responder: si falla, la evaluación ya quedó guardada y el error va a los logs. A quien está dado de baja o no tiene
+ * correo no le llega nada.
+ */
+function sendEvaluationEmail(checkinId: number) {
+  after(async () => {
+    const key = process.env.RESEND_API_KEY;
+    if (!key) return console.warn(`Falta RESEND_API_KEY: no se avisó la evaluación ${checkinId}.`);
+    const { rows } = await db.query(
+      `select u.name, u.email, u.active, c.date, c.weight_kg, c.body_fat_pct,
+              p.date as prev_date, p.weight_kg as prev_weight, p.body_fat_pct as prev_fat,
+              d.id is not null as has_diet, ${DIET_COLS.map((k) => `d.${k}`).join(", ")}
+       from checkins c join users u on u.id = c.client_id
+       left join diets d on d.checkin_id = c.id
+       left join lateral (
+         select date, weight_kg, body_fat_pct from checkins p
+         where p.client_id = c.client_id and (p.date, p.id) < (c.date, c.id) order by p.date desc, p.id desc limit 1
+       ) p on true
+       where c.id = $1`,
+      [checkinId]
+    );
+    const r = rows[0];
+    if (!r?.active || !EMAIL.test(r.email ?? "")) return;
+    const html = renderEvaluationEmail({
+      name: r.name,
+      date: r.date,
+      weight: r.weight_kg,
+      fat: r.body_fat_pct,
+      prev: r.prev_date ? { date: r.prev_date, weight: r.prev_weight, fat: r.prev_fat } : null,
+      diet: r.has_diet ? (Object.fromEntries(DIET_COLS.map((k) => [k, r[k]])) as EvaluationEmail["diet"]) : null,
+    });
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: "Zar del Fitness <no-reply@zardelfitness.com.ar>",
+        to: [r.email],
+        subject: SUBJECT,
+        html,
+        attachments: IMAGES,
+      }),
+    });
+    if (!res.ok) console.error(`Resend no mandó el aviso de la evaluación ${checkinId}: ${res.status} ${await res.text()}`);
+  });
 }
 
 export async function updateCheckin(_: FormState, form: FormData): Promise<FormState> {
@@ -254,6 +307,8 @@ export async function updateCheckin(_: FormState, form: FormData): Promise<FormS
      ${DIET_UPSERT}`,
     [id, ...c.values, ...c.diet, c.hasDiet]
   );
+  // El admin eligió en el popup volver a mandarle el correo (components/Form.tsx, `ask`).
+  if (form.get("notify") === "1") sendEvaluationEmail(id);
   redirect(`/portal/clientes/${rows[0].client_id}#historico`);
 }
 

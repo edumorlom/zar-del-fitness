@@ -28,7 +28,16 @@ export default async function EditCheckinPage({ params }: { params: Promise<{ id
         ← {client.name}
       </Link>
       <PageHead title="Editar" accent="evaluación" sub={`${client.name} · ${shortDate(found.checkin.date)}`} />
-      <Form action={updateCheckin} submit="Guardar cambios" className="card form">
+      <Form
+        action={updateCheckin}
+        submit="Guardar cambios"
+        className="card form"
+        ask={
+          client.active && client.email
+            ? `¿Le mandamos de nuevo el correo con la evaluación a ${client.name}?\n\nAceptar: se lo manda.\nCancelar: guarda los cambios sin mandarlo.`
+            : undefined
+        }
+      >
         <input type="hidden" name="id" value={checkinId} />
         <CheckinFields checkin={found.checkin} diet={found.diet} today={todayISO()} />
       </Form>
