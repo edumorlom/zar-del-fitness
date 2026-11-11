@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { addProgressPhoto, deleteProgressPhoto } from "~/actions";
 import type { ProgressPhoto } from "~/lib/data";
 import { shortDate, todayISO } from "~/lib/format";
+import { pick, type Lang } from "@/lib/i18n";
 
 /** El lado más largo de la foto que se sube: alcanza para verla a pantalla completa y pesa unos cientos de KB. */
 const MAX_SIDE = 1600;
@@ -31,14 +32,16 @@ type Shown = ProgressPhoto & { label: string };
  * Las fotos de progreso de un cliente: la subida, la primera y la última lado a lado (el antes y el ahora) y el visor.
  * Se guardan todas; se muestran sólo esas dos. `photos` viene con la más nueva primero.
  */
-export function ProgressPhotos({ clientId, photos, you }: { clientId: number; photos: ProgressPhoto[]; you: boolean }) {
+export function ProgressPhotos({ clientId, photos, you, lang = "es" }: { clientId: number; photos: ProgressPhoto[]; you: boolean; lang?: Lang }) {
+  const tr = pick(lang);
+  const [first, latest] = [tr("Primera", "First"), tr("Última", "Latest")];
   const shown: Shown[] =
     photos.length === 1
-      ? [{ ...photos[0], label: "Primera" }]
+      ? [{ ...photos[0], label: first }]
       : photos.length > 1
         ? [
-            { ...photos[photos.length - 1], label: "Primera" },
-            { ...photos[0], label: "Última" },
+            { ...photos[photos.length - 1], label: first },
+            { ...photos[0], label: latest },
           ]
         : [];
   const [date, setDate] = useState(todayISO());
@@ -108,10 +111,10 @@ export function ProgressPhotos({ clientId, photos, you }: { clientId: number; ph
 
       {photos.length === 0 ? (
         <div className="card empty">
-          <p className="fact">Todavía no hay fotos</p>
+          <p className="fact">{tr("Todavía no hay fotos", "No photos yet")}</p>
           <p className="muted">
             {you
-              ? "Tu coach las saca en los controles: acá vas a ver la primera al lado de la última."
+              ? tr("Tu coach las saca en los controles: acá vas a ver la primera al lado de la última.", "Your coach takes them at your check-ins: here you'll see the first one next to the latest.")
               : "Subí la del día del control, siempre con la misma pose: acá se ve la primera al lado de la última."}
           </p>
         </div>
@@ -120,7 +123,7 @@ export function ProgressPhotos({ clientId, photos, you }: { clientId: number; ph
           <ul className="photos__grid photos__grid--pair">
             {shown.map((p, i) => (
               <li key={p.id}>
-                <button type="button" className="photos__item" onClick={() => setOpen(i)} aria-label={`Ver la ${p.label.toLowerCase()} foto, del ${shortDate(p.taken_on)}`}>
+                <button type="button" className="photos__item" onClick={() => setOpen(i)} aria-label={tr(`Ver la ${p.label.toLowerCase()} foto, del ${shortDate(p.taken_on)}`, `See the ${p.label.toLowerCase()} photo, from ${shortDate(p.taken_on)}`)}>
                   <img src={p.url} alt="" loading="lazy" decoding="async" />
                   <span className="photos__date">
                     <span className="photos__label">{p.label}</span>
@@ -132,13 +135,13 @@ export function ProgressPhotos({ clientId, photos, you }: { clientId: number; ph
           </ul>
           {photos.length > 2 && (
             <p className="muted photos__count">
-              {photos.length} fotos guardadas · se muestran la primera y la última
+              {tr(`${photos.length} fotos guardadas · se muestran la primera y la última`, `${photos.length} photos saved · showing the first and the latest`)}
             </p>
           )}
         </>
       )}
 
-      {open !== null && shown[open] && <Viewer photos={shown} index={open} canDelete={!you} onIndex={setOpen} onClose={() => setOpen(null)} />}
+      {open !== null && shown[open] && <Viewer photos={shown} index={open} canDelete={!you} lang={lang} onIndex={setOpen} onClose={() => setOpen(null)} />}
     </div>
   );
 }
@@ -148,13 +151,16 @@ function Viewer({
   photos,
   index,
   canDelete,
+  lang,
   onIndex,
   onClose,
 }: {
   photos: Shown[];
   index: number;
   canDelete: boolean;
+  lang: Lang;
   onIndex: (i: number) => void; onClose: () => void }) {
+  const tr = pick(lang);
   const ref = useRef<HTMLDialogElement>(null);
   const [deleting, startDelete] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -191,7 +197,7 @@ function Viewer({
 
   return (
     // Esc cierra el <dialog> solo; un toque fuera de la foto (en el fondo) también.
-    <dialog ref={ref} className="viewer" onClose={onClose} onClick={(e) => e.target === e.currentTarget && onClose()} aria-label="Foto de progreso">
+    <dialog ref={ref} className="viewer" onClose={onClose} onClick={(e) => e.target === e.currentTarget && onClose()} aria-label={tr("Foto de progreso", "Progress photo")}>
       <div className="viewer__bar">
         <p className="viewer__date">
           {photo.label} <span className="muted">· {shortDate(photo.taken_on)}</span>
@@ -201,21 +207,21 @@ function Viewer({
             {deleting ? "Borrando…" : "Borrar"}
           </button>
         )}
-        <button type="button" className="icon-btn" onClick={onClose} aria-label="Cerrar" title="Cerrar">
+        <button type="button" className="icon-btn" onClick={onClose} aria-label={tr("Cerrar", "Close")} title={tr("Cerrar", "Close")}>
           <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
             <path d="M6 6l12 12M18 6L6 18" />
           </svg>
         </button>
       </div>
       {error && <p className="form-msg form-msg--error viewer__error">{error}</p>}
-      <img className="viewer__img" src={photo.url} alt={`Foto de progreso del ${shortDate(photo.taken_on)}`} />
+      <img className="viewer__img" src={photo.url} alt={tr(`Foto de progreso del ${shortDate(photo.taken_on)}`, `Progress photo from ${shortDate(photo.taken_on)}`)} />
       {prev !== null && (
-        <button type="button" className="icon-btn viewer__nav viewer__nav--prev" onClick={() => onIndex(prev)} aria-label="Ver la primera" title="Primera">
+        <button type="button" className="icon-btn viewer__nav viewer__nav--prev" onClick={() => onIndex(prev)} aria-label={tr("Ver la primera", "See the first")} title={tr("Primera", "First")}>
           ‹
         </button>
       )}
       {next !== null && (
-        <button type="button" className="icon-btn viewer__nav viewer__nav--next" onClick={() => onIndex(next)} aria-label="Ver la última" title="Última">
+        <button type="button" className="icon-btn viewer__nav viewer__nav--next" onClick={() => onIndex(next)} aria-label={tr("Ver la última", "See the latest")} title={tr("Última", "Latest")}>
           ›
         </button>
       )}

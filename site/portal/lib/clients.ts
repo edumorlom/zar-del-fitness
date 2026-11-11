@@ -53,26 +53,26 @@ export const bmi = (weightKg: number | null, heightCm: number | null) =>
 
 /** Lo opcional de una evaluación, en el orden del detalle: perímetros (cm) y lo que da la balanza. */
 export const MEASURES = [
-  { key: "chest_cm", label: "Pecho", unit: "cm", group: "Perímetros", min: 40, max: 200, int: false },
-  { key: "bust_cm", label: "Busto", unit: "cm", group: "Perímetros", min: 40, max: 200, int: false },
-  { key: "waist_cm", label: "Cintura", unit: "cm", group: "Perímetros", min: 40, max: 220, int: false },
-  { key: "abdomen_cm", label: "Abdomen", unit: "cm", group: "Perímetros", min: 40, max: 220, int: false },
-  { key: "hip_cm", label: "Cadera", unit: "cm", group: "Perímetros", min: 40, max: 220, int: false },
-  { key: "biceps_r_cm", label: "Bíceps derecho", unit: "cm", group: "Perímetros", min: 10, max: 80, int: false },
-  { key: "biceps_l_cm", label: "Bíceps izquierdo", unit: "cm", group: "Perímetros", min: 10, max: 80, int: false },
-  { key: "leg_r_cm", label: "Pierna derecha", unit: "cm", group: "Perímetros", min: 20, max: 120, int: false },
-  { key: "leg_l_cm", label: "Pierna izquierda", unit: "cm", group: "Perímetros", min: 20, max: 120, int: false },
-  { key: "biological_age", label: "Edad biológica", unit: "años", group: "Balanza", min: 5, max: 120, int: true },
-  { key: "visceral_fat", label: "Grasa visceral", unit: "", group: "Balanza", min: 1, max: 60, int: false },
-  { key: "bmr_kcal", label: "Metabolismo basal", unit: "kcal", group: "Balanza", min: 500, max: 6000, int: true },
+  { key: "chest_cm", label: "Pecho", en: "Chest", unit: "cm", group: "Perímetros", min: 40, max: 200, int: false },
+  { key: "bust_cm", label: "Busto", en: "Bust", unit: "cm", group: "Perímetros", min: 40, max: 200, int: false },
+  { key: "waist_cm", label: "Cintura", en: "Waist", unit: "cm", group: "Perímetros", min: 40, max: 220, int: false },
+  { key: "abdomen_cm", label: "Abdomen", en: "Abdomen", unit: "cm", group: "Perímetros", min: 40, max: 220, int: false },
+  { key: "hip_cm", label: "Cadera", en: "Hips", unit: "cm", group: "Perímetros", min: 40, max: 220, int: false },
+  { key: "biceps_r_cm", label: "Bíceps derecho", en: "Right biceps", unit: "cm", group: "Perímetros", min: 10, max: 80, int: false },
+  { key: "biceps_l_cm", label: "Bíceps izquierdo", en: "Left biceps", unit: "cm", group: "Perímetros", min: 10, max: 80, int: false },
+  { key: "leg_r_cm", label: "Pierna derecha", en: "Right leg", unit: "cm", group: "Perímetros", min: 20, max: 120, int: false },
+  { key: "leg_l_cm", label: "Pierna izquierda", en: "Left leg", unit: "cm", group: "Perímetros", min: 20, max: 120, int: false },
+  { key: "biological_age", label: "Edad biológica", en: "Biological age", unit: "años", group: "Balanza", min: 5, max: 120, int: true },
+  { key: "visceral_fat", label: "Grasa visceral", en: "Visceral fat", unit: "", group: "Balanza", min: 1, max: 60, int: false },
+  { key: "bmr_kcal", label: "Metabolismo basal", en: "Basal metabolic rate", unit: "kcal", group: "Balanza", min: 500, max: 6000, int: true },
 ] as const;
 // El plan de alimentación, en el orden del día. Los nombres salen del portal anterior (sumar-to-sqlite.mjs).
 export const MEALS = [
-  { key: "breakfast", label: "Desayuno" },
-  { key: "morning_snack", label: "Colación de la mañana" },
-  { key: "lunch", label: "Almuerzo" },
-  { key: "afternoon_snack", label: "Colación de la tarde" },
-  { key: "dinner", label: "Cena" },
-  { key: "supplements", label: "Suplementos" },
+  { key: "breakfast", label: "Desayuno", en: "Breakfast" },
+  { key: "morning_snack", label: "Colación de la mañana", en: "Morning snack" },
+  { key: "lunch", label: "Almuerzo", en: "Lunch" },
+  { key: "afternoon_snack", label: "Colación de la tarde", en: "Afternoon snack" },
+  { key: "dinner", label: "Cena", en: "Dinner" },
+  { key: "supplements", label: "Suplementos", en: "Supplements" },
 ] as const;
 export type MeasureKey =(typeof MEASURES)[number]["key"];

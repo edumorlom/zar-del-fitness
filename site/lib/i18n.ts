@@ -86,3 +86,9 @@ export function fill(template: string, values: Record<string, string | number>) 
     return String(values[key]);
   });
 }
+
+/** El texto en el idioma: tr("Hola", "Hi"). Para el portal, que tiene sus textos en el código y no en db/. */
+export const pick =
+  (lang: Lang) =>
+  <T,>(es: T, en: T): T =>
+    lang === "en" ? en : es;

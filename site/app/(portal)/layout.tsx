@@ -10,10 +10,12 @@ import { MotionProvider } from "@/components/motion/MotionProvider";
 import { fonts } from "@/components/RootShell";
 import { Sparkles } from "@/components/Sparkles";
 import { content, portalUrl, siteUrl } from "@/lib/content";
+import { locales, pick } from "@/lib/i18n";
+import { getLang } from "~/lib/lang";
 
-export const metadata: Metadata = {
+export const generateMetadata = async (): Promise<Metadata> => ({
   metadataBase: new URL(portalUrl),
-  title: { default: "Mi progreso | Zar del Fitness", template: "%s | Zar del Fitness" },
+  title: { default: `${pick(await getLang())("Mi progreso", "My progress")} | Zar del Fitness`, template: "%s | Zar del Fitness" },
   // Privado: que los buscadores no lo indexen. Sólo /portal/ingresar, la entrada, se indexa (y está en el sitemap del sitio).
   robots: { index: false, follow: false },
   // Los mismos íconos que el sitio. app/favicon.ico ya lo agrega Next.js; icon.svg, icon1.png y apple-icon.tsx son
@@ -25,7 +27,7 @@ export const metadata: Metadata = {
     ],
     apple: { url: `${siteUrl}/apple-icon`, sizes: "180x180", type: "image/png" },
   },
-};
+});
 
 export const viewport: Viewport = { themeColor: "#000000", colorScheme: "dark" };
 
@@ -79,23 +81,24 @@ const appearance = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const lang = await getLang();
   return (
-    <html lang="es-AR" className={fonts}>
+    <html lang={locales[lang].html} className={fonts}>
       <body>
-        {/* esUY: castellano rioplatense (con vos), lo más cercano a Argentina que trae Clerk */}
+        {/* esUY: castellano rioplatense (con vos), lo más cercano a Argentina que trae Clerk; en inglés, el suyo (enUS) */}
         {/* ui: la versión del formulario de Clerk queda fija con la del portal (sus estilos no se rompen solos) */}
-        <ClerkProvider ui={ui} appearance={appearance} localization={esUY} signInUrl="/portal/ingresar" signUpUrl="/portal/ingresar">
+        <ClerkProvider ui={ui} appearance={appearance} localization={lang === "es" ? esUY : undefined} signInUrl="/portal/ingresar" signUpUrl="/portal/ingresar">
           <IconSprite />
           <a className="skip-link" href="#main">
-            Ir al contenido
+            {pick(lang)("Ir al contenido", "Skip to content")}
           </a>
           {/* El fondo del sitio (el del inicio, components/Hero.tsx): los destellos y el brillo dorado, quietos detrás de todo */}
           <div className="site-backdrop" aria-hidden="true">
             <Sparkles />
           </div>
           {/* Lo mismo que el sitio: el scroll suave, el cursor dorado y la barra de progreso arriba */}
-          <MotionProvider labels={{ video: content("es").t.video }}>{children}</MotionProvider>
+          <MotionProvider labels={{ video: content(lang).t.video }}>{children}</MotionProvider>
         </ClerkProvider>
       </body>
     </html>

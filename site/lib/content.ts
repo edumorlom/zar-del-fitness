@@ -217,7 +217,8 @@ function build(lang: Lang) {
     waInfo: wa(t.whatsapp.informacion),
     waPresencial: wa(t.whatsapp.presencial),
     waDudas: wa(t.whatsapp.dudas),
-    portal: `${portalUrl}/`,
+    // Por /idioma/: el portal queda en el idioma de la página de donde se entró (app/(portal)/portal/idioma/[lang]).
+    portal: `${portalUrl}/idioma/${lang}`,
   };
 
   const contact = {

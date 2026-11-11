@@ -2,16 +2,17 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { niceTicks, spread } from "~/lib/chart";
-import { longDate, num, shortDate } from "~/lib/format";
+import { longDate, num as numEs, shortDate } from "~/lib/format";
+import { pick, type Lang } from "@/lib/i18n";
 
 export type EvolutionPoint = { date: string; weight: number; fatPct: number; lean: number; fatKg: number };
 
 // Una medida por gráfico, cada una con su escala: kilos y porcentajes en un mismo eje aplastaban las líneas.
 const METRICS = [
-  { key: "weight", label: "Peso", unit: "kg", better: 0, delta: "kg" },
-  { key: "fatPct", label: "% Graso", unit: "%", better: -1, delta: "puntos" },
-  { key: "lean", label: "Masa magra", unit: "kg", better: 1, delta: "kg" },
-  { key: "fatKg", label: "Grasa", unit: "kg", better: -1, delta: "kg" },
+  { key: "weight", label: "Peso", en: "Weight", unit: "kg", better: 0, delta: "kg" },
+  { key: "fatPct", label: "% Graso", en: "Body fat %", unit: "%", better: -1, delta: "puntos" },
+  { key: "lean", label: "Masa magra", en: "Lean mass", unit: "kg", better: 1, delta: "kg" },
+  { key: "fatKg", label: "Grasa", en: "Fat", unit: "kg", better: -1, delta: "kg" },
 ] as const;
 type Key = (typeof METRICS)[number]["key"];
 
@@ -19,7 +20,9 @@ const H = 260;
 const PAD = { top: 16, right: 16, bottom: 30, left: 44 };
 
 /** La evolución de una medida en el tiempo, con pestañas para elegir cuál. `you`: lo ve el propio cliente. */
-export function Evolution({ points, you }: { points: EvolutionPoint[]; you: boolean }) {
+export function Evolution({ points, you, lang = "es" }: { points: EvolutionPoint[]; you: boolean; lang?: Lang }) {
+  const tr = pick(lang);
+  const num = (n: number, digits = 1) => numEs(n, digits, lang);
   const [metric, setMetric] = useState<Key>("weight");
   const [active, setActive] = useState<number | null>(null);
   const [width, setWidth] = useState(0);
@@ -73,14 +76,14 @@ export function Evolution({ points, you }: { points: EvolutionPoint[]; you: bool
     <div className="card evo" data-reveal>
       <div className="evo__head">
         <div>
-          <p className="label">{you ? "Tu evolución" : "Evolución"}</p>
+          <p className="label">{you ? tr("Tu evolución", "Your progress") : "Evolución"}</p>
           <p className={good ? "delta delta--good" : "delta"}>
             {flat
-              ? "Sin cambios desde el primer control"
-              : `${change > 0 ? "↑" : "↓"} ${num(Math.abs(change))} ${m.delta} desde el primer control`}
+              ? tr("Sin cambios desde el primer control", "No change since the first check-in")
+              : `${change > 0 ? "↑" : "↓"} ${num(Math.abs(change))} ${m.delta === "puntos" ? tr("puntos", "points") : m.delta} ${tr("desde el primer control", "since the first check-in")}`}
           </p>
         </div>
-        <div className="evo__tabs" role="tablist" aria-label="Medida">
+        <div className="evo__tabs" role="tablist" aria-label={tr("Medida", "Measurement")}>
           {METRICS.map((tab) => (
             <button
               key={tab.key}
@@ -90,7 +93,7 @@ export function Evolution({ points, you }: { points: EvolutionPoint[]; you: bool
               className="evo__tab"
               onClick={() => setMetric(tab.key)}
             >
-              {tab.label}
+              {tr(tab.label, tab.en)}
             </button>
           ))}
         </div>
@@ -101,7 +104,10 @@ export function Evolution({ points, you }: { points: EvolutionPoint[]; you: bool
         className="evo__plot"
         tabIndex={0}
         role="group"
-        aria-label={`${m.label}: de ${num(values[0])} ${m.unit} el ${shortDate(points[0].date)} a ${num(values[values.length - 1])} ${m.unit} el ${shortDate(points[points.length - 1].date)}. Con las flechas, cada control.`}
+        aria-label={tr(
+          `${m.label}: de ${num(values[0])} ${m.unit} el ${shortDate(points[0].date)} a ${num(values[values.length - 1])} ${m.unit} el ${shortDate(points[points.length - 1].date)}. Con las flechas, cada control.`,
+          `${m.en}: from ${num(values[0])} ${m.unit} on ${shortDate(points[0].date)} to ${num(values[values.length - 1])} ${m.unit} on ${shortDate(points[points.length - 1].date)}. Use the arrow keys for each check-in.`
+        )}
         onPointerMove={(e) => setActive(nearest(e.clientX))}
         onPointerLeave={() => setActive(null)}
         onFocus={() => setActive(points.length - 1)}
@@ -142,14 +148,14 @@ export function Evolution({ points, you }: { points: EvolutionPoint[]; you: bool
         )}
         {p && (
           <div className="evo__tip" style={{ left: tipLeft }} role="status">
-            <p className="evo__tip-date">{longDate(p.date)}</p>
+            <p className="evo__tip-date">{longDate(p.date, lang)}</p>
             {METRICS.map((row) => (
               <p key={row.key} className={row.key === metric ? "evo__tip-row is-active" : "evo__tip-row"}>
                 <span className="evo__key" aria-hidden="true" />
                 <b>
                   {num(p[row.key])} {row.unit}
                 </b>
-                <span>{row.label}</span>
+                <span>{tr(row.label, row.en)}</span>
               </p>
             ))}
           </div>

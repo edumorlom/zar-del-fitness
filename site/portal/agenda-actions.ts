@@ -10,7 +10,8 @@ import { db } from "~/lib/db";
 import { getAppointment, type Appointment } from "~/lib/data";
 import { dateOf, fromLocalInput, longDate, timeOf } from "~/lib/format";
 import { createEvent, deleteEvent, moveEvent } from "~/lib/google";
-import { SLOT_MINUTES } from "~/lib/slots";
+import { getLang } from "~/lib/lang";
+import { DAILY_LIMIT_MESSAGE, ONLY_FRIDAYS, SLOT_MINUTES } from "~/lib/slots";
 import { appointmentDayError, requestSlot, withAvailableSlot } from "~/lib/turnos";
 import type { FormState } from "./actions";
 
@@ -47,24 +48,38 @@ function mailConfirmed(clientId: number, start: Date, requested: Date | null) {
 
 // ---------- El cliente ----------
 
+// Lo que responde requestSlot (en castellano: también lo usan Digui y MCP), para el cliente con el portal en inglés.
+// shortcut: se busca por el texto; si cambia un mensaje en turnos.ts o slots.ts sin cambiarlo acá, sale en castellano.
+const EN: Record<string, string> = {
+  "Elegí un horario.": "Pick a time.",
+  [ONLY_FRIDAYS]: "Check-ins are booked on Fridays only.",
+  [DAILY_LIMIT_MESSAGE]: "That Friday is fully booked: pick another one.",
+  "Ese horario ya no está libre: elegí otro.": "That time is no longer free: pick another one.",
+  "Ese horario ya está tomado: elegí otro.": "That time is already taken: pick another one.",
+  "Ya tenés un turno pedido. Si querés otro horario, cancelalo primero.": "You already have a booking. To pick another time, cancel it first.",
+};
+
 export async function requestAppointment(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();
   if (!viewer.scopes.includes("user")) return { error: "Los turnos los pide el cliente desde su cuenta." };
-  const r = await requestSlot(viewer.id, new Date(String(form.get("start") ?? "")));
-  if (!r.ok) return { error: r.mensaje };
+  const start = new Date(String(form.get("start") ?? ""));
+  const r = await requestSlot(viewer.id, start);
+  const en = (await getLang()) === "en";
+  if (!r.ok) return { error: en ? (EN[r.mensaje] ?? r.mensaje) : r.mensaje };
   refresh();
-  return { ok: r.mensaje };
+  return { ok: en ? `Requested: ${longDate(dateOf(start), "en")} at ${timeOf(start)}. We'll let you know once it's confirmed.` : r.mensaje };
 }
 
 export async function cancelAppointment(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();
   const a = await load(viewer, Number(form.get("id")), true);
-  if (!a || (a.status !== "requested" && a.status !== "confirmed")) return { error: "Ese turno ya no está." };
+  if (!a || (a.status !== "requested" && a.status !== "confirmed"))
+    return { error: (await getLang()) === "en" ? "That booking no longer exists." : "Ese turno ya no está." };
   if (a.google_event_id) await deleteEvent(a.google_event_id);
   await db.query("update appointments set status = 'cancelled', decided_by = $2 where id = $1", [a.id, viewer.id]);
   await db.query("update users set next_control_at = null where id = $1 and next_control_at = $2", [a.client_id, a.starts_at]);
   refresh();
-  return { ok: "Turno cancelado." };
+  return { ok: (await getLang()) === "en" ? "Booking cancelled." : "Turno cancelado." };
 }
 
 // ---------- El admin o el coach ----------
