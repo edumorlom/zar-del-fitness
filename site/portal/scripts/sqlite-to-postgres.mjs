@@ -29,6 +29,7 @@ const value = (col, v) => (col === "conditions" ? JSON.parse(v ?? "[]") : col ==
 // En el SQLite cada persona tiene un rol; en Postgres, una lista de scopes.
 const userCols = (await columns("users", ["id", "created_at", "coach_id"])).map((c) => (c === "role" ? "scopes" : c));
 const checkinCols = await columns("checkins", ["id", "client_id", "created_by"]);
+const dietCols = await columns("diets", ["id", "checkin_id"]);
 const set = (c) =>
   c === "scopes"
     ? "scopes = case when excluded.scopes = '{user}' or excluded.scopes <@ users.scopes then users.scopes else users.scopes || excluded.scopes end"
@@ -38,7 +39,7 @@ const set = (c) =>
 const update = [...userCols.filter((c) => c !== "email").map(set), "coach_id = coalesce(users.coach_id, excluded.coach_id)"];
 
 const ids = {}; // users.id del SQLite → users.id de Postgres
-const count = { usersNew: 0, usersUpdated: 0, checkinsNew: 0, checkinsSkipped: 0 };
+const count = { usersNew: 0, usersUpdated: 0, checkinsNew: 0, checkinsSkipped: 0, dietsNew: 0 };
 
 try {
   await db.query("begin");
@@ -61,14 +62,27 @@ try {
   for (const c of lite.prepare("select * from checkins order by client_id, date").all()) {
     const cols = ["client_id", ...checkinCols];
     const values = [ids[c.client_id], ...checkinCols.map((k) => c[k])];
-    const { rowCount } = await db.query(
-      `insert into checkins (${cols})
-       select ${cols.map((_, i) => `$${i + 1}`)}
-       where not exists (select 1 from checkins
-                         where client_id = $1 and date = $2::date and weight_kg = $3::numeric and body_fat_pct = $4::numeric)`,
+    // La que ya estaba se busca igual, para colgarle la dieta si todavía no la tiene.
+    const { rows } = await db.query(
+      `with found as (select id, false as inserted from checkins
+                      where client_id = $1 and date = $2::date and weight_kg = $3::numeric and body_fat_pct = $4::numeric
+                      order by id limit 1),
+            added as (insert into checkins (${cols})
+                      select ${cols.map((_, i) => `$${i + 1}`)} where not exists (select 1 from found)
+                      returning id, true as inserted)
+       select * from found union all select * from added`,
       values
     );
-    rowCount ? count.checkinsNew++ : count.checkinsSkipped++;
+    rows[0].inserted ? count.checkinsNew++ : count.checkinsSkipped++;
+    const diet = lite.prepare(`select ${dietCols} from diets where checkin_id = ?`).get(c.id);
+    if (diet) {
+      const { rowCount } = await db.query(
+        `insert into diets (checkin_id, ${dietCols}) values ($1, ${dietCols.map((_, i) => `$${i + 2}`)})
+         on conflict (checkin_id) do nothing`,
+        [rows[0].id, ...dietCols.map((k) => diet[k])]
+      );
+      count.dietsNew += rowCount;
+    }
   }
 
   await db.query("commit");
@@ -81,5 +95,5 @@ try {
 
 console.log(
   `personas nuevas: ${count.usersNew} · actualizadas: ${count.usersUpdated} · ` +
-    `evaluaciones nuevas: ${count.checkinsNew} · ya estaban: ${count.checkinsSkipped}`
+    `evaluaciones nuevas: ${count.checkinsNew} · ya estaban: ${count.checkinsSkipped} · dietas nuevas: ${count.dietsNew}`
 );

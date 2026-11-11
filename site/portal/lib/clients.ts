@@ -66,4 +66,13 @@ export const MEASURES = [
   { key: "visceral_fat", label: "Grasa visceral", unit: "", group: "Balanza", min: 1, max: 60, int: false },
   { key: "bmr_kcal", label: "Metabolismo basal", unit: "kcal", group: "Balanza", min: 500, max: 6000, int: true },
 ] as const;
-export type MeasureKey = (typeof MEASURES)[number]["key"];
+// El plan de alimentación, en el orden del día. Los nombres salen del portal anterior (sumar-to-sqlite.mjs).
+export const MEALS = [
+  { key: "breakfast", label: "Desayuno" },
+  { key: "morning_snack", label: "Colación de la mañana" },
+  { key: "lunch", label: "Almuerzo" },
+  { key: "afternoon_snack", label: "Colación de la tarde" },
+  { key: "dinner", label: "Cena" },
+  { key: "supplements", label: "Suplementos" },
+] as const;
+export type MeasureKey =(typeof MEASURES)[number]["key"];

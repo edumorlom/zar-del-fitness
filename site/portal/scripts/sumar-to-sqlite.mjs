@@ -98,7 +98,7 @@ create table checkins (
   bust_cm real
 );
 create index checkins_client on checkins(client_id, date);
--- La dieta que se le dio en cada evaluación. Todavía no está en Postgres (lib/migrate.ts).
+-- La dieta que se le dio en cada evaluación (en Postgres, la tabla diets de lib/migrate.ts).
 create table diets (
   id integer primary key,
   checkin_id integer not null unique references checkins(id) on delete cascade,

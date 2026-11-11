@@ -4,7 +4,7 @@ import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { canCreate, canManage, scopesToSave } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
-import { BODY_TYPES, CONDITIONS, MEASURES, PLANS } from "~/lib/clients";
+import { BODY_TYPES, CONDITIONS, MEALS, MEASURES, PLANS } from "~/lib/clients";
 import { randomUUID } from "node:crypto";
 import { db } from "~/lib/db";
 import { fromLocalInput, todayISO } from "~/lib/format";
@@ -182,10 +182,17 @@ export async function addCheckin(_: FormState, form: FormData): Promise<FormStat
     extra.push(v === null ? null : m.int ? Math.round(v) : v);
   }
 
+  // El plan de alimentación, opcional: va con la evaluación, en la misma consulta para que no quede una sin la otra.
+  const diet = ["goal", ...MEALS.map((m) => m.key)].map((k) => text(form, `diet_${k}`) || null);
+  const n = 6 + MEASURES.length;
   await db.query(
-    `insert into checkins (client_id, date, weight_kg, body_fat_pct, created_by, ${MEASURES.map((m) => m.key).join(", ")})
-     values ($1, $2, $3, $4, $5, ${MEASURES.map((_, i) => `$${i + 6}`).join(", ")})`,
-    [clientId, date, weight, fat, viewer.id, ...extra]
+    `with c as (
+       insert into checkins (client_id, date, weight_kg, body_fat_pct, created_by, ${MEASURES.map((m) => m.key).join(", ")})
+       values ($1, $2, $3, $4, $5, ${MEASURES.map((_, i) => `$${i + 6}`).join(", ")}) returning id
+     )
+     insert into diets (checkin_id, goal, ${MEALS.map((m) => m.key).join(", ")})
+     select id, ${diet.map((_, i) => `$${n + i}`).join(", ")} from c where $${n + diet.length}`,
+    [clientId, date, weight, fat, viewer.id, ...extra, ...diet, diet.some(Boolean)]
   );
   refresh();
   return { ok: "Evaluación cargada." };

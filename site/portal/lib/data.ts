@@ -1,5 +1,6 @@
 import "server-only";
 import type { PoolClient } from "pg";
+import { MEALS } from "./clients";
 import { db } from "./db";
 import type { Scope } from "./access";
 
@@ -81,7 +82,20 @@ export async function getCheckins(clientId: number) {
   return rows;
 }
 
-export type ProgressPhoto = { id: number; url: string; taken_on: string };
+export type Diet = Record<"goal" | (typeof MEALS)[number]["key"], string | null> & { date: string };
+
+/** El plan de alimentación vigente: el de la última evaluación que trajo uno. */
+export async function getDiet(clientId: number) {
+  const { rows } = await db.query<Diet>(
+    `select c.date, d.goal, ${MEALS.map((m) => `d.${m.key}`).join(", ")}
+     from diets d join checkins c on c.id = d.checkin_id
+     where c.client_id = $1 order by c.date desc, c.id desc limit 1`,
+    [clientId]
+  );
+  return rows[0] ?? null;
+}
+
+export type ProgressPhoto ={ id: number; url: string; taken_on: string };
 
 /** Las fotos de progreso de un cliente, la más nueva primero. Se sirven por /archivos/ (que revisa quién las pide). */
 export async function getProgressPhotos(clientId: number) {

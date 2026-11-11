@@ -17,6 +17,9 @@
 /public/img/
 /lib/image-widths.json
 
+# a quiénes ya les llegó el correo de portal/scripts/email-cuenta-lista.mjs: son correos de personas
+/portal/scripts/email-cuenta-lista.enviados.txt
+
 # next.js
 /.next/
 /out/

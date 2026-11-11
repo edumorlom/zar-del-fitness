@@ -10,8 +10,9 @@ import { ProgressPhotos } from "~/components/ProgressPhotos";
 import { initials } from "~/components/Shell";
 import { canManage } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
-import { age, bmi, controlStatus, daysBetween, MEASURES, STATUS_LABEL } from "~/lib/clients";
-import { getCheckins, getClient, getCoaches, getProgressPhotos } from "~/lib/data";
+import { DietCard } from "~/components/Diet";
+import { age, bmi, controlStatus, daysBetween, MEALS, MEASURES, STATUS_LABEL } from "~/lib/clients";
+import { getCheckins, getClient, getCoaches, getDiet, getProgressPhotos } from "~/lib/data";
 import { days, num, shortDate, todayISO } from "~/lib/format";
 
 export const metadata: Metadata = { title: "Cliente" };
@@ -35,7 +36,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
   // Un cliente que no es suyo es, para el coach, un cliente que no existe.
   if (!client || !canManage(viewer, client)) notFound();
   const admin = viewer.scopes.includes("admin");
-  const [checkins, coaches, photos] = await Promise.all([getCheckins(id), admin ? getCoaches() : [], getProgressPhotos(id)]);
+  const [checkins, coaches, photos, diet] = await Promise.all([getCheckins(id), admin ? getCoaches() : [], getProgressPhotos(id), getDiet(id)]);
 
   const today = todayISO();
   const last = checkins[checkins.length - 1];
@@ -216,6 +217,13 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         </section>
       </div>
 
+      {diet && (
+        <section id="alimentacion" className="anchor">
+          <h2 className="section-title">Plan de alimentación</h2>
+          <DietCard diet={diet} />
+        </section>
+      )}
+
       <section id="evaluar" className="anchor">
         <h2 className="section-title">Nueva evaluación</h2>
         <Form action={addCheckin} submit="Guardar evaluación" reset className="card form" key={checkins.length}>
@@ -252,6 +260,24 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
                 </div>
               </fieldset>
             ))}
+          </details>
+          <details className="more">
+            <summary>Plan de alimentación (opcional)</summary>
+            <p className="field__hint">
+              {diet ? `Viene con el plan vigente (del ${shortDate(diet.date)}): cambiá sólo lo que cambia.` : "Lo ve el cliente en Mi progreso."}
+            </p>
+            <div className="fields">
+              {[{ key: "goal", label: "Objetivo" } as const, ...MEALS].map((m) => (
+                <label key={m.key} className="field">
+                  <span className="field__label">{m.label}</span>
+                  {m.key === "goal" ? (
+                    <input name="diet_goal" defaultValue={diet?.goal ?? ""} />
+                  ) : (
+                    <textarea name={`diet_${m.key}`} rows={2} defaultValue={diet?.[m.key] ?? ""} />
+                  )}
+                </label>
+              ))}
+            </div>
           </details>
           <p className="field__hint">La masa magra y la grasa en kg se calculan solas.</p>
         </Form>

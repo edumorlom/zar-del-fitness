@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "node .next/standalone/site/server.js",
     "lint": "eslint",
-    "test": "node --test portal/lib/*.test.ts",
+    "test": "node --test portal/*/*.test.ts",
     "check": "npm run lint && npm test && npm run build"
   },
   "dependencies": {
