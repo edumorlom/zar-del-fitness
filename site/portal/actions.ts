@@ -181,11 +181,33 @@ function readCheckin(form: FormData) {
     extra.push(v === null ? null : m.int ? Math.round(v) : v);
   }
   // El plan de alimentación, opcional: todo vacío es sin plan.
-  const diet = DIET_COLS.map((k) => text(form, `diet_${k}`) || null);
+  const diet = readDiet(form);
   return { values: [date, weight, fat, ...extra], diet, hasDiet: diet.some(Boolean) };
 }
 
+const readDiet = (form: FormData) => DIET_COLS.map((k) => text(form, `diet_${k}`) || null);
+const DIET_UPSERT = `on conflict (checkin_id) do update set ${DIET_COLS.map((k) => `${k} = excluded.${k}`).join(", ")}`;
 const params = (from: number, n: number) => Array.from({ length: n }, (_, i) => `$${from + i}`).join(", ");
+
+/** El plan solo, sin cargar una evaluación: va a la última evaluación del cliente, y así pasa a ser el vigente. */
+export async function saveDiet(_: FormState, form: FormData): Promise<FormState> {
+  const viewer = await requireViewer();
+  const clientId = Number(form.get("client_id"));
+  const { rows } = await db.query<{ coach_id: number | null }>("select coach_id from users where id = $1", [clientId]);
+  if (!rows[0] || !canManage(viewer, rows[0])) return { error: "No podés cambiar el plan de este cliente." };
+  const diet = readDiet(form);
+  if (!diet.some(Boolean)) return { error: "Completá al menos un campo del plan." };
+
+  const { rowCount } = await db.query(
+    `insert into diets (checkin_id, ${DIET_COLS.join(", ")})
+     select id, ${params(2, diet.length)} from checkins where client_id = $1 order by date desc, id desc limit 1
+     ${DIET_UPSERT}`,
+    [clientId, ...diet]
+  );
+  if (!rowCount) return { error: "Cargá primero una evaluación: el plan va con ella." };
+  refresh();
+  return { ok: "Plan guardado." };
+}
 
 export async function addCheckin(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();
@@ -229,7 +251,7 @@ export async function updateCheckin(_: FormState, form: FormData): Promise<FormS
           gone as (delete from diets where checkin_id = $1 and not $${n + c.diet.length})
      insert into diets (checkin_id, ${DIET_COLS.join(", ")})
      select id, ${params(n, c.diet.length)} from c where $${n + c.diet.length}
-     on conflict (checkin_id) do update set ${DIET_COLS.map((k) => `${k} = excluded.${k}`).join(", ")}`,
+     ${DIET_UPSERT}`,
     [id, ...c.values, ...c.diet, c.hasDiet]
   );
   redirect(`/portal/clientes/${rows[0].client_id}#historico`);

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { addCheckin, deleteCheckin, deleteClient } from "~/actions";
+import { addCheckin, deleteCheckin, deleteClient, saveDiet } from "~/actions";
 import { AdminShell, PageHead } from "~/components/AdminShell";
 import { ClientForm } from "~/components/ClientForm";
 import { Evolution } from "~/components/Evolution";
@@ -11,7 +11,7 @@ import { initials } from "~/components/Shell";
 import { canManage } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { CheckinFields } from "~/components/CheckinFields";
-import { DietCard } from "~/components/Diet";
+import { DietFields } from "~/components/Diet";
 import { age, bmi, controlStatus, daysBetween, STATUS_LABEL } from "~/lib/clients";
 import { getCheckins, getClient, getCoaches, getDiet, getProgressPhotos } from "~/lib/data";
 import { days, num, shortDate, todayISO } from "~/lib/format";
@@ -225,10 +225,17 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         </section>
       </div>
 
-      {diet && (
+      {last && (
         <section id="alimentacion" className="anchor">
           <h2 className="section-title">Plan de alimentación</h2>
-          <DietCard diet={diet} />
+          <Form action={saveDiet} submit="Guardar plan" className="card form">
+            <input type="hidden" name="client_id" value={client.id} />
+            <p className="field__hint">
+              {diet ? `Vigente desde la evaluación del ${shortDate(diet.date)}. ` : ""}
+              Se guarda en la última evaluación (del {shortDate(last.date)}) y lo ve el cliente en Mi progreso.
+            </p>
+            <DietFields diet={diet} />
+          </Form>
         </section>
       )}
 
