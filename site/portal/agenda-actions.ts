@@ -1,7 +1,10 @@
 "use server";
 
 import { refresh } from "next/cache";
+import { after } from "next/server";
 import { canManage } from "~/lib/access";
+import { renderConfirmedEmail } from "~/lib/appointment-emails";
+import { sendMail } from "~/lib/email-layout";
 import { requireViewer, type Viewer } from "~/lib/auth";
 import { db } from "~/lib/db";
 import { getAppointment, type Appointment } from "~/lib/data";
@@ -25,6 +28,21 @@ async function load(viewer: Viewer, id: number, ownerOk: boolean) {
   if (!a) return null;
   if (ownerOk && a.client_id === viewer.id) return a;
   return canManage(viewer, { coach_id: a.coach_id }) ? a : null;
+}
+
+/**
+ * Al cliente le llega un correo con su turno confirmado y, si se lo movieron, lo que había pedido. Después de
+ * responder: si falla, el turno ya quedó. A quien está dado de baja o no tiene correo no le llega nada.
+ */
+function mailConfirmed(clientId: number, start: Date, requested: Date | null) {
+  after(async () => {
+    const { rows } = await db.query<{ name: string; email: string | null; active: boolean }>(
+      "select name, email, active from users where id = $1",
+      [clientId]
+    );
+    const u = rows[0];
+    if (u?.active && u.email) await sendMail({ to: u.email, ...renderConfirmedEmail({ name: u.name, start, requested }) });
+  });
 }
 
 // ---------- El cliente ----------
@@ -64,6 +82,7 @@ export async function confirmAppointment(_: FormState, form: FormData): Promise<
     viewer.id,
   ]);
   await db.query("update users set next_control_at = $2 where id = $1", [a.client_id, a.starts_at]);
+  mailConfirmed(a.client_id, a.starts_at, a.requested_at);
   refresh();
   return eventId ? { ok: "Confirmado y agregado al calendario." } : { ok: "Confirmado. No se pudo agregar al Google Calendar (¿está conectado?)." };
 }
@@ -88,6 +107,7 @@ export async function moveAppointment(_: FormState, form: FormData): Promise<For
     await connection.query("update users set next_control_at = $2 where id = $1", [a.client_id, start]);
   });
   if (!result.ok) return { error: result.mensaje };
+  mailConfirmed(a.client_id, start, a.requested_at ?? a.starts_at);
   refresh();
   return { ok: `Movido al ${longDate(dateOf(start))} a las ${timeOf(start)} h y confirmado.` };
 }

@@ -8,6 +8,7 @@ import { requireViewer } from "~/lib/auth";
 import { BODY_TYPES, CONDITIONS, MEALS, MEASURES, PLANS } from "~/lib/clients";
 import { randomUUID } from "node:crypto";
 import { db } from "~/lib/db";
+import { sendMail } from "~/lib/email-layout";
 import { type EvaluationEmail, IMAGES, renderEvaluationEmail, SUBJECT } from "~/lib/evaluation-email";
 import { fromLocalInput, todayISO } from "~/lib/format";
 import { bucketFromEnv, deleteObject, imageType, PHOTO_MAX_MB, putObject } from "~/lib/storage";
@@ -245,8 +246,6 @@ export async function addCheckin(_: FormState, form: FormData): Promise<FormStat
  */
 function sendEvaluationEmail(checkinId: number) {
   after(async () => {
-    const key = process.env.RESEND_API_KEY;
-    if (!key) return console.warn(`Falta RESEND_API_KEY: no se avisó la evaluación ${checkinId}.`);
     const { rows } = await db.query(
       `select u.name, u.email, u.active, c.date, c.weight_kg, c.body_fat_pct,
               p.date as prev_date, p.weight_kg as prev_weight, p.body_fat_pct as prev_fat,
@@ -270,18 +269,7 @@ function sendEvaluationEmail(checkinId: number) {
       prev: r.prev_date ? { date: r.prev_date, weight: r.prev_weight, fat: r.prev_fat } : null,
       diet: r.has_diet ? (Object.fromEntries(DIET_COLS.map((k) => [k, r[k]])) as EvaluationEmail["diet"]) : null,
     });
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: "Zar del Fitness <no-reply@zardelfitness.com.ar>",
-        to: [r.email],
-        subject: SUBJECT,
-        html,
-        attachments: IMAGES,
-      }),
-    });
-    if (!res.ok) console.error(`Resend no mandó el aviso de la evaluación ${checkinId}: ${res.status} ${await res.text()}`);
+    await sendMail({ to: r.email, subject: SUBJECT, html, attachments: IMAGES });
   });
 }
 

@@ -4,7 +4,10 @@ import horarios from "@db/horarios.json";
 import { db } from "./db";
 import { takenIntervals } from "./data";
 import { dateOf, longDate, timeOf } from "./format";
-import { busy } from "./google";
+import { after } from "next/server";
+import { renderRequestEmail } from "./appointment-emails";
+import { sendMail } from "./email-layout";
+import { busy, CALENDAR_OWNER } from "./google";
 import { DAILY_LIMIT_MESSAGE, daySlots, freeSlots, hoursFrom, MAX_DAILY_APPOINTMENTS, ONLY_FRIDAYS, SLOT_MINUTES } from "./slots";
 import { phoneTail } from "./digui-api";
 
@@ -97,6 +100,14 @@ export async function requestSlot(clientId: number, start: Date): Promise<Result
     );
   });
   if (!result.ok) return result;
+  // Al Zar le llega un correo con el pedido, venga del portal o de Digui. Después de responder: si falla, el turno ya quedó.
+  after(async () => {
+    const { rows } = await db.query<{ name: string; email: string | null; phone: string | null; coach: string | null }>(
+      "select u.name, u.email, u.phone, c.name as coach from users u left join users c on c.id = u.coach_id where u.id = $1",
+      [clientId]
+    );
+    if (rows[0]) await sendMail({ to: CALENDAR_OWNER, ...renderRequestEmail({ ...rows[0], start }) });
+  });
   return { ok: true, mensaje: `Pedido: ${longDate(dateOf(start))} a las ${timeOf(start)} h. Te avisamos cuando esté confirmado.` };
 }
 
