@@ -170,6 +170,20 @@ alter table progress_photos alter column taken_on set default (now() at time zon
 update users set photo_url = replace(photo_url, 'https://mi.zardelfitness.com.ar/', '/'),
   certificate_url = replace(certificate_url, 'https://mi.zardelfitness.com.ar/', '/')
   where photo_url like 'https://mi.zardelfitness.com.ar/%' or certificate_url like 'https://mi.zardelfitness.com.ar/%';
+
+-- La foto de perfil de un cliente es su última foto de progreso: las de la ficha pasan a progreso, con la fecha de alta
+-- (no se sabe cuándo se sacaron) para que no le ganen a las de verdad. Sólo las que están en su carpeta del bucket; las
+-- del equipo quedan en su ficha.
+insert into progress_photos (client_id, key, taken_on)
+select id, k, client_since
+from (select id, external_id, client_since,
+             substring(photo_url from '^/archivos/(alumnos/[0-9a-f-]{36}/foto[.](?:jpg|jpeg|png))(?:[?].*)?$') as k
+      from users where photo_url is not null and not (scopes && array['admin', 'coach'])) f
+where split_part(k, '/', 2) = external_id
+on conflict (key) do nothing;
+update users u set photo_url = null
+  where photo_url is not null and not (scopes && array['admin', 'coach'])
+    and exists (select 1 from progress_photos p where p.client_id = u.id and '/archivos/' || p.key = split_part(u.photo_url, '?', 1));
 `;
 
 export async function migrate() {

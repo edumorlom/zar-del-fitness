@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminShell, PageHead } from "~/components/AdminShell";
+import { ClientPicker } from "~/components/ClientPicker";
 import { Form } from "~/components/Form";
 import { initials } from "~/components/Shell";
 import { recordPayment, voidPayment } from "~/payment-actions";
@@ -155,14 +156,11 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
             <div className="fields">
               <label className="field field--wide">
                 <span className="field__label">Cliente</span>
-                <select name="client_id" defaultValue={preselect} required>
-                  <option value="">Elegí un cliente</option>
-                  {passes.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} · {p.pass_expires ? `vence el ${shortDate(p.pass_expires)}` : "sin vencimiento"}
-                    </option>
-                  ))}
-                </select>
+                <ClientPicker
+                  name="client_id"
+                  defaultValue={preselect}
+                  options={passes.map((p) => ({ id: p.id, label: `${p.name} · ${p.pass_expires ? `vence el ${shortDate(p.pass_expires)}` : "sin vencimiento"}` }))}
+                />
               </label>
               <fieldset className="choice field--wide">
                 <legend className="field__label">Cómo pagó</legend>

@@ -1548,6 +1548,15 @@ a.person:hover .strong {
 .tag-alert {
   color: #ec835a;
 }
+.pill__x {
+  margin-left: 2px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
 .chips {
   display: inline-flex;
   flex-wrap: wrap;

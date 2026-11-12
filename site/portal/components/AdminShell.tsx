@@ -17,7 +17,8 @@ export function AdminShell({ viewer, children }: { viewer: Viewer; children: Rea
     );
   else if (viewer.scopes.includes("receptionist")) items.push({ href: "/portal/clientes/nuevo", label: "Nuevo cliente", icon: "clients" });
   if (canHandlePayments(viewer)) items.push({ href: "/portal/pagos", label: "Pagos", icon: "payments" });
-  if (viewer.scopes.includes("admin")) items.push({ href: "/portal/configuracion", label: "Configuración", icon: "settings" });
+  if (viewer.scopes.includes("admin"))
+    items.push({ href: "/portal/broadcast", label: "Broadcast", icon: "broadcast" }, { href: "/portal/configuracion", label: "Configuración", icon: "settings" });
   if (viewer.scopes.includes("user")) items.push({ href: "/portal/mi-progreso", label: "Mi progreso", icon: "progress" });
   const role = viewer.scopes.map((s) => SCOPE_LABEL[s]).join(" · ");
   return (

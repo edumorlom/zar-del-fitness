@@ -12,7 +12,11 @@ test("el correo masivo: {nombre} en asunto y texto, párrafos, saltos de línea 
   assert.match(html, /Hola, Juan\./);
   assert.match(html, /Primera línea<br>segunda &#60;b&#62;línea&#60;\/b&#62;/);
   assert.match(html, />Chau</);
-  assert.equal(html.match(/class="p" style="padding:\d+px 40px 0;/g)?.length, 3);
+  assert.equal(html.match(/class="p" style="padding:\d+px 40px 0;/g)?.length, 4); // el título y los 3 párrafos
+  assert.match(html, /text-transform:uppercase;">Juan, novedades<\/h2>/);
   assert.match(html, /src="cid:hero"/);
+  assert.match(html, /src="cid:boton"/);
+  assert.match(html, /href="https:\/\/zardelfitness\.com\.ar\/portal\/ingresar"/);
+  assert.match(html, /Escribinos por WhatsApp/);
   assert.doesNotMatch(html, /\{nombre\}/i);
 });

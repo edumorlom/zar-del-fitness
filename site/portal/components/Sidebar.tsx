@@ -29,6 +29,7 @@ const ICONS = {
     <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M16 4v4M10 10v4M18 16v4" {...stroke} />
   ),
   progress: <path d="M3 18l6-7 4 4 8-9" {...stroke} />,
+  broadcast: <path d="M3 10v4h3l6 4V6L6 10H3zM16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11" {...stroke} />,
   payments: (
     <>
       <rect x="2.5" y="5" width="19" height="14" rx="2" {...stroke} />
