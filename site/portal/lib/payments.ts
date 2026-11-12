@@ -21,8 +21,8 @@ export const METHOD_LABEL: Record<Method, { es: string; en: string }> = {
 export const PAYABLE_PLANS: Record<string, string> = { Premium: "premium" };
 export const isPayable = (plan: string | null): plan is string => plan !== null && Object.hasOwn(PAYABLE_PLANS, plan);
 
-/** Desde cuántos días antes de vencer el pase el cliente ve el botón de Mercado Pago (y el pase está "por vencer"). */
-export const PAY_WINDOW_DAYS = 7;
+/** Cuántos días antes de vencer el pase está "por vencer": se le avisa al cliente y el equipo lo ve en Pagos. */
+export const PASS_DUE_DAYS = 7;
 
 export type PassStatus = "al-dia" | "por-vencer" | "vencido" | "sin-fecha";
 
@@ -37,17 +37,14 @@ export const PASS_LABEL: Record<PassStatus, string> = {
 export function passStatus(expires: string | null, today: string): PassStatus {
   if (!expires) return "sin-fecha";
   const left = daysBetween(today, expires);
-  return left < 0 ? "vencido" : left <= PAY_WINDOW_DAYS ? "por-vencer" : "al-dia";
+  return left < 0 ? "vencido" : left <= PASS_DUE_DAYS ? "por-vencer" : "al-dia";
 }
 
 /**
- * ¿Puede pagar ya con Mercado Pago? Su plan se paga desde el portal, está activo y el pase vence dentro de
- * PAY_WINDOW_DAYS (o ya venció). Sin vencimiento cargado no: primero lo carga el equipo.
+ * ¿Puede pagar con Mercado Pago desde su perfil? Si su plan se paga desde el portal y está activo, en cualquier momento:
+ * pagar antes no le hace perder días (extendPass suma el mes a su vencimiento), y sin vencimiento cargado arranca hoy.
  */
-export function canPayOnline(c: { plan: string | null; active: boolean; pass_expires: string | null }, today: string) {
-  const st = passStatus(c.pass_expires, today);
-  return isPayable(c.plan) && c.active && (st === "por-vencer" || st === "vencido");
-}
+export const canPayOnline = (c: { plan: string | null; active: boolean }) => isPayable(c.plan) && c.active;
 
 /** "AAAA-MM-DD" + n meses. Si ese día no existe en el mes, el último (31/01 + 1 → 28/02), como hace Postgres. */
 export function addMonths(date: string, n: number) {

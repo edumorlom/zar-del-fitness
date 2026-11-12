@@ -28,16 +28,12 @@ test("estado del pase: por vencer dentro de 7 días, vencido desde el día sigui
   assert.equal(passStatus("2026-11-11", today), "vencido");
 });
 
-test("Mercado Pago, sólo Premium, activo y con el pase por vencer o vencido", () => {
-  const today = "2026-11-12";
-  const premium = { plan: "Premium", active: true, pass_expires: "2026-11-15" };
-  assert.equal(canPayOnline(premium, today), true);
-  assert.equal(canPayOnline({ ...premium, pass_expires: "2026-10-01" }, today), true);
-  assert.equal(canPayOnline({ ...premium, pass_expires: "2026-12-30" }, today), false);
-  assert.equal(canPayOnline({ ...premium, pass_expires: null }, today), false);
-  assert.equal(canPayOnline({ ...premium, active: false }, today), false);
-  assert.equal(canPayOnline({ ...premium, plan: "General Dirigido" }, today), false);
-  assert.equal(canPayOnline({ ...premium, plan: null }, today), false);
+test("Mercado Pago, cualquier cliente Premium activo, en cualquier momento", () => {
+  const premium = { plan: "Premium", active: true };
+  assert.equal(canPayOnline(premium), true);
+  assert.equal(canPayOnline({ ...premium, active: false }), false);
+  assert.equal(canPayOnline({ ...premium, plan: "General Dirigido" }), false);
+  assert.equal(canPayOnline({ ...premium, plan: null }), false);
   assert.equal(isPayable("toString"), false);
 });
 

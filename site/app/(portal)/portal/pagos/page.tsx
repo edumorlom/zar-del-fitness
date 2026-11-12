@@ -10,7 +10,7 @@ import { requireViewer } from "~/lib/auth";
 import { daysBetween } from "~/lib/clients";
 import { dateOf, days, monthYear, shortDate, timeOf, todayISO } from "~/lib/format";
 import { mpConfigured } from "~/lib/mercadopago";
-import { IN_PERSON, METHOD_LABEL, METHODS, money, MP_IN_PROCESS, PASS_LABEL, passStatus, PAY_WINDOW_DAYS, type PassStatus } from "~/lib/payments";
+import { IN_PERSON, METHOD_LABEL, METHODS, money, MP_IN_PROCESS, PASS_DUE_DAYS, PASS_LABEL, passStatus, type PassStatus } from "~/lib/payments";
 import { listPayments, payablePasses, planPrice, totalsSince, type PaymentRow } from "~/lib/payments-data";
 
 export const metadata: Metadata = { title: "Pagos" };
@@ -57,7 +57,7 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
       <PageHead
         title="Pagos"
         accent="Premium"
-        sub={`El pase de los clientes Premium. Lo pagan con Mercado Pago desde su portal (el botón aparece ${PAY_WINDOW_DAYS} días antes de que venza) o acá, en efectivo o con tarjeta. Cada pago lo extiende un mes.`}
+        sub="El pase de los clientes Premium. Lo pagan con Mercado Pago desde su perfil, cuando quieran, o acá, en efectivo o con tarjeta. Cada pago lo extiende un mes."
       >
         <a className="btn btn--gold btn--sm" href="#registrar">
           Registrar pago
@@ -85,11 +85,11 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
         </section>
         <section className="card kpi">
           <p className="label">Por vencer</p>
-          <p className="kpi__sub">En {PAY_WINDOW_DAYS} días o menos</p>
+          <p className="kpi__sub">En {PASS_DUE_DAYS} días o menos</p>
           <p className="kpi__big">
             <span data-count={by["por-vencer"]}>{by["por-vencer"]}</span>
           </p>
-          <p className="kpi__foot">Ya pueden pagar con Mercado Pago</p>
+          <p className="kpi__foot">Lo ven en su perfil, con el botón de pagar</p>
         </section>
         <section className="card kpi">
           <p className="label">Vencidos</p>

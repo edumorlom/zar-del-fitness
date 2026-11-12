@@ -8,7 +8,7 @@ import { payWithMercadoPago } from "~/payment-actions";
 import { homeOf } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { getClient } from "~/lib/data";
-import { longDate, todayISO } from "~/lib/format";
+import { longDate } from "~/lib/format";
 import { getLang } from "~/lib/lang";
 import { mpConfigured } from "~/lib/mercadopago";
 import { canPayOnline } from "~/lib/payments";
@@ -36,7 +36,7 @@ export default async function PaymentReturnPage({ searchParams }: { searchParams
   const tr = pick(lang);
   // Probar de nuevo, sólo si no pagó: en proceso, en revisión o sin respuesta de Mercado Pago, podría cobrarse dos veces.
   const failed = !r || r.state === "rejected" || r.state === "unknown" || r.state === "reversed";
-  const retry = failed && mpConfigured() && canPayOnline(client, todayISO());
+  const retry = failed && mpConfigured() && canPayOnline(client);
 
   const view =
     r?.state === "approved"

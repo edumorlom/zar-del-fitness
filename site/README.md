@@ -105,8 +105,9 @@ SSL "Full", delante de Railway:
   transaccional por fecha impide superar el cupo con reservas simultáneas. Los horarios de apertura del gimnasio siguen en `db/horarios.json`.
 - **Pagos** (`/portal/pagos`; las reglas en `portal/lib/payments.ts`): por ahora, sólo del plan Premium (`PAYABLE_PLANS`), al
   precio de `db/planes.json`. Cada pago aprobado extiende el pase (`pass_expires`) un mes: desde el vencimiento si todavía
-  no pasó, o desde hoy si ya venció. Desde 7 días antes de que venza (`PAY_WINDOW_DAYS`), el cliente ve en Mi progreso el
-  botón para pagar con Mercado Pago (Checkout Pro, `portal/lib/mercadopago.ts`); al aprobarse, el pase se extiende solo,
+  no pasó, o desde hoy si ya venció. El cliente Premium activo ve siempre en Mi progreso (su perfil) el botón para
+  pagar con Mercado Pago, aunque no tenga vencimiento cargado (arranca hoy); 7 días antes de vencer (`PASS_DUE_DAYS`)
+  el pase figura "por vencer". El pago va por Checkout Pro (`portal/lib/mercadopago.ts`); al aprobarse, el pase se extiende solo,
   con el aviso de Mercado Pago (`/portal/api/mercadopago`, sin Clerk: ver `proxy.ts`) o cuando el cliente vuelve al
   portal (`/portal/pago`), lo que llegue primero, y una sola vez. De los avisos no se cree nada: el pago se le pide a
   Mercado Pago con el access token. Si se devuelve, el pase vuelve a como estaba. El admin y recepción ven los pases y

@@ -9,7 +9,7 @@ import { canHandlePayments } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { getClient } from "~/lib/data";
 import { db } from "~/lib/db";
-import { shortDate, todayISO } from "~/lib/format";
+import { shortDate } from "~/lib/format";
 import { getLang } from "~/lib/lang";
 import { createPreference, mpConfigured } from "~/lib/mercadopago";
 import { canPayOnline, IN_PERSON, isPayable, METHOD_LABEL, type Method } from "~/lib/payments";
@@ -32,8 +32,8 @@ export async function payWithMercadoPago(): Promise<FormState> {
   const viewer = await requireViewer();
   const tr = pick(await getLang());
   const client = viewer.scopes.includes("user") ? await getClient(viewer.id) : null;
-  if (!client || !canPayOnline(client, todayISO()))
-    return { error: tr("Todavía no podés pagar desde el portal: se habilita cuando tu pase está por vencer.", "You can't pay from the portal yet: it opens when your pass is about to expire.") };
+  if (!client || !canPayOnline(client))
+    return { error: tr("Tu plan no se paga desde el portal: consultá en el gimnasio.", "Your plan can't be paid from the portal: ask at the gym.") };
   const price = planPrice(client.plan);
   if (!price || !mpConfigured())
     return { error: tr("El pago con Mercado Pago no está disponible ahora. Podés pagar en el gimnasio.", "Paying with Mercado Pago isn't available right now. You can pay at the gym.") };

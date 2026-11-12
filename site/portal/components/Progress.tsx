@@ -94,12 +94,15 @@ function pass(expires: string | null, lang: Lang) {
   return { fact: n < 0 ? tr(`Venció el ${on}`, `Expired on ${on}`) : tr(`Vence el ${on}`, `Expires on ${on}`), note, warn: n <= 3 };
 }
 
-/** El botón de Mercado Pago del pase: `amount`, el precio ya escrito; `processing`, si tiene un pago en proceso. */
-export type PayOffer = { amount: string; processing: boolean };
+/**
+ * El botón de Mercado Pago del pase: `amount`, el precio ya escrito; `processing`, si tiene un pago en proceso; `early`,
+ * si el pase todavía no está por vencer (pagar es adelantar un mes).
+ */
+export type PayOffer = { amount: string; processing: boolean; early: boolean };
 
 /**
- * El saludo, los datos del plan y el coach. `you`: lo ve el propio cliente (le habla de vos, en su idioma). `pay`: el
- * pase está por vencer y lo puede pagar con Mercado Pago (mi-progreso decide cuándo).
+ * El saludo, los datos del plan y el coach. `you`: lo ve el propio cliente (le habla de vos, en su idioma). `pay`: puede
+ * pagar el pase con Mercado Pago (mi-progreso decide si su plan se paga desde el portal).
  */
 export function Hero({ client, checkins, you, appointment, pay, lang = "es" }: { client: Client; checkins: Checkin[]; you: boolean; appointment?: Appointment | null; pay?: PayOffer | null; lang?: Lang }) {
   const tr = pick(lang);
@@ -164,11 +167,11 @@ export function Hero({ client, checkins, you, appointment, pay, lang = "es" }: {
               </dd>
             )}
           </div>
-          {p && (
+          {(p || (you && pay)) && (
             <div>
               <dt className="label">{you ? tr("Tu pase", "Your pass") : "Pase"}</dt>
-              <dd className="fact">{p.fact}</dd>
-              <dd className={p.warn ? "note note--warn" : "note"}>{p.note}</dd>
+              <dd className="fact">{p?.fact ?? tr("Sin vencimiento", "No expiry date yet")}</dd>
+              {p && <dd className={p.warn ? "note note--warn" : "note"}>{p.note}</dd>}
               {you && pay && (
                 <dd className="pay">
                   {pay.processing && (
@@ -180,7 +183,11 @@ export function Hero({ client, checkins, you, appointment, pay, lang = "es" }: {
                     </p>
                   )}
                   <Form action={payWithMercadoPago} submit={tr(`Pagar ${pay.amount} con Mercado Pago`, `Pay ${pay.amount} with Mercado Pago`)} button="btn btn--gold btn--sm" className="inline-form" />
-                  <p className="note">{tr("Se extiende un mes apenas se aprueba.", "It's extended one month as soon as it's approved.")}</p>
+                  <p className="note">
+                    {pay.early
+                      ? tr("Si pagás antes, el mes se suma a tu vencimiento: no perdés días.", "Paying early adds the month to your current expiry: you don't lose any days.")
+                      : tr("Se extiende un mes apenas se aprueba.", "It's extended one month as soon as it's approved.")}
+                  </p>
                 </dd>
               )}
             </div>

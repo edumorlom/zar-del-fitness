@@ -10,7 +10,7 @@ import { getCheckins, getClient, getDiet, getOpenAppointment, getProgressPhotos 
 import { todayISO } from "~/lib/format";
 import { getLang } from "~/lib/lang";
 import { mpConfigured } from "~/lib/mercadopago";
-import { canPayOnline, money } from "~/lib/payments";
+import { canPayOnline, money, passStatus } from "~/lib/payments";
 import { mpInProcess, planPrice } from "~/lib/payments-data";
 import { pick } from "@/lib/i18n";
 
@@ -29,11 +29,15 @@ export default async function MyProgressPage() {
   if (!client) redirect("/portal/ingresar");
   const lang = await getLang();
   const tr = pick(lang);
-  // El botón de Mercado Pago, sólo cuando el pase está por vencer (o venció) y el plan se paga desde el portal.
+  // El botón de Mercado Pago, siempre que su plan se pague desde el portal. Con el pase al día, pagar es adelantar un mes.
   const price = planPrice(client.plan);
   const pay: PayOffer | null =
-    price && mpConfigured() && canPayOnline(client, todayISO())
-      ? { amount: money(price.amount, price.currency, lang), processing: await mpInProcess(viewer.id) }
+    price && mpConfigured() && canPayOnline(client)
+      ? {
+          amount: money(price.amount, price.currency, lang),
+          processing: await mpInProcess(viewer.id),
+          early: passStatus(client.pass_expires, todayISO()) === "al-dia",
+        }
       : null;
   // Resultados ocupa 01, o 01 y 02 si hay controles; el plan sólo existe con un control.
   const next = (checkins.length ? 3 : 2) + (diet ? 1 : 0);
