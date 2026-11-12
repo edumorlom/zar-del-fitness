@@ -238,7 +238,8 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
             <input type="hidden" name="client_id" value={client.id} />
             <p className="field__hint">
               {diet ? `Vigente desde la evaluación del ${shortDate(diet.date)}. ` : ""}
-              Se guarda en la última evaluación (del {shortDate(last.date)}) y lo ve el cliente en Mi progreso.
+              Se guarda en la última evaluación (del {shortDate(last.date)}) y lo ve el cliente en Mi progreso. Si cambia algo, le
+              llega por correo.
             </p>
             <DietFields diet={diet} />
           </Form>

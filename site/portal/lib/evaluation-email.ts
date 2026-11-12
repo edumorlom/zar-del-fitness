@@ -39,19 +39,25 @@ const stat = (label: string, value: string, unit: string, diff: string) =>
     `<div style="${F};font-size:12px;line-height:18px;letter-spacing:2px;color:#8a8a8a;font-weight:700;text-transform:uppercase">${label}</div><div style="padding-top:6px;${ANTON};font-size:40px;line-height:46px;color:#ffffff">${value}<span style="font-size:20px;color:#dcdcdc"> ${unit}</span></div><div style="padding-top:4px;${F};font-size:14px;line-height:22px;color:#a3a3a3">${diff}</div>`
   )}</td>`;
 
-function dietRows(diet: Omit<Diet, "date">) {
-  const goal = diet.goal
-    ? `<div style="padding-top:8px;${F};font-size:15px;line-height:25px;color:#a3a3a3">Objetivo: <strong style="color:#e7c152">${esc(diet.goal)}</strong></div>`
-    : "";
+/** Las comidas del plan que tienen algo, una debajo de la otra (también las usa el correo del plan solo). */
+export function mealsTable(diet: Omit<Diet, "date">) {
   const meals = MEALS.filter((m) => diet[m.key])
     .map(
       (m) =>
         `<tr><td style="padding:0 0 20px"><div style="${F};font-size:16px;line-height:24px;color:#ffffff;font-weight:700">${m.label}</div><div style="padding-top:4px;${F};font-size:15px;line-height:25px;color:#a3a3a3">${esc(diet[m.key]!).replace(/\r?\n/g, "<br>")}</div></td></tr>`
     )
     .join("");
+  return meals ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">${meals}</table>` : "";
+}
+
+function dietRows(diet: Omit<Diet, "date">) {
+  const goal = diet.goal
+    ? `<div style="padding-top:8px;${F};font-size:15px;line-height:25px;color:#a3a3a3">Objetivo: <strong style="color:#e7c152">${esc(diet.goal)}</strong></div>`
+    : "";
+  const meals = mealsTable(diet);
   return (
     `<tr><td class="p" style="padding:56px 40px 24px">${box(`${heading("Tu plan de alimentación")}${goal}`)}</td></tr>\n` +
-    (meals ? `<tr><td class="p" style="padding:0 40px 8px">${box(`<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">${meals}</table>`)}</td></tr>\n` : "")
+    (meals ? `<tr><td class="p" style="padding:0 40px 8px">${box(meals)}</td></tr>\n` : "")
   );
 }
 

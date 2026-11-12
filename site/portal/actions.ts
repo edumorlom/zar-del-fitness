@@ -9,6 +9,7 @@ import { BODY_TYPES, CONDITIONS, MEALS, MEASURES, PLANS } from "~/lib/clients";
 import { randomUUID } from "node:crypto";
 import { db } from "~/lib/db";
 import { sendMail } from "~/lib/email-layout";
+import { DIET_IMAGES, DIET_SUBJECT, type DietEmail, renderDietEmail } from "~/lib/diet-email";
 import { type EvaluationEmail, IMAGES, renderEvaluationEmail, SUBJECT } from "~/lib/evaluation-email";
 import { fromLocalInput, todayISO } from "~/lib/format";
 import { bucketFromEnv, deleteObject, imageType, PHOTO_MAX_MB, putObject } from "~/lib/storage";
@@ -192,14 +193,31 @@ const readDiet = (form: FormData) => DIET_COLS.map((k) => text(form, `diet_${k}`
 const DIET_UPSERT = `on conflict (checkin_id) do update set ${DIET_COLS.map((k) => `${k} = excluded.${k}`).join(", ")}`;
 const params = (from: number, n: number) => Array.from({ length: n }, (_, i) => `$${from + i}`).join(", ");
 
-/** El plan solo, sin cargar una evaluación: va a la última evaluación del cliente, y así pasa a ser el vigente. */
+/**
+ * El plan solo, sin cargar una evaluación: va a la última evaluación del cliente, y así pasa a ser el vigente. Si cambió
+ * algo, al cliente le llega por correo (renderDietEmail); guardarlo igual que estaba no le manda otro.
+ */
 export async function saveDiet(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();
   const clientId = Number(form.get("client_id"));
-  const { rows } = await db.query<{ coach_id: number | null }>("select coach_id from users where id = $1", [clientId]);
-  if (!rows[0] || !canManage(viewer, rows[0])) return { error: "No podés cambiar el plan de este cliente." };
+  const { rows } = await db.query<{ coach_id: number | null; name: string; email: string | null; active: boolean }>(
+    "select coach_id, name, email, active from users where id = $1",
+    [clientId]
+  );
+  const client = rows[0];
+  if (!client || !canManage(viewer, client)) return { error: "No podés cambiar el plan de este cliente." };
   const diet = readDiet(form);
   if (!diet.some(Boolean)) return { error: "Completá al menos un campo del plan." };
+
+  // El plan que tenía la última evaluación, para saber si cambió.
+  const before = await db.query<Record<string, string | null>>(
+    `select ${DIET_COLS.map((k) => `d.${k}`).join(", ")} from checkins c left join diets d on d.checkin_id = c.id
+     where c.client_id = $1 order by c.date desc, c.id desc limit 1`,
+    [clientId]
+  );
+  // Sin contar espacios de más ni el \r\n con que el navegador manda los saltos de línea.
+  const norm = (v: string | null | undefined) => v?.replace(/\r\n/g, "\n").trim() || null;
+  const changed = DIET_COLS.some((k, i) => norm(before.rows[0]?.[k]) !== norm(diet[i]));
 
   const { rowCount } = await db.query(
     `insert into diets (checkin_id, ${DIET_COLS.join(", ")})
@@ -209,7 +227,20 @@ export async function saveDiet(_: FormState, form: FormData): Promise<FormState>
   );
   if (!rowCount) return { error: "Cargá primero una evaluación: el plan va con ella." };
   refresh();
-  return { ok: "Plan guardado." };
+  if (!changed) return { ok: "Plan guardado. No cambió nada: no se le mandó otro correo." };
+  // Como el de la evaluación: a quien está dado de baja o no tiene correo no le llega nada.
+  if (!client.active || !EMAIL.test(client.email ?? ""))
+    return { ok: "Plan guardado. No se le mandó correo: no tiene correo cargado o está dado de baja." };
+  sendDietEmail(client.email!, client.name, diet);
+  return { ok: "Plan guardado. Le llega por correo." };
+}
+
+/** El correo del plan solo, después de responder: si Resend falla, el plan ya quedó guardado y el error va a los logs. */
+function sendDietEmail(to: string, name: string, diet: (string | null)[]) {
+  after(async () => {
+    const html = renderDietEmail({ name, diet: Object.fromEntries(DIET_COLS.map((k, i) => [k, diet[i]])) as DietEmail["diet"] });
+    await sendMail({ to, subject: DIET_SUBJECT, html, attachments: DIET_IMAGES });
+  });
 }
 
 export async function addCheckin(_: FormState, form: FormData): Promise<FormState> {
