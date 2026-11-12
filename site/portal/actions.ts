@@ -14,7 +14,8 @@ import { type EvaluationEmail, IMAGES, renderEvaluationEmail, SUBJECT } from "~/
 import { fromLocalInput, todayISO } from "~/lib/format";
 import { bucketFromEnv, deleteObject, imageType, PHOTO_MAX_MB, putObject } from "~/lib/storage";
 
-export type FormState = { error?: string; ok?: string } | null;
+/** Lo que responde un formulario. `sent`: a quién le llegó el correo que mandó; el formulario lo muestra en un cartel. */
+export type FormState = { error?: string; ok?: string; sent?: string } | null;
 
 const text = (form: FormData, key: string) => String(form.get(key) ?? "").trim();
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -229,18 +230,21 @@ export async function saveDiet(_: FormState, form: FormData): Promise<FormState>
   refresh();
   if (!changed) return { ok: "Plan guardado. No cambió nada: no se le mandó otro correo." };
   // Como el de la evaluación: a quien está dado de baja o no tiene correo no le llega nada.
-  if (!client.active || !EMAIL.test(client.email ?? ""))
-    return { ok: "Plan guardado. No se le mandó correo: no tiene correo cargado o está dado de baja." };
-  sendDietEmail(client.email!, client.name, diet);
-  return { ok: "Plan guardado. Le llega por correo." };
+  if (!client.active || !EMAIL.test(client.email ?? "")) return mailed("Plan guardado.", null);
+  const html = renderDietEmail({ name: client.name, diet: Object.fromEntries(DIET_COLS.map((k, i) => [k, diet[i]])) as DietEmail["diet"] });
+  const ok = await sendMail({ to: client.email!, subject: DIET_SUBJECT, html, attachments: DIET_IMAGES });
+  return mailed("Plan guardado.", ok ? client.email : false);
 }
 
-/** El correo del plan solo, después de responder: si Resend falla, el plan ya quedó guardado y el error va a los logs. */
-function sendDietEmail(to: string, name: string, diet: (string | null)[]) {
-  after(async () => {
-    const html = renderDietEmail({ name, diet: Object.fromEntries(DIET_COLS.map((k, i) => [k, diet[i]])) as DietEmail["diet"] });
-    await sendMail({ to, subject: DIET_SUBJECT, html, attachments: DIET_IMAGES });
-  });
+/**
+ * La respuesta de un formulario que le manda un correo al cliente: con `sent`, el cartel de "correo enviado". Si no
+ * salió, igual es un "ok" (lo guardado ya quedó, y el formulario se vacía: volver a mandarlo duplicaría la evaluación).
+ */
+function mailed(ok: string, to: string | null | false): FormState {
+  if (to) return { ok, sent: to };
+  return to === null
+    ? { ok: `${ok} No se le mandó correo: no tiene correo cargado o está dado de baja.` }
+    : { ok: `${ok} El correo no salió (Resend no lo aceptó): avisale por WhatsApp.` };
 }
 
 export async function addCheckin(_: FormState, form: FormData): Promise<FormState> {
@@ -265,43 +269,41 @@ export async function addCheckin(_: FormState, form: FormData): Promise<FormStat
      select id from c`,
     [clientId, viewer.id, ...c.values, ...c.diet, c.hasDiet]
   );
-  sendEvaluationEmail(created.rows[0].id);
+  const to = await mailEvaluation(created.rows[0].id);
   refresh();
-  return { ok: "Evaluación cargada." };
+  return mailed("Evaluación cargada.", to);
 }
 
 /**
- * Le avisa al cliente por correo (Resend) que su evaluación ya está, con el resumen y el plan. Corre después de
- * responder: si falla, la evaluación ya quedó guardada y el error va a los logs. A quien está dado de baja o no tiene
- * correo no le llega nada.
+ * Le avisa al cliente por correo (Resend) que su evaluación ya está, con el resumen y el plan. Devuelve a quién se lo
+ * mandó, null si no corresponde (dado de baja o sin correo) o false si Resend no lo aceptó: la evaluación ya quedó
+ * guardada igual, y el error va a los logs.
  */
-function sendEvaluationEmail(checkinId: number) {
-  after(async () => {
-    const { rows } = await db.query(
-      `select u.name, u.email, u.active, c.date, c.weight_kg, c.body_fat_pct,
-              p.date as prev_date, p.weight_kg as prev_weight, p.body_fat_pct as prev_fat,
-              d.id is not null as has_diet, ${DIET_COLS.map((k) => `d.${k}`).join(", ")}
-       from checkins c join users u on u.id = c.client_id
-       left join diets d on d.checkin_id = c.id
-       left join lateral (
-         select date, weight_kg, body_fat_pct from checkins p
-         where p.client_id = c.client_id and (p.date, p.id) < (c.date, c.id) order by p.date desc, p.id desc limit 1
-       ) p on true
-       where c.id = $1`,
-      [checkinId]
-    );
-    const r = rows[0];
-    if (!r?.active || !EMAIL.test(r.email ?? "")) return;
-    const html = renderEvaluationEmail({
-      name: r.name,
-      date: r.date,
-      weight: r.weight_kg,
-      fat: r.body_fat_pct,
-      prev: r.prev_date ? { date: r.prev_date, weight: r.prev_weight, fat: r.prev_fat } : null,
-      diet: r.has_diet ? (Object.fromEntries(DIET_COLS.map((k) => [k, r[k]])) as EvaluationEmail["diet"]) : null,
-    });
-    await sendMail({ to: r.email, subject: SUBJECT, html, attachments: IMAGES });
+async function mailEvaluation(checkinId: number): Promise<string | null | false> {
+  const { rows } = await db.query(
+    `select u.name, u.email, u.active, c.date, c.weight_kg, c.body_fat_pct,
+            p.date as prev_date, p.weight_kg as prev_weight, p.body_fat_pct as prev_fat,
+            d.id is not null as has_diet, ${DIET_COLS.map((k) => `d.${k}`).join(", ")}
+     from checkins c join users u on u.id = c.client_id
+     left join diets d on d.checkin_id = c.id
+     left join lateral (
+       select date, weight_kg, body_fat_pct from checkins p
+       where p.client_id = c.client_id and (p.date, p.id) < (c.date, c.id) order by p.date desc, p.id desc limit 1
+     ) p on true
+     where c.id = $1`,
+    [checkinId]
+  );
+  const r = rows[0];
+  if (!r?.active || !EMAIL.test(r.email ?? "")) return null;
+  const html = renderEvaluationEmail({
+    name: r.name,
+    date: r.date,
+    weight: r.weight_kg,
+    fat: r.body_fat_pct,
+    prev: r.prev_date ? { date: r.prev_date, weight: r.prev_weight, fat: r.prev_fat } : null,
+    diet: r.has_diet ? (Object.fromEntries(DIET_COLS.map((k) => [k, r[k]])) as EvaluationEmail["diet"]) : null,
   });
+  return (await sendMail({ to: r.email, subject: SUBJECT, html, attachments: IMAGES })) ? (r.email as string) : false;
 }
 
 export async function updateCheckin(_: FormState, form: FormData): Promise<FormState> {
@@ -326,8 +328,9 @@ export async function updateCheckin(_: FormState, form: FormData): Promise<FormS
      ${DIET_UPSERT}`,
     [id, ...c.values, ...c.diet, c.hasDiet]
   );
-  // El admin eligió en el popup volver a mandarle el correo (components/Form.tsx, `ask`).
-  if (form.get("notify") === "1") sendEvaluationEmail(id);
+  // El admin eligió en el popup volver a mandarle el correo (components/Form.tsx, `ask`). Va después de responder: la
+  // página vuelve a la ficha, sin el cartel.
+  if (form.get("notify") === "1") after(() => mailEvaluation(id));
   redirect(`/portal/clientes/${rows[0].client_id}#historico`);
 }
 

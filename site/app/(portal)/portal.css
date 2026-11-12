@@ -2375,6 +2375,11 @@ a.person:hover .strong {
 .ask .muted {
   margin-top: 12px;
 }
+/* El correo del cartel de "correo enviado": uno largo corta en cualquier lado antes que desbordar en el celular */
+.ask .mono {
+  color: var(--white);
+  overflow-wrap: anywhere;
+}
 .ask__actions {
   display: flex;
   flex-wrap: wrap;

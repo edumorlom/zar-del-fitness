@@ -9,7 +9,7 @@ import { canHandlePayments, homeOf } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { daysBetween } from "~/lib/clients";
 import { dateOf, days, monthYear, shortDate, timeOf, todayISO } from "~/lib/format";
-import { mpConfigured } from "~/lib/mercadopago";
+import { lastMpError, mpStatus } from "~/lib/mercadopago";
 import { IN_PERSON, METHOD_LABEL, METHODS, money, MP_IN_PROCESS, PASS_DUE_DAYS, PASS_LABEL, passStatus, type PassStatus } from "~/lib/payments";
 import { listPayments, payablePasses, planPrice, totalsSince, type PaymentRow } from "~/lib/payments-data";
 
@@ -44,6 +44,9 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
   const [passes, payments, totals] = await Promise.all([payablePasses(), listPayments(), totalsSince(`${today.slice(0, 7)}-01`)]);
   const price = planPrice("Premium");
   const preselect = passes.some((p) => String(p.id) === sp.cliente) ? sp.cliente : "";
+  // Al admin, si Mercado Pago acepta el token (le pregunta de quién es la cuenta) y el último error, si hubo.
+  const mp = admin ? await mpStatus() : null;
+  const lastError = mp?.state === "ok" ? lastMpError() : null;
 
   const by: Record<PassStatus, number> = { "al-dia": 0, "por-vencer": 0, vencido: 0, "sin-fecha": 0 };
   for (const p of passes) by[passStatus(p.pass_expires, today)]++;
@@ -64,7 +67,40 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
         </a>
       </PageHead>
 
-      {!mpConfigured() && (
+      {admin && mp?.state === "error" && (
+        <div className="card notice" data-reveal>
+          <p className="strong">
+            <span className="chip chip--warn">{mp.status === 401 || mp.status === 403 ? "Token rechazado" : "Sin conexión"}</span>{" "}
+            {mp.status === 401 || mp.status === 403 ? "Mercado Pago no acepta el access token" : "Mercado Pago no respondió"}
+          </p>
+          <p className="muted">
+            Respuesta: {mp.status ? `${mp.status} · ` : ""}
+            {mp.message}. El token cargado en Railway (MP_ACCESS_TOKEN) es <span className="mono">{mp.hint}</span>. Un access token
+            completo mide unos 70 caracteres: copialo con el botón de copiar en Mercado Pago → Tus integraciones → Credenciales de
+            producción, pegalo en Railway y aplicá el cambio. Mientras tanto los clientes ven el botón, pero no pueden pagar.
+          </p>
+        </div>
+      )}
+      {admin && mp?.state === "ok" && (
+        <div className="card notice" data-reveal>
+          <p className="strong">
+            <span className="st-dot st--al-dia" aria-hidden="true" /> Mercado Pago conectado: cuenta {mp.account.nickname}
+            {mp.account.email ? ` (${mp.account.email})` : ""}
+          </p>
+          <p className="muted">
+            Token <span className="mono">{mp.hint}</span>.
+            {lastError && !lastError.what.includes("/users/me") && (
+              <>
+                {" "}
+                Último error: {shortDate(dateOf(lastError.at))} {timeOf(lastError.at)} h, {lastError.what} →{" "}
+                {lastError.status ? `${lastError.status} · ` : ""}
+                {lastError.message}.
+              </>
+            )}
+          </p>
+        </div>
+      )}
+      {mp?.state === "missing" && (
         <div className="card notice" data-reveal>
           <p className="strong">Mercado Pago no está conectado</p>
           <p className="muted">

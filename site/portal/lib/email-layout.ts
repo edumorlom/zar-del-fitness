@@ -57,14 +57,26 @@ ${rows}<tr><td class="p" align="left" style="padding:56px 40px 40px;${F};font-si
 ${help ? `<a class="nc" href="https://wa.me/5491127336258" style="color:#e7c152;font-weight:700;text-decoration:underline">${help}</a><br>\n` : ""}The VIP by Zar del Fitness, Av. Álvarez Thomas 847, Colegiales, CABA.<br>Este correo es automático y no recibe respuestas.</div>`)}</td></tr></table>
 </td></tr></table></body></html>`;
 
-/** Manda un correo por Resend. Sin RESEND_API_KEY no manda y lo deja en los logs; si Resend lo rechaza, también. */
+/**
+ * Manda un correo por Resend y dice si Resend lo aceptó. Sin RESEND_API_KEY no manda y lo deja en los logs; si Resend lo
+ * rechaza o no responde, también.
+ */
 export async function sendMail(mail: { to: string; subject: string; html: string; attachments: ReturnType<typeof image>[] }) {
   const key = process.env.RESEND_API_KEY;
-  if (!key) return console.warn(`Falta RESEND_API_KEY: no se mandó "${mail.subject}".`);
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: "Zar del Fitness <no-reply@zardelfitness.com.ar>", ...mail, to: [mail.to] }),
-  });
-  if (!res.ok) console.error(`Resend no mandó "${mail.subject}": ${res.status} ${await res.text()}`);
+  if (!key) {
+    console.warn(`Falta RESEND_API_KEY: no se mandó "${mail.subject}".`);
+    return false;
+  }
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: "Zar del Fitness <no-reply@zardelfitness.com.ar>", ...mail, to: [mail.to] }),
+    });
+    if (res.ok) return true;
+    console.error(`Resend no mandó "${mail.subject}": ${res.status} ${await res.text()}`);
+  } catch (e) {
+    console.error(`Resend no mandó "${mail.subject}":`, e);
+  }
+  return false;
 }

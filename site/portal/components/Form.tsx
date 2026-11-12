@@ -1,11 +1,12 @@
 "use client";
 
-import { startTransition, useActionState, useEffect, useRef } from "react";
+import { startTransition, useActionState, useEffect, useId, useRef } from "react";
 import type { FormState } from "~/actions";
 
 /**
  * Un formulario que manda a una Server Action y muestra su error o su "ok". Los campos quedan como estaban si hay un
- * error (el <form action> de React los vaciaría); con `reset`, se vacían cuando sale bien.
+ * error (el <form action> de React los vaciaría); con `reset`, se vacían cuando sale bien. Si la acción le mandó un
+ * correo al cliente (`sent`), lo dice en un cartel con el diseño del sitio.
  */
 export function Form({
   action,
@@ -37,8 +38,11 @@ export function Form({
   const ref = useRef<HTMLFormElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const asked = useRef<FormData | null>(null);
+  const done = useRef<HTMLDialogElement>(null);
+  const doneTitle = useId();
   useEffect(() => {
     if (reset && state?.ok) ref.current?.reset();
+    if (state?.sent) done.current?.showModal();
   }, [reset, state]);
 
   return (
@@ -79,6 +83,21 @@ export function Form({
                 {notify ? ask.yes : ask.no}
               </button>
             ))}
+          </div>
+        </dialog>
+      )}
+      {state?.sent && (
+        <dialog ref={done} className="ask card" onClick={(e) => e.target === e.currentTarget && done.current?.close()} aria-labelledby={doneTitle}>
+          <h2 id={doneTitle} className="h2 h2--sm">
+            Correo <em className="serif gold-text">enviado</em>
+          </h2>
+          <p className="muted">
+            {state.ok} El correo se envió correctamente a <strong className="mono">{state.sent}</strong>.
+          </p>
+          <div className="ask__actions">
+            <button type="button" className="btn btn--gold btn--sm" onClick={() => done.current?.close()} autoFocus>
+              Listo
+            </button>
           </div>
         </dialog>
       )}
