@@ -7,7 +7,7 @@ import { dateOf, longDate, timeOf } from "./format";
 import { after } from "next/server";
 import { renderRequestEmail } from "./appointment-emails";
 import { sendMail } from "./email-layout";
-import { busy, CALENDAR_OWNER } from "./google";
+import { busy, CALENDAR_OWNER, deleteEvent } from "./google";
 import { DAILY_LIMIT_MESSAGE, daySlots, freeSlots, hoursFrom, MAX_DAILY_APPOINTMENTS, ONLY_FRIDAYS, SLOT_MINUTES } from "./slots";
 import { phoneTail } from "./digui-api";
 
@@ -100,7 +100,12 @@ export async function requestSlot(clientId: number, start: Date): Promise<Result
     );
   });
   if (!result.ok) return result;
-  // Al Zar le llega un correo con el pedido, venga del portal o de Digui. Después de responder: si falla, el turno ya quedó.
+  mailRequest(clientId, start);
+  return { ok: true, mensaje: `Pedido: ${longDate(dateOf(start))} a las ${timeOf(start)} h. Te avisamos cuando esté confirmado.` };
+}
+
+/** Al Zar le llega un correo con el pedido, venga del portal o de Digui. Después de responder: si falla, el turno ya quedó. */
+function mailRequest(clientId: number, start: Date) {
   after(async () => {
     const { rows } = await db.query<{ name: string; email: string | null; phone: string | null; coach: string | null }>(
       "select u.name, u.email, u.phone, c.name as coach from users u left join users c on c.id = u.coach_id where u.id = $1",
@@ -108,7 +113,58 @@ export async function requestSlot(clientId: number, start: Date): Promise<Result
     );
     if (rows[0]) await sendMail({ to: CALENDAR_OWNER, ...renderRequestEmail({ ...rows[0], start }) });
   });
-  return { ok: true, mensaje: `Pedido: ${longDate(dateOf(start))} a las ${timeOf(start)} h. Te avisamos cuando esté confirmado.` };
+}
+
+type Live = { id: number; client_id: number; starts_at: Date; google_event_id: string | null };
+
+/** Cancela un turno: lo saca del Google Calendar (Google le avisa al cliente) y, si era su próximo control, de la ficha. */
+export async function cancelAppointmentRow(a: Live, by: number) {
+  if (a.google_event_id) await deleteEvent(a.google_event_id);
+  await db.query("update appointments set status = 'cancelled', decided_by = $2 where id = $1", [a.id, by]);
+  await db.query("update users set next_control_at = null where id = $1 and next_control_at = $2", [a.client_id, a.starts_at]);
+}
+
+/** El próximo turno pedido o confirmado del cliente (tiene uno solo: requestSlot no deja pedir otro). */
+async function nextAppointment(clientId: number) {
+  const { rows } = await db.query<Live>(
+    `select id, client_id, starts_at, google_event_id from appointments
+     where client_id = $1 and status in ('requested', 'confirmed') and ends_at > now() order by starts_at limit 1`,
+    [clientId]
+  );
+  return rows[0] ?? null;
+}
+
+const at = (d: Date) => `${longDate(dateOf(d))} a las ${timeOf(d)} h`;
+
+/** El cliente cancela su turno (desde Digui o MCP), como el botón del portal. */
+export async function cancelSlot(clientId: number): Promise<Result> {
+  const a = await nextAppointment(clientId);
+  if (!a) return { ok: false, mensaje: "No tenés turnos pedidos ni confirmados." };
+  await cancelAppointmentRow(a, clientId);
+  return { ok: true, mensaje: `Cancelado tu turno del ${at(a.starts_at)}.` };
+}
+
+/**
+ * El cliente mueve su turno a otro horario libre (desde Digui o MCP). Vuelve a quedar pedido, aunque estuviera
+ * confirmado: lo confirma el Zar, como un pedido nuevo (le llega el correo, y el evento viejo sale del calendario).
+ */
+export async function moveSlot(clientId: number, start: Date): Promise<Result> {
+  const a = await nextAppointment(clientId);
+  if (!a) return { ok: false, mensaje: "No tenés un turno para mover: pedí uno nuevo." };
+  if (a.starts_at.getTime() === start.getTime()) return { ok: false, mensaje: "Tu turno ya es en ese horario." };
+  const result = await withAvailableSlot(start, a.id, async (connection) => {
+    await connection.query(
+      `update appointments set starts_at = $2, ends_at = $2::timestamptz + make_interval(mins => $3), status = 'requested',
+              google_event_id = null, requested_at = null, decided_by = null
+       where id = $1`,
+      [a.id, start, SLOT_MINUTES]
+    );
+    await connection.query("update users set next_control_at = null where id = $1 and next_control_at = $2", [clientId, a.starts_at]);
+  });
+  if (!result.ok) return result;
+  if (a.google_event_id) await deleteEvent(a.google_event_id);
+  mailRequest(clientId, start);
+  return { ok: true, mensaje: `Movido: ${at(start)}. Queda pedido hasta que el Zar lo confirme.` };
 }
 
 /** El único cliente cuyo teléfono termina igual (últimos 7 dígitos); null si no hay o hay varios. */

@@ -12,9 +12,13 @@ import { z } from "zod";
 import { content } from "@/lib/content";
 import { getCheckins, getClient } from "./data";
 import { BAD_DAY, customerId, NO_FILE_ID, NO_FILE_PHONE, parseDay, parseStart } from "./digui-api";
+import { SITE } from "./email-layout";
 import { dateOf, longDate, num, todayISO } from "./format";
+import { mpConfigured } from "./mercadopago";
+import { canPayOnline, METHOD_LABEL, money, MP_IN_PROCESS, PASS_LABEL, passStatus } from "./payments";
+import { listPayments, planPrice } from "./payments-data";
 import { bookableDays } from "./slots";
-import { clientById, clientByPhone, freeTimes, HOURS, liveAppointments, requestSlot } from "./turnos";
+import { cancelSlot, clientById, clientByPhone, freeTimes, HOURS, liveAppointments, moveSlot, requestSlot } from "./turnos";
 
 type Reply = { ok: boolean; mensaje: string; [k: string]: unknown };
 
@@ -193,7 +197,7 @@ export function portalMcp() {
     {
       title: "Pedir un turno",
       description:
-        "Pide un turno para la persona (queda pedido hasta que el Zar lo confirme). El inicio tiene que ser uno de ver_horarios_libres. Cancelar o mover un turno no se puede: se hace desde el portal o escribiéndole al Zar.",
+        "Pide un turno para la persona (queda pedido hasta que el Zar lo confirme). El inicio tiene que ser uno de ver_horarios_libres. Si ya tiene uno, para cambiarlo es mover_turno.",
       inputSchema: { ...persona, inicio: z.string().describe("AAAA-MM-DDTHH:MM, hora argentina") },
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     },
@@ -204,6 +208,84 @@ export function portalMcp() {
       if (!start) return fail("El inicio va como AAAA-MM-DDTHH:MM.");
       if (!bookableDays(todayISO(), HOURS).includes(dateOf(start))) return fail(BAD_DAY);
       return reply(await requestSlot(id, start));
+    }
+  );
+
+  server.registerTool(
+    "mover_turno",
+    {
+      title: "Mover el turno",
+      description:
+        "Mueve el turno pedido o confirmado de la persona a otro horario, que tiene que ser uno de ver_horarios_libres. Vuelve a quedar pedido hasta que el Zar lo confirme. Antes, confirmá con la persona el horario nuevo.",
+      inputSchema: { ...persona, inicio: z.string().describe("El horario nuevo: AAAA-MM-DDTHH:MM, hora argentina") },
+      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
+    },
+    async (args) => {
+      const id = await who(args);
+      if (typeof id === "string") return fail(id);
+      const start = parseStart(args.inicio);
+      if (!start) return fail("El inicio va como AAAA-MM-DDTHH:MM.");
+      if (!bookableDays(todayISO(), HOURS).includes(dateOf(start))) return fail(BAD_DAY);
+      return reply(await moveSlot(id, start));
+    }
+  );
+
+  server.registerTool(
+    "cancelar_turno",
+    {
+      title: "Cancelar el turno",
+      description:
+        "Cancela el turno pedido o confirmado de la persona (tiene uno solo: el de ver_turnos). Antes, confirmá con la persona que quiere cancelarlo. No se puede deshacer: después tendría que pedir otro.",
+      inputSchema: persona,
+      annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
+    },
+    async (args) => {
+      const id = await who(args);
+      if (typeof id === "string") return fail(id);
+      return reply(await cancelSlot(id));
+    }
+  );
+
+  server.registerTool(
+    "ver_pagos",
+    {
+      title: "Pagos del cliente",
+      description:
+        "El pase de la persona (vencimiento y si está al día), el precio de su plan, si puede pagarlo online con Mercado Pago (y dónde) y sus últimos pagos, el más nuevo primero.",
+      inputSchema: { ...persona, cantidad: z.number().int().min(1).max(20).default(5).describe("Cuántos pagos (1 a 20).") },
+      annotations: readOnly,
+    },
+    async (args) => {
+      const id = await who(args);
+      if (typeof id === "string") return fail(id);
+      const c = await getClient(id);
+      if (!c) return fail(NO_FILE_ID);
+      const vence = fecha(c.pass_expires);
+      const estado = PASS_LABEL[passStatus(vence, todayISO())];
+      const precio = planPrice(c.plan);
+      const online = canPayOnline(c) && mpConfigured();
+      // Sin la nota interna ni quién lo cargó: son del equipo.
+      const pagos = (await listPayments(args.cantidad, id)).map((p) => ({
+        fecha: dateOf(p.at),
+        monto: money(p.amount, p.currency),
+        medio: METHOD_LABEL[p.method].es,
+        estado: p.status === "approved" ? "aprobado" : p.status === "cancelled" ? "anulado" : MP_IN_PROCESS.includes(p.mp_status ?? "") ? "en proceso" : "para revisar",
+        pase_hasta: p.status === "approved" ? fecha(p.pass_after) : null,
+      }));
+      return reply({
+        ok: true,
+        mensaje:
+          `${vence ? `Tu pase vence el ${longDate(vence)} (${estado.toLowerCase()}).` : "Tu pase no tiene vencimiento cargado."}` +
+          (precio ? ` El plan ${precio.name} cuesta ${money(precio.amount, precio.currency)} por mes.` : "") +
+          (online ? ` Podés pagarlo con Mercado Pago desde Mi Portal: ${SITE}/portal/mi-progreso.` : "") +
+          (pagos.length ? ` Último pago: ${pagos[0].monto} el ${longDate(pagos[0].fecha)} (${pagos[0].estado}).` : " Todavía no hay pagos registrados."),
+        plan: c.plan,
+        vence_pase: vence,
+        estado_pase: estado,
+        precio: precio ? money(precio.amount, precio.currency) : null,
+        pagar_online: online ? `${SITE}/portal/mi-progreso` : null,
+        pagos,
+      });
     }
   );
 

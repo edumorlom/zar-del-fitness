@@ -9,10 +9,10 @@ import { requireViewer, type Viewer } from "~/lib/auth";
 import { db } from "~/lib/db";
 import { getAppointment, type Appointment } from "~/lib/data";
 import { dateOf, fromLocalInput, longDate, timeOf } from "~/lib/format";
-import { createEvent, deleteEvent, moveEvent } from "~/lib/google";
+import { createEvent, moveEvent } from "~/lib/google";
 import { getLang } from "~/lib/lang";
 import { DAILY_LIMIT_MESSAGE, ONLY_FRIDAYS, SLOT_MINUTES } from "~/lib/slots";
-import { appointmentDayError, requestSlot, withAvailableSlot } from "~/lib/turnos";
+import { appointmentDayError, cancelAppointmentRow, requestSlot, withAvailableSlot } from "~/lib/turnos";
 import type { FormState } from "./actions";
 
 const event = (a: Appointment, start: Date, end: Date) => ({
@@ -75,9 +75,7 @@ export async function cancelAppointment(_: FormState, form: FormData): Promise<F
   const a = await load(viewer, Number(form.get("id")), true);
   if (!a || (a.status !== "requested" && a.status !== "confirmed"))
     return { error: (await getLang()) === "en" ? "That booking no longer exists." : "Ese turno ya no está." };
-  if (a.google_event_id) await deleteEvent(a.google_event_id);
-  await db.query("update appointments set status = 'cancelled', decided_by = $2 where id = $1", [a.id, viewer.id]);
-  await db.query("update users set next_control_at = null where id = $1 and next_control_at = $2", [a.client_id, a.starts_at]);
+  await cancelAppointmentRow(a, viewer.id);
   refresh();
   return { ok: (await getLang()) === "en" ? "Booking cancelled." : "Turno cancelado." };
 }

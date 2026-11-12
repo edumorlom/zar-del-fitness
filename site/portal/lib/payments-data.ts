@@ -187,18 +187,18 @@ export type PaymentRow = {
 };
 
 /**
- * Los pagos, el último primero: los aprobados, los anulados y los de Mercado Pago que siguen en proceso o hay que
+ * Los pagos (todos, o los de un cliente), el último primero: los aprobados, los anulados y los de Mercado Pago que siguen en proceso o hay que
  * revisar. Los checkouts que el cliente abrió y no pagó no aparecen.
  */
-export async function listPayments(limit = 100) {
+export async function listPayments(limit = 100, clientId: number | null = null) {
   const { rows } = await db.query<PaymentRow>(
     `select p.id, p.client_id, u.name as client_name, p.method, p.status, p.amount, p.currency, p.pass_before, p.pass_after,
             p.note, p.mp_status, coalesce(p.approved_at, p.created_at) as at, b.name as created_by_name,
             p.created_by = p.client_id as by_client
      from payments p join users u on u.id = p.client_id left join users b on b.id = p.created_by
-     where p.status <> 'pending' or p.mp_status = any($2) or p.mp_status = 'approved'
+     where (p.status <> 'pending' or p.mp_status = any($2) or p.mp_status = 'approved') and ($3::int is null or p.client_id = $3)
      order by coalesce(p.approved_at, p.created_at) desc, p.id desc limit $1`,
-    [limit, MP_IN_PROCESS]
+    [limit, MP_IN_PROCESS, clientId]
   );
   return rows;
 }
