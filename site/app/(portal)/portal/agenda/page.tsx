@@ -60,11 +60,11 @@ function Row({ a, pending }: { a: Appointment; pending?: boolean }) {
         )}
         <Move a={a} />
         {a.status === "requested" ? (
-          <Form action={rejectAppointment} submit="Rechazar" button="link-sm" className="inline-form" confirm={`¿Rechazar el pedido de ${a.client_name}?`}>
+          <Form action={rejectAppointment} submit="Rechazar" button="link-sm" className="inline-form" confirm={{ title: "¿Rechazar", accent: "el pedido?", text: `El pedido de turno de ${a.client_name}.`, yes: "Rechazar", no: "Volver" }}>
             <input type="hidden" name="id" value={a.id} />
           </Form>
         ) : (
-          <Form action={cancelAppointment} submit="Cancelar" button="link-sm" className="inline-form" confirm={`¿Cancelar el turno de ${a.client_name}? Le llega el aviso.`}>
+          <Form action={cancelAppointment} submit="Cancelar" button="link-sm" className="inline-form" confirm={{ title: "¿Cancelar", accent: "el turno?", text: `El turno de ${a.client_name}. Le llega el aviso.`, yes: "Sí, cancelar", no: "Volver" }}>
             <input type="hidden" name="id" value={a.id} />
           </Form>
         )}

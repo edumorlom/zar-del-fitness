@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { addProgressPhoto, deleteProgressPhoto } from "~/actions";
+import { Ask } from "./Form";
 import type { ProgressPhoto } from "~/lib/data";
 import { shortDate, todayISO } from "~/lib/format";
 import { pick, type Lang } from "@/lib/i18n";
@@ -162,6 +163,7 @@ function Viewer({
   onIndex: (i: number) => void; onClose: () => void }) {
   const tr = pick(lang);
   const ref = useRef<HTMLDialogElement>(null);
+  const confirm = useRef<HTMLDialogElement>(null);
   const [deleting, startDelete] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const photo = photos[index];
@@ -184,7 +186,6 @@ function Viewer({
   }, [prev, next, onIndex]);
 
   function remove() {
-    if (!window.confirm(`¿Borrar esta foto del ${shortDate(photo.taken_on)}? No se puede deshacer.`)) return;
     startDelete(async () => {
       const form = new FormData();
       form.set("id", String(photo.id));
@@ -196,14 +197,15 @@ function Viewer({
   }
 
   return (
-    // Esc cierra el <dialog> solo; un toque fuera de la foto (en el fondo) también.
-    <dialog ref={ref} className="viewer" onClose={onClose} onClick={(e) => e.target === e.currentTarget && onClose()} aria-label={tr("Foto de progreso", "Progress photo")}>
+    // Esc cierra el <dialog> solo; un toque fuera de la foto (en el fondo) también. El onClose mira el target porque
+    // React le pasa también el close del cartel de borrar, que está adentro.
+    <dialog ref={ref} className="viewer" onClose={(e) => e.target === e.currentTarget && onClose()} onClick={(e) => e.target === e.currentTarget && onClose()} aria-label={tr("Foto de progreso", "Progress photo")}>
       <div className="viewer__bar">
         <p className="viewer__date">
           {photo.label} <span className="muted">· {shortDate(photo.taken_on)}</span>
         </p>
         {canDelete && (
-          <button type="button" className="btn btn--sm btn--danger" onClick={remove} disabled={deleting}>
+          <button type="button" className="btn btn--sm btn--danger" onClick={() => confirm.current?.showModal()} disabled={deleting}>
             {deleting ? "Borrando…" : "Borrar"}
           </button>
         )}
@@ -213,6 +215,19 @@ function Viewer({
           </svg>
         </button>
       </div>
+      {canDelete && (
+        <Ask
+          dialog={confirm}
+          q={{
+            title: tr("¿Borrar", "Delete"),
+            accent: tr("esta foto?", "this photo?"),
+            text: tr(`La del ${shortDate(photo.taken_on)}. No se puede deshacer.`, `From ${shortDate(photo.taken_on)}. This can't be undone.`),
+            yes: tr("Borrar", "Delete"),
+            no: tr("Cancelar", "Cancel"),
+          }}
+          onAnswer={(yes) => yes && remove()}
+        />
+      )}
       {error && <p className="form-msg form-msg--error viewer__error">{error}</p>}
       <img className="viewer__img" src={photo.url} alt={tr(`Foto de progreso del ${shortDate(photo.taken_on)}`, `Progress photo from ${shortDate(photo.taken_on)}`)} />
       {prev !== null && (

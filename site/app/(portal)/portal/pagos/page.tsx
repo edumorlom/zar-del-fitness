@@ -332,7 +332,13 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
                               submit="Anular"
                               button="link-sm"
                               className="inline-form"
-                              confirm={`¿Anular el pago de ${p.client_name} del ${shortDate(dateOf(p.at))} (${money(p.amount, p.currency)})? El pase vuelve a como estaba.${p.method === "mercadopago" ? " La devolución del dinero se hace en Mercado Pago." : ""}`}
+                              confirm={{
+                                title: "¿Anular",
+                                accent: "el pago?",
+                                text: `El de ${p.client_name} del ${shortDate(dateOf(p.at))} (${money(p.amount, p.currency)}). El pase vuelve a como estaba.${p.method === "mercadopago" ? " La devolución del dinero se hace en Mercado Pago." : ""}`,
+                                yes: "Anular",
+                                no: "Volver",
+                              }}
                             >
                               <input type="hidden" name="id" value={p.id} />
                             </Form>

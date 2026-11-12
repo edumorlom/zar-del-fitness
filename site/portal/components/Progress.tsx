@@ -408,7 +408,7 @@ export function Results({ checkins, you, manage, number = "01", lang = "es" }: {
                   <td>{n(fat(c))} kg</td>
                   {manage && (
                     <td className="right">
-                      <Form action={deleteCheckin} submit="Borrar" button="link-sm" confirm={`¿Borrar el control del ${shortDate(c.date)}?`}>
+                      <Form action={deleteCheckin} submit="Borrar" button="link-sm" confirm={{ title: "¿Borrar", accent: "el control?", text: `El del ${shortDate(c.date)}. No se puede deshacer.`, yes: "Borrar" }}>
                         <input type="hidden" name="id" value={c.id} />
                       </Form>
                     </td>

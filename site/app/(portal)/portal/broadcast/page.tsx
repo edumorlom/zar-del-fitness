@@ -45,7 +45,12 @@ export default async function BroadcastPage() {
         }
       />
 
-      <Form action={sendBroadcast} submit="Enviar correo" confirm="¿Mandar este correo a los clientes elegidos?" className="card form">
+      <Form action={sendBroadcast} submit="Enviar correo" confirm={{
+          title: "¿Enviar",
+          accent: "el correo?",
+          text: "Les llega a todos los clientes elegidos, en los grupos y uno por uno. No se puede deshacer.",
+          yes: "Enviar",
+        }} className="card form">
         <div className="fields">
           <label className="field field--wide">
             <span className="field__label">Asunto</span>

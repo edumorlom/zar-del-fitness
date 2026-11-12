@@ -71,7 +71,13 @@ export default async function BookingPage({ searchParams }: { searchParams: Prom
               action={cancelAppointment}
               submit={tr("Cancelar turno", "Cancel booking")}
               button="btn btn--ghost btn--sm"
-              confirm={tr("¿Cancelar el turno?", "Cancel this booking?")}
+              confirm={{
+                title: tr("¿Cancelar", "Cancel"),
+                accent: tr("el turno?", "this booking?"),
+                text: tr("Si después querés otro, lo pedís de nuevo.", "If you want another one later, just book again."),
+                yes: tr("Sí, cancelar", "Yes, cancel"),
+                no: tr("Volver", "Back"),
+              }}
             >
               <input type="hidden" name="id" value={open.id} />
             </Form>
@@ -134,7 +140,13 @@ export default async function BookingPage({ searchParams }: { searchParams: Prom
                       submit={`${timeOf(s.start)} h`}
                       button="slot"
                       className="inline-form"
-                      confirm={tr(`¿Pedir turno el ${inline(day)} a las ${timeOf(s.start)} h?`, `Book ${inline(day)} at ${timeOf(s.start)}?`)}
+                      confirm={{
+                        title: tr("¿Pedir", "Book"),
+                        accent: tr("este turno?", "this time?"),
+                        text: tr(`El ${inline(day)} a las ${timeOf(s.start)} h.`, `${inline(day)} at ${timeOf(s.start)}.`),
+                        yes: tr("Pedir turno", "Book"),
+                        no: tr("Volver", "Back"),
+                      }}
                     >
                       <input type="hidden" name="start" value={s.start.toISOString()} />
                     </Form>

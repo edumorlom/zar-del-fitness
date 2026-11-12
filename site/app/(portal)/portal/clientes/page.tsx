@@ -234,7 +234,7 @@ export default async function ClientsPage({
                           button="icon-btn icon-btn--sm icon-btn--danger"
                           label={`Borrar a ${r.name}`}
                           className="inline-form"
-                          confirm={`¿Borrar a ${r.name}? Se borran su cuenta y sus controles. No se puede deshacer.`}
+                          confirm={{ title: "¿Borrar", accent: `a ${r.name}?`, text: "Se borran su cuenta y sus controles. No se puede deshacer.", yes: "Borrar" }}
                         >
                           <input type="hidden" name="id" value={r.id} />
                         </Form>

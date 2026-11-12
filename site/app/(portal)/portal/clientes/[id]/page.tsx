@@ -212,7 +212,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
                             button="icon-btn icon-btn--sm icon-btn--danger"
                             label={`Borrar la evaluación del ${shortDate(c.date)}`}
                             className="inline-form"
-                            confirm={`¿Borrar la evaluación del ${shortDate(c.date)}?`}
+                            confirm={{ title: "¿Borrar", accent: "la evaluación?", text: `La del ${shortDate(c.date)}. No se puede deshacer.`, yes: "Borrar" }}
                           >
                             <input type="hidden" name="id" value={c.id} />
                           </Form>
@@ -269,7 +269,12 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
             submit="Borrar cliente"
             button="btn btn--sm btn--danger"
             className="card danger"
-            confirm={`¿Borrar a ${client.name}? Se borran su cuenta, sus ${checkins.length} evaluaciones y sus fotos${client.scopes.includes("coach") ?", y sus clientes quedan sin coach" : ""}. No se puede deshacer.`}
+            confirm={{
+              title: "¿Borrar",
+              accent: `a ${client.name}?`,
+              text: `Se borran su cuenta, sus ${checkins.length} evaluaciones y sus fotos${client.scopes.includes("coach") ? ", y sus clientes quedan sin coach" : ""}. No se puede deshacer.`,
+              yes: "Borrar",
+            }}
           >
             <input type="hidden" name="id" value={client.id} />
             <div>
