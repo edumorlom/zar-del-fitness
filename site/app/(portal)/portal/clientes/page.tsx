@@ -16,10 +16,51 @@ export const metadata: Metadata = { title: "Clientes" };
 
 const STATUSES = Object.keys(STATUS_LABEL) as ControlStatus[];
 
+type Row = Awaited<ReturnType<typeof listClients>>[number];
+// Columnas que se pueden ordenar (?orden=columna, o ?orden=-columna para invertir)
+const SORTS: Record<string, (r: Row) => string | number | null> = {
+  cliente: (r) => r.name,
+  coach: (r) => r.coach_name,
+  control: (r) => r.last_date,
+  medidas: (r) => r.last_weight,
+  perfil: (r) => [r.sex, r.body_type].filter(Boolean).join(" ") || null,
+};
+
+/** Ordena por una columna; los vacíos siempre van al final. */
+function sortRows(rows: Row[], orden?: string) {
+  const desc = orden?.startsWith("-") ?? false;
+  const by = SORTS[orden?.replace(/^-/, "") ?? ""];
+  if (!by) return rows;
+  return rows.sort((a, b) => {
+    const x = by(a);
+    const y = by(b);
+    if (x === y) return 0;
+    if (x === null) return 1;
+    if (y === null) return -1;
+    const c = typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y), "es");
+    return desc ? -c : c;
+  });
+}
+
+/** Un encabezado que ordena la tabla: el primer clic ordena ascendente, el segundo lo invierte. */
+function SortTh({ col, label, sp, className }: { col: string; label: string; sp: Record<string, string | undefined>; className?: string }) {
+  const current = sp.orden === col ? "ascending" : sp.orden === `-${col}` ? "descending" : undefined;
+  const params = new URLSearchParams(Object.entries(sp).filter((e): e is [string, string] => Boolean(e[1])));
+  params.set("orden", current === "ascending" ? `-${col}` : col);
+  return (
+    <th scope="col" className={className} aria-sort={current}>
+      <Link className="th-sort" href={`?${params}`} scroll={false}>
+        {label}
+        <span aria-hidden="true">{current === "ascending" ? " ↑" : current === "descending" ? " ↓" : ""}</span>
+      </Link>
+    </th>
+  );
+}
+
 export default async function ClientsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; coach?: string; plan?: string; estado?: string; bajas?: string }>;
+  searchParams: Promise<{ q?: string; coach?: string; plan?: string; estado?: string; bajas?: string; orden?: string }>;
 }) {
   const viewer = await requireViewer();
   if (!isTeam(viewer)) redirect(homeOf(viewer));
@@ -32,7 +73,7 @@ export default async function ClientsPage({
     admin ? getCoaches() : [],
   ]);
   const estado = STATUSES.includes(sp.estado as ControlStatus) ? (sp.estado as ControlStatus) : null;
-  const rows = estado ? all.filter((r) => controlStatus(r.last_date, today) === estado) : all;
+  const rows = sortRows(estado ? all.filter((r) => controlStatus(r.last_date, today) === estado) : all, sp.orden);
   const filtered = Boolean(sp.q || sp.coach || sp.plan || estado);
 
   return (
@@ -53,6 +94,7 @@ export default async function ClientsPage({
 
       <Filters>
         {inactive && <input type="hidden" name="bajas" value="1" />}
+        {sp.orden && <input type="hidden" name="orden" value={sp.orden} />}
         <input className="filters__search" name="q" type="search" defaultValue={sp.q ?? ""} placeholder="Buscar por nombre, DNI o correo" aria-label="Buscar" />
         {admin && (
           <select name="coach" defaultValue={sp.coach ?? ""} aria-label="Coach">
@@ -93,11 +135,11 @@ export default async function ClientsPage({
           <table className="table table--cards">
             <thead>
               <tr>
-                <th scope="col">Cliente</th>
-                <th scope="col">Coach · Plan</th>
-                <th scope="col">Último control</th>
-                <th scope="col" className="right">Medidas</th>
-                <th scope="col">Perfil</th>
+                <SortTh col="cliente" label="Cliente" sp={sp} />
+                <SortTh col="coach" label="Coach · Plan" sp={sp} />
+                <SortTh col="control" label="Último control" sp={sp} />
+                <SortTh col="medidas" label="Medidas" sp={sp} className="right" />
+                <SortTh col="perfil" label="Perfil" sp={sp} />
                 <th scope="col" className="right">
                   <span className="sr-only">Acciones</span>
                 </th>

@@ -3,7 +3,7 @@
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
-import { canCreate, canManage, scopesToSave } from "~/lib/access";
+import { canCreate, canManage, isTeam, scopesToSave } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { BODY_TYPES, CONDITIONS, MEALS, MEASURES, PLANS } from "~/lib/clients";
 import { randomUUID } from "node:crypto";
@@ -79,7 +79,10 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
 
   // La foto va al bucket antes de guardar: si no se pudo subir, no se guarda nada (y no queda un cliente repetido).
   // Sin foto nueva queda la que tenía. La clave usa external_id, como las del portal anterior; quien no tiene, recibe uno.
+  // De un cliente, la foto va a sus fotos de progreso (la última es la de perfil); la del equipo, a su ficha.
+  const client = !isTeam({ scopes });
   let photoUrl: string | null = null;
+  let progressKey: string | null = null;
   let externalId: string | null = null;
   const file = form.get("photo");
   if (file instanceof File && file.size > 0) {
@@ -94,15 +97,16 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
       externalId = rows[0]?.external_id ?? null;
     }
     externalId ??= randomUUID();
-    const key = `alumnos/${externalId}/foto.${type}`;
+    const key = client ? `alumnos/${externalId}/progreso/${randomUUID()}.${type}` : `alumnos/${externalId}/foto.${type}`;
     try {
       await putObject(bucket, key, bytes, type === "png" ? "image/png" : "image/jpeg");
     } catch (e) {
       console.error(e);
       return { error: "No se pudo subir la foto. Probá de nuevo." };
     }
+    if (client) progressKey = key;
     // ?v=: con la misma dirección, el navegador seguiría mostrando la foto anterior.
-    photoUrl = `/archivos/${key}?v=${Date.now()}`;
+    else photoUrl = `/archivos/${key}?v=${Date.now()}`;
   }
 
   const fields = [name, email, scopes, coachId, text(form, "phone") || null, photoUrl, plan,
@@ -139,6 +143,8 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
     if ((e as { code?: string }).code === "23505") return { error: "Ese correo ya lo tiene otra cuenta." };
     throw e;
   }
+  if (progressKey)
+    await db.query("insert into progress_photos (client_id, key, uploaded_by) values ($1, $2, $3)", [created ?? id, progressKey, viewer.id]);
   // Recepción no puede abrir la ficha que creó: vuelve al formulario, vacío para cargar otro.
   if (created !== undefined) redirect(canManage(viewer, { coach_id: coachId }) ? `/portal/clientes/${created}` : `/portal/clientes/nuevo?creado=${created}`);
   refresh();

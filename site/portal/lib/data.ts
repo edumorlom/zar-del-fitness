@@ -4,6 +4,10 @@ import { MEALS } from "./clients";
 import { db } from "./db";
 import type { Scope } from "./access";
 
+/** La foto de perfil de `u`: de un cliente, su última foto de progreso; si no tiene, la de su ficha. */
+export const PHOTO_URL = `coalesce((select '/archivos/' || pp.key from progress_photos pp where pp.client_id = u.id
+  order by pp.taken_on desc, pp.id desc limit 1), u.photo_url) as photo_url`;
+
 export type Client = {
   id: number;
   scopes: Scope[];
@@ -59,7 +63,7 @@ export type Checkin = {
 
 export async function getClient(id: number) {
   const { rows } = await db.query<Client>(
-    `select u.id, u.scopes, u.email, u.name, u.coach_id, u.phone, u.photo_url, u.title, u.plan, u.client_since,
+    `select u.id, u.scopes, u.email, u.name, u.coach_id, u.phone, ${PHOTO_URL}, u.title, u.plan, u.client_since,
             u.pass_expires, u.next_control_at, u.goal, u.dni, u.sex, u.birth_year, u.height_cm, u.body_type,
             u.conditions, u.medications, u.notes, u.active, u.legacy_last_checkin, u.legacy_last_weight,
             u.certificate_url, u.clerk_id is not null as linked,
@@ -153,7 +157,7 @@ export type ClientFilters = { q?: string; coach?: number | null; plan?: string; 
 export async function listClients(viewer: { id: number; scopes: Scope[] }, f: ClientFilters = {}) {
   const coach = viewer.scopes.includes("admin") ? (f.coach ?? null) : viewer.id;
   const { rows } = await db.query<ClientRow>(
-    `select u.id, u.name, u.email, u.photo_url, u.dni, u.plan, u.sex, u.birth_year, u.height_cm, u.body_type, u.conditions,
+    `select u.id, u.name, u.email, ${PHOTO_URL}, u.dni, u.plan, u.sex, u.birth_year, u.height_cm, u.body_type, u.conditions,
             u.active, u.pass_expires, u.client_since, u.coach_id, c.name as coach_name, c.photo_url as coach_photo,
             coalesce(l.date, u.legacy_last_checkin) as last_date,
             coalesce(l.weight_kg, u.legacy_last_weight) as last_weight,
@@ -211,7 +215,7 @@ export type UserRow = {
 /** Todas las cuentas, para Configuración (sólo el admin). */
 export async function listUsers() {
   const { rows } = await db.query<UserRow>(
-    `select u.id, u.name, u.email, u.scopes, u.photo_url, u.title, u.active, u.clerk_id is not null as linked,
+    `select u.id, u.name, u.email, u.scopes, ${PHOTO_URL}, u.title, u.active, u.clerk_id is not null as linked,
             c.name as coach_name
      from users u left join users c on c.id = u.coach_id
      order by case when 'admin' = any(u.scopes) then 0 when 'coach' = any(u.scopes) then 1 else 2 end, u.name`

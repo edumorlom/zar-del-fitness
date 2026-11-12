@@ -736,6 +736,14 @@
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
+.th-sort {
+  color: inherit;
+  text-decoration: none;
+}
+.th-sort:hover,
+th[aria-sort] .th-sort {
+  color: var(--white);
+}
 .table tbody tr {
   transition: background-color 0.3s;
 }

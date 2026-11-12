@@ -1,6 +1,7 @@
 import "server-only";
 import type { PoolClient } from "pg";
 import planes from "@db/planes.json";
+import { PHOTO_URL } from "./data";
 import { db } from "./db";
 import { todayISO } from "./format";
 import { getPayment } from "./mercadopago";
@@ -216,7 +217,7 @@ export type PassRow = {
 /** Los clientes activos de los planes que se pagan desde el portal, con su último pago: los más urgentes primero. */
 export async function payablePasses() {
   const { rows } = await db.query<PassRow>(
-    `select u.id, u.name, u.email, u.photo_url, u.plan, u.pass_expires, lp.approved_at as last_paid_at, lp.method as last_method
+    `select u.id, u.name, u.email, ${PHOTO_URL}, u.plan, u.pass_expires, lp.approved_at as last_paid_at, lp.method as last_method
      from users u
      left join lateral (select approved_at, method from payments where client_id = u.id and status = 'approved'
                         order by approved_at desc limit 1) lp on true
