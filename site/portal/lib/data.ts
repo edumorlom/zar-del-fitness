@@ -286,3 +286,9 @@ export async function takenIntervals(from: Date, to: Date, exceptId: number | nu
   );
   return rows;
 }
+
+/** La plantilla del correo masivo: la última que mandó el admin, o null si nunca mandó uno. */
+export async function getBroadcastTemplate() {
+  const { rows } = await db.query<{ subject: string; body: string }>("select subject, body from broadcast_template where id = 1");
+  return rows[0] ?? null;
+}

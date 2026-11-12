@@ -6,10 +6,15 @@ export const SITE = "https://zardelfitness.com.ar";
 
 export const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
+/** "Melanie" aunque en la base esté "MELANIE WOLMAN". */
+export function firstName(name: string) {
+  const first = name.trim().split(/\s+/)[0];
+  return first === first.toUpperCase() ? first.slice(0, 1) + first.slice(1).toLowerCase() : first;
+}
+
 /** "Hola, Melanie." aunque en la base esté "MELANIE WOLMAN". */
 export function greeting(name: string) {
-  const first = name.trim().split(/\s+/)[0];
-  const nice = first === first.toUpperCase() ? first.slice(0, 1) + first.slice(1).toLowerCase() : first;
+  const nice = firstName(name);
   return nice ? `Hola, ${esc(nice)}.` : "Hola.";
 }
 

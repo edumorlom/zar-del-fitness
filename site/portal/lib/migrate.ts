@@ -153,6 +153,14 @@ create table if not exists payments (
 create index if not exists payments_client on payments(client_id, created_at);
 create index if not exists payments_approved on payments(approved_at) where status = 'approved';
 
+-- La plantilla del correo masivo (Broadcast, sólo el admin): una sola fila, la última que se mandó.
+create table if not exists broadcast_template (
+  id int primary key default 1 check (id = 1),
+  subject text not null,
+  body text not null,
+  updated_at timestamptz not null default now()
+);
+
 -- "Hoy" es el día argentino, no el de la sesión (current_date, en UTC en Railway: de 21 a 24 h ya es mañana).
 alter table users alter column client_since set default (now() at time zone 'America/Argentina/Buenos_Aires')::date;
 alter table progress_photos alter column taken_on set default (now() at time zone 'America/Argentina/Buenos_Aires')::date;
