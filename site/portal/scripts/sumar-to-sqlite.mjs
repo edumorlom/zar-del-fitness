@@ -15,8 +15,8 @@ const X = JSON.parse(readFileSync(exportPath, "utf8"));
 const bundle = filesPath ? JSON.parse(readFileSync(filesPath, "utf8")) : {};
 const diets = bundle.dietas ?? {};
 // Los archivos ya subidos al bucket (alumnos/<id>/foto.jpg; las HEIC pasaron a JPEG): el portal los sirve en /archivos/.
-// Con dominio completo porque el formulario del cliente pide una URL.
-const PORTAL = "https://mi.zardelfitness.com.ar";
+// Relativa: el portal la sirve en cualquier dominio (mi.zardelfitness.com.ar ya no existe).
+const PORTAL = "";
 const fileUrl = {};
 for (const f of bundle.archivos ?? []) {
   const ext = f.nombre.split(".").pop().toLowerCase().replace(/^(heic|jpeg)$/, "jpg");

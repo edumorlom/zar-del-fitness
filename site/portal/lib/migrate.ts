@@ -156,6 +156,12 @@ create index if not exists payments_approved on payments(approved_at) where stat
 -- "Hoy" es el día argentino, no el de la sesión (current_date, en UTC en Railway: de 21 a 24 h ya es mañana).
 alter table users alter column client_since set default (now() at time zone 'America/Argentina/Buenos_Aires')::date;
 alter table progress_photos alter column taken_on set default (now() at time zone 'America/Argentina/Buenos_Aires')::date;
+
+-- Las fotos y certificados importados tenían https://mi.zardelfitness.com.ar/archivos/…, un dominio que ya no existe:
+-- relativos, el portal los sirve en cualquier dominio.
+update users set photo_url = replace(photo_url, 'https://mi.zardelfitness.com.ar/', '/'),
+  certificate_url = replace(certificate_url, 'https://mi.zardelfitness.com.ar/', '/')
+  where photo_url like 'https://mi.zardelfitness.com.ar/%' or certificate_url like 'https://mi.zardelfitness.com.ar/%';
 `;
 
 export async function migrate() {
