@@ -182,7 +182,7 @@ export function Hero({ client, checkins, you, appointment, pay, lang = "es" }: {
                       )}
                     </p>
                   )}
-                  <Form action={payWithMercadoPago} submit={tr(`Pagar ${pay.amount} con Mercado Pago`, `Pay ${pay.amount} with Mercado Pago`)} button="btn btn--gold btn--sm" className="inline-form" />
+                  <Form action={payWithMercadoPago} submit={tr(`Pagar ${pay.amount}`, `Pay ${pay.amount}`)} button="btn btn--gold btn--sm" className="inline-form" />
                   <p className="note">
                     {pay.early
                       ? tr("Si pagás antes, el mes se suma a tu vencimiento: no perdés días.", "Paying early adds the month to your current expiry: you don't lose any days.")
