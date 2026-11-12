@@ -127,6 +127,32 @@ create table if not exists progress_photos (
 );
 create index if not exists progress_photos_client on progress_photos(client_id, taken_on);
 
+-- Los pagos del pase (por ahora, sólo Premium: portal/lib/payments.ts). Con Mercado Pago lo paga el cliente desde el
+-- portal: la fila queda 'pending' hasta que Mercado Pago lo aprueba (mp_status: lo último que dijo). En efectivo o con
+-- tarjeta en el local lo carga el admin o recepción, ya aprobado. Cada pago aprobado extiende el pase un mes:
+-- pass_before y pass_after son el vencimiento antes y después, para poder anularlo.
+create table if not exists payments (
+  id serial primary key,
+  client_id int not null references users(id) on delete cascade,
+  method text not null check (method in ('mercadopago', 'cash', 'card')),
+  status text not null default 'pending' check (status in ('pending', 'approved', 'cancelled')),
+  plan text not null,
+  amount numeric(12, 2) not null check (amount > 0),
+  currency text not null default 'ARS',
+  pass_before date,
+  pass_after date,
+  note text,
+  mp_preference_id text,
+  mp_payment_id text unique,
+  mp_status text,
+  created_by int references users(id) on delete set null,
+  cancelled_by int references users(id) on delete set null,
+  created_at timestamptz not null default now(),
+  approved_at timestamptz
+);
+create index if not exists payments_client on payments(client_id, created_at);
+create index if not exists payments_approved on payments(approved_at) where status = 'approved';
+
 -- "Hoy" es el día argentino, no el de la sesión (current_date, en UTC en Railway: de 21 a 24 h ya es mañana).
 alter table users alter column client_since set default (now() at time zone 'America/Argentina/Buenos_Aires')::date;
 alter table progress_photos alter column taken_on set default (now() at time zone 'America/Argentina/Buenos_Aires')::date;

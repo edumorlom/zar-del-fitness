@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { canCreate, canManage, homeOf, isTeam, scopesToSave } from "./access.ts";
+import { canCreate, canHandlePayments, canManage, homeOf, isTeam, scopesToSave } from "./access.ts";
 import { age, bmi, controlStatus } from "./clients.ts";
 import { bookableDays, daySlots, freeSlots, hoursFrom, monthGrid, shiftMonth } from "./slots.ts";
 import { dashboard } from "./stats.ts";
@@ -17,9 +17,13 @@ test("el admin maneja a cualquiera; el coach, sólo a los suyos; el cliente, a n
   assert.equal(canManage(user, { coach_id: 3 }), false);
 });
 
-test("recepción crea cuentas de cliente y no ve nada más, aunque pida otros scopes", () => {
+test("recepción crea cuentas de cliente y maneja los pagos, nada más, aunque pida otros scopes", () => {
   const front = { id: 4, scopes: ["receptionist" as const] };
   assert.equal(canCreate(front), true);
+  assert.equal(canHandlePayments(front), true);
+  assert.equal(canHandlePayments({ scopes: ["admin"] }), true);
+  assert.equal(canHandlePayments({ scopes: ["coach"] }), false);
+  assert.equal(canHandlePayments({ scopes: ["user"] }), false);
   assert.equal(isTeam(front), false);
   assert.equal(canManage(front, { coach_id: 4 }), false);
   assert.equal(homeOf(front), "/portal/clientes/nuevo");

@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Hero, Results, Title } from "~/components/Progress";
+import { Hero, Results, Title, type PayOffer } from "~/components/Progress";
 import { ProgressPhotos } from "~/components/ProgressPhotos";
 import { Shell } from "~/components/Shell";
 import { homeOf } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { DietCard } from "~/components/Diet";
 import { getCheckins, getClient, getDiet, getOpenAppointment, getProgressPhotos } from "~/lib/data";
+import { todayISO } from "~/lib/format";
 import { getLang } from "~/lib/lang";
+import { mpConfigured } from "~/lib/mercadopago";
+import { canPayOnline, money } from "~/lib/payments";
+import { mpInProcess, planPrice } from "~/lib/payments-data";
 import { pick } from "@/lib/i18n";
 
 export const generateMetadata = async (): Promise<Metadata> => ({ title: pick(await getLang())("Mi progreso", "My progress") });
@@ -25,11 +29,17 @@ export default async function MyProgressPage() {
   if (!client) redirect("/portal/ingresar");
   const lang = await getLang();
   const tr = pick(lang);
+  // El botón de Mercado Pago, sólo cuando el pase está por vencer (o venció) y el plan se paga desde el portal.
+  const price = planPrice(client.plan);
+  const pay: PayOffer | null =
+    price && mpConfigured() && canPayOnline(client, todayISO())
+      ? { amount: money(price.amount, price.currency, lang), processing: await mpInProcess(viewer.id) }
+      : null;
   // Resultados ocupa 01, o 01 y 02 si hay controles; el plan sólo existe con un control.
   const next = (checkins.length ? 3 : 2) + (diet ? 1 : 0);
   return (
     <Shell viewer={viewer}>
-      <Hero client={client} checkins={checkins} you appointment={appointment} lang={lang} />
+      <Hero client={client} checkins={checkins} you appointment={appointment} pay={pay} lang={lang} />
       <Results checkins={checkins} you manage={false} lang={lang} />
       {diet && (
         <section id="alimentacion">

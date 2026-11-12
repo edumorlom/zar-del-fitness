@@ -2616,3 +2616,21 @@ a.person:hover .strong {
     transform: none;
   }
 }
+
+/* ---------- Pagos (equipo) ---------- */
+@media (min-width: 1101px) {
+  .kpis--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+/* Un monto ("$ 1.350.000") no entra con el tamaño de un número de clientes */
+.kpi__big--money {
+  font-size: clamp(1.8rem, 2.6vw, 2.4rem);
+}
+/* El botón de Mercado Pago en "Tu pase" (Mi progreso) */
+.facts .pay {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  margin-top: 12px;
+}

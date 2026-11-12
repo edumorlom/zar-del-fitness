@@ -1,5 +1,5 @@
 import { Reveals } from "@/components/motion/Reveals";
-import { isTeam, SCOPE_LABEL } from "~/lib/access";
+import { canHandlePayments, isTeam, SCOPE_LABEL } from "~/lib/access";
 import type { Viewer } from "~/lib/auth";
 import { DiguiChat } from "./DiguiChat";
 import { initials, SIGN_OUT, SignOut } from "./Shell";
@@ -16,6 +16,7 @@ export function AdminShell({ viewer, children }: { viewer: Viewer; children: Rea
       { href: "/portal/clientes", label: "Clientes", icon: "clients" }
     );
   else if (viewer.scopes.includes("receptionist")) items.push({ href: "/portal/clientes/nuevo", label: "Nuevo cliente", icon: "clients" });
+  if (canHandlePayments(viewer)) items.push({ href: "/portal/pagos", label: "Pagos", icon: "payments" });
   if (viewer.scopes.includes("admin")) items.push({ href: "/portal/configuracion", label: "Configuración", icon: "settings" });
   if (viewer.scopes.includes("user")) items.push({ href: "/portal/mi-progreso", label: "Mi progreso", icon: "progress" });
   const role = viewer.scopes.map((s) => SCOPE_LABEL[s]).join(" · ");

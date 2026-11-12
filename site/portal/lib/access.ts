@@ -5,10 +5,13 @@ export const SCOPE_LABEL: Record<Scope, string> = { admin: "Admin", coach: "Coac
 
 type Scoped = { scopes: Scope[] };
 
-/** Quienes trabajan con clientes. Recepción no: crea cuentas y no ve nada más. */
+/** Quienes trabajan con clientes. Recepción no: crea cuentas y maneja los pagos, nada más. */
 export const isTeam = ({ scopes }: Scoped) => scopes.includes("admin") || scopes.includes("coach");
 
 export const canCreate = ({ scopes }: Scoped) => scopes.includes("admin") || scopes.includes("receptionist");
+
+/** Quién ve los pagos y carga los del local (efectivo o tarjeta): el admin y recepción. Anularlos, sólo el admin. */
+export const canHandlePayments = ({ scopes }: Scoped) => scopes.includes("admin") || scopes.includes("receptionist");
 
 /** Quién puede ver y cargar datos de un cliente: el admin, cualquiera; el coach, sólo los que tiene asignados. */
 export const canManage = (viewer: Scoped & { id: number }, client: { coach_id: number | null }) =>

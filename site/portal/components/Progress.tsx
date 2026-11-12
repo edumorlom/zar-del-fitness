@@ -1,4 +1,5 @@
 import { deleteCheckin } from "~/actions";
+import { payWithMercadoPago } from "~/payment-actions";
 import Link from "next/link";
 import type { Appointment, Checkin, Client } from "~/lib/data";
 import { dateOf, days, daysUntil, longDate, monthYear, num, shortDate, timeOf, todayISO } from "~/lib/format";
@@ -93,8 +94,14 @@ function pass(expires: string | null, lang: Lang) {
   return { fact: n < 0 ? tr(`Venció el ${on}`, `Expired on ${on}`) : tr(`Vence el ${on}`, `Expires on ${on}`), note, warn: n <= 3 };
 }
 
-/** El saludo, los datos del plan y el coach. `you`: lo ve el propio cliente (le habla de vos, en su idioma). */
-export function Hero({ client, checkins, you, appointment, lang = "es" }: { client: Client; checkins: Checkin[]; you: boolean; appointment?: Appointment | null; lang?: Lang }) {
+/** El botón de Mercado Pago del pase: `amount`, el precio ya escrito; `processing`, si tiene un pago en proceso. */
+export type PayOffer = { amount: string; processing: boolean };
+
+/**
+ * El saludo, los datos del plan y el coach. `you`: lo ve el propio cliente (le habla de vos, en su idioma). `pay`: el
+ * pase está por vencer y lo puede pagar con Mercado Pago (mi-progreso decide cuándo).
+ */
+export function Hero({ client, checkins, you, appointment, pay, lang = "es" }: { client: Client; checkins: Checkin[]; you: boolean; appointment?: Appointment | null; pay?: PayOffer | null; lang?: Lang }) {
   const tr = pick(lang);
   const [firstName, ...rest] = client.name.split(/\s+/);
   const w = win(checkins, you, lang);
@@ -162,6 +169,20 @@ export function Hero({ client, checkins, you, appointment, lang = "es" }: { clie
               <dt className="label">{you ? tr("Tu pase", "Your pass") : "Pase"}</dt>
               <dd className="fact">{p.fact}</dd>
               <dd className={p.warn ? "note note--warn" : "note"}>{p.note}</dd>
+              {you && pay && (
+                <dd className="pay">
+                  {pay.processing && (
+                    <p className="note">
+                      {tr(
+                        "Tenés un pago con Mercado Pago en proceso: cuando se apruebe, el pase se extiende solo.",
+                        "You have a Mercado Pago payment in process: once it's approved, your pass is extended automatically."
+                      )}
+                    </p>
+                  )}
+                  <Form action={payWithMercadoPago} submit={tr(`Pagar ${pay.amount} con Mercado Pago`, `Pay ${pay.amount} with Mercado Pago`)} button="btn btn--gold btn--sm" className="inline-form" />
+                  <p className="note">{tr("Se extiende un mes apenas se aprueba.", "It's extended one month as soon as it's approved.")}</p>
+                </dd>
+              )}
             </div>
           )}
         </dl>

@@ -15,6 +15,7 @@ import { DietFields } from "~/components/Diet";
 import { age, bmi, controlStatus, daysBetween, STATUS_LABEL } from "~/lib/clients";
 import { getCheckins, getClient, getCoaches, getDiet, getProgressPhotos } from "~/lib/data";
 import { days, num, shortDate, todayISO } from "~/lib/format";
+import { isPayable } from "~/lib/payments";
 
 export const metadata: Metadata = { title: "Cliente" };
 
@@ -75,6 +76,11 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         <a className="btn btn--ghost btn--sm" href="#fotos">
           Fotos{photos.length > 0 && ` (${photos.length})`}
         </a>
+        {admin && isPayable(client.plan) && (
+          <Link className="btn btn--ghost btn--sm" href={`/portal/pagos?cliente=${client.id}#registrar`}>
+            Registrar pago
+          </Link>
+        )}
         <a className="btn btn--ghost btn--sm" href="#editar">
           Editar
         </a>

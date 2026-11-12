@@ -103,6 +103,14 @@ SSL "Full", delante de Railway:
 - Los turnos de control se piden y se mueven sólo a viernes, con un máximo de 5 pedidos o confirmados por día para
   todo el gimnasio. Cancelados y rechazados liberan cupo. Portal, API y MCP comparten la disponibilidad; un bloqueo
   transaccional por fecha impide superar el cupo con reservas simultáneas. Los horarios de apertura del gimnasio siguen en `db/horarios.json`.
+- **Pagos** (`/portal/pagos`; las reglas en `portal/lib/payments.ts`): por ahora, sólo del plan Premium (`PAYABLE_PLANS`), al
+  precio de `db/planes.json`. Cada pago aprobado extiende el pase (`pass_expires`) un mes: desde el vencimiento si todavía
+  no pasó, o desde hoy si ya venció. Desde 7 días antes de que venza (`PAY_WINDOW_DAYS`), el cliente ve en Mi progreso el
+  botón para pagar con Mercado Pago (Checkout Pro, `portal/lib/mercadopago.ts`); al aprobarse, el pase se extiende solo,
+  con el aviso de Mercado Pago (`/portal/api/mercadopago`, sin Clerk: ver `proxy.ts`) o cuando el cliente vuelve al
+  portal (`/portal/pago`), lo que llegue primero, y una sola vez. De los avisos no se cree nada: el pago se le pide a
+  Mercado Pago con el access token. Si se devuelve, el pase vuelve a como estaba. El admin y recepción ven los pases y
+  los pagos, y cargan los del local (efectivo o tarjeta); sólo el admin los anula.
 - `instrumentation.ts` crea las tablas que falten al arrancar el servidor. Si la base no responde, el servidor arranca
   igual: el sitio no depende de ella.
 - Las variables (`.env.local` para `npm run dev`; en producción, las del servicio en Railway):
@@ -111,6 +119,9 @@ SSL "Full", delante de Railway:
   (el secreto de firma de la cuenta de Digui): con ella, el chat de Digui sabe quién entró (cliente, coach o admin)
   (`portal/components/DiguiChat.tsx`), en el portal y también en el sitio, con una cookie que deja el portal
   (`portal/lib/digui-cookie.ts`; se borra al cerrar la sesión); sin ella, el chat es anónimo.
+  `MP_ACCESS_TOKEN`: el access token de producción de la cuenta de Mercado Pago del Zar (Tus integraciones → la
+  aplicación → Credenciales de producción); sin él, el botón de pagar no aparece y los pagos se cargan en el local. Los
+  avisos no se configuran en el panel de Mercado Pago: cada pago lleva su `notification_url`.
   `DIGUI_API_KEY`: la clave que Digui manda como `Authorization: Bearer …` a la API de turnos (`/portal/api/digui/…`,
   y `/api/digui/…` en `mi.`, sin Clerk: ver `proxy.ts`); sin ella, esas rutas responden 401. Sirve para que Digui consulte horarios libres,
   vea los turnos de quien chatea y los pida. Las instrucciones para Digui están en `<portalUrl>/api/digui`. Con la misma clave, `<portalUrl>/api/digui/mcp` es un servidor MCP (Streamable HTTP, sin sesión; `portal/lib/mcp.ts`) con lo mismo como herramientas, más la ficha (sin datos de salud ni DNI) y las evaluaciones de la persona y la información del gimnasio, para conectarle a Digui u otro agente.

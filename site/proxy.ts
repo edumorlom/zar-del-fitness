@@ -23,8 +23,10 @@ const localOrigin = (req: NextRequest) => {
   return /^(mi\.)?localhost(:\d+)?$/.test(host) ? `http://${host}` : null;
 };
 const PORTAL = /^\/(portal|archivos)(\/|$)/;
-// La API de Digui la llama el servidor de Digui con su clave, no una persona con sesión: va al portal sin Clerk.
+// La API de Digui la llama el servidor de Digui con su clave, no una persona con sesión: va al portal sin Clerk. Los
+// avisos de Mercado Pago (/portal/api/mercadopago), también: los manda su servidor.
 const DIGUI = /^(\/portal)?\/api\/digui(\/|$)/;
+const NO_SESSION = /^(\/portal)?\/api\/(digui|mercadopago)(\/|$)/;
 
 /** La ruta en app/(portal)/: /archivos/… y /api/digui/… (en mi.) llevan /portal adelante. */
 function toPortal(req: NextRequest) {
@@ -97,7 +99,7 @@ export default function proxy(req: NextRequest, event: NextFetchEvent) {
         308
       );
   }
-  if (DIGUI.test(pathname)) return NextResponse.rewrite(toPortal(req));
+  if (NO_SESSION.test(pathname)) return NextResponse.rewrite(toPortal(req));
   // El portal también, en el dominio del sitio: la sesión de Clerk y la cookie del chat de Digui (portal/lib/digui-cookie.ts)
   // son de un dominio, y el sitio no vería las del .com.
   if (isAlias(req)) return NextResponse.redirect(new URL(pathname + search, siteUrl), 308);

@@ -125,7 +125,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                         ? u.coach_name
                           ? `Coach: ${u.coach_name}`
                           : "Sin coach"
-                        : "Crea clientes"}
+                        : "Crea clientes y carga pagos"}
                 </td>
                 <td className="right actions">
                   <Link className="icon-btn icon-btn--sm" href={`/portal/clientes/${u.id}#editar`} aria-label={`Editar a ${u.name}`} title="Editar">
