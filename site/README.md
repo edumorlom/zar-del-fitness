@@ -112,6 +112,12 @@ SSL "Full", delante de Railway:
   portal (`/portal/pago`), lo que llegue primero, y una sola vez. De los avisos no se cree nada: el pago se le pide a
   Mercado Pago con el access token. Si se devuelve, el pase vuelve a como estaba. El admin y recepción ven los pases y
   los pagos, y cargan los del local (efectivo o tarjeta); sólo el admin los anula.
+- **Recordatorio de evaluación** (`portal/lib/reminders.ts`; las reglas y el correo en `portal/lib/reminder-email.ts`): al
+  cliente Premium activo al que se le cumple un mes de su última evaluación le llega un correo para que pida el turno de
+  la próxima, con su peso y % graso (contra la anterior) y el botón a `/portal/turno`. Es automático: el servidor se fija
+  al arrancar y una vez por hora, de 9 a 21 h, sólo en producción. Uno por evaluación (`users.evaluation_reminder_on`):
+  con una evaluación nueva, otro al mes de esa. No le llega si ya tiene un turno pedido o confirmado, o el próximo control
+  puesto. Si Resend no lo acepta, se reintenta a la hora siguiente.
 - `instrumentation.ts` crea las tablas que falten al arrancar el servidor. Si la base no responde, el servidor arranca
   igual: el sitio no depende de ella.
 - Las variables (`.env.local` para `npm run dev`; en producción, las del servicio en Railway):

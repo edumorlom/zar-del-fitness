@@ -36,8 +36,28 @@ export function change(now: number, before: number | undefined, unit: string, si
 
 const stat = (label: string, value: string, unit: string, diff: string) =>
   `<td width="50%" valign="top" style="padding:0 12px 0 0">${box(
-    `<div style="${F};font-size:12px;line-height:18px;letter-spacing:2px;color:#8a8a8a;font-weight:700;text-transform:uppercase">${label}</div><div style="padding-top:6px;${ANTON};font-size:40px;line-height:46px;color:#ffffff">${value}<span style="font-size:20px;color:#dcdcdc"> ${unit}</span></div><div style="padding-top:4px;${F};font-size:14px;line-height:22px;color:#a3a3a3">${diff}</div>`
+    `<div style="${F};font-size:12px;line-height:18px;letter-spacing:2px;color:#8a8a8a;font-weight:700;text-transform:uppercase">${label}</div><div style="padding-top:6px;${ANTON};font-size:40px;line-height:46px;color:#ffffff">${value}<span style="font-size:20px;color:#dcdcdc"> ${unit}</span></div>${diff ? `<div style="padding-top:4px;${F};font-size:14px;line-height:22px;color:#a3a3a3">${diff}</div>` : ""}`
   )}</td>`;
+
+type Numbers = { weight: number | null; fat: number | null };
+
+/**
+ * El peso y el % graso de una evaluación, grandes, entre dos líneas, cada uno con su diferencia contra la anterior
+ * (`prev`, del `since`). Sin anterior, `first` ("Tu primera evaluación"; vacío, sin esa línea). Lo que falte no va, y
+ * sin ninguno de los dos, nada. También lo usa el recordatorio de la evaluación (reminder-email.ts).
+ */
+export function statsRow(now: Numbers, prev: Numbers | null, since: string | undefined, first = "Tu primera evaluación") {
+  const diff = (n: number, before: number | null | undefined, unit: string) =>
+    prev ? change(n, before ?? undefined, unit, since) : first;
+  const stats = [
+    now.weight !== null && stat("Peso", num(now.weight), "kg", diff(now.weight, prev?.weight, "kg")),
+    now.fat !== null && stat("% graso", num(now.fat), "%", diff(now.fat, prev?.fat, "puntos")),
+  ].filter(Boolean);
+  if (!stats.length) return "";
+  return `<tr><td class="p" style="padding:32px 40px 0"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-top:1px solid #2a2a2a;border-bottom:1px solid #2a2a2a"><tr><td style="padding:24px 0"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr>
+${stats.join("\n")}
+</tr></table></td></tr></table></td></tr>\n`;
+}
 
 /** Las comidas del plan que tienen algo, una debajo de la otra (también las usa el correo del plan solo). */
 export function mealsTable(diet: Omit<Diet, "date">) {
@@ -71,10 +91,7 @@ export function renderEvaluationEmail(e: EvaluationEmail) {
     textRow(
       `${greeting(e.name)} Ya está cargada tu evaluación del ${date}. En Mi Portal vas a ver tus medidas y cómo venís evolucionando.${hasDiet ? " Abajo te dejamos tu plan de alimentación." : ""}`
     ) +
-    `<tr><td class="p" style="padding:32px 40px 0"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-top:1px solid #2a2a2a;border-bottom:1px solid #2a2a2a"><tr><td style="padding:24px 0"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr>
-${stat("Peso", num(e.weight), "kg", change(e.weight, e.prev?.weight, "kg", since))}
-${stat("% graso", num(e.fat), "%", change(e.fat, e.prev?.fat, "puntos", since))}
-</tr></table></td></tr></table></td></tr>\n` +
+    statsRow(e, e.prev, since) +
     buttonRow(`${SITE}/portal/mi-progreso`, "Ver mi evaluación", 250) +
     (hasDiet ? dietRows(e.diet!) : "");
   return page({ title: SUBJECT, preheader: `Tu evaluación del ${date} ya está en Mi Portal.`, rows, help: "¿Dudas sobre tu evaluación? Escribinos por WhatsApp." });

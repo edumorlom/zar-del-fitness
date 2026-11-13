@@ -161,6 +161,9 @@ create table if not exists broadcast_template (
   updated_at timestamptz not null default now()
 );
 
+-- El día que se le mandó al cliente el último recordatorio de evaluación (portal/lib/reminders.ts): uno por evaluación.
+alter table users add column if not exists evaluation_reminder_on date;
+
 -- "Hoy" es el día argentino, no el de la sesión (current_date, en UTC en Railway: de 21 a 24 h ya es mañana).
 alter table users alter column client_since set default (now() at time zone 'America/Argentina/Buenos_Aires')::date;
 alter table progress_photos alter column taken_on set default (now() at time zone 'America/Argentina/Buenos_Aires')::date;
