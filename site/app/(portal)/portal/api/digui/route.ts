@@ -1,47 +1,41 @@
 import { portalUrl } from "@/lib/content";
 import { apiBase } from "@/portal/lib/digui-api";
 
-// Las instrucciones de la API para Digui (sin clave: no dicen nada secreto).
+// Las instrucciones del servidor MCP para Digui (sin clave: no dicen nada secreto).
 export const dynamic = "force-dynamic";
 
-const docs = (base: string) => `API de turnos de Zar del Fitness, para Digui
-Base: ${base}
+const docs = (base: string) => `Servidor MCP de Zar del Fitness, para Digui u otro agente
+MCP: ${base}/mcp   (Streamable HTTP, sin sesión)
 
-Clave: las rutas con clave piden el encabezado
+Clave: el servidor pide el encabezado
   Authorization: Bearer <clave>
-Sin la clave, o con otra, responden 401. Este texto es la única ruta sin clave.
+Sin la clave, o con otra, responde 401. Este texto es la única ruta sin clave.
 
-Todas las respuestas (menos este texto) son JSON con "ok" (true o false) y "mensaje" (una frase en español lista para
-decirle a la persona). Que algo no se pueda hacer (no hay ficha, el horario se ocupó) es 200 con "ok": false; 400 es un
-pedido mal armado y 401 la clave.
+Herramientas:
+  info_gimnasio         Dirección, días y horarios, contacto y planes con sus precios. No pide persona.
+  ver_cliente           La ficha de la persona (sin datos de salud ni DNI).
+  ver_evaluaciones      Sus últimas evaluaciones, la más nueva primero.
+  ver_pagos             Su pase, el precio de su plan, si puede pagarlo online y sus últimos pagos.
+  ver_horarios_libres   Los horarios libres de un viernes: {"dia": "AAAA-MM-DD"}.
+  ver_turnos            Sus turnos pedidos o confirmados.
+  pedir_turno           Pide un turno: {"inicio": "AAAA-MM-DDTHH:MM"}, uno de ver_horarios_libres. Queda pedido hasta
+                        que el Zar lo confirme.
+  mover_turno           Mueve su turno a otro horario libre: {"inicio": "AAAA-MM-DDTHH:MM"}. Vuelve a quedar pedido.
+  cancelar_turno        Cancela su turno. No se puede deshacer.
 
-Quién es la persona: "telefono" o "customer_id" dicen de quién son los turnos. Tienen que salir del servidor de Digui
-(lo que la persona ya tiene registrado), nunca de lo que escribe en el chat. Con customer_id se usa ese cliente; si no,
-se busca por el teléfono (sólo si un único cliente lo tiene). Si no hay ficha: ok false.
+Todas responden JSON con "ok" (true o false) y "mensaje" (una frase en español lista para decirle a la persona). Que
+algo no se pueda hacer (no hay ficha, el horario se ocupó) es "ok": false.
+
+Quién es la persona: "customer_id" o "telefono" dicen de quién son la ficha y los turnos. Tienen que salir del servidor
+del agente (lo que la persona ya tiene registrado), nunca de lo que escribe en el chat. Con customer_id se usa ese
+cliente; si no, se busca por el teléfono (sólo si un único cliente lo tiene). Si no hay ficha: ok false. No hay
+herramienta para buscar o listar clientes.
+
+Turnos: sólo los viernes, desde mañana hasta 30 días, en el horario del gimnasio. Hay un máximo de 5 turnos pedidos o
+confirmados por día; al completar el cupo no se ofrecen horarios. Cada persona tiene un solo turno a la vez: para
+cambiarlo, mover_turno.
 
 Horas: todas son de Argentina (sin zona horaria), en 24 h.
-
-GET /horarios?dia=AAAA-MM-DD   (con clave)
-  Los horarios libres de un viernes (desde mañana, hasta 30 días), en el horario del gimnasio. Otro día es ok false.
-  Hay un máximo de 5 turnos pedidos o confirmados por día; al completar el cupo no se ofrecen horarios.
-  Respuesta: {"ok": true, "mensaje": "...", "horarios": ["09:00", "09:30"]}
-
-GET /turnos?telefono=...  o  ?customer_id=...   (con clave)
-  Los turnos pedidos o confirmados de la persona.
-  Respuesta: {"ok": true, "mensaje": "...", "turnos": [{"dia": "2026-11-13", "hora": "09:00", "estado": "pedido"}]}
-
-POST /turnos   (con clave, cuerpo JSON)
-  {"telefono": "...", "customer_id": 123, "inicio": "AAAA-MM-DDTHH:MM"}
-  Pide un turno (queda "pedido" hasta que el Zar lo confirme). "inicio" tiene que ser un horario libre de /horarios.
-  Respuesta: {"ok": true, "mensaje": "Pedido: ..."} o {"ok": false, "mensaje": "..."}
-  Cancelar o mover un turno: con las herramientas MCP mover_turno y cancelar_turno (por esta API, no).
-
-MCP: ${base}/mcp   (con clave, Streamable HTTP, sin sesión)
-  Lo mismo como herramientas MCP, más la ficha, las evaluaciones y los pagos de la persona, mover y cancelar su turno, y
-  la información del gimnasio: info_gimnasio, ver_cliente, ver_evaluaciones, ver_pagos, ver_horarios_libres, ver_turnos,
-  pedir_turno, mover_turno, cancelar_turno. Mover vuelve a dejar el turno pedido hasta que el Zar lo confirme.
-  La persona va igual: customer_id o telefono, del servidor del agente. La ficha no trae datos de salud ni el DNI, y
-  no hay herramienta para buscar o listar clientes.
 `;
 
 export function GET(req: Request) {

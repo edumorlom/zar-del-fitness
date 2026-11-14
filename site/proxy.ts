@@ -23,7 +23,8 @@ const localOrigin = (req: NextRequest) => {
   return /^(mi\.)?localhost(:\d+)?$/.test(host) ? `http://${host}` : null;
 };
 const PORTAL = /^\/(portal|archivos)(\/|$)/;
-// La API de Digui la llama el servidor de Digui con su clave, no una persona con sesión: va al portal sin Clerk. Los
+// El servidor MCP de Digui (/api/digui/mcp) lo llama el servidor de Digui con su clave, no una persona con sesión: va al
+// portal sin Clerk, igual que sus instrucciones (/api/digui). Los
 // avisos de Mercado Pago (/portal/api/mercadopago), también: los manda su servidor.
 const DIGUI = /^(\/portal)?\/api\/digui(\/|$)/;
 const NO_SESSION = /^(\/portal)?\/api\/(digui|mercadopago)(\/|$)/;

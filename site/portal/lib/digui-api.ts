@@ -1,4 +1,4 @@
-// Ayudas puras de la API de Digui: sin db ni server-only, para probarlas con node --test.
+// Ayudas puras del servidor MCP de Digui: sin db ni server-only, para probarlas con node --test.
 import { createHash, timingSafeEqual } from "node:crypto";
 import { fromLocalInput } from "./format.ts";
 
@@ -8,7 +8,7 @@ export const BAD_DAY = "Ese día no se puede pedir: elegí un viernes entre mañ
 
 const sha = (s: string) => createHash("sha256").update(s).digest();
 
-// Dónde está la API, para sus instrucciones: el dominio en que se pidieron (Railway lo pasa en Host). En mi. las URLs
+// Dónde está el servidor MCP, para sus instrucciones: el dominio en que se pidieron (Railway lo pasa en Host). En mi. las URLs
 // no llevan /portal; en el dominio principal, sí.
 export function apiBase(host: string): string {
   const name = host.split(",")[0].trim().toLowerCase();

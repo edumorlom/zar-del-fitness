@@ -40,7 +40,7 @@ export async function appointmentDayError(start: Date, exceptId: number) {
   return (await takenIntervals(from, to, exceptId)).length >= MAX_DAILY_APPOINTMENTS ? DAILY_LIMIT_MESSAGE : null;
 }
 
-/** La misma disponibilidad para el portal, la API y MCP. */
+/** La misma disponibilidad para el portal y el servidor MCP. */
 export async function availableSlots(day: string) {
   if (!daySlots(day, HOURS).length) return [];
   return (await availabilityOn(day)).slots;
@@ -85,7 +85,7 @@ export async function withAvailableSlot<T>(start: Date, exceptId: number | null,
   }
 }
 
-/** Pedir un turno para un cliente: las reglas del portal, que también usa la API de Digui. */
+/** Pedir un turno para un cliente: las reglas del portal, que también usa el servidor MCP (pedir_turno). */
 export async function requestSlot(clientId: number, start: Date): Promise<Result> {
   const { rowCount } = await db.query(
     "select 1 from appointments where client_id = $1 and status in ('requested', 'confirmed') and ends_at > now()",

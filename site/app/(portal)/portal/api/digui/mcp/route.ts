@@ -2,8 +2,8 @@ import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/
 import { keyOk } from "~/lib/digui-api";
 import { portalMcp } from "~/lib/mcp";
 
-// El servidor MCP del portal (portal/lib/mcp.ts), por Streamable HTTP: <portalUrl>/api/digui/mcp, con la misma clave
-// que la API de Digui (Authorization: Bearer <DIGUI_API_KEY>). Sin estado: cada pedido arma su servidor y responde
+// El servidor MCP del portal (portal/lib/mcp.ts), por Streamable HTTP: <portalUrl>/api/digui/mcp, con la clave de
+// Digui (Authorization: Bearer <DIGUI_API_KEY>). Sin estado: cada pedido arma su servidor y responde
 // JSON, así no hay sesiones que guardar entre réplicas de Railway.
 export const dynamic = "force-dynamic";
 

@@ -101,7 +101,7 @@ SSL "Full", delante de Railway:
   pregunta en el navegador al terminar la página (`components/Session.tsx`; el sitio es estático), lo mismo que vería
   el portal. Mientras Clerk no responde (o si falla), vale lo que dice su cookie `__client_uat`.
 - Los turnos de control se piden y se mueven sólo a viernes, con un máximo de 5 pedidos o confirmados por día para
-  todo el gimnasio. Cancelados y rechazados liberan cupo. Portal, API y MCP comparten la disponibilidad; un bloqueo
+  todo el gimnasio. Cancelados y rechazados liberan cupo. El portal y el servidor MCP comparten la disponibilidad; un bloqueo
   transaccional por fecha impide superar el cupo con reservas simultáneas. Los horarios de apertura del gimnasio siguen en `db/horarios.json`.
 - **Pagos** (`/portal/pagos`; las reglas en `portal/lib/payments.ts`): por ahora, sólo del plan Premium (`PAYABLE_PLANS`), al
   precio de `db/planes.json`. Cada pago aprobado extiende el pase (`pass_expires`) un mes: desde el vencimiento si todavía
@@ -129,9 +129,12 @@ SSL "Full", delante de Railway:
   `MP_ACCESS_TOKEN`: el access token de producción de la cuenta de Mercado Pago del Zar (Tus integraciones → la
   aplicación → Credenciales de producción); sin él, el botón de pagar no aparece y los pagos se cargan en el local. Los
   avisos no se configuran en el panel de Mercado Pago: cada pago lleva su `notification_url`.
-  `DIGUI_API_KEY`: la clave que Digui manda como `Authorization: Bearer …` a la API de turnos (`/portal/api/digui/…`,
-  y `/api/digui/…` en `mi.`, sin Clerk: ver `proxy.ts`); sin ella, esas rutas responden 401. Sirve para que Digui consulte horarios libres,
-  vea los turnos de quien chatea y los pida. Las instrucciones para Digui están en `<portalUrl>/api/digui`. Con la misma clave, `<portalUrl>/api/digui/mcp` es un servidor MCP (Streamable HTTP, sin sesión; `portal/lib/mcp.ts`) con lo mismo como herramientas, más la ficha (sin datos de salud ni DNI) y las evaluaciones de la persona y la información del gimnasio, para conectarle a Digui u otro agente.
+  `DIGUI_API_KEY`: la clave que Digui manda como `Authorization: Bearer …` al servidor MCP del portal,
+  `<portalUrl>/api/digui/mcp` (y `/api/digui/mcp` en `mi.`, sin Clerk: ver `proxy.ts`; Streamable HTTP, sin sesión;
+  `portal/lib/mcp.ts`); sin ella, responde 401. Es la única forma en que Digui u otro agente consulta horarios libres y
+  pide, mueve o cancela el turno de quien chatea (`pedir_turno`, `mover_turno`, `cancelar_turno`), y ve su ficha (sin
+  datos de salud ni DNI), sus evaluaciones, sus pagos y la información del gimnasio. Las instrucciones, sin clave, están
+  en `<portalUrl>/api/digui`.
 - Sólo `/portal/ingresar` se indexa, y está en el `sitemap.xml` del sitio (`app/sitemap.ts`); el `robots.txt` del portal
   (`app/(portal)/portal/robots.txt/route.ts`) nombra ese sitemap, que es lo que le permite nombrar una página de otro
   dominio.

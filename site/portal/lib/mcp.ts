@@ -1,6 +1,7 @@
 import "server-only";
-// El servidor MCP del portal, para agentes (Digui u otro con la clave): las mismas consultas y reglas que la API de
-// Digui (app/(portal)/portal/api/digui/), como herramientas MCP. Lo sirve app/(portal)/portal/api/digui/mcp/route.ts.
+// El servidor MCP del portal, para agentes (Digui u otro con la clave): la única forma en que un agente consulta y pide
+// turnos, con las mismas reglas que el portal (portal/lib/turnos.ts). Lo sirve app/(portal)/portal/api/digui/mcp/route.ts,
+// y sus instrucciones están en app/(portal)/portal/api/digui/route.ts.
 //
 // Quién es la persona: customer_id o telefono, que tienen que salir del servidor del agente (lo que la persona ya tiene
 // registrado), nunca de lo que escribe en el chat. Por eso no hay herramienta para buscar o listar clientes, y la ficha
@@ -33,15 +34,17 @@ const fail = (mensaje: string) => reply({ ok: false, mensaje });
 const persona = {
   customer_id: z.union([z.number().int().positive(), z.string().regex(/^\d+$/)]).optional()
     .describe("El id del cliente en el portal, del servidor del agente (no de lo que escribe la persona)."),
-  telefono: z.string().optional()
+  // También como número: el servidor del agente puede tenerlo guardado así.
+  telefono: z.union([z.string(), z.number()]).optional()
     .describe("El teléfono de la persona, del servidor del agente. Se usa si no viene customer_id."),
 };
 
 /** El cliente de customer_id o, si no viene, del teléfono. Un mensaje si falta o no hay ficha. */
-async function who(args: { customer_id?: number | string; telefono?: string }): Promise<number | string> {
+async function who(args: { customer_id?: number | string; telefono?: string | number }): Promise<number | string> {
   const id = customerId(args.customer_id);
   if (id !== null) return (await clientById(id)) ?? NO_FILE_ID;
-  if (args.telefono?.trim()) return (await clientByPhone(args.telefono)) ?? NO_FILE_PHONE;
+  const tel = args.telefono === undefined ? "" : String(args.telefono).trim();
+  if (tel) return (await clientByPhone(tel)) ?? NO_FILE_PHONE;
   return "Falta el teléfono o el customer_id.";
 }
 
