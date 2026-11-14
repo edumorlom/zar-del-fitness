@@ -72,7 +72,7 @@ jobs:
         # construye nada, sólo arma la imagen. --ci espera a que el despliegue termine.
         run: |
           scripts/deploy-bundle.sh "$RUNNER_TEMP/app"
-          npx -y @railway/cli@5.71.0 up "$RUNNER_TEMP/app" --path-as-root --no-gitignore --service "$RAILWAY_SERVICE" --ci
+          npx -y @railway/cli@5.74.0 up "$RUNNER_TEMP/app" --path-as-root --no-gitignore --service "$RAILWAY_SERVICE" --ci
 
       - name: Avisar a Bing (IndexNow)
         run: node scripts/indexnow.mjs ../sitemap-anterior.xml

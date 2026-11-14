@@ -16,6 +16,11 @@ npm test         # pruebas del portal
 npm run check    # lint, pruebas y build, como en el despliegue
 ```
 
+`overrides` en `package.json` deja usar ESLint 10 con `eslint-config-next`: Next.js lo soporta, pero
+`eslint-plugin-react`, `eslint-plugin-import` y `eslint-plugin-jsx-a11y` todavía no lo dicen en sus `peerDependencies`
+y npm se queja en cada `npm install`. Cuando los tres lo agreguen, se puede sacar. TypeScript queda en 6: `typescript-eslint`
+todavía no soporta el 7.
+
 ## Dónde editar
 
 | Qué | Dónde |
