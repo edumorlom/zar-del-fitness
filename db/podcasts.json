@@ -1,5 +1,27 @@
 [
   {
+    "id": "la-inteligencia-artificial-nos-hara-inutiles",
+    "video": "https://www.youtube.com/watch?v=BcMRw0mKf9w",
+    "fecha": "2026-11-15",
+    "duracion": "51:52",
+    "invitado": "Edu Morales",
+    "titulo": { "es": "¿La inteligencia artificial nos hará inútiles?", "en": "Will artificial intelligence make us useless?" },
+    "descripcion": {
+      "es": "Con Edu Morales, especialista en IA: el futuro de la tecnología, las profesiones que podrían desaparecer y los desafíos que enfrentaremos.",
+      "en": "With Edu Morales, an AI specialist: the future of technology, the jobs that could disappear and the challenges we will face as a society."
+    },
+    "resumen": {
+      "es": [
+        "¿Estamos frente a la mayor revolución de nuestra historia o estamos creando una tecnología que podría terminar reemplazándonos? La inteligencia artificial ya está transformando nuestra manera de trabajar, aprender, crear y relacionarnos. Pero hay una pregunta que cada vez cobra más fuerza: ¿hasta dónde estamos dispuestos a llegar?",
+        "En este episodio de Detrás del Espejo conversamos con Edu Morales, especialista en inteligencia artificial, sobre el futuro de la tecnología, las profesiones que podrían desaparecer y los desafíos que enfrentaremos como sociedad. Una conversación que nos invita a cuestionar lo que creemos saber sobre nuestro propio futuro."
+      ],
+      "en": [
+        "Are we facing the biggest revolution in our history, or are we creating a technology that could end up replacing us? Artificial intelligence is already changing the way we work, learn, create and relate to each other. But there's a question that keeps getting louder: how far are we willing to go?",
+        "In this episode of Detrás del Espejo we talk with Edu Morales, an artificial intelligence specialist, about the future of technology, the jobs that could disappear and the challenges we will face as a society. A conversation that invites us to question what we think we know about our own future."
+      ]
+    }
+  },
+  {
     "id": "que-evalua-un-juez-del-fisicoculturismo",
     "video": "https://www.youtube.com/watch?v=AB-A_akSIuk",
     "fecha": "2026-11-06",
