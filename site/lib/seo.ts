@@ -11,6 +11,19 @@ export const abs = (path: string) => new URL(path, siteUrl).href;
 
 const xHandle = socials.find((s) => s.icon === "x")?.href.split("/").pop();
 
+/**
+ * "2026-11-06" → "2026-11-06T00:00:00-03:00": la fecha de db/ con hora y zona horaria (la del gimnasio, de
+ * db/horarios.json). Google pide fecha, hora y zona en uploadDate y datePublished; con la fecha sola marca
+ * "Invalid datetime value" y "missing a timezone" en Search Console.
+ */
+export function dateTime(date: string) {
+  const { timeZone } = content("es").schedule;
+  const gmt = new Intl.DateTimeFormat("en", { timeZone, timeZoneName: "longOffset" })
+    .formatToParts(new Date(`${date}T12:00:00Z`))
+    .find((p) => p.type === "timeZoneName")!.value; // "GMT-03:00" ("GMT" si es UTC)
+  return `${date}T00:00:00${gmt.slice(3) || "+00:00"}`;
+}
+
 /** La URL de la página en cada idioma, si existe en los dos. */
 export type Alternates = Record<Lang, string>;
 
@@ -272,8 +285,8 @@ export function articleLd(post: {
     "@id": abs(`${post.path}#nota`),
     headline: post.title,
     description: post.description,
-    datePublished: post.date,
-    dateModified: post.date,
+    datePublished: dateTime(post.date),
+    dateModified: dateTime(post.date),
     author: post.author === ronald.name ? { "@id": ids.ronald } : { "@type": "Person", name: post.author },
     publisher: { "@id": ids.business },
     image: abs(post.image),
@@ -296,7 +309,7 @@ export function videoLd(episode: { path: string; title: string; description: str
     name: episode.title,
     description: episode.description,
     thumbnailUrl: abs(episode.image),
-    uploadDate: episode.date,
+    uploadDate: dateTime(episode.date),
     duration: `PT${Math.floor(m / 60) ? `${Math.floor(m / 60)}H` : ""}${m % 60}M${episode.seconds % 60}S`,
     embedUrl: `https://www.youtube.com/embed/${episode.videoId}`,
     inLanguage: "es",

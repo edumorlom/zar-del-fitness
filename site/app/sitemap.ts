@@ -4,7 +4,7 @@ import { content, portalLogin } from "@/lib/content";
 import { lastCommit } from "@/lib/git";
 import { LANGS, otherLang } from "@/lib/i18n";
 import { episodes, findEpisode } from "@/lib/podcasts";
-import { abs, languages, type Alternates } from "@/lib/seo";
+import { abs, dateTime, languages, type Alternates } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
@@ -74,7 +74,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
             description: e.description,
             player_loc: `https://www.youtube.com/embed/${e.videoId}`,
             duration: e.seconds,
-            publication_date: e.date,
+            publication_date: dateTime(e.date),
           },
         ],
       })),
