@@ -120,9 +120,9 @@ SSL "Full", delante de Railway:
   los pagos, y cargan los del local (efectivo o tarjeta); sólo el admin los anula.
 - **Legal** (la investigación detrás, en `docs/legal/`): las páginas de términos y privacidad (`lib/legal.ts`,
   `components/LegalPage.tsx`, de `db/legal/`). El pie tiene los links legales, los de Defensa del Consumidor y la leyenda de
-  la AAIP. No hay botón de arrepentimiento ni botón de baja: se sacaron a pedido del dueño (la Disp. 954/2025 los exige a
-  quien vende a distancia, ver el informe). Los pedidos de arrepentimiento (10 días) y de baja llegan por WhatsApp o en el
-  gimnasio, y hay que responderlos con una constancia escrita: el código dentro de las 24 horas, la baja dentro de las 72.
+  la AAIP. No hay botón de arrepentimiento ni botón de baja, y los términos no tienen las secciones de arrepentimiento y de
+  baja: se sacaron a pedido del dueño (la Disp. 954/2025 exige los botones a quien vende a distancia, y el art. 1111 del
+  CCyC, informar el arrepentimiento: ver el informe).
 - **Consentimientos** (`portal/lib/consent.ts`, Ley 25.326): la primera vez que un cliente entra, y cada vez que cambia la
   fecha (`actualizado`) de los términos o la privacidad, pasa por `/portal/mis-datos` antes que por cualquier otra página.
   Tiene que aceptar los términos, la transferencia de sus datos a los proveedores de afuera (casilla aparte) y dar el

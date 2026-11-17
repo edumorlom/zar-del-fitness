@@ -30,7 +30,7 @@ This policy follows Argentine Law 25,326 on Personal Data Protection and its Dec
 | Payments | Plan, amount, date and payment method; with Mercado Pago, the transaction number | You, the front desk and Mercado Pago |
 | Portal account | The ID of your sign-in account (with Google or an emailed code). We don't store passwords | Clerk, our sign-in provider |
 | Conversations | What you write to us on WhatsApp or in the website chat | You |
-| Choices and requests | What you agreed to and when, and your withdrawal, cancellation or data access requests | You |
+| Choices and requests | What you agreed to and when, and your cancellation or data access requests | You |
 | Website use | Pages you visit, device, approximate location | Google Analytics, with cookies |
 
 **What's required.** To train you we need your identity and contact details, the fitness declaration and your evaluation data: without them we can't provide the service. Your fingerprint, publishing your photos and offers are optional: if you don't give them, you still train.
@@ -95,7 +95,7 @@ You can delete or block cookies in your browser, and turn off Google Analytics w
 - **Your client file, evaluations, photos and plan:** while you're a client and up to 2 years after your last check-in or payment, so you can come back with your history. Then we delete them. If you ask us to delete them sooner, we do.
 - **Your fingerprint:** we delete it from the reader within 30 days after you stop being a client.
 - **Payments and invoices:** as long as tax and commercial laws require (up to 10 years).
-- **Your choices and your withdrawal or cancellation requests:** up to 5 years, as a record for you and for us.
+- **Your choices and your cancellation requests:** up to 5 years, as a record for you and for us.
 - **Google Analytics statistics:** up to 14 months.
 - **Photos published with your authorization:** until you withdraw it.
 

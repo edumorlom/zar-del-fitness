@@ -1,10 +1,10 @@
 ---
 titulo: Términos y condiciones
-descripcion: Las condiciones de los planes de Zar del Fitness: cómo se contratan y se pagan, el arrepentimiento en 10 días, la baja sin cargo, la salud al entrenar, las fotos y tus datos.
+descripcion: Las condiciones de los planes de Zar del Fitness: cómo se contratan y se pagan, los turnos, la salud al entrenar, las fotos y tus datos.
 actualizado: 2026-11-17
 ---
 
-> **En pocas palabras.** Pagás tu plan por mes, sin débitos automáticos. Si lo contrataste a distancia (por el sitio, el portal o WhatsApp), tenés 10 días para arrepentirte y te devolvemos todo. Te podés dar de baja cuando quieras, sin preaviso ni cargo. Antes de entrenar completás la declaración de aptitud física. Si cambia el precio, te avisamos con 30 días de anticipación. Tus fotos se publican sólo si lo autorizás.
+> **En pocas palabras.** Pagás tu plan por mes, sin débitos automáticos. Antes de entrenar completás la declaración de aptitud física. Si cambia el precio, te avisamos con 30 días de anticipación. Tus fotos se publican sólo si lo autorizás.
 
 ## 1. Quiénes somos y qué abarcan estos términos
 
@@ -34,25 +34,13 @@ El invitado del Sistema Premium también tiene que completar la declaración de 
 
 **Cambios de precio.** Si cambia el precio de tu plan, te avisamos por correo o WhatsApp **al menos 30 días antes**. El precio nuevo se aplica sólo a los meses que pagues desde esa fecha: lo que ya pagaste no cambia. Si no estás de acuerdo, te podés dar de baja sin ningún costo.
 
-## 4. Arrepentimiento: 10 días para cambiar de idea
-
-Si contrataste un plan **a distancia** (por el sitio, el portal, WhatsApp o teléfono), tenés **10 días corridos** desde que lo contrataste para arrepentirte, **sin dar motivos y sin costo**, aunque ya hayas empezado a entrenar (art. 34 de la Ley 24.240 y arts. 1110 a 1116 del Código Civil y Comercial). Si el último día no es hábil, el plazo sigue hasta el primer día hábil siguiente. Este derecho no se puede renunciar.
-
-Para arrepentirte, escribinos por WhatsApp al {whatsapp} o pedilo en el gimnasio. Te respondemos dentro de las 24 horas con un **código** que es tu constancia y te **devolvemos todo lo que pagaste**, por el mismo medio de pago.
-
-## 5. Baja: cuando quieras, sin cargo
-
-Te podés dar de baja **cuando quieras**, por el mismo medio por el que contrataste o por cualquier otro: por WhatsApp al {whatsapp} o en el gimnasio. **No hay preaviso, multa ni cargo** por darte de baja (arts. 10 ter y 10 quater de la Ley 24.240). Te mandamos por escrito la constancia de tu baja dentro de las 72 horas.
-
-Como no hay débitos automáticos, después de la baja no se te cobra nada más. Lo que ya pagaste lo podés seguir usando hasta que venza tu pase. Salvo el arrepentimiento de la sección 4, o que el servicio no se haya podido prestar por algo nuestro, no devolvemos los días que quedaban del mes.
-
-## 6. Turnos y evaluaciones
+## 4. Turnos y evaluaciones
 
 - Entrenás en los horarios del gimnasio publicados en el sitio.
 - Los turnos de evaluación los pedís en el portal, según la disponibilidad que muestra, o por WhatsApp. Si no podés ir, cancelalo o cambialo desde el portal o avisanos, así el lugar queda para otra persona.
 - Si tenemos que cambiar un horario o cerrar un día, te avisamos con la mayor anticipación posible. Si el cierre es largo y por algo nuestro, extendemos tu pase por los días que no pudiste entrenar.
 
-## 7. Tu salud y tu seguridad
+## 5. Tu salud y tu seguridad
 
 **Antes de empezar.** Completás la **declaración jurada de aptitud física** que exige la Ciudad de Buenos Aires para entrenar en un gimnasio (Ley 139, con los cambios de la Ley 6316), y la actualizás cada vez que cambie tu salud y al menos una vez por año. Si la declaración lo indica, o si tu coach lo pide, necesitás un **certificado médico** de que podés entrenar. Si entrenás online, te pedimos la misma declaración.
 
@@ -68,41 +56,41 @@ Como no hay débitos automáticos, después de la baja no se te cobra nada más.
 
 **El médico traumatólogo** del Sistema Premium te atiende como profesional de la salud, bajo su propia responsabilidad profesional. No reemplaza a tu médico de cabecera.
 
-## 8. Menores de edad
+## 6. Menores de edad
 
 Los menores de 18 años entrenan sólo con la autorización escrita de su madre, padre o tutor, que completa la declaración de aptitud física para menores y acepta estos términos por ellos.
 
-## 9. Convivencia en el gimnasio
+## 7. Convivencia en el gimnasio
 
 - Entrás con tu huella, si lo aceptaste, o con la forma alternativa que te damos. El acceso es personal.
 - Respetá al equipo y a los demás clientes, y cuidá los equipos. Traé toalla y ropa y calzado de entrenamiento.
 - Cuidá tus cosas. Si algo que dejaste en el gimnasio se pierde o se daña por nuestra culpa, respondemos según la ley.
 - Si alguien pone en riesgo a otras personas, ejerce violencia o acosa, podemos suspender o terminar su plan. Se lo avisamos por escrito con el motivo y le devolvemos la parte del mes que no usó.
 
-## 10. Planes online
+## 8. Planes online
 
 Para el plan online necesitás conexión a internet y un lugar seguro para entrenar. Las rutinas, los videos y el material que te damos son para tu uso personal: no los podés vender ni compartir. Tu coach te responde en los horarios que te indicamos al empezar.
 
-## 11. Fotos y testimonios
+## 9. Fotos y testimonios
 
 - **Tus fotos de progreso son privadas:** las ven sólo vos, tu coach y quien dirige el gimnasio.
 - **Las publicamos sólo si lo autorizás aparte** (en *Mis datos* del portal o por escrito), en nuestro sitio, nuestras redes y nuestras publicidades, sin tu nombre completo salvo que también lo autorices (art. 53 del Código Civil y Comercial).
 - Podés **retirar ese permiso cuando quieras.** Si lo retirás, dentro de los 7 días sacamos tus fotos del sitio, borramos las publicaciones de nuestras redes en las que aparecés y no las volvemos a usar.
 - Antes de filmarte o fotografiarte en el gimnasio para nuestras redes, te preguntamos.
 
-## 12. Tus datos personales
+## 10. Tus datos personales
 
 Cómo guardamos y usamos tus datos, en especial los de salud, está en la [Política de privacidad](/privacidad/), que es parte de estos términos.
 
-## 13. Propiedad intelectual
+## 11. Propiedad intelectual
 
 La marca {marca}, el método, los planes, las rutinas, los textos, las fotos y los videos del sitio son nuestros o tenemos permiso para usarlos. Los podés ver y usar para tu entrenamiento, pero no copiarlos para otro fin.
 
-## 14. Cambios en estos términos
+## 12. Cambios en estos términos
 
 Si cambiamos estos términos, te avisamos por correo, WhatsApp o en el portal **al menos 30 días antes** de que se apliquen. Los cambios no afectan lo que ya pagaste, y si no estás de acuerdo te podés dar de baja sin costo. Arriba de esta página está la fecha de la última versión.
 
-## 15. Reclamos, ley aplicable y tribunales
+## 13. Reclamos, ley aplicable y tribunales
 
 Si algo no salió bien, escribinos primero: lo queremos resolver. También podés reclamar en la [Ventanilla Única Federal de Defensa del Consumidor](https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario) o en [Defensa al Consumidor de la Ciudad](https://buenosaires.gob.ar/defensaconsumidor) (línea 147).
 

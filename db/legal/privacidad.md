@@ -28,7 +28,7 @@ Esta política cumple la Ley 25.326 de Protección de los Datos Personales y su 
 | Pagos | Plan, monto, fecha y medio de pago; con Mercado Pago, el número de la operación | Vos, recepción y Mercado Pago |
 | Cuenta del portal | El identificador de tu cuenta para iniciar sesión (con Google o con un código por correo). No guardamos contraseñas | Clerk, nuestro proveedor de inicio de sesión |
 | Conversaciones | Lo que nos escribís por WhatsApp o en el chat del sitio | Vos |
-| Permisos y pedidos | Qué aceptaste y cuándo, y tus pedidos de arrepentimiento, baja o acceso a tus datos | Vos |
+| Permisos y pedidos | Qué aceptaste y cuándo, y tus pedidos de baja o de acceso a tus datos | Vos |
 | Uso del sitio | Páginas que visitás, dispositivo, ubicación aproximada | Google Analytics, con cookies |
 
 **Qué es obligatorio.** Para entrenarte necesitamos tus datos de identificación y contacto, la declaración de aptitud física y los datos de tus evaluaciones: sin ellos no podemos prestarte el servicio. Son opcionales la huella, la publicación de tus fotos y las promociones: si no los das, entrenás igual.
@@ -93,7 +93,7 @@ Podés borrar o bloquear las cookies desde tu navegador, y desactivar Google Ana
 - **Tu ficha, tus evaluaciones, tus fotos y tu plan:** mientras seas cliente y hasta 2 años después de tu último control o pago, para que puedas volver con tu historial. Después los borramos. Si pedís que los borremos antes, lo hacemos.
 - **Tu huella:** la borramos del lector dentro de los 30 días de que dejes de ser cliente.
 - **Pagos y facturas:** el tiempo que exigen las leyes fiscales y comerciales (hasta 10 años).
-- **Tus permisos y tus pedidos de arrepentimiento o baja:** hasta 5 años, como constancia para vos y para nosotros.
+- **Tus permisos y tus pedidos de baja:** hasta 5 años, como constancia para vos y para nosotros.
 - **Estadísticas de Google Analytics:** hasta 14 meses.
 - **Tus fotos publicadas con tu autorización:** hasta que retires el permiso.
 
