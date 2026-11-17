@@ -10,7 +10,7 @@ This is a translation. The Spanish version is the one that applies under Argenti
 
 ## 1. Who is responsible for your data
 
-The controller of your personal data is **{titular}**, CUIT (Argentine tax ID) {cuit}, at {domicilio}, owner of the {marca} brand and the {gimnasio} gym ("Zar del Fitness" or "we" in this policy).
+The controller of your personal data is **{titular}**, CUIT (Argentine tax ID) {cuit}, at {domicilio}, which operates the {marca} brand and the {gimnasio} gym ("Zar del Fitness" or "we" in this policy).
 
 For anything about privacy, message us on WhatsApp at {whatsapp}, email {correo} or talk to us at the gym.
 

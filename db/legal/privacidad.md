@@ -8,7 +8,7 @@ actualizado: 2026-11-17
 
 ## 1. Quién es responsable de tus datos
 
-El responsable de tus datos personales es **{titular}**, CUIT {cuit}, con domicilio en {domicilio}, titular de la marca {marca} y del gimnasio {gimnasio} (en esta política, "Zar del Fitness" o "nosotros").
+El responsable de tus datos personales es **{titular}**, CUIT {cuit}, con domicilio en {domicilio}, que opera la marca {marca} y el gimnasio {gimnasio} (en esta política, "Zar del Fitness" o "nosotros").
 
 Para cualquier tema de privacidad podés escribirnos por WhatsApp al {whatsapp}, por correo a {correo} o hablarnos en el gimnasio.
 
