@@ -6,6 +6,7 @@ import { LoginBackdrop } from "~/components/LoginBackdrop";
 import { SiteHeader } from "~/components/SiteHeader";
 import { getViewer } from "~/lib/auth";
 import { getLang } from "~/lib/lang";
+import { content } from "@/lib/content";
 import { pick } from "@/lib/i18n";
 
 // La única página del portal que se indexa: está en el sitemap del sitio (app/sitemap.ts), para que quien busque
@@ -27,6 +28,7 @@ export default async function LoginPage() {
   if (await getViewer()) redirect("/portal");
   const lang = await getLang();
   const tr = pick(lang);
+  const { t, pages } = content(lang);
   return (
     <>
     <SiteHeader login={{ label: tr("Iniciar sesión", "Sign in"), href: "/portal/ingresar" }} lang={lang} />
@@ -53,6 +55,13 @@ export default async function LoginPage() {
         <div className="signin">
           <SignIn routing="path" path="/portal/ingresar" withSignUp fallbackRedirectUrl="/portal" signUpFallbackRedirectUrl="/portal" />
         </div>
+        {/* Antes de juntar datos, a la vista: quién los trata y para qué (art. 6 de la Ley 25.326). */}
+        <p className="panel__legal">
+          {tr("Tus datos se tratan según la ", "Your data is handled under our ")}
+          <a href={pages.privacidad}>{t.legal.privacidad}</a>
+          {tr(" y los ", " and ")}
+          <a href={pages.terminos}>{t.legal.terminos}</a>.
+        </p>
       </div>
 
       <p className="motto intro-lines">

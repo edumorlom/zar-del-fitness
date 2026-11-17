@@ -20,3 +20,12 @@ test("el correo masivo: {nombre} en asunto y texto, párrafos, saltos de línea 
   assert.match(html, /Escribinos por WhatsApp/);
   assert.doesNotMatch(html, /\{nombre\}/i);
 });
+
+test("el correo de promociones trae el link de baja; el aviso, no", () => {
+  const url = "https://zardelfitness.com.ar/portal/correos?c=7&t=abc";
+  const promo = renderBroadcastEmail({ name: "Ana", subject: "Promo", body: "Hola", unsubscribe: url });
+  assert.match(promo.html, /href="https:\/\/zardelfitness\.com\.ar\/portal\/correos\?c=7&#38;t=abc"/);
+  assert.match(promo.html, /date de baja acá/);
+  const notice = renderBroadcastEmail({ name: "Ana", subject: "Cerramos el lunes", body: "Hola" });
+  assert.doesNotMatch(notice.html, /date de baja/);
+});

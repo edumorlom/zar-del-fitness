@@ -4,6 +4,7 @@ import { Reveals } from "@/components/motion/Reveals";
 import { homeOf } from "~/lib/access";
 import type { Viewer } from "~/lib/auth";
 import { getLang } from "~/lib/lang";
+import { content } from "@/lib/content";
 import { pick } from "@/lib/i18n";
 import { DiguiChat } from "./DiguiChat";
 import { SiteHeader } from "./SiteHeader";
@@ -33,6 +34,7 @@ export async function Shell({ viewer, children }: { viewer: Viewer; children: Re
   const home = homeOf(viewer);
   const lang = await getLang();
   const tr = pick(lang);
+  const { t, pages } = content(lang);
   return (
     <>
       <SiteHeader login={{ ...SIGN_OUT, label: tr(SIGN_OUT.label, "Sign out") }} lang={lang} />
@@ -48,6 +50,14 @@ export async function Shell({ viewer, children }: { viewer: Viewer; children: Re
           )}
         </div>
         {children}
+        {/* Los permisos del cliente y las páginas legales del sitio (db/legal/), en su idioma */}
+        <nav className="portal-legal" aria-label={tr("Legal", "Legal")}>
+          {viewer.scopes.includes("user") && <Link href="/portal/mis-datos">{tr("Mis datos y permisos", "My data and choices")}</Link>}
+          <a href={pages.privacidad}>{t.legal.privacidad}</a>
+          <a href={pages.terminos}>{t.legal.terminos}</a>
+          <a href={pages.arrepentimiento}>{t.legal.arrepentimiento}</a>
+          <a href={pages.baja}>{t.legal.baja}</a>
+        </nav>
       </main>
       <DiguiChat customerId={viewer.id} />
       {/* Último: conecta las animaciones data-* una vez montado todo el contenido */}

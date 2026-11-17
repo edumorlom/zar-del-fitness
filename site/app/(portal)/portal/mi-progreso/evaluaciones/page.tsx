@@ -6,6 +6,7 @@ import { Title } from "~/components/Progress";
 import { Shell } from "~/components/Shell";
 import { homeOf } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
+import { requireConsent } from "~/lib/consent";
 import { getCheckins } from "~/lib/data";
 import { getLang } from "~/lib/lang";
 import { pick } from "@/lib/i18n";
@@ -16,6 +17,7 @@ export const generateMetadata = async (): Promise<Metadata> => ({ title: pick(aw
 export default async function MyMeasuresPage() {
   const viewer = await requireViewer();
   if (!viewer.scopes.includes("user")) redirect(homeOf(viewer));
+  await requireConsent(viewer);
   const checkins = (await getCheckins(viewer.id)).reverse(); // la última primero
   const lang = await getLang();
   const tr = pick(lang);

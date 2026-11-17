@@ -20,6 +20,12 @@
     { "red": "TikTok", "url": "https://www.tiktok.com/@zardelfitness" },
     { "red": "X (Twitter)", "url": "https://x.com/zardelfitness" }
   ],
+  "legal": {
+    "titular": "",
+    "cuit": "",
+    "correo": "",
+    "dataFiscal": ""
+  },
   "personasEvaluadas": 4000,
   "resenasGoogle": { "puntaje": 4.8, "cantidad": 171 }
 }

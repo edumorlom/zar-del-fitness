@@ -25,9 +25,14 @@ type HeaderProps = {
   language: { href: string; lang: Lang; label: string };
   /** En el panel del equipo, el único menú móvil reúne el portal y el sitio. */
   portal?: PortalMenu;
+  /**
+   * El "BOTÓN DE ARREPENTIMIENTO" y el "BOTÓN DE BAJA DE SERVICIO" (Disp. 954/2025): a simple vista desde que se abre la
+   * página. En la compu, a la derecha de la franja dorada; en el celular, en el menú (y en el pie, en las dos).
+   */
+  legal?: { href: string; label: string }[];
 };
 
-export function Header({ home, nav, announce, waInfo, login, labels, language, portal }: HeaderProps) {
+export function Header({ home, nav, announce, waInfo, login, labels, language, portal, legal }: HeaderProps) {
   // Lo que dice Clerk (components/Session.tsx), también en el sitio.
   const signedIn = useSignedIn();
   const loginLabel = (signedIn && login.signedInLabel) || login.label;
@@ -101,15 +106,26 @@ export function Header({ home, nav, announce, waInfo, login, labels, language, p
         data-open={open}
         data-portal={portal ? true : undefined}
       >
-        <a className={styles.announce} href={announce.href}>
-          <Icon name="spark" />
-          <span>
-            {announce.text} <strong>{announce.price}</strong>
-          </span>
-          <span className={styles.announceCta}>
-            {announce.cta} <Icon name="arrow" />
-          </span>
-        </a>
+        <div className={styles.announce}>
+          <a className={styles.announceLink} href={announce.href}>
+            <Icon name="spark" />
+            <span>
+              {announce.text} <strong>{announce.price}</strong>
+            </span>
+            <span className={styles.announceCta}>
+              {announce.cta} <Icon name="arrow" />
+            </span>
+          </a>
+          {legal && (
+            <span className={styles.announceLegal}>
+              {legal.map((l) => (
+                <a key={l.href} href={l.href}>
+                  {l.label}
+                </a>
+              ))}
+            </span>
+          )}
+        </div>
 
         <div className={`container ${styles.bar}`}>
           <a className={styles.logo} href={isHome ? "#top" : home} aria-label={labels.logo} onClick={closeMenu}>
@@ -191,6 +207,15 @@ export function Header({ home, nav, announce, waInfo, login, labels, language, p
           <a className="btn btn--ghost" href={login.href} onClick={closeMenu}>
             <span>{loginLabel}</span>
           </a>
+          {legal && (
+            <span className={styles.menuLegal}>
+              {legal.map((l) => (
+                <a key={l.href} href={l.href} onClick={closeMenu}>
+                  {l.label}
+                </a>
+              ))}
+            </span>
+          )}
         </div>
       </div>
     </>

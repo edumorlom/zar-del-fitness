@@ -2656,3 +2656,74 @@ a.person:hover .strong {
   gap: 8px;
   margin-top: 12px;
 }
+
+/* ---------- Mis datos: los permisos del cliente (app/(portal)/portal/mis-datos, portal/lib/consent.ts) ---------- */
+.consent {
+  display: grid;
+  gap: 20px;
+  max-width: 820px;
+}
+.consent__card {
+  display: grid;
+  gap: 16px;
+}
+.consent__docs,
+.consent__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+}
+.consent__docs a {
+  color: var(--gold-light);
+  text-decoration: underline;
+  text-decoration-color: var(--line-gold);
+  text-underline-offset: 3px;
+}
+.consent__list {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.check.consent__item {
+  align-items: flex-start;
+  padding: 14px 16px;
+  line-height: 1.5;
+}
+.consent__item input {
+  margin-top: 3px;
+}
+.consent__item > span {
+  display: grid;
+  gap: 4px;
+}
+.consent__item input:disabled {
+  opacity: 0.7;
+}
+.consent__when {
+  color: var(--muted-2);
+  font-size: 0.78rem;
+}
+.portal-legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  color: var(--muted-2);
+  font-size: 0.82rem;
+}
+.portal-legal a:hover {
+  color: var(--gold-light);
+}
+.panel__legal {
+  margin-top: 16px;
+  color: var(--muted-2);
+  font-size: 0.8rem;
+}
+.panel__legal a {
+  color: var(--silver);
+  text-decoration: underline;
+  text-decoration-color: var(--line-gold);
+  text-underline-offset: 3px;
+}

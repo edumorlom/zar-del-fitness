@@ -11,6 +11,7 @@ import textos from "@db/textos.json";
 import trayectoria from "@db/trayectoria.json";
 import type { IconName } from "@/components/Icon";
 import { checkTranslated, fill, homePath, localePath, localize, locales, text, type Lang } from "./i18n";
+import { legalPaths } from "./legal";
 
 const WA_NUMBER = gimnasio.whatsapp.replace(/\D/g, "");
 
@@ -201,10 +202,28 @@ const openDays = horarios.dias.map((d) => WEEKDAYS.indexOf(d));
 
 export const stats = { peopleEvaluated: gimnasio.personasEvaluadas };
 
+/**
+ * Quién es el titular del negocio, para el pie (Res. 270/2020: nombre, CUIT y domicilio antes de contratar), de
+ * db/gimnasio.json (legal). Mientras falte el titular o el CUIT, el pie no muestra la línea.
+ */
+export const legalHolder =
+  gimnasio.legal.titular && gimnasio.legal.cuit
+    ? { titular: gimnasio.legal.titular, cuit: gimnasio.legal.cuit, domicilio: `${calle}, ${barrio}, ${ciudad}` }
+    : null;
+
 function build(lang: Lang) {
   const t = localize(textos, lang, "db/textos.json");
   const home = homePath(lang);
-  const pages = { home, blog: localePath(lang, "/blog/"), podcasts: localePath(lang, "/podcasts/") };
+  const pages = {
+    home,
+    blog: localePath(lang, "/blog/"),
+    podcasts: localePath(lang, "/podcasts/"),
+    // Las páginas legales (db/legal/, lib/legal.ts) y los botones de arrepentimiento y de baja (components/CancelPage.tsx).
+    terminos: legalPaths.terminos[lang],
+    privacidad: legalPaths.privacidad[lang],
+    arrepentimiento: localePath(lang, lang === "es" ? "/arrepentimiento/" : "/withdrawal/"),
+    baja: localePath(lang, lang === "es" ? "/baja/" : "/cancel-plan/"),
+  };
 
   const links = {
     retoOnline: wa(t.whatsapp.retoOnline),
@@ -219,6 +238,11 @@ function build(lang: Lang) {
     waDudas: wa(t.whatsapp.dudas),
     // Por /idioma/: el portal queda en el idioma de la página de donde se entró (app/(portal)/portal/idioma/[lang]).
     portal: `${portalUrl}/idioma/${lang}`,
+    // El formulario de reclamos de la Ventanilla Única Federal (Res. 274/2021) y Defensa al Consumidor de la Ciudad (Ley 2244).
+    consumidor: "https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario",
+    consumidorCaba: "https://buenosaires.gob.ar/defensaconsumidor",
+    /** El QR del formulario 960/D de ARCA (db/gimnasio.json, legal.dataFiscal): si no está, el pie no lo muestra. */
+    dataFiscal: gimnasio.legal.dataFiscal || null,
   };
 
   const contact = {

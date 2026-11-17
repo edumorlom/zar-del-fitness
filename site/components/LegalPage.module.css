@@ -1,0 +1,98 @@
+/* Las páginas legales: el encabezado y el cuerpo son los de las notas (BlogPost.module.css); acá, el índice, las tablas
+   y el recuadro de contacto. */
+
+.toc {
+  margin-top: clamp(8px, 2vw, 24px);
+  padding: 24px 28px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--ink);
+}
+.toc ol {
+  margin-top: 12px;
+  padding-left: 1.4em;
+  list-style: decimal;
+  columns: 2 260px;
+  column-gap: 32px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.toc li {
+  break-inside: avoid;
+  padding-block: 3px;
+}
+.toc li::marker {
+  color: var(--gold);
+}
+.toc a {
+  color: var(--silver);
+}
+.toc a:hover {
+  color: var(--gold-light);
+}
+
+/* Con el menú fijo arriba, que el subtítulo al que lleva el índice no quede tapado. */
+.prose h2 {
+  scroll-margin-top: calc(var(--header-h) + 36px);
+  font-size: clamp(1.5rem, 2.8vw, 2rem);
+}
+.prose {
+  font-size: 1.02rem;
+}
+.prose table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.prose th,
+.prose td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.prose th {
+  color: var(--white);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.prose blockquote {
+  padding: 18px 22px;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--ink);
+  font-style: normal;
+}
+
+.contact {
+  margin-block: 8px clamp(56px, 8vw, 96px);
+  padding: clamp(24px, 4vw, 36px);
+  border-radius: var(--radius);
+  border: 1px solid var(--line-gold);
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(214, 166, 29, 0.12), transparent 60%),
+    var(--ink);
+  color: var(--muted);
+}
+.contactTitle {
+  margin-bottom: 8px;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 1;
+  color: var(--white);
+  text-transform: uppercase;
+}
+.contactLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-top: 16px;
+}
+.contactLinks a {
+  color: var(--gold-light);
+  text-decoration: underline;
+  text-decoration-color: var(--line-gold);
+  text-underline-offset: 3px;
+}

@@ -161,6 +161,42 @@ create table if not exists broadcast_template (
   updated_at timestamptz not null default now()
 );
 
+-- Los consentimientos de cada cliente (portal/lib/consent.ts, Ley 25.326): qué aceptó o retiró, de qué versión de los
+-- términos y la privacidad (db/legal/), y si lo marcó en el portal o lo cargó el equipo. Una fila por cambio, nunca se
+-- cambia ni se borra (salvo con la cuenta): vale la última de cada tipo.
+create table if not exists consents (
+  id serial primary key,
+  user_id int not null references users(id) on delete cascade,
+  kind text not null check (kind in ('terminos', 'salud', 'huella', 'imagen', 'marketing')),
+  granted boolean not null,
+  version text not null,
+  source text not null default 'portal' check (source in ('portal', 'equipo')),
+  recorded_by int references users(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+create index if not exists consents_user on consents(user_id, kind, created_at desc);
+
+-- Los pedidos del botón de arrepentimiento y del botón de baja del sitio (site/app/cancel/route.ts): el código que se le
+-- manda a quien lo pide es la constancia. user_id, si el correo es el de un cliente.
+create table if not exists cancel_requests (
+  id serial primary key,
+  code text not null unique,
+  kind text not null check (kind in ('arrepentimiento', 'baja')),
+  name text not null,
+  email text not null,
+  phone text,
+  dni text,
+  plan text,
+  purchased_on date,
+  message text,
+  lang text not null default 'es',
+  user_id int references users(id) on delete set null,
+  status text not null default 'recibido' check (status in ('recibido', 'resuelto')),
+  resolved_by int references users(id) on delete set null,
+  resolved_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
 -- El día que se le mandó al cliente el último recordatorio de evaluación (portal/lib/reminders.ts): uno por evaluación.
 alter table users add column if not exists evaluation_reminder_on date;
 

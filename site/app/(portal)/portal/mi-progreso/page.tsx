@@ -5,6 +5,7 @@ import { ProgressPhotos } from "~/components/ProgressPhotos";
 import { Shell } from "~/components/Shell";
 import { homeOf } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
+import { requireConsent } from "~/lib/consent";
 import { DietCard } from "~/components/Diet";
 import { getCheckins, getClient, getDiet, getOpenAppointment, getProgressPhotos } from "~/lib/data";
 import { todayISO } from "~/lib/format";
@@ -19,6 +20,7 @@ export const generateMetadata = async (): Promise<Metadata> => ({ title: pick(aw
 export default async function MyProgressPage() {
   const viewer = await requireViewer();
   if (!viewer.scopes.includes("user")) redirect(homeOf(viewer));
+  await requireConsent(viewer);
   const [client, checkins, appointment, photos, diet] = await Promise.all([
     getClient(viewer.id),
     getCheckins(viewer.id),

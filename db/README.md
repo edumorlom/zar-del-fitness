@@ -18,12 +18,13 @@ El sitio está en castellano (`zardelfitness.com.ar/`) y en inglés (`zardelfitn
 |---|---|
 | `planes.json` | Los planes: nombre, precio, descripción y qué incluyen. |
 | `horarios.json` | Días y turnos del gimnasio, último ingreso y duración de la clase. |
-| `gimnasio.json` | Dirección (con código postal), coordenadas del gimnasio para Google Maps, el nombre de esa ficha tal cual figura en Google (`nombreEnGoogle`: Google cruza el negocio por nombre, dirección y teléfono), el link de su ficha en Google Maps (`googleMaps`, la de las reseñas: le dice a Google y a los asistentes con IA que el sitio y la ficha son el mismo gimnasio), WhatsApp, redes, la cantidad de personas evaluadas y la puntuación y cantidad de reseñas de la ficha de Google (`resenasGoogle`: se ven en Resultados; actualizarlas a mano de vez en cuando). |
+| `gimnasio.json` | Dirección (con código postal), coordenadas del gimnasio para Google Maps, el nombre de esa ficha tal cual figura en Google (`nombreEnGoogle`: Google cruza el negocio por nombre, dirección y teléfono), el link de su ficha en Google Maps (`googleMaps`, la de las reseñas: le dice a Google y a los asistentes con IA que el sitio y la ficha son el mismo gimnasio), WhatsApp, redes, la cantidad de personas evaluadas y la puntuación y cantidad de reseñas de la ficha de Google (`resenasGoogle`: se ven en Resultados; actualizarlas a mano de vez en cuando), y los datos legales del titular (`legal`, ver abajo). |
 | `preguntas.json` | Las preguntas frecuentes. |
 | `equipo.json` | Los entrenadores. `credenciales` son sus certificaciones una por una (`titulo` y, si se sabe, `otorgadaPor`): no se ven en el sitio, van en los datos para Google y los buscadores con IA. |
 | `textos.json` | Todos los textos del sitio, por sección, en castellano y en inglés: botones, menú, títulos, párrafos, textos alternativos de las fotos, los mensajes que se arman para WhatsApp, y el título y la descripción de cada página para Google (`seo`). `seo.llms` es la excepción: sólo se usa en `llms.txt`, no se ve en el sitio. |
 | `trayectoria.json` | La prensa y los premios: medio, título, tipo, link e imagen. |
 | `blog/` | Las notas del blog, una por archivo Markdown (ver abajo). Las traducciones al inglés, en `blog/en/`. |
+| `legal/` | Los términos y condiciones y la política de privacidad, en Markdown (ver abajo). Las traducciones al inglés, en `legal/en/`. |
 | `podcasts.json` | Los episodios del podcast, Detrás del Espejo (ver abajo). |
 | `img/` | Las imágenes del sitio. En los JSON se nombran como `/img/archivo.webp`. Las del blog van en `img/blog/`, y las miniaturas de los podcasts en `img/podcasts/`. |
 
@@ -55,6 +56,39 @@ El sitio muestra los planes `reto-online`, `premium`, `general` y `reto-internac
 - `general.leerEn` es el botón para cambiar de idioma: cada uno está en su idioma ("Leer en español", "Read in English") y se muestra en la página del otro.
 - En la prensa, `link` es opcional. La `imagen` es la que aparece al pasar el mouse, y va en `db/img/`.
 - La nota con `destacadoEnInicio` aparece también en el inicio, con ese texto ("Emmy Winner 2024"). Si ninguna lo tiene, no se muestra.
+
+## Legal (`legal/` y `gimnasio.json`)
+
+`legal/terminos.md` es la página `/terminos/` y `legal/privacidad.md`, `/privacidad/`. Su traducción va en `legal/en/` con el
+mismo nombre (`/en/terms/` y `/en/privacy/`). Arriba llevan este encabezado:
+
+```
+---
+titulo: Política de privacidad
+descripcion: Lo que muestra Google debajo del título.
+actualizado: 2026-11-17
+---
+```
+
+- Los subtítulos van con `##` y numerados (`## 4. Tus datos de salud`): arman el índice de arriba de la página.
+- Los datos del negocio se escriben entre llaves y salen de `gimnasio.json`: `{titular}`, `{cuit}`, `{correo}`, `{domicilio}`,
+  `{whatsapp}`, `{sitio}`, `{marca}` y `{gimnasio}`.
+- **`actualizado` es la versión.** Cambiala sólo si el cambio es de fondo, y en los dos idiomas (si no coinciden, el sitio no se
+  construye): con una fecha nueva, el portal les vuelve a pedir a los clientes que acepten los términos y la privacidad.
+  Los términos prometen avisar los cambios 30 días antes.
+- Los textos de los botones de arrepentimiento y de baja (`/arrepentimiento/` y `/baja/`) y la leyenda de la AAIP del pie están
+  en `textos.json` (`legal` y `cancelar`).
+
+En `gimnasio.json`, `legal` tiene lo que piden la ley de defensa del consumidor y la de datos personales:
+
+| Campo | Qué es |
+|---|---|
+| `titular` | El nombre (persona) o la razón social (empresa) del titular del negocio. |
+| `cuit` | Su CUIT, con guiones: `20-12345678-9`. |
+| `correo` | El correo para consultas y pedidos sobre datos personales y reclamos. Le llegan también los pedidos de los botones de arrepentimiento y de baja. |
+| `dataFiscal` | El link del QR del formulario 960/D de ARCA (`https://qr.afip.gob.ar/?qr=…`): con él, el pie muestra el Data Fiscal. |
+
+Mientras falten `titular`, `cuit` o `correo`, las páginas legales dicen "[a completar]" y el build lo avisa.
 
 ## Blog (`blog/`)
 

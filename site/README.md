@@ -32,6 +32,7 @@ todavía no soporta el 7.
 | Secciones | `components/*.tsx` + su `*.module.css` |
 | Imágenes | `../db/img/` (WebP). Se copian a `public/img/` antes de `dev` y `build`, con copias más chicas en WebP para cada ancho de pantalla (`scripts/copy-images.mjs`; `next/image` las elige con `lib/image-loader.ts`). |
 | Notas del blog | `../db/blog/`, y en inglés `../db/blog/en/` (ver `../db/README.md`) |
+| Términos, privacidad y los datos legales del titular | `../db/legal/` y `../db/gimnasio.json` (`legal`), ver `../db/README.md` |
 | Episodios del podcast | `../db/podcasts.json` (ver `../db/README.md`) |
 | SEO: título y descripción | `../db/textos.json` (`seo`) |
 | SEO: datos estructurados (Google), hreflang, sitemap, robots | `lib/seo.ts`, `app/sitemap.ts`, `app/robots.ts` |
@@ -117,6 +118,20 @@ SSL "Full", delante de Railway:
   portal (`/portal/pago`), lo que llegue primero, y una sola vez. De los avisos no se cree nada: el pago se le pide a
   Mercado Pago con el access token. Si se devuelve, el pase vuelve a como estaba. El admin y recepción ven los pases y
   los pagos, y cargan los del local (efectivo o tarjeta); sólo el admin los anula.
+- **Legal** (la investigación detrás, en `docs/legal/`): las páginas de términos y privacidad (`lib/legal.ts`,
+  `components/LegalPage.tsx`, de `db/legal/`) y el **botón de arrepentimiento** y el **botón de baja de servicio** (Disp.
+  954/2025: `components/CancelPage.tsx`, en `/arrepentimiento/` y `/baja/`). Los dos botones están a la derecha de la franja
+  dorada (en el celular, en el menú) y en el pie, que además tiene los links a Defensa del Consumidor y la leyenda de la AAIP.
+  El formulario no pide iniciar sesión: guarda el pedido en `cancel_requests` y manda en el momento el código a quien lo pidió y
+  los datos a `ADMIN_EMAIL` y al correo de `db/gimnasio.json` (`portal/cancel-actions.ts`), que tienen que responder dentro de
+  las 24 horas.
+- **Consentimientos** (`portal/lib/consent.ts`, Ley 25.326): la primera vez que un cliente entra, y cada vez que cambia la
+  fecha (`actualizado`) de los términos o la privacidad, pasa por `/portal/mis-datos` antes que por cualquier otra página.
+  Tiene que aceptar los términos (con la transferencia de datos a los proveedores de afuera) y dar el consentimiento expreso
+  de salud; la huella, la publicación de sus fotos y las promociones son opcionales. Cada cambio es una fila nueva en
+  `consents` (nunca se borra). El equipo ve los permisos en la ficha del cliente y carga ahí lo que firmó en papel. Los
+  correos masivos de promociones no les llegan a quienes dijeron que no y traen un link firmado para darse de baja sin
+  iniciar sesión (`/portal/correos`; la firma usa `UNSUBSCRIBE_SECRET` o, si no está, `CLERK_SECRET_KEY`).
 - **Recordatorio de evaluación** (`portal/lib/reminders.ts`; las reglas y el correo en `portal/lib/reminder-email.ts`): al
   cliente Premium activo al que se le cumple un mes de su última evaluación le llega un correo para que pida el turno de
   la próxima, con su peso y % graso (contra la anterior) y el botón a `/portal/turno`. Es automático: el servidor se fija

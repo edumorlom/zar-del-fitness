@@ -1,0 +1,174 @@
+/* El botón de arrepentimiento y el de baja: lo que hay que saber a la izquierda, el formulario a la derecha. */
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: start;
+}
+
+.points {
+  display: grid;
+  gap: 18px;
+  color: var(--silver);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+.points li {
+  position: relative;
+  padding-left: 28px;
+}
+.points li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.points strong {
+  color: var(--white);
+}
+.alt {
+  margin-top: 28px;
+}
+.alt a,
+.links a {
+  color: var(--gold-light);
+  text-decoration: underline;
+  text-decoration-color: var(--line-gold);
+  text-underline-offset: 3px;
+}
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin-top: 16px;
+  font-size: 0.9rem;
+}
+
+.form,
+.done {
+  padding: clamp(24px, 4vw, 40px);
+  border-radius: var(--radius);
+  border: 1px solid var(--line-gold);
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(214, 166, 29, 0.12), transparent 60%),
+    var(--ink);
+}
+.formTitle,
+.doneTitle {
+  margin-bottom: 20px;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  line-height: 1;
+  color: var(--white);
+  text-transform: uppercase;
+}
+.done p:last-child {
+  color: var(--silver);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+.done strong {
+  color: var(--gold-light);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.04em;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.field {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.field > span {
+  color: var(--silver);
+  font-weight: 700;
+}
+.field small {
+  color: var(--muted-2);
+  font-size: 0.78rem;
+}
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--black);
+  color: var(--white);
+  font: inherit;
+  font-size: 1rem;
+}
+.field textarea {
+  resize: vertical;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.wide {
+  grid-column: 1 / -1;
+}
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--silver);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.check input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--gold);
+}
+.trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.privacy {
+  margin-top: 18px;
+  color: var(--muted-2);
+  font-size: 0.8rem;
+}
+.submit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-top: 20px;
+}
+.error {
+  color: #ff8a7a;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .fields {
+    grid-template-columns: 1fr;
+  }
+}

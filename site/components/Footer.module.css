@@ -8,7 +8,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 1.3fr 1.2fr;
+  grid-template-columns: 1.3fr 1fr 1.2fr;
   gap: 40px;
 }
 
@@ -54,12 +54,35 @@
   height: 16px;
   color: var(--gold);
 }
+/* El titular, la leyenda de la AAIP (Res. 14/2018) y el Data Fiscal: chicos, pero en todas las páginas. */
+.fine {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 32px;
+  margin-top: 48px;
+  color: var(--muted-2);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+.fine p {
+  grid-column: 1;
+  max-width: 900px;
+}
+.dataFiscal {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: start;
+}
+.dataFiscal img {
+  width: 60px;
+  height: auto;
+}
 .bottom {
   display: flex;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  margin-top: 64px;
+  margin-top: 32px;
   padding-top: 24px;
   padding-bottom: 24px;
   border-top: 1px solid var(--line);
@@ -88,6 +111,9 @@
 @media (max-width: 1000px) {
   .grid {
     grid-template-columns: 1fr 1fr;
+  }
+  .brand {
+    grid-column: 1 / -1;
   }
 }
 @media (max-width: 560px) {

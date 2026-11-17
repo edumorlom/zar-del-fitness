@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { addCheckin, deleteCheckin, deleteClient, saveDiet } from "~/actions";
+import { saveClientConsents } from "~/consent-actions";
 import { AdminShell, PageHead } from "~/components/AdminShell";
 import { ClientForm } from "~/components/ClientForm";
 import { Evolution } from "~/components/Evolution";
@@ -9,6 +10,7 @@ import { Form } from "~/components/Form";
 import { ProgressPhotos } from "~/components/ProgressPhotos";
 import { initials } from "~/components/Shell";
 import { canManage } from "~/lib/access";
+import { CONSENT_KINDS, CONSENT_TEXT, getConsents, REQUIRED_CONSENTS } from "~/lib/consent";
 import { requireViewer } from "~/lib/auth";
 import { CheckinFields } from "~/components/CheckinFields";
 import { DietFields } from "~/components/Diet";
@@ -38,7 +40,13 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
   // Un cliente que no es suyo es, para el coach, un cliente que no existe.
   if (!client || !canManage(viewer, client)) notFound();
   const admin = viewer.scopes.includes("admin");
-  const [checkins, coaches, photos, diet] = await Promise.all([getCheckins(id), admin ? getCoaches() : [], getProgressPhotos(id), getDiet(id)]);
+  const [checkins, coaches, photos, diet, consents] = await Promise.all([
+    getCheckins(id),
+    admin ? getCoaches() : [],
+    getProgressPhotos(id),
+    getDiet(id),
+    getConsents(id),
+  ]);
 
   const today = todayISO();
   const last = checkins[checkins.length - 1];
@@ -148,6 +156,42 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
             )}
           </div>
         )}
+      </section>
+
+      {/* Lo que el cliente aceptó (portal/lib/consent.ts): sin el consentimiento de salud no se le cargan evaluaciones ni
+          fotos; sin el de imagen, sus fotos no se publican. Acá se carga lo que firmó en papel en el gimnasio. */}
+      <section id="permisos" className="card anchor" data-reveal>
+        <h2 className="card-title">Permisos</h2>
+        <ul className="chips">
+          {CONSENT_KINDS.map((k) => {
+            const c = consents[k];
+            const title = CONSENT_TEXT[k].es.title.replace(/ \(opcional\)$/, "");
+            const cls = c?.granted ? "chip chip--gold" : c || REQUIRED_CONSENTS.includes(k) ? "chip chip--warn" : "chip chip--quiet";
+            return (
+              <li key={k} className={cls} title={c ? `${c.source === "equipo" ? `Cargado por ${c.recorded_by_name ?? "el equipo"}` : "En el portal"} · versión ${c.version}` : undefined}>
+                {c?.granted ? "✓" : "✗"} {title}
+                {c ? ` · ${c.granted ? "" : "retirado "}${shortDate(c.at.slice(0, 10))}` : " · sin respuesta"}
+              </li>
+            );
+          })}
+        </ul>
+        {!consents.salud?.granted && (
+          <p className="warn">Sin el consentimiento de salud no cargues evaluaciones, fotos ni datos de salud de este cliente.</p>
+        )}
+        <details>
+          <summary className="muted">Cargar lo que firmó en papel</summary>
+          <Form action={saveClientConsents.bind(null, client.id)} submit="Guardar permisos" className="form">
+            <div className="checks">
+              {CONSENT_KINDS.map((k) => (
+                <label key={k} className="check">
+                  <input type="checkbox" name={k} defaultChecked={consents[k]?.granted ?? false} />
+                  <span>{CONSENT_TEXT[k].es.title.replace(/ \(opcional\)$/, "")}</span>
+                </label>
+              ))}
+            </div>
+            <p className="field__hint">Tildá sólo lo que el cliente firmó. Queda guardado con tu nombre y la fecha de hoy; destildar algo que había aceptado lo registra como retirado.</p>
+          </Form>
+        </details>
       </section>
 
       <div className="dash-row dash-row--even">

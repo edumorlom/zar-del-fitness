@@ -6,6 +6,7 @@ import { ClientPicker } from "~/components/ClientPicker";
 import { Form } from "~/components/Form";
 import { requireViewer } from "~/lib/auth";
 import { DEFAULT_TEMPLATE } from "~/lib/broadcast-email";
+import { countMarketingOptOuts } from "~/lib/consent";
 import { PLANS } from "~/lib/clients";
 import { getBroadcastTemplate, listClients } from "~/lib/data";
 
@@ -17,7 +18,7 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export default async function BroadcastPage() {
   const viewer = await requireViewer();
   if (!viewer.scopes.includes("admin")) notFound();
-  const [all, saved] = await Promise.all([listClients(viewer, { active: true }), getBroadcastTemplate()]);
+  const [all, saved, optedOut] = await Promise.all([listClients(viewer, { active: true }), getBroadcastTemplate(), countMarketingOptOuts()]);
   const template = saved ?? DEFAULT_TEMPLATE;
   const clients = all.filter((c) => EMAIL.test(c.email ?? ""));
   const noEmail = all.length - clients.length;
@@ -64,6 +65,24 @@ export default async function BroadcastPage() {
               próxima.
             </span>
           </label>
+          <fieldset className="choice field--wide">
+            <legend className="field__label">Tipo de correo</legend>
+            <div className="choice__grid">
+              <label className="choice__card">
+                <input type="radio" name="kind" value="promo" defaultChecked />
+                <span className="strong">Novedades o promociones</span>
+                <span className="field__hint">
+                  Lleva el link para darse de baja y no les llega a quienes se dieron de baja
+                  {optedOut > 0 && ` (${optedOut} ${optedOut === 1 ? "cliente" : "clientes"})`}.
+                </span>
+              </label>
+              <label className="choice__card">
+                <input type="radio" name="kind" value="aviso" />
+                <span className="strong">Aviso del servicio</span>
+                <span className="field__hint">Un cierre, un cambio de horario: les llega a todos. Nunca para publicidad (Ley 25.326, art. 27).</span>
+              </label>
+            </div>
+          </fieldset>
           <fieldset className="choice field--wide">
             <legend className="field__label">Grupos</legend>
             <div className="checks">

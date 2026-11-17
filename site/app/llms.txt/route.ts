@@ -1,6 +1,7 @@
 import { posts } from "@/lib/blog";
 import { content, socials } from "@/lib/content";
 import { fill, type Lang } from "@/lib/i18n";
+import { LEGAL_IDS, legalDocs } from "@/lib/legal";
 import { episodes } from "@/lib/podcasts";
 import { abs } from "@/lib/seo";
 
@@ -60,6 +61,16 @@ function ronaldLines(lang: Lang, h: string) {
   ];
 }
 
+/** Los términos, la privacidad y los botones de arrepentimiento y de baja (db/legal/, db/textos.json). */
+function legalLines(lang: Lang) {
+  const { t, pages } = content(lang);
+  return [
+    ...LEGAL_IDS.map((id) => `- [${legalDocs[id][lang].title}](${abs(legalDocs[id][lang].path)}): ${legalDocs[id][lang].description}`),
+    `- [${t.legal.arrepentimiento}](${abs(pages.arrepentimiento)}): ${t.cancelar.arrepentimiento.seo.descripcion}`,
+    `- [${t.legal.baja}](${abs(pages.baja)}): ${t.cancelar.baja.seo.descripcion}`,
+  ];
+}
+
 // /llms.txt (llmstxt.org): el sitio resumido en Markdown para ChatGPT, Claude y otros asistentes.
 // Sale de db/, como el resto del sitio (los textos en inglés también): no hay que editarlo a mano.
 export function GET() {
@@ -79,6 +90,7 @@ export function GET() {
     `## ${t.seo.llms.servicios}`,
     "",
     `- ${t.seo.llms.pagos}`,
+    `- ${t.seo.llms.condiciones}`,
     `- ${t.seo.llms.supervision}`,
     `- ${t.seo.llms.visitas}`,
     "",
@@ -104,6 +116,10 @@ export function GET() {
     `- [${t.menu.podcasts}](${abs(pages.podcasts)}): ${t.seo.llms.podcasts}`,
     ...episodes.es.map((e) => `- [${e.title}](${abs(e.path)}) (${e.guest}): ${e.description}`),
     "",
+    `## ${t.seo.llms.legal}`,
+    "",
+    ...legalLines("es"),
+    "",
     // Para los asistentes que buscan en inglés aunque les pregunten en español.
     "## In English",
     "",
@@ -116,6 +132,7 @@ export function GET() {
     `### ${en.t.seo.llms.servicios}`,
     "",
     `- ${en.t.seo.llms.pagos}`,
+    `- ${en.t.seo.llms.condiciones}`,
     `- ${en.t.seo.llms.supervision}`,
     `- ${en.t.seo.llms.visitas}`,
     "",
@@ -124,6 +141,7 @@ export function GET() {
     ...gymLines("en"),
     `- [${en.t.menu.blog}](${abs(en.pages.blog)}): ${en.t.seo.llms.blog}`,
     `- [${en.t.menu.podcasts}](${abs(en.pages.podcasts)}): ${en.t.seo.llms.podcasts}`,
+    ...legalLines("en"),
     "",
     ...ronaldLines("en", "###"),
     "",

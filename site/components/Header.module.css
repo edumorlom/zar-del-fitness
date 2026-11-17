@@ -22,6 +22,7 @@
 
 /* Barra de anuncio */
 .announce {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,6 +35,43 @@
   font-weight: 600;
   overflow: hidden;
   transition: height 0.45s var(--ease-out), opacity 0.3s;
+}
+.announceLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 0;
+}
+/* Los botones de arrepentimiento y de baja (Disp. 954/2025), a la derecha de la franja: chicos, pero a simple vista. */
+.announceLegal {
+  position: absolute;
+  right: 16px;
+  display: flex;
+  gap: 16px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+.announceLegal a {
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 0, 0, 0.35);
+  text-underline-offset: 2px;
+}
+.announceLegal a:hover {
+  text-decoration-color: currentColor;
+}
+.menuLegal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  width: 100%;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.menuLegal a {
+  text-decoration: underline;
+  text-decoration-color: var(--line-gold);
+  text-underline-offset: 3px;
 }
 .announce strong {
   font-weight: 800;
@@ -336,6 +374,10 @@
 /* Con el botón de ingreso, el menú completo entra desde 1260 px (en inglés es más largo). */
 @media (max-width: 1260px) {
   .nav {
+    display: none;
+  }
+  /* Con el menú hamburguesa, los botones de arrepentimiento y de baja van ahí (y en el pie). */
+  .announceLegal {
     display: none;
   }
   .lang {

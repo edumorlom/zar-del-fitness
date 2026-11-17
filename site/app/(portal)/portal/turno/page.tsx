@@ -7,6 +7,7 @@ import { Title } from "~/components/Progress";
 import { Shell } from "~/components/Shell";
 import { homeOf, isTeam } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
+import { requireConsent } from "~/lib/consent";
 import { getOpenAppointment } from "~/lib/data";
 import { dateOf, longDate, timeOf, todayISO } from "~/lib/format";
 import { bookableDays } from "~/lib/slots";
@@ -20,6 +21,7 @@ export const generateMetadata = async (): Promise<Metadata> => ({ title: pick(aw
 export default async function BookingPage({ searchParams }: { searchParams: Promise<{ dia?: string }> }) {
   const viewer = await requireViewer();
   if (!viewer.scopes.includes("user")) redirect(isTeam(viewer) ? "/portal/agenda" : homeOf(viewer));
+  await requireConsent(viewer);
   const sp = await searchParams;
   const open = await getOpenAppointment(viewer.id);
   const lang = await getLang();
