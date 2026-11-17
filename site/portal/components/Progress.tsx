@@ -406,7 +406,7 @@ export function Results({ checkins, you, manage, number = "01", lang = "es" }: {
               </tr>
             </thead>
             <tbody>
-              {[...checkins].reverse().map((c, i) => (
+              {checkins.toReversed().map((c, i) => (
                 <tr key={c.id} className={i === 0 ? "is-latest" : undefined}>
                   <td className="strong">{shortDate(c.date)}</td>
                   <td>{n(c.weight_kg)} kg</td>

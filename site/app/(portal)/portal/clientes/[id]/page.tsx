@@ -233,7 +233,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
                     </tr>
                   </thead>
                   <tbody>
-                    {[...checkins].reverse().map((c) => (
+                    {checkins.toReversed().map((c) => (
                       <tr key={c.id}>
                         <td className="mono">{shortDate(c.date)}</td>
                         <td className="right mono">{num(c.weight_kg)} kg</td>
