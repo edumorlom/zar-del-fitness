@@ -4,7 +4,7 @@ descripcion: The terms of the Zar del Fitness plans: how you buy and pay, sessio
 actualizado: 2026-11-17
 ---
 
-> **In short.** You pay for your plan monthly, with no automatic debits. Before training you fill in the fitness declaration. If the price changes, we tell you 30 days in advance. Your photos are published only if you authorize it.
+> **In short.** You pay for your plan monthly, with no automatic debits, and payments are non-refundable, except where the law provides otherwise. Before training you fill in the fitness declaration. If the price changes, we tell you 30 days in advance. Your photos are published only if you authorize it.
 
 This is a translation. The Spanish version is the one that applies under Argentine law.
 
@@ -32,6 +32,7 @@ The Premium System guest must also fill in the fitness declaration and accept th
 - **We don't use automatic debits.** We never charge you anything you don't pay yourself.
 - You pay at the gym (cash or card), by bank transfer, with Mercado Pago from the portal (for now, the Premium System), or by the method we tell you when you buy an online plan. When you pay with Mercado Pago, the payment is also governed by its terms, and we never see your card details.
 - Prices in pesos are **final prices**. The International Challenge, provided to people outside Argentina, is charged in US dollars.
+- **Payments are non-refundable**, except where the law or these terms provide otherwise.
 - We give you a receipt for every payment.
 
 **Price changes.** If the price of your plan changes, we tell you by email or WhatsApp **at least 30 days in advance**. The new price only applies to the months you pay from that date: what you already paid doesn't change. If you don't agree, you can cancel at no cost.

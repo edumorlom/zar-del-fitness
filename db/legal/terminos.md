@@ -4,7 +4,7 @@ descripcion: Las condiciones de los planes de Zar del Fitness: cómo se contrata
 actualizado: 2026-11-17
 ---
 
-> **En pocas palabras.** Pagás tu plan por mes, sin débitos automáticos. Antes de entrenar completás la declaración de aptitud física. Si cambia el precio, te avisamos con 30 días de anticipación. Tus fotos se publican sólo si lo autorizás.
+> **En pocas palabras.** Pagás tu plan por mes, sin débitos automáticos, y los pagos no son reembolsables, salvo en los casos que establece la ley. Antes de entrenar completás la declaración de aptitud física. Si cambia el precio, te avisamos con 30 días de anticipación. Tus fotos se publican sólo si lo autorizás.
 
 ## 1. Quiénes somos y qué abarcan estos términos
 
@@ -30,6 +30,7 @@ El invitado del Sistema Premium también tiene que completar la declaración de 
 - **No hacemos débitos automáticos.** Nunca te cobramos nada que no pagues vos.
 - Pagás en el gimnasio (efectivo o tarjeta), por transferencia, con Mercado Pago desde el portal (por ahora, el Sistema Premium), o por el medio que te indiquemos al contratar un plan online. Cuando pagás con Mercado Pago, el pago se rige también por sus términos, y nosotros no vemos los datos de tu tarjeta.
 - Los precios en pesos son **precios finales**. El Reto Internacional, que se presta a personas fuera de Argentina, se cobra en dólares estadounidenses.
+- **Los pagos no son reembolsables**, salvo en los casos que establecen la ley o estos términos.
 - Te damos el comprobante de cada pago.
 
 **Cambios de precio.** Si cambia el precio de tu plan, te avisamos por correo o WhatsApp **al menos 30 días antes**. El precio nuevo se aplica sólo a los meses que pagues desde esa fecha: lo que ya pagaste no cambia. Si no estás de acuerdo, te podés dar de baja sin ningún costo.
