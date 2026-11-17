@@ -40,7 +40,7 @@ export function renderBroadcastEmail({
     // Art. 27 de la Ley 25.326 (y del Decreto 1558/2001): en cada correo de publicidad, cómo pedir que no le manden más.
     (unsubscribe
       ? textRow(
-          `<span style="font-size:13px;line-height:21px;color:#8a8a8a">Te escribimos porque sos cliente de Zar del Fitness. Si no querés recibir más novedades ni promociones, <a href="${esc(unsubscribe)}" style="color:#e7c152;text-decoration:underline">date de baja acá</a>.</span>`,
+          `<span style="font-size:13px;line-height:21px;color:#8a8a8a">Te escribimos porque sos cliente de Zar del Fitness. Podés pedir en cualquier momento el retiro o bloqueo, total o parcial, de tus datos de nuestra base de promociones: <a href="${esc(unsubscribe)}" style="color:#e7c152;text-decoration:underline">date de baja acá</a> o escribinos por WhatsApp.</span>`,
           32
         )
       : "");

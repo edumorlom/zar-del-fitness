@@ -12,7 +12,7 @@ El responsable de tus datos personales es **{titular}**, CUIT {cuit}, con domici
 
 Para cualquier tema de privacidad podés escribirnos por WhatsApp al {whatsapp}, por correo a {correo} o hablarnos en el gimnasio.
 
-Esta política cumple la Ley 25.326 de Protección de los Datos Personales y su Decreto 1558/2001. Inscribimos nuestras bases de datos en el Registro Nacional de Bases de Datos de la Agencia de Acceso a la Información Pública (AAIP), como pide el art. 21 de esa ley.
+Esta política cumple la Ley 25.326 de Protección de los Datos Personales y su Decreto 1558/2001.
 
 ## 2. Qué datos guardamos
 
@@ -30,6 +30,8 @@ Esta política cumple la Ley 25.326 de Protección de los Datos Personales y su 
 | Conversaciones | Lo que nos escribís por WhatsApp o en el chat del sitio | Vos |
 | Permisos y pedidos | Qué aceptaste y cuándo, y tus pedidos de arrepentimiento, baja o acceso a tus datos | Vos |
 | Uso del sitio | Páginas que visitás, dispositivo, ubicación aproximada | Google Analytics, con cookies |
+
+**Qué es obligatorio.** Para entrenarte necesitamos tus datos de identificación y contacto, la declaración de aptitud física y los datos de tus evaluaciones: sin ellos no podemos prestarte el servicio. Son opcionales la huella, la publicación de tus fotos y las promociones: si no los das, entrenás igual.
 
 **No vemos ni guardamos los datos de tu tarjeta.** Cuando pagás con Mercado Pago, los carga y los protege Mercado Pago.
 
@@ -68,13 +70,13 @@ Para que el sitio, el portal y los pagos funcionen, usamos estos proveedores. Ca
 | Google | Estadísticas del sitio (Google Analytics), el inicio de sesión con Google si lo elegís y la agenda de turnos del equipo (Google Calendar) | Estados Unidos y otros países |
 | Resend | El envío de los correos | Estados Unidos |
 | Mercado Pago | Los pagos online. Mercado Pago es responsable de los datos que le das para pagar, según su propia política | Argentina |
-| Digui | El chat del sitio. Si iniciaste sesión, ve tu nombre, tus turnos, tus evaluaciones y tus pagos, para responderte. No ve tus datos de salud ni tu DNI | Sus servidores y los modelos de inteligencia artificial que usa pueden estar fuera de Argentina |
+| Digui | El chat del sitio, que es un asistente de inteligencia artificial, no una persona (si querés hablar con alguien del equipo, escribinos por WhatsApp). Si iniciaste sesión, ve tu nombre, tus turnos, tus evaluaciones y tus pagos, para responderte. No ve tus datos de salud ni tu DNI | Sus servidores y los modelos de inteligencia artificial que usa pueden estar fuera de Argentina |
 | YouTube (Google) | Los videos del sitio. Cuando reproducís uno, Google puede usar sus propias cookies | Estados Unidos y otros países |
 | WhatsApp (Meta) | Las conversaciones que nos mandás por WhatsApp | Estados Unidos y otros países |
 
 También podemos tener que dar datos a un juez o a una autoridad que los pida según la ley.
 
-**Datos fuera de Argentina.** Varios de estos proveedores guardan los datos en Estados Unidos, un país que para la Argentina no tiene un nivel de protección "adecuado". Por eso usamos proveedores con acuerdos de protección de datos y certificaciones de seguridad, y te pedimos tu **consentimiento expreso** para esa transferencia (art. 12 de la Ley 25.326 y su decreto reglamentario), al aceptar esta política en el portal.
+**Datos fuera de Argentina.** Varios de estos proveedores guardan los datos en Estados Unidos, un país que para la Argentina no tiene un nivel de protección "adecuado". Por eso usamos proveedores con acuerdos de protección de datos y certificaciones de seguridad, y te pedimos tu **consentimiento expreso** para esa transferencia (art. 12 de la Ley 25.326 y su decreto reglamentario), en una casilla aparte del portal.
 
 ## 6. Cookies y estadísticas
 

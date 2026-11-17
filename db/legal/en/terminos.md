@@ -88,8 +88,8 @@ For the online plan you need an internet connection and a safe place to train. T
 ## 11. Photos and testimonials
 
 - **Your progress photos are private:** only you, your coach and the person who runs the gym see them.
-- **We publish them only if you authorize it separately** (in *My data* in the portal or in writing), without your full name unless you also authorize that (art. 53 of the Civil and Commercial Code).
-- You can **withdraw that permission at any time.** If you do, we remove your photos from the website, delete the posts on our social media where you appear and don't use them again.
+- **We publish them only if you authorize it separately** (in *My data* in the portal or in writing), on our website, social media and ads, without your full name unless you also authorize that (art. 53 of the Civil and Commercial Code).
+- You can **withdraw that permission at any time.** If you do, within 7 days we remove your photos from the website, delete the posts on our social media where you appear and don't use them again.
 - Before filming or photographing you at the gym for our social media, we ask you.
 
 ## 12. Your personal data

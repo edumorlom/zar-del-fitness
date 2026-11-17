@@ -14,29 +14,41 @@ import type { Viewer } from "./auth";
 
 /**
  * - terminos: aceptó los términos y condiciones y leyó la política de privacidad.
+ * - transferencia: que sus datos se guarden en proveedores de fuera de Argentina (Estados Unidos, que para la AAIP no
+ *   tiene protección "adecuada"): consentimiento expreso y aparte (art. 12 de la Ley 25.326 y su Decreto 1558/2001).
  * - salud: consentimiento expreso para sus datos de salud (art. 7 de la Ley 25.326): ficha médica, medidas, fotos.
  * - huella: usar su huella dactilar para entrar al gimnasio (dato biométrico). Si no, se le da otra forma de entrar.
  * - imagen: usar sus fotos (antes y después) en el sitio y las redes (art. 53 del Código Civil y Comercial).
  * - marketing: recibir novedades y promociones por correo. Se puede dar de baja con el link de cada correo.
  */
-export const CONSENT_KINDS = ["terminos", "salud", "huella", "imagen", "marketing"] as const;
+export const CONSENT_KINDS = ["terminos", "transferencia", "salud", "huella", "imagen", "marketing"] as const;
 export type ConsentKind = (typeof CONSENT_KINDS)[number];
 
 /** Los que hacen falta para usar el portal: sin ellos, el cliente va a /portal/mis-datos antes que a cualquier otra página. */
-export const REQUIRED_CONSENTS: ConsentKind[] = ["terminos", "salud"];
+export const REQUIRED_CONSENTS: ConsentKind[] = ["terminos", "transferencia", "salud"];
 
 /** Qué dice cada casilla, en el idioma del cliente. El equipo ve los títulos en castellano (la ficha del cliente). */
 export const CONSENT_TEXT: Record<ConsentKind, Record<Lang, { title: string; text: string }>> = {
   terminos: {
     es: {
       title: "Términos y privacidad",
-      text:
-        "Leí y acepto los Términos y condiciones y la Política de privacidad de Zar del Fitness, y consiento que mis datos se guarden en los proveedores que nombra la política, algunos fuera de Argentina (como Estados Unidos).",
+      text: "Leí y acepto los Términos y condiciones y la Política de privacidad de Zar del Fitness.",
     },
     en: {
       title: "Terms and privacy",
+      text: "I have read and accept the Zar del Fitness Terms and Conditions and Privacy Policy.",
+    },
+  },
+  transferencia: {
+    es: {
+      title: "Mis datos en proveedores del exterior",
       text:
-        "I have read and accept the Zar del Fitness Terms and Conditions and Privacy Policy, and I consent to my data being stored with the providers listed in the policy, some of them outside Argentina (such as the United States).",
+        "Consiento que mis datos, incluidos los de salud, se guarden en los proveedores que nombra la Política de privacidad, varios en Estados Unidos, un país que para la Argentina no tiene un nivel de protección adecuado.",
+    },
+    en: {
+      title: "My data with providers abroad",
+      text:
+        "I consent to my data, including health data, being stored with the providers listed in the Privacy Policy, several of them in the United States, a country Argentina doesn't consider to have an adequate level of protection.",
     },
   },
   salud: {
@@ -65,12 +77,12 @@ export const CONSENT_TEXT: Record<ConsentKind, Record<Lang, { title: string; tex
     es: {
       title: "Mis fotos en el sitio y las redes (opcional)",
       text:
-        "Autorizo a Zar del Fitness a publicar mis fotos de antes y después en su sitio y sus redes, sin mi nombre completo. Puedo retirarlo cuando quiera: las sacan del sitio y no las vuelven a usar.",
+        "Autorizo a Zar del Fitness a publicar mis fotos de antes y después, con mi cara y sin mi nombre completo, en su sitio, sus redes y sus publicidades, mientras no retire este permiso. Puedo retirarlo cuando quiera: dentro de los 7 días las sacan del sitio y de sus redes, y no las vuelven a usar.",
     },
     en: {
       title: "My photos on the website and social media (optional)",
       text:
-        "I authorize Zar del Fitness to publish my before and after photos on its website and social media, without my full name. I can withdraw this at any time: they will be removed from the website and not used again.",
+        "I authorize Zar del Fitness to publish my before and after photos, showing my face but not my full name, on its website, social media and ads, until I withdraw this permission. I can withdraw it at any time: within 7 days they will be removed from the website and social media and not used again.",
     },
   },
   marketing: {

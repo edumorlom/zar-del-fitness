@@ -7,6 +7,7 @@ import { Evolution } from "./Evolution";
 import { Form } from "./Form";
 import { initials } from "./Shell";
 import { ScrollTable } from "./ScrollTable";
+import { content } from "@/lib/content";
 import { pick, type Lang } from "@/lib/i18n";
 
 const lean = (c: Checkin) => c.weight_kg * (1 - c.body_fat_pct / 100);
@@ -182,6 +183,16 @@ export function Hero({ client, checkins, you, appointment, pay, lang = "es" }: {
                       )}
                     </p>
                   )}
+                  {/* Antes de pagar, destacado: el derecho de arrepentimiento y los términos (arts. 1107 y 1111 del CCyC). */}
+                  <p className="note note--legal">
+                    {tr("Tenés ", "You have ")}
+                    <strong>{tr("10 días corridos para arrepentirte", "10 calendar days to withdraw")}</strong>
+                    {tr(" y te devolvemos todo: ", " and get a full refund: ")}
+                    <a href={content(lang).pages.arrepentimiento}>{content(lang).t.legal.arrepentimiento}</a>
+                    {tr(". Al pagar aceptás los ", ". By paying you accept the ")}
+                    <a href={content(lang).pages.terminos}>{content(lang).t.legal.terminos}</a>
+                    {tr(". Sin débitos automáticos.", ". No automatic debits.")}
+                  </p>
                   <Form action={payWithMercadoPago} submit={tr(`Pagar ${pay.amount}`, `Pay ${pay.amount}`)} button="btn btn--gold btn--sm" className="inline-form" />
                   <p className="note">
                     {pay.early

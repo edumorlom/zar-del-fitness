@@ -28,6 +28,13 @@ export async function saveMyConsents(_: FormState, form: FormData): Promise<Form
 
   if (first && !answers.terminos)
     return { error: tr("Para usar el portal tenés que aceptar los términos y la privacidad.", "To use the portal you need to accept the terms and privacy policy.") };
+  if (first && !answers.transferencia)
+    return {
+      error: tr(
+        "Para usar el portal necesitamos tu consentimiento para guardar tus datos en nuestros proveedores del exterior.",
+        "To use the portal we need your consent to store your data with our providers abroad."
+      ),
+    };
   if (first && !answers.salud && !before.salud)
     return {
       error: tr(
@@ -40,7 +47,7 @@ export async function saveMyConsents(_: FormState, form: FormData): Promise<Form
   if (!first && !form.has("terminos")) delete (answers as Partial<typeof answers>).terminos;
   await recordConsents(viewer.id, answers, "portal", viewer.id);
   refresh();
-  if (first && answers.terminos && answers.salud) redirect(homeOf(viewer));
+  if (first && answers.terminos && answers.transferencia && answers.salud) redirect(homeOf(viewer));
   if (!answers.salud)
     return {
       ok: tr(

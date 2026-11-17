@@ -86,8 +86,8 @@ Para el plan online necesitás conexión a internet y un lugar seguro para entre
 ## 11. Fotos y testimonios
 
 - **Tus fotos de progreso son privadas:** las ven sólo vos, tu coach y quien dirige el gimnasio.
-- **Las publicamos sólo si lo autorizás aparte** (en *Mis datos* del portal o por escrito), sin tu nombre completo salvo que también lo autorices (art. 53 del Código Civil y Comercial).
-- Podés **retirar ese permiso cuando quieras.** Si lo retirás, sacamos tus fotos del sitio, borramos las publicaciones de nuestras redes en las que aparecés y no las volvemos a usar.
+- **Las publicamos sólo si lo autorizás aparte** (en *Mis datos* del portal o por escrito), en nuestro sitio, nuestras redes y nuestras publicidades, sin tu nombre completo salvo que también lo autorices (art. 53 del Código Civil y Comercial).
+- Podés **retirar ese permiso cuando quieras.** Si lo retirás, dentro de los 7 días sacamos tus fotos del sitio, borramos las publicaciones de nuestras redes en las que aparecés y no las volvemos a usar.
 - Antes de filmarte o fotografiarte en el gimnasio para nuestras redes, te preguntamos.
 
 ## 12. Tus datos personales

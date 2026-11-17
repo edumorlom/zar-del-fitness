@@ -127,8 +127,8 @@ SSL "Full", delante de Railway:
   las 24 horas.
 - **Consentimientos** (`portal/lib/consent.ts`, Ley 25.326): la primera vez que un cliente entra, y cada vez que cambia la
   fecha (`actualizado`) de los términos o la privacidad, pasa por `/portal/mis-datos` antes que por cualquier otra página.
-  Tiene que aceptar los términos (con la transferencia de datos a los proveedores de afuera) y dar el consentimiento expreso
-  de salud; la huella, la publicación de sus fotos y las promociones son opcionales. Cada cambio es una fila nueva en
+  Tiene que aceptar los términos, la transferencia de sus datos a los proveedores de afuera (casilla aparte) y dar el
+  consentimiento expreso de salud; la huella, la publicación de sus fotos y las promociones son opcionales. Cada cambio es una fila nueva en
   `consents` (nunca se borra). El equipo ve los permisos en la ficha del cliente y carga ahí lo que firmó en papel. Los
   correos masivos de promociones no les llegan a quienes dijeron que no y traen un link firmado para darse de baja sin
   iniciar sesión (`/portal/correos`; la firma usa `UNSUBSCRIBE_SECRET` o, si no está, `CLERK_SECRET_KEY`).

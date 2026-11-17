@@ -167,7 +167,7 @@ create table if not exists broadcast_template (
 create table if not exists consents (
   id serial primary key,
   user_id int not null references users(id) on delete cascade,
-  kind text not null check (kind in ('terminos', 'salud', 'huella', 'imagen', 'marketing')),
+  kind text not null check (kind in ('terminos', 'transferencia', 'salud', 'huella', 'imagen', 'marketing')),
   granted boolean not null,
   version text not null,
   source text not null default 'portal' check (source in ('portal', 'equipo')),

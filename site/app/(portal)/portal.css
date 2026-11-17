@@ -2727,3 +2727,15 @@ a.person:hover .strong {
   text-decoration-color: var(--line-gold);
   text-underline-offset: 3px;
 }
+/* El derecho de arrepentimiento, destacado arriba del botón de pagar (arts. 1107 y 1111 del CCyC). */
+.note--legal {
+  padding: 10px 12px;
+  border: 1px solid var(--line-gold);
+  border-radius: 10px;
+  background: rgba(152, 136, 88, 0.08);
+}
+.note--legal a {
+  color: var(--gold-light);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

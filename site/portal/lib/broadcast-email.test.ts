@@ -26,6 +26,7 @@ test("el correo de promociones trae el link de baja; el aviso, no", () => {
   const promo = renderBroadcastEmail({ name: "Ana", subject: "Promo", body: "Hola", unsubscribe: url });
   assert.match(promo.html, /href="https:\/\/zardelfitness\.com\.ar\/portal\/correos\?c=7&#38;t=abc"/);
   assert.match(promo.html, /date de baja acá/);
+  assert.match(promo.html, /retiro o bloqueo, total o parcial/);
   const notice = renderBroadcastEmail({ name: "Ana", subject: "Cerramos el lunes", body: "Hola" });
   assert.doesNotMatch(notice.html, /date de baja/);
 });
