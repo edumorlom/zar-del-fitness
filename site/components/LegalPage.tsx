@@ -77,7 +77,6 @@ export function LegalPage({ lang, id }: { lang: Lang; id: LegalId }) {
                   {o.title}
                 </a>
               ))}
-              <a href={pages.arrepentimiento}>{t.legal.arrepentimiento}</a>
             </p>
           </aside>
         </div>

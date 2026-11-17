@@ -44,11 +44,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const home = { es: es.home, en: en.home };
   const blog = { es: es.blog, en: en.blog };
   const podcasts = { es: es.podcasts, en: en.podcasts };
-  const arrepentimiento = { es: es.arrepentimiento, en: en.arrepentimiento };
-  const baja = { es: es.baja, en: en.baja };
-  // Las páginas legales (db/legal/) y los botones de arrepentimiento y de baja: cambian con sus archivos y sus textos.
+  // Las páginas legales (db/legal/): cambian con sus archivos.
   const legalUpdated = (id: (typeof LEGAL_IDS)[number]) => lastCommit(`../db/legal/${id}.md`, `../db/legal/en/${id}.md`) ?? legalDocs[id].es.updated;
-  const cancelUpdated = lastCommit("../db/textos.json", "components/CancelPage.tsx", "components/CancelForm.tsx");
 
   const site = LANGS.flatMap((lang) => {
     const updated = posts[lang].map(postUpdated);
@@ -89,8 +86,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
         lastModified: legalUpdated(id),
         changeFrequency: "yearly" as const,
       })),
-      { ...page(arrepentimiento[lang], 0.3, arrepentimiento), lastModified: cancelUpdated, changeFrequency: "yearly" as const },
-      { ...page(baja[lang], 0.3, baja), lastModified: cancelUpdated, changeFrequency: "yearly" as const },
     ];
   });
 

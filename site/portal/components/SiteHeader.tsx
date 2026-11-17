@@ -30,10 +30,6 @@ export function SiteHeader({ login, portal, lang }: { login: { label: string; hr
         write: t.encabezado.escribinos,
       }}
       language={{ href: lang ? `/portal/idioma/${other}` : `${siteUrl}/en/`, lang: other, label: content(other).t.general.leerEn }}
-      legal={[
-        { href: abs(pages.arrepentimiento), label: t.legal.arrepentimiento },
-        { href: abs(pages.baja), label: t.legal.baja },
-      ]}
     />
   );
 }

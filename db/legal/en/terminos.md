@@ -40,11 +40,11 @@ The Premium System guest must also fill in the fitness declaration and accept th
 
 If you bought a plan **remotely** (on the website, the portal, WhatsApp or by phone), you have **10 calendar days** from the purchase to withdraw, **with no reason needed and at no cost**, even if you've already started training (art. 34 of Law 24,240 and arts. 1110 to 1116 of the Civil and Commercial Code). If the last day is not a business day, the period runs until the next business day. You can't waive this right.
 
-To withdraw, use the **[Withdrawal button](/en/withdrawal/)** (no need to register or sign in), message us on WhatsApp or ask at the gym. We immediately send you a **code** that is your receipt, reply within 24 hours and **refund everything you paid**, through the same payment method.
+To withdraw, message us on WhatsApp at {whatsapp} or ask at the gym. We reply within 24 hours with a **code** that is your receipt and **refund everything you paid**, through the same payment method.
 
 ## 5. Cancelling: any time, at no cost
 
-You can cancel **at any time**, through the same channel you used to buy or any other: with the **[Cancel service button](/en/cancel-plan/)**, on WhatsApp or at the gym. **There's no notice period, penalty or fee** for cancelling (arts. 10 ter and 10 quater of Law 24,240). We immediately send you the receipt with your request code.
+You can cancel **at any time**, through the same channel you used to buy or any other: on WhatsApp at {whatsapp} or at the gym. **There's no notice period, penalty or fee** for cancelling (arts. 10 ter and 10 quater of Law 24,240). We send you a written cancellation receipt within 72 hours.
 
 Since there are no automatic debits, nothing else is charged after you cancel. You can keep using what you already paid for until your pass expires. Except for the withdrawal in section 4, or if we couldn't provide the service because of something on our side, we don't refund the remaining days of the month.
 

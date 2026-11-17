@@ -183,13 +183,9 @@ export function Hero({ client, checkins, you, appointment, pay, lang = "es" }: {
                       )}
                     </p>
                   )}
-                  {/* Antes de pagar, destacado: el derecho de arrepentimiento y los términos (arts. 1107 y 1111 del CCyC). */}
+                  {/* Antes de pagar, a la vista: los términos (art. 1107 del CCyC). */}
                   <p className="note note--legal">
-                    {tr("Tenés ", "You have ")}
-                    <strong>{tr("10 días corridos para arrepentirte", "10 calendar days to withdraw")}</strong>
-                    {tr(" y te devolvemos todo: ", " and get a full refund: ")}
-                    <a href={content(lang).pages.arrepentimiento}>{content(lang).t.legal.arrepentimiento}</a>
-                    {tr(". Al pagar aceptás los ", ". By paying you accept the ")}
+                    {tr("Al pagar aceptás los ", "By paying you accept the ")}
                     <a href={content(lang).pages.terminos}>{content(lang).t.legal.terminos}</a>
                     {tr(". Sin débitos automáticos.", ". No automatic debits.")}
                   </p>

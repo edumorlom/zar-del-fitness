@@ -29,10 +29,6 @@ export function PageShell({ lang, alternate, children }: { lang: Lang; alternate
         }}
         // "Read in English" en inglés, "Leer en español" en castellano: en el idioma al que lleva.
         language={{ href: alternate, lang: other, label: content(other).t.general.leerEn }}
-        legal={[
-          { href: pages.arrepentimiento, label: t.legal.arrepentimiento },
-          { href: pages.baja, label: t.legal.baja },
-        ]}
       />
       <main id="main">{children}</main>
       <Footer lang={lang} />

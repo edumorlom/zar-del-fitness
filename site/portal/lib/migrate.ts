@@ -176,26 +176,6 @@ create table if not exists consents (
 );
 create index if not exists consents_user on consents(user_id, kind, created_at desc);
 
--- Los pedidos del botón de arrepentimiento y del botón de baja del sitio (site/app/cancel/route.ts): el código que se le
--- manda a quien lo pide es la constancia. user_id, si el correo es el de un cliente.
-create table if not exists cancel_requests (
-  id serial primary key,
-  code text not null unique,
-  kind text not null check (kind in ('arrepentimiento', 'baja')),
-  name text not null,
-  email text not null,
-  phone text,
-  dni text,
-  plan text,
-  purchased_on date,
-  message text,
-  lang text not null default 'es',
-  user_id int references users(id) on delete set null,
-  status text not null default 'recibido' check (status in ('recibido', 'resuelto')),
-  resolved_by int references users(id) on delete set null,
-  resolved_at timestamptz,
-  created_at timestamptz not null default now()
-);
 
 -- El día que se le mandó al cliente el último recordatorio de evaluación (portal/lib/reminders.ts): uno por evaluación.
 alter table users add column if not exists evaluation_reminder_on date;

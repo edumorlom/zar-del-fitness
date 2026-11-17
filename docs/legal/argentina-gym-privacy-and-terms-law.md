@@ -1,3 +1,5 @@
+> **Update (same day):** at the owner's request, the "Botón de arrepentimiento" and "Botón de baja de servicio" pages, their form and the header/footer links were removed. Withdrawal and cancellation requests now go through WhatsApp or the gym, and the terms still state both rights. This reopens A4 (Disp. 954/2025) and moves A5 to the front-desk procedure (B13).
+
 > **Status in the code (branch `claude/festive-thompson-cgh487`, 2026-11-17).** Besides what this report calls "This release", the code already covers these items the report lists as *Gap*:
 > - **A7:** a separate, unticked consent to the transfer to US providers ("My data with providers abroad", required in `/portal/mis-datos`).
 > - **A12:** the withdrawal right, highlighted right above the Mercado Pago pay button, with a link to the terms; clients accept the terms before they can pay.

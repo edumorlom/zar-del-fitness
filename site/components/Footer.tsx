@@ -34,14 +34,12 @@ export function Footer({ lang }: { lang: Lang }) {
           </a>
         </address>
 
-        {/* Lo que pide la ley en el sitio: los términos (Ley 24.240, art. 38), la privacidad (Ley 25.326), los botones de
-            arrepentimiento y de baja (Disp. 954/2025) y los links a Defensa del Consumidor (Res. 274/2021 y Ley CABA 2244). */}
+        {/* Lo que pide la ley en el sitio: los términos (Ley 24.240, art. 38), la privacidad (Ley 25.326) y los links a
+            Defensa del Consumidor (Res. 274/2021 y Ley CABA 2244). */}
         <nav className={styles.col} aria-label={t.legal.pie}>
           <p className={styles.label}>{t.legal.pie}</p>
           <a href={pages.terminos}>{t.legal.terminos}</a>
           <a href={pages.privacidad}>{t.legal.privacidad}</a>
-          <a href={pages.arrepentimiento}>{t.legal.arrepentimiento}</a>
-          <a href={pages.baja}>{t.legal.baja}</a>
           <a href={links.consumidor} rel="noopener">
             {t.legal.consumidor}
           </a>

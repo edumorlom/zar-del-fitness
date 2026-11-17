@@ -61,14 +61,9 @@ function ronaldLines(lang: Lang, h: string) {
   ];
 }
 
-/** Los términos, la privacidad y los botones de arrepentimiento y de baja (db/legal/, db/textos.json). */
+/** Los términos y la privacidad (db/legal/). */
 function legalLines(lang: Lang) {
-  const { t, pages } = content(lang);
-  return [
-    ...LEGAL_IDS.map((id) => `- [${legalDocs[id][lang].title}](${abs(legalDocs[id][lang].path)}): ${legalDocs[id][lang].description}`),
-    `- [${t.legal.arrepentimiento}](${abs(pages.arrepentimiento)}): ${t.cancelar.arrepentimiento.seo.descripcion}`,
-    `- [${t.legal.baja}](${abs(pages.baja)}): ${t.cancelar.baja.seo.descripcion}`,
-  ];
+  return LEGAL_IDS.map((id) => `- [${legalDocs[id][lang].title}](${abs(legalDocs[id][lang].path)}): ${legalDocs[id][lang].description}`);
 }
 
 // /llms.txt (llmstxt.org): el sitio resumido en Markdown para ChatGPT, Claude y otros asistentes.

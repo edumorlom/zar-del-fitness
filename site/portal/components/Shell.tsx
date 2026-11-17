@@ -55,8 +55,6 @@ export async function Shell({ viewer, children }: { viewer: Viewer; children: Re
           {viewer.scopes.includes("user") && <Link href="/portal/mis-datos">{tr("Mis datos y permisos", "My data and choices")}</Link>}
           <a href={pages.privacidad}>{t.legal.privacidad}</a>
           <a href={pages.terminos}>{t.legal.terminos}</a>
-          <a href={pages.arrepentimiento}>{t.legal.arrepentimiento}</a>
-          <a href={pages.baja}>{t.legal.baja}</a>
         </nav>
       </main>
       <DiguiChat customerId={viewer.id} />

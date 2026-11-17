@@ -38,11 +38,11 @@ El invitado del Sistema Premium también tiene que completar la declaración de 
 
 Si contrataste un plan **a distancia** (por el sitio, el portal, WhatsApp o teléfono), tenés **10 días corridos** desde que lo contrataste para arrepentirte, **sin dar motivos y sin costo**, aunque ya hayas empezado a entrenar (art. 34 de la Ley 24.240 y arts. 1110 a 1116 del Código Civil y Comercial). Si el último día no es hábil, el plazo sigue hasta el primer día hábil siguiente. Este derecho no se puede renunciar.
 
-Para arrepentirte, usá el **[Botón de arrepentimiento](/arrepentimiento/)** (no hace falta registrarse ni iniciar sesión), escribinos por WhatsApp o pedilo en el gimnasio. Te mandamos en el momento un **código** que es tu constancia, te respondemos dentro de las 24 horas y te **devolvemos todo lo que pagaste**, por el mismo medio de pago.
+Para arrepentirte, escribinos por WhatsApp al {whatsapp} o pedilo en el gimnasio. Te respondemos dentro de las 24 horas con un **código** que es tu constancia y te **devolvemos todo lo que pagaste**, por el mismo medio de pago.
 
 ## 5. Baja: cuando quieras, sin cargo
 
-Te podés dar de baja **cuando quieras**, por el mismo medio por el que contrataste o por cualquier otro: con el **[Botón de baja de servicio](/baja/)**, por WhatsApp o en el gimnasio. **No hay preaviso, multa ni cargo** por darte de baja (arts. 10 ter y 10 quater de la Ley 24.240). Te mandamos en el momento la constancia con el código de tu pedido.
+Te podés dar de baja **cuando quieras**, por el mismo medio por el que contrataste o por cualquier otro: por WhatsApp al {whatsapp} o en el gimnasio. **No hay preaviso, multa ni cargo** por darte de baja (arts. 10 ter y 10 quater de la Ley 24.240). Te mandamos por escrito la constancia de tu baja dentro de las 72 horas.
 
 Como no hay débitos automáticos, después de la baja no se te cobra nada más. Lo que ya pagaste lo podés seguir usando hasta que venza tu pase. Salvo el arrepentimiento de la sección 4, o que el servicio no se haya podido prestar por algo nuestro, no devolvemos los días que quedaban del mes.
 

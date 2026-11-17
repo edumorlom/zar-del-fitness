@@ -350,8 +350,6 @@
     },
     "terminos": { "es": "Términos y condiciones", "en": "Terms and conditions" },
     "privacidad": { "es": "Política de privacidad", "en": "Privacy policy" },
-    "arrepentimiento": { "es": "Botón de arrepentimiento", "en": "Withdrawal button" },
-    "baja": { "es": "Botón de baja de servicio", "en": "Cancel service button" },
     "consumidor": {
       "es": "Defensa de las y los Consumidores. Para reclamos ingrese aquí",
       "en": "Consumer protection (Argentina). File a complaint here"
@@ -361,104 +359,6 @@
     "aaip": {
       "es": "El titular de los datos personales tiene la facultad de ejercer el derecho de acceso a los mismos en forma gratuita a intervalos no inferiores a seis meses, salvo que se acredite un interés legítimo al efecto conforme lo establecido en el artículo 14, inciso 3 de la Ley Nº 25.326. LA AGENCIA DE ACCESO A LA INFORMACIÓN PÚBLICA, en su carácter de Órgano de Control de la Ley N° 25.326, tiene la atribución de atender las denuncias y reclamos que interpongan quienes resulten afectados en sus derechos por incumplimiento de las normas vigentes en materia de protección de datos personales.",
       "en": "The data subject has the right to access their personal data free of charge at intervals of no less than six months, unless a legitimate interest is shown, under article 14(3) of Argentine Law No. 25,326. The AGENCIA DE ACCESO A LA INFORMACIÓN PÚBLICA, as the supervisory authority of Law No. 25,326, has the power to handle complaints and claims from anyone whose rights are affected by non-compliance with personal data protection rules."
-    }
-  },
-
-  "cancelar": {
-    "arrepentimiento": {
-      "antetitulo": { "es": "Botón de arrepentimiento", "en": "Withdrawal button" },
-      "titulo": { "es": ["Botón de", "*arrepentimiento*"], "en": ["Changed", "*your mind?*"] },
-      "bajada": {
-        "es": "Si contrataste un plan a distancia (por el sitio, el portal o WhatsApp), tenés 10 días corridos para arrepentirte, sin dar motivos y sin costo.",
-        "en": "If you bought a plan remotely (on the website, the portal or WhatsApp), you have 10 calendar days to withdraw, with no reason needed and at no cost."
-      },
-      "puntos": {
-        "es": [
-          "Tenés **10 días corridos** desde que contrataste para revocar la compra (art. 34 de la Ley 24.240 y art. 1110 del Código Civil y Comercial). Si el último día no es hábil, el plazo sigue hasta el primer día hábil siguiente.",
-          "No tenés que registrarte, iniciar sesión ni explicar por qué. Completá el formulario y te llega por correo el **código de tu pedido**, que es tu constancia.",
-          "Te devolvemos **todo lo que pagaste**, por el mismo medio de pago, sin costo para vos.",
-          "Si preferís, también lo podés pedir por WhatsApp o en el gimnasio."
-        ],
-        "en": [
-          "You have **10 calendar days** from purchase to withdraw (art. 34 of Law 24,240 and art. 1110 of the Argentine Civil and Commercial Code). If the last day is not a business day, the period runs until the next business day.",
-          "You don't need to register, sign in or explain why. Fill in the form and you'll get your **request code** by email, which is your receipt.",
-          "We refund **everything you paid**, through the same payment method, at no cost to you.",
-          "If you prefer, you can also ask on WhatsApp or at the gym."
-        ]
-      },
-      "enviar": { "es": "Me arrepiento de la compra", "en": "Withdraw my purchase" },
-      "seo": {
-        "titulo": { "es": "Botón de arrepentimiento", "en": "Withdrawal button" },
-        "descripcion": {
-          "es": "Arrepentite de un plan de Zar del Fitness contratado a distancia dentro de los 10 días corridos, sin registrarte y sin costo. Te mandamos el código al instante.",
-          "en": "Withdraw from a Zar del Fitness plan bought remotely within 10 calendar days, without registering and at no cost. You get your request code instantly."
-        }
-      }
-    },
-    "baja": {
-      "antetitulo": { "es": "Botón de baja de servicio", "en": "Cancel service button" },
-      "titulo": { "es": ["Botón de", "*baja*"], "en": ["Cancel", "*your plan*"] },
-      "bajada": {
-        "es": "Podés dar de baja tu plan cuando quieras, por este mismo medio, sin dar explicaciones y sin cargo.",
-        "en": "You can cancel your plan at any time, right here, with no explanation and no charge."
-      },
-      "puntos": {
-        "es": [
-          "La baja corre desde que la pedís: no hay preaviso, multa ni cargo por cancelar (art. 10 quater de la Ley 24.240).",
-          "No tenés que iniciar sesión. Te llega por correo el **código de tu pedido**, que es tu constancia de baja.",
-          "No hacemos débitos automáticos: después de la baja no se te cobra nada más. Lo que ya pagaste lo podés usar hasta que venza tu pase.",
-          "Si además querés que borremos tus datos personales, marcalo en el formulario."
-        ],
-        "en": [
-          "Cancellation takes effect when you request it: no notice period, penalty or cancellation fee (art. 10 quater of Law 24,240).",
-          "You don't need to sign in. You'll get your **request code** by email, which is your cancellation receipt.",
-          "We don't use automatic debits: nothing else is charged after you cancel. You can keep using what you already paid for until your pass expires.",
-          "If you also want us to delete your personal data, tick the box in the form."
-        ]
-      },
-      "enviar": { "es": "Dar de baja mi plan", "en": "Cancel my plan" },
-      "seo": {
-        "titulo": { "es": "Botón de baja de servicio", "en": "Cancel service button" },
-        "descripcion": {
-          "es": "Da de baja tu plan de Zar del Fitness cuando quieras, sin iniciar sesión, sin preaviso y sin cargo. Te mandamos la constancia con tu código al instante.",
-          "en": "Cancel your Zar del Fitness plan at any time, without signing in, notice period or fees. You get your receipt and request code instantly."
-        }
-      }
-    },
-    "formulario": {
-      "titulo": { "es": "Tu pedido", "en": "Your request" },
-      "nombre": { "es": "Nombre y apellido", "en": "Full name" },
-      "correo": { "es": "Correo", "en": "Email" },
-      "correoAyuda": { "es": "Te mandamos ahí el código.", "en": "We'll send your code there." },
-      "telefono": { "es": "Teléfono (opcional)", "en": "Phone (optional)" },
-      "dni": { "es": "DNI (opcional)", "en": "ID number (optional)" },
-      "dniAyuda": { "es": "Nos ayuda a encontrar tu cuenta.", "en": "Helps us find your account." },
-      "plan": { "es": "Plan", "en": "Plan" },
-      "planElegir": { "es": "Elegí tu plan", "en": "Choose your plan" },
-      "planOtro": { "es": "Otro o no sé", "en": "Other or not sure" },
-      "fecha": { "es": "¿Cuándo lo contrataste? (opcional)", "en": "When did you buy it? (optional)" },
-      "mensaje": { "es": "Comentario (opcional)", "en": "Comment (optional)" },
-      "borrarDatos": { "es": "Además, quiero que borren mis datos personales.", "en": "I also want my personal data deleted." },
-      "enviando": { "es": "Enviando…", "en": "Sending…" },
-      "listoTitulo": { "es": "Recibimos tu pedido", "en": "We got your request" },
-      "listo": {
-        "es": "Tu código es **{codigo}**. Te lo mandamos también a {correo}: guardalo, es tu constancia. Te escribimos dentro de las 24 horas.",
-        "en": "Your code is **{codigo}**. We also sent it to {correo}: keep it, it's your receipt. We'll get back to you within 24 hours."
-      },
-      "sinCorreo": {
-        "es": "Tu código es **{codigo}**. No pudimos mandarte el correo: sacale una captura a esta pantalla, es tu constancia. Te escribimos dentro de las 24 horas.",
-        "en": "Your code is **{codigo}**. We couldn't send you the email: take a screenshot of this screen, it's your receipt. We'll get back to you within 24 hours."
-      },
-      "error": {
-        "es": "No pudimos registrar el pedido. Escribinos por WhatsApp al {whatsapp} y lo hacemos por ahí.",
-        "en": "We couldn't record your request. Message us on WhatsApp at {whatsapp} and we'll do it there."
-      },
-      "faltan": { "es": "Completá tu nombre y un correo válido.", "en": "Please enter your name and a valid email." },
-      "otrosCanales": { "es": "También por WhatsApp", "en": "Or on WhatsApp" },
-      "datos": {
-        "es": "Usamos estos datos sólo para tramitar tu pedido. Más en la Política de privacidad.",
-        "en": "We use this data only to process your request. More in the Privacy policy."
-      }
     }
   },
 

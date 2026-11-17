@@ -119,12 +119,10 @@ SSL "Full", delante de Railway:
   Mercado Pago con el access token. Si se devuelve, el pase vuelve a como estaba. El admin y recepción ven los pases y
   los pagos, y cargan los del local (efectivo o tarjeta); sólo el admin los anula.
 - **Legal** (la investigación detrás, en `docs/legal/`): las páginas de términos y privacidad (`lib/legal.ts`,
-  `components/LegalPage.tsx`, de `db/legal/`) y el **botón de arrepentimiento** y el **botón de baja de servicio** (Disp.
-  954/2025: `components/CancelPage.tsx`, en `/arrepentimiento/` y `/baja/`). Los dos botones están a la derecha de la franja
-  dorada (en el celular, en el menú) y en el pie, que además tiene los links a Defensa del Consumidor y la leyenda de la AAIP.
-  El formulario no pide iniciar sesión: guarda el pedido en `cancel_requests` y manda en el momento el código a quien lo pidió y
-  los datos a `ADMIN_EMAIL` y al correo de `db/gimnasio.json` (`portal/cancel-actions.ts`), que tienen que responder dentro de
-  las 24 horas.
+  `components/LegalPage.tsx`, de `db/legal/`). El pie tiene los links legales, los de Defensa del Consumidor y la leyenda de
+  la AAIP. No hay botón de arrepentimiento ni botón de baja: se sacaron a pedido del dueño (la Disp. 954/2025 los exige a
+  quien vende a distancia, ver el informe). Los pedidos de arrepentimiento (10 días) y de baja llegan por WhatsApp o en el
+  gimnasio, y hay que responderlos con una constancia escrita: el código dentro de las 24 horas, la baja dentro de las 72.
 - **Consentimientos** (`portal/lib/consent.ts`, Ley 25.326): la primera vez que un cliente entra, y cada vez que cambia la
   fecha (`actualizado`) de los términos o la privacidad, pasa por `/portal/mis-datos` antes que por cualquier otra página.
   Tiene que aceptar los términos, la transferencia de sus datos a los proveedores de afuera (casilla aparte) y dar el

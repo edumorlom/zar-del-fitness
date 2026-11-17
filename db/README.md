@@ -76,8 +76,7 @@ actualizado: 2026-11-17
 - **`actualizado` es la versión.** Cambiala sólo si el cambio es de fondo, y en los dos idiomas (si no coinciden, el sitio no se
   construye): con una fecha nueva, el portal les vuelve a pedir a los clientes que acepten los términos y la privacidad.
   Los términos prometen avisar los cambios 30 días antes.
-- Los textos de los botones de arrepentimiento y de baja (`/arrepentimiento/` y `/baja/`) y la leyenda de la AAIP del pie están
-  en `textos.json` (`legal` y `cancelar`).
+- Los textos legales del pie (los links y la leyenda de la AAIP) están en `textos.json` (`legal`).
 
 En `gimnasio.json`, `legal` tiene lo que piden la ley de defensa del consumidor y la de datos personales:
 
@@ -85,7 +84,7 @@ En `gimnasio.json`, `legal` tiene lo que piden la ley de defensa del consumidor 
 |---|---|
 | `titular` | El nombre (persona) o la razón social (empresa) del titular del negocio. |
 | `cuit` | Su CUIT, con guiones: `20-12345678-9`. |
-| `correo` | El correo para consultas y pedidos sobre datos personales y reclamos. Le llegan también los pedidos de los botones de arrepentimiento y de baja. |
+| `correo` | El correo para consultas y pedidos sobre datos personales y reclamos. |
 | `dataFiscal` | El link del QR del formulario 960/D de ARCA (`https://qr.afip.gob.ar/?qr=…`): con él, el pie muestra el Data Fiscal. |
 
 Mientras falten `titular`, `cuit` o `correo`, las páginas legales dicen "[a completar]" y el build lo avisa.

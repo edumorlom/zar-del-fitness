@@ -218,11 +218,9 @@ function build(lang: Lang) {
     home,
     blog: localePath(lang, "/blog/"),
     podcasts: localePath(lang, "/podcasts/"),
-    // Las páginas legales (db/legal/, lib/legal.ts) y los botones de arrepentimiento y de baja (components/CancelPage.tsx).
+    // Las páginas legales (db/legal/, lib/legal.ts).
     terminos: legalPaths.terminos[lang],
     privacidad: legalPaths.privacidad[lang],
-    arrepentimiento: localePath(lang, lang === "es" ? "/arrepentimiento/" : "/withdrawal/"),
-    baja: localePath(lang, lang === "es" ? "/baja/" : "/cancel-plan/"),
   };
 
   const links = {

@@ -84,7 +84,6 @@ async function site(req: NextRequest) {
     return to(pathname.startsWith("/privacy") ? "/en/privacy/" : "/privacidad/");
   if (/^\/(terminos-y-condiciones|condiciones|terms|terms-and-conditions)\/?$/.test(pathname))
     return to(pathname.startsWith("/terms") ? "/en/terms/" : "/terminos/");
-  if (/^\/boton-de-(arrepentimiento|baja)\/?$/.test(pathname)) return to(pathname.includes("baja") ? "/baja/" : "/arrepentimiento/");
   if (SITEMAPS.test(pathname)) return to("/sitemap.xml");
   if (GONE.test(pathname)) return gone(req);
   // Una página sin la barra final (/blog), a la URL con barra.
