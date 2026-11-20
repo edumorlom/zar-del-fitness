@@ -4,7 +4,6 @@ import type { Viewer } from "~/lib/auth";
 import { age, BODY_TYPES, CONDITIONS, PLANS } from "~/lib/clients";
 import type { Client, Coach } from "~/lib/data";
 import { todayISO, toLocalInput } from "~/lib/format";
-import { PHOTO_MAX_MB } from "~/lib/storage";
 import { Form } from "./Form";
 import { initials } from "./Shell";
 import { Steps } from "./Steps";
@@ -101,7 +100,7 @@ export function ClientForm({ viewer, client, coaches }: { viewer: Viewer; client
       </Field>
       <Field
         label="Foto"
-        hint={`JPG o PNG, hasta ${PHOTO_MAX_MB} MB.${client?.photo_url ? " Ya tiene una: elegí otra sólo para cambiarla." : ""}`}
+        hint={`JPG o PNG: se achica sola al guardar.${client?.photo_url ? " Ya tiene una: elegí otra sólo para cambiarla." : ""}`}
       >
         <input name="photo" type="file" accept="image/jpeg,image/png" />
       </Field>

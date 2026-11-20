@@ -1,13 +1,17 @@
-import { MEASURES } from "~/lib/clients";
+import { measuresFor } from "~/lib/clients";
 import type { Checkin, Diet } from "~/lib/data";
 import { shortDate } from "~/lib/format";
 import { DietFields } from "./Diet";
 
 const input = (v: number | null | undefined) => (v == null ? "" : String(v).replace(".", ","));
 
-/** Los campos de una evaluación: vacíos para una nueva (con el plan vigente de entrada), o con lo que tiene para editarla. */
-export function CheckinFields({ checkin, diet, today }: { checkin?: Checkin; diet: Diet | null; today: string }) {
-  const measured = checkin && MEASURES.some((m) => checkin[m.key] !== null);
+/**
+ * Los campos de una evaluación: vacíos para una nueva (con el plan vigente de entrada), o con lo que tiene para editarla.
+ * A los hombres no se les piden busto, cintura ni cadera (measuresFor); lo que no está acá, la acción no lo toca.
+ */
+export function CheckinFields({ checkin, diet, today, sex }: { checkin?: Checkin; diet: Diet | null; today: string; sex: "M" | "F" | null }) {
+  const measures = measuresFor(sex);
+  const measured = checkin && measures.some((m) => checkin[m.key] !== null);
   return (
     <>
       <div className="fields fields--3">
@@ -30,7 +34,7 @@ export function CheckinFields({ checkin, diet, today }: { checkin?: Checkin; die
           <fieldset key={g} className="more__group">
             <legend className="field__label">{g}</legend>
             <div className="fields fields--3">
-              {MEASURES.filter((m) => m.group === g).map((m) => (
+              {measures.filter((m) => m.group === g).map((m) => (
                 <label key={m.key} className="field">
                   <span className="field__label">
                     {m.label}

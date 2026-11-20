@@ -294,7 +294,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         <h2 className="section-title">Nueva evaluación</h2>
         <Form action={addCheckin} submit="Guardar evaluación" reset className="card form" key={checkins.length}>
           <input type="hidden" name="client_id" value={client.id} />
-          <CheckinFields diet={diet} today={today} />
+          <CheckinFields diet={diet} today={today} sex={client.sex} />
           <p className="field__hint">La masa magra y la grasa en kg se calculan solas.</p>
         </Form>
       </section>

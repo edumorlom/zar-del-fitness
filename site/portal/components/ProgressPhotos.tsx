@@ -1,31 +1,13 @@
 "use client";
 
+import { unstable_rethrow } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { addProgressPhoto, deleteProgressPhoto } from "~/actions";
+import { addProgressPhoto, deleteProgressPhoto, type FormState } from "~/actions";
 import { Ask } from "./Form";
 import type { ProgressPhoto } from "~/lib/data";
 import { shortDate, todayISO } from "~/lib/format";
+import { shrinkPhoto } from "~/lib/shrink-photo";
 import { pick, type Lang } from "@/lib/i18n";
-
-/** El lado más largo de la foto que se sube: alcanza para verla a pantalla completa y pesa unos cientos de KB. */
-const MAX_SIDE = 1600;
-
-/**
- * Achica la foto en el navegador y la pasa a JPEG. Así entran varias aunque el celular las saque de 8 MB, y de paso se
- * pierden los datos que trae (la ubicación, el modelo del celular): el lienzo sólo copia los píxeles.
- */
-async function shrink(file: File): Promise<Blob> {
-  const bitmap = await createImageBitmap(file); // respeta la rotación de la cámara (EXIF)
-  const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  canvas.getContext("2d")!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close();
-  const blob = await new Promise<Blob | null>((ok) => canvas.toBlob(ok, "image/jpeg", 0.85));
-  if (!blob) throw new Error("toBlob");
-  return blob;
-}
 
 type Shown = ProgressPhoto & { label: string };
 
@@ -59,7 +41,7 @@ export function ProgressPhotos({ clientId, photos, you, lang = "es" }: { clientI
         setStatus({ text: files.length > 1 ? `Subiendo ${done + failed.length + 1} de ${files.length}…` : "Subiendo…" });
         let blob: Blob;
         try {
-          blob = await shrink(file);
+          blob = await shrinkPhoto(file);
         } catch {
           failed.push(`${file.name}: no se pudo leer la foto (probá con un JPG o PNG)`);
           continue;
@@ -68,7 +50,16 @@ export function ProgressPhotos({ clientId, photos, you, lang = "es" }: { clientI
         form.set("client_id", String(clientId));
         form.set("taken_on", date);
         form.set("photo", blob, "foto.jpg");
-        const res = await addProgressPhoto(null, form);
+        // Si se corta la conexión o falla el servidor, se avisa y se sigue con las otras: sin el catch, el error de una
+        // tiraría la página entera.
+        let res: FormState;
+        try {
+          res = await addProgressPhoto(null, form);
+        } catch (e) {
+          unstable_rethrow(e); // la redirección de la acción (sin sesión, a /portal/ingresar) sigue su camino
+          console.error(e);
+          res = { error: "No se pudo subir la foto. Probá de nuevo." };
+        }
         if (res?.error) failed.push(files.length > 1 ? `${file.name}: ${res.error}` : res.error);
         else done++;
       }

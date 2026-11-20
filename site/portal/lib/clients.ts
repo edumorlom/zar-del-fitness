@@ -66,6 +66,12 @@ export const MEASURES = [
   { key: "visceral_fat", label: "Grasa visceral", en: "Visceral fat", unit: "", group: "Balanza", min: 1, max: 60, int: false },
   { key: "bmr_kcal", label: "Metabolismo basal", en: "Basal metabolic rate", unit: "kcal", group: "Balanza", min: 500, max: 6000, int: true },
 ] as const;
+
+/** Lo que se mide sólo a las mujeres: a los hombres, la evaluación no lo pide. */
+const WOMEN_ONLY: readonly MeasureKey[] = ["bust_cm", "waist_cm", "hip_cm"];
+
+/** Lo que se le mide a un cliente según su sexo. Sin el sexo cargado, todo (mejor de más que perder una medida). */
+export const measuresFor = (sex: "M" | "F" | null) => MEASURES.filter((m) => sex !== "M" || !WOMEN_ONLY.includes(m.key));
 // El plan de alimentación, en el orden del día. Los nombres salen del portal anterior (sumar-to-sqlite.mjs).
 export const MEALS = [
   { key: "breakfast", label: "Desayuno", en: "Breakfast" },

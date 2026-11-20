@@ -45,7 +45,7 @@ export default async function EditCheckinPage({ params }: { params: Promise<{ id
         }
       >
         <input type="hidden" name="id" value={checkinId} />
-        <CheckinFields checkin={found.checkin} diet={found.diet} today={todayISO()} />
+        <CheckinFields checkin={found.checkin} diet={found.diet} today={todayISO()} sex={client.sex} />
       </Form>
     </AdminShell>
   );

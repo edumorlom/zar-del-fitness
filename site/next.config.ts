@@ -33,7 +33,8 @@ const nextConfig: NextConfig = {
   // la página pesa el doble comprimida y Lighthouse dio peor primera pintada (1,7 s contra 1,5 s) el 2026-10-12.
   experimental: {
     globalNotFound: true,
-    // La ficha del cliente sube su foto (hasta PHOTO_MAX_MB de portal/lib/storage.ts) con el resto del formulario.
+    // La ficha del cliente sube su foto (hasta PHOTO_MAX_MB de portal/lib/storage.ts) con el resto del formulario. El
+    // navegador la achica antes (portal/lib/shrink-photo.ts): pasado este límite, Next.js corta el pedido y la página se cae.
     serverActions: { bodySizeLimit: "6mb" },
   },
   // Los mismos encabezados de seguridad que tenía el .htaccess. HSTS sin includeSubDomains. Permissions-Policy no toca

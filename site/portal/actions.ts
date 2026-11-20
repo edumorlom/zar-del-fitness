@@ -172,7 +172,6 @@ export async function deleteClient(_: FormState, form: FormData): Promise<FormSt
 const decimal = (form: FormData, key: string) => Number(text(form, key).replace(",", "."));
 
 const DIET_COLS = ["goal", ...MEALS.map((m) => m.key)];
-const MEASURE_COLS = MEASURES.map((m) => m.key);
 
 /** Lo que se carga en una evaluación, validado: lo mismo al cargarla que al editarla. */
 function readCheckin(form: FormData) {
@@ -183,9 +182,13 @@ function readCheckin(form: FormData) {
   if (!(weight >= 20 && weight <= 400)) return { error: "El peso va en kg, entre 20 y 400." };
   if (!(fat >= 1 && fat <= 80)) return { error: "El % graso va entre 1 y 80." };
 
-  // Lo opcional: vacío queda sin medir; si viene, dentro de un rango creíble.
+  // Lo opcional: vacío queda sin medir; si viene, dentro de un rango creíble. Lo que el formulario no trae (busto,
+  // cintura y cadera, a los hombres: measuresFor) no se toca: al editar, queda lo que tenía.
+  const cols = ["date", "weight_kg", "body_fat_pct"];
   const extra: (number | null)[] = [];
   for (const m of MEASURES) {
+    if (!form.has(m.key)) continue;
+    cols.push(m.key);
     const raw = text(form, m.key);
     const v = raw ? decimal(form, m.key) : null;
     if (v !== null && !(v >= m.min && v <= m.max)) return { error: `${m.label}: entre ${m.min} y ${m.max}.` };
@@ -193,7 +196,7 @@ function readCheckin(form: FormData) {
   }
   // El plan de alimentación, opcional: todo vacío es sin plan.
   const diet = readDiet(form);
-  return { values: [date, weight, fat, ...extra], diet, hasDiet: diet.some(Boolean) };
+  return { cols, values: [date, weight, fat, ...extra], diet, hasDiet: diet.some(Boolean) };
 }
 
 const readDiet = (form: FormData) => DIET_COLS.map((k) => text(form, `diet_${k}`) || null);
@@ -265,7 +268,7 @@ export async function addCheckin(_: FormState, form: FormData): Promise<FormStat
   const n = 3 + c.values.length;
   const created = await db.query<{ id: number }>(
     `with c as (
-       insert into checkins (client_id, created_by, date, weight_kg, body_fat_pct, ${MEASURE_COLS.join(", ")})
+       insert into checkins (client_id, created_by, ${c.cols.join(", ")})
        values ($1, $2, ${params(3, c.values.length)}) returning id
      ),
      d as (
@@ -324,10 +327,9 @@ export async function updateCheckin(_: FormState, form: FormData): Promise<FormS
   if ("error" in c) return c;
 
   // Todo en una consulta: la evaluación, y el plan se guarda, se cambia o (si quedó vacío) se borra.
-  const cols = ["date", "weight_kg", "body_fat_pct", ...MEASURE_COLS];
   const n = 2 + c.values.length;
   await db.query(
-    `with c as (update checkins set ${cols.map((k, i) => `${k} = $${i + 2}`).join(", ")} where id = $1 returning id),
+    `with c as (update checkins set ${c.cols.map((k, i) => `${k} = $${i + 2}`).join(", ")} where id = $1 returning id),
           gone as (delete from diets where checkin_id = $1 and not $${n + c.diet.length})
      insert into diets (checkin_id, ${DIET_COLS.join(", ")})
      select id, ${params(n, c.diet.length)} from c where $${n + c.diet.length}
@@ -367,7 +369,7 @@ async function photoOwner(clientId: number) {
 }
 
 /**
- * Una foto por llamada: el navegador ya la achicó (PhotoUpload) y así cada una entra en serverActions.bodySizeLimit
+ * Una foto por llamada: el navegador ya la achicó (shrinkPhoto) y así cada una entra en serverActions.bodySizeLimit
  * aunque se elijan varias juntas.
  */
 export async function addProgressPhoto(_: FormState, form: FormData): Promise<FormState> {

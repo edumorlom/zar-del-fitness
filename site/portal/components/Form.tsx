@@ -1,7 +1,8 @@
 "use client";
 
-import { startTransition, useActionState, useEffect, useId, useRef } from "react";
+import { startTransition, useActionState, useEffect, useId, useRef, useTransition } from "react";
 import type { FormState } from "~/actions";
+import { shrinkPhotos } from "~/lib/shrink-photo";
 
 /** Lo que dice un cartel: el título (con la segunda parte en cursiva dorada), el texto y los dos botones. */
 export type Question = { title: string; accent: string; text: string; yes: string; no?: string };
@@ -48,7 +49,8 @@ export function Ask({
 /**
  * Un formulario que manda a una Server Action y muestra su error o su "ok". Los campos quedan como estaban si hay un
  * error (el <form action> de React los vaciaría); con `reset`, se vacían cuando sale bien. Si la acción le mandó un
- * correo al cliente (`sent`), lo dice en un cartel con el diseño del sitio.
+ * correo al cliente (`sent`), lo dice en un cartel con el diseño del sitio. Las fotos van achicadas (shrinkPhotos): la
+ * de un celular, entera, puede pasar el límite de Next.js y tirar la página.
  */
 export function Form({
   action,
@@ -77,7 +79,14 @@ export function Form({
   className?: string;
   children?: React.ReactNode;
 }) {
-  const [state, formAction, pending] = useActionState(action, null);
+  const [state, formAction, sending] = useActionState(action, null);
+  const [shrinking, startShrinking] = useTransition();
+  const pending = sending || shrinking;
+  const send = (data: FormData) =>
+    startShrinking(async () => {
+      await shrinkPhotos(data);
+      startTransition(() => formAction(data));
+    });
   const ref = useRef<HTMLFormElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const asked = useRef<FormData | null>(null);
@@ -96,7 +105,7 @@ export function Form({
       onSubmit={(e) => {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
-        if (!confirm && !ask) return startTransition(() => formAction(data));
+        if (!confirm && !ask) return send(data);
         asked.current = data;
         dialog.current?.showModal();
       }}
@@ -110,7 +119,7 @@ export function Form({
             const data = asked.current;
             if (!data || (confirm && !yes)) return;
             if (ask && yes) data.set("notify", "1");
-            startTransition(() => formAction(data));
+            send(data);
           }}
         />
       )}
