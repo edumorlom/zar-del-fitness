@@ -5,7 +5,8 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { Marked } from "marked";
-import { localePath, type Lang } from "./i18n";
+import { localePath, otherLang, type Lang } from "./i18n";
+import { readFrontmatter } from "./markdown";
 
 // En el build, process.cwd() es site/.
 const DB = path.join(process.cwd(), "..", "db");
@@ -61,22 +62,9 @@ export type Post = {
 
 function read(lang: Lang, file: string): Post {
   const where = `db/blog/${lang === "en" ? "en/" : ""}${file}`;
-  const raw = readFileSync(path.join(DIRS[lang], file), "utf-8").replace(/\r\n/g, "\n");
-  const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!match) throw new Error(`${where}: falta el encabezado entre "---"`);
-
-  // Una línea "clave: valor" por dato.
-  const meta: Record<string, string> = {};
-  for (const line of match[1].split("\n")) {
-    const i = line.indexOf(":");
-    if (i > 0) meta[line.slice(0, i).trim()] = line.slice(i + 1).trim();
-  }
-  for (const key of KEYS) if (!meta[key]) throw new Error(`${where}: falta "${key}" en el encabezado`);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(meta.fecha)) throw new Error(`${where}: la fecha va como 2026-10-03`);
-
+  const { meta, body } = readFrontmatter(path.join(DIRS[lang], file), where, KEYS, "fecha");
   const slug = file.replace(/\.md$/, "");
   const [year, month, day] = meta.fecha.split("-");
-  const body = match[2];
   const words = body.split(/\s+/).filter(Boolean).length;
 
   return {
@@ -134,4 +122,10 @@ export function translationOf(post: Post): Post | undefined {
   return post.lang === "en"
     ? posts.es.find((p) => p.slug === post.original)
     : posts.en.find((p) => p.original === post.slug);
+}
+
+/** La nota en castellano y en inglés (los hreflang), si está traducida. */
+export function postAlternates(post: Post): Record<Lang, string> | undefined {
+  const other = translationOf(post);
+  return other && ({ [post.lang]: post.path, [otherLang(post.lang)]: other.path } as Record<Lang, string>);
 }

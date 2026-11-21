@@ -1,5 +1,6 @@
 import { SignOutButton } from "@clerk/nextjs";
 import Link from "next/link";
+import { Icon } from "@/components/Icon";
 import { Reveals } from "@/components/motion/Reveals";
 import { homeOf } from "~/lib/access";
 import type { Viewer } from "~/lib/auth";
@@ -12,22 +13,13 @@ import { SiteHeader } from "./SiteHeader";
 export const SignOut = ({ label = "Salir" }: { label?: string }) => (
   <SignOutButton redirectUrl="/portal/ingresar">
     <button className="icon-btn" aria-label={label} title={label}>
-      <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H3" />
-      </svg>
+      <Icon name="logout" />
     </button>
   </SignOutButton>
 );
 
 /** El botón dorado del menú del sitio, con la sesión iniciada (app/(portal)/portal/salir). */
 export const SIGN_OUT = { label: "Cerrar sesión", href: "/portal/salir" };
-
-export const initials = (name: string) =>
-  name
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase())
-    .join("");
 
 /** Arriba, el menú del sitio (con "Cerrar sesión"); abajo, qué parte del portal es. Y las animaciones data-* del sitio. */
 export async function Shell({ viewer, children }: { viewer: Viewer; children: React.ReactNode }) {

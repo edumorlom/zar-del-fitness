@@ -2,28 +2,20 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { niceTicks, spread } from "~/lib/chart";
+import { BODY_STATS, type BodyPoint, type BodyStatKey } from "~/lib/clients";
 import { longDate, num as numEs, shortDate } from "~/lib/format";
 import { pick, type Lang } from "@/lib/i18n";
 
-export type EvolutionPoint = { date: string; weight: number; fatPct: number; lean: number; fatKg: number };
-
-// Una medida por gráfico, cada una con su escala: kilos y porcentajes en un mismo eje aplastaban las líneas.
-const METRICS = [
-  { key: "weight", label: "Peso", en: "Weight", unit: "kg", better: 0, delta: "kg" },
-  { key: "fatPct", label: "% Graso", en: "Body fat %", unit: "%", better: -1, delta: "puntos" },
-  { key: "lean", label: "Masa magra", en: "Lean mass", unit: "kg", better: 1, delta: "kg" },
-  { key: "fatKg", label: "Grasa", en: "Fat", unit: "kg", better: -1, delta: "kg" },
-] as const;
-type Key = (typeof METRICS)[number]["key"];
+// Una medida por gráfico (BODY_STATS), cada una con su escala: kilos y porcentajes en un mismo eje aplastaban las líneas.
 
 const H = 260;
 const PAD = { top: 16, right: 16, bottom: 30, left: 44 };
 
 /** La evolución de una medida en el tiempo, con pestañas para elegir cuál. `you`: lo ve el propio cliente. */
-export function Evolution({ points, you, lang = "es" }: { points: EvolutionPoint[]; you: boolean; lang?: Lang }) {
+export function Evolution({ points, you, lang = "es" }: { points: BodyPoint[]; you: boolean; lang?: Lang }) {
   const tr = pick(lang);
   const num = (n: number, digits = 1) => numEs(n, digits, lang);
-  const [metric, setMetric] = useState<Key>("weight");
+  const [metric, setMetric] = useState<BodyStatKey>("weight");
   const [active, setActive] = useState<number | null>(null);
   const [width, setWidth] = useState(0);
   const box = useRef<HTMLDivElement>(null);
@@ -36,7 +28,7 @@ export function Evolution({ points, you, lang = "es" }: { points: EvolutionPoint
     return () => ro.disconnect();
   }, []);
 
-  const m = METRICS.find((it) => it.key === metric)!;
+  const m = BODY_STATS.find((it) => it.key === metric)!;
   const values = points.map((p) => p[metric]);
   const ticks = niceTicks(Math.min(...values), Math.max(...values));
   const [lo, hi] = [ticks[0], ticks[ticks.length - 1]];
@@ -84,7 +76,7 @@ export function Evolution({ points, you, lang = "es" }: { points: EvolutionPoint
           </p>
         </div>
         <div className="evo__tabs" role="tablist" aria-label={tr("Medida", "Measurement")}>
-          {METRICS.map((tab) => (
+          {BODY_STATS.map((tab) => (
             <button
               key={tab.key}
               role="tab"
@@ -149,7 +141,7 @@ export function Evolution({ points, you, lang = "es" }: { points: EvolutionPoint
         {p && (
           <div className="evo__tip" style={{ left: tipLeft }} role="status">
             <p className="evo__tip-date">{longDate(p.date, lang)}</p>
-            {METRICS.map((row) => (
+            {BODY_STATS.map((row) => (
               <p key={row.key} className={row.key === metric ? "evo__tip-row is-active" : "evo__tip-row"}>
                 <span className="evo__key" aria-hidden="true" />
                 <b>

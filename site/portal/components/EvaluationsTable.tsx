@@ -1,17 +1,15 @@
-import { MEASURES } from "~/lib/clients";
+import { BODY_STATS, MEASURES } from "~/lib/clients";
 import type { Checkin } from "~/lib/data";
 import { num, shortDate } from "~/lib/format";
 import { pick, type Lang } from "@/lib/i18n";
+import { Empty } from "./Cards";
 import { ScrollTable } from "./ScrollTable";
 
 type Param = { label: string; en: string; unit: string; group: string; of: (c: Checkin) => number | null; digits: number };
 
-// La masa magra y el peso graso salen del peso y el % graso, como en el portal anterior.
+// La composición corporal (BODY_STATS) y después lo opcional: perímetros y balanza.
 const PARAMS: Param[] = [
-  { label: "Peso", en: "Weight", unit: "kg", group: "Composición", of: (c) => c.weight_kg, digits: 1 },
-  { label: "% graso", en: "Body fat %", unit: "%", group: "Composición", of: (c) => c.body_fat_pct, digits: 1 },
-  { label: "Masa magra", en: "Lean mass", unit: "kg", group: "Composición", of: (c) => c.weight_kg * (1 - c.body_fat_pct / 100), digits: 1 },
-  { label: "Peso graso", en: "Fat mass", unit: "kg", group: "Composición", of: (c) => (c.weight_kg * c.body_fat_pct) / 100, digits: 1 },
+  ...BODY_STATS.map((s) => ({ label: s.label, en: s.en, unit: s.unit, group: "Composición", of: s.of, digits: 1 })),
   ...MEASURES.map((m) => ({ label: m.label, en: m.en, unit: m.unit, group: m.group, of: (c: Checkin) => c[m.key], digits: m.int ? 0 : 1 })),
 ];
 
@@ -24,12 +22,7 @@ const value = (v: number | null, p: Param, lang: Lang) =>
 /** Todos los parámetros de todas las evaluaciones (la última primero), con la variación contra la anterior. */
 export function EvaluationsTable({ checkins, lang = "es" }: { checkins: Checkin[]; lang?: Lang }) {
   const tr = pick(lang);
-  if (checkins.length === 0)
-    return (
-      <div className="card empty">
-        <p className="fact">{tr("Todavía no hay evaluaciones", "No evaluations yet")}</p>
-      </div>
-    );
+  if (checkins.length === 0) return <Empty title={tr("Todavía no hay evaluaciones", "No evaluations yet")} />;
 
   // Los parámetros que nunca se midieron no aparecen
   const shown = PARAMS.filter((p) => checkins.some((c) => p.of(c) !== null));

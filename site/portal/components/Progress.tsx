@@ -1,51 +1,27 @@
-import { deleteCheckin } from "~/actions";
-import { payWithMercadoPago } from "~/payment-actions";
+// Mi progreso (app/(portal)/portal/mi-progreso): lo que ve el cliente de sí mismo, en su idioma y hablándole de vos.
 import Link from "next/link";
+import { Icon } from "@/components/Icon";
+import { payWithMercadoPago } from "~/payment-actions";
+import { BODY_STATS, bodyPoint, fatMass, leanMass } from "~/lib/clients";
 import type { Appointment, Checkin, Client } from "~/lib/data";
 import { dateOf, days, daysUntil, longDate, monthYear, num, shortDate, timeOf, todayISO } from "~/lib/format";
+import { Empty } from "./Cards";
 import { Evolution } from "./Evolution";
 import { Form } from "./Form";
-import { initials } from "./Shell";
+import { initials } from "./Person";
 import { ScrollTable } from "./ScrollTable";
+import { Title } from "./Title";
 import { content } from "@/lib/content";
 import { pick, type Lang } from "@/lib/i18n";
 
-const lean = (c: Checkin) => c.weight_kg * (1 - c.body_fat_pct / 100);
-const fat = (c: Checkin) => (c.weight_kg * c.body_fat_pct) / 100;
-
-const ArrowIcon = () => (
-  <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M5 12h14M13 6l6 6-6 6" />
-  </svg>
-);
-
-/** Un título en dos líneas que entran animadas, la segunda en cursiva dorada (como Lines del sitio). */
-export function Title({ plain, accent, as: Tag = "h2", className = "h2 h2--sm" }: { plain: string; accent?: string; as?: "h1" | "h2"; className?: string }) {
-  return (
-    <Tag className={className} data-lines>
-      <span className="ln">
-        <span>{plain}</span>
-      </span>{" "}
-      {accent && (
-        <span className="ln">
-          <span>
-            <em className="serif gold-text">{accent}</em>
-          </span>
-        </span>
-      )}
-    </Tag>
-  );
-}
-
 /** Lo que logró desde el primer control, si hay algo para festejar. */
-// Lo que lee el propio cliente (`you`) va en su idioma; lo que ve sólo el equipo, en castellano.
-function win(checkins: Checkin[], you: boolean, lang: Lang) {
+function win(checkins: Checkin[], lang: Lang) {
   const n = (v: number) => num(v, 1, lang);
   if (checkins.length < 2) return null;
   const first = checkins[0];
   const last = checkins[checkins.length - 1];
   const fatDrop = first.body_fat_pct - last.body_fat_pct;
-  const leanGain = lean(last) - lean(first);
+  const leanGain = leanMass(last) - leanMass(first);
   if (lang === "en") {
     if (fatDrop >= 0.5 && leanGain >= 0.5)
       return {
@@ -56,28 +32,23 @@ function win(checkins: Checkin[], you: boolean, lang: Lang) {
     if (leanGain >= 0.5) return { title: "Building muscle!", text: <>Since you started, you&apos;ve gained <b>{n(leanGain)} kg</b> of lean mass.</> };
     return null;
   }
-  const since = you ? "Desde que empezaste" : "Desde el primer control";
-  const [bajo, sumo] = you ? ["bajaste", "sumaste"] : ["bajó", "sumó"];
   if (fatDrop >= 0.5 && leanGain >= 0.5)
     return {
       title: "¡Recomposición corporal!",
       text: (
         <>
-          {since} {bajo} <b>{num(fatDrop)} puntos</b> de grasa y {sumo} <b>{num(leanGain)} kg</b> de masa magra.{" "}
-          {you && "Así se hace."}
+          Desde que empezaste bajaste <b>{num(fatDrop)} puntos</b> de grasa y sumaste <b>{num(leanGain)} kg</b> de masa magra. Así se hace.
         </>
       ),
     };
-  if (fatDrop >= 0.5)
-    return { title: "¡Bajando grasa!", text: <>{since} {bajo} <b>{num(fatDrop)} puntos</b> de grasa.</> };
-  if (leanGain >= 0.5)
-    return { title: "¡Sumando músculo!", text: <>{since} {sumo} <b>{num(leanGain)} kg</b> de masa magra.</> };
+  if (fatDrop >= 0.5) return { title: "¡Bajando grasa!", text: <>Desde que empezaste bajaste <b>{num(fatDrop)} puntos</b> de grasa.</> };
+  if (leanGain >= 0.5) return { title: "¡Sumando músculo!", text: <>Desde que empezaste sumaste <b>{num(leanGain)} kg</b> de masa magra.</> };
   return null;
 }
 
-function nextControl(at: Date | null, you: boolean, lang: Lang) {
+function nextControl(at: Date | null, lang: Lang) {
   const tr = pick(lang);
-  if (!at) return { fact: tr("A coordinar", "To be scheduled"), note: you ? tr("Lo arreglás con tu coach.", "Set it up with your coach.") : "Sin fecha todavía.", warn: false };
+  if (!at) return { fact: tr("A coordinar", "To be scheduled"), note: tr("Lo arreglás con tu coach.", "Set it up with your coach."), warn: false };
   const n = daysUntil(dateOf(at));
   const d = (k: number) => days(k, lang);
   const note =
@@ -101,15 +72,12 @@ function pass(expires: string | null, lang: Lang) {
  */
 export type PayOffer = { amount: string; processing: boolean; early: boolean };
 
-/**
- * El saludo, los datos del plan y el coach. `you`: lo ve el propio cliente (le habla de vos, en su idioma). `pay`: puede
- * pagar el pase con Mercado Pago (mi-progreso decide si su plan se paga desde el portal).
- */
-export function Hero({ client, checkins, you, appointment, pay, lang = "es" }: { client: Client; checkins: Checkin[]; you: boolean; appointment?: Appointment | null; pay?: PayOffer | null; lang?: Lang }) {
+/** El saludo, los datos del plan y el coach. `pay`: puede pagar el pase con Mercado Pago (mi-progreso decide si su plan se paga desde el portal). */
+export function Hero({ client, checkins, appointment, pay, lang }: { client: Client; checkins: Checkin[]; appointment: Appointment | null; pay: PayOffer | null; lang: Lang }) {
   const tr = pick(lang);
-  const [firstName, ...rest] = client.name.split(/\s+/);
-  const w = win(checkins, you, lang);
-  const control = nextControl(appointment?.starts_at ?? client.next_control_at, you, lang);
+  const firstName = client.name.split(/\s+/)[0];
+  const w = win(checkins, lang);
+  const control = nextControl(appointment?.starts_at ?? client.next_control_at, lang);
   if (appointment?.status === "requested") control.note = `${timeOf(appointment.starts_at)} h · ${tr("esperando confirmación", "awaiting confirmation")}`;
   else if (appointment?.requested_at) control.note += tr(" · reprogramado", " · rescheduled");
   const p = pass(client.pass_expires, lang);
@@ -120,29 +88,18 @@ export function Hero({ client, checkins, you, appointment, pay, lang = "es" }: {
         <p className="eyebrow intro">
           <span className="dot" /> {longDate(todayISO(), lang)}
         </p>
-        <h1 className="h2 intro-lines">
-          <span className="ln">
-            <span>{you ? tr("Hola,", "Hi,") : firstName}</span>
-          </span>{" "}
-          <span className="ln">
-            <span>
-              <em className="serif gold-text">{you ? firstName : rest.join(" ")}</em>
-            </span>
-          </span>
-        </h1>
+        <Title as="h1" className="h2" intro plain={tr("Hola,", "Hi,")} accent={firstName} />
         <div className="meta intro">
           {client.plan && <span className="pill">★ {client.plan}</span>}
           <span>
-            {you ? tr("Entrenando con nosotros desde", "Training with us since") : `${client.email} · cliente desde`} {monthYear(client.client_since, lang)}
+            {tr("Entrenando con nosotros desde", "Training with us since")} {monthYear(client.client_since, lang)}
           </span>
         </div>
 
         {w && (
           <div className="win intro">
             <span className="win__icon" aria-hidden="true">
-              <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" />
-              </svg>
+              <Icon name="trophy" />
             </span>
             <div>
               <h2>{w.title}</h2>
@@ -153,27 +110,25 @@ export function Hero({ client, checkins, you, appointment, pay, lang = "es" }: {
 
         <dl className="facts intro">
           <div>
-            <dt className="label">{you ? tr("Tu objetivo", "Your goal") : "Objetivo"}</dt>
-            <dd className="fact">{client.goal ?? (you ? tr("Lo definís con tu coach", "You'll set it with your coach") : "Sin definir")}</dd>
+            <dt className="label">{tr("Tu objetivo", "Your goal")}</dt>
+            <dd className="fact">{client.goal ?? tr("Lo definís con tu coach", "You'll set it with your coach")}</dd>
           </div>
           <div>
-            <dt className="label">{you ? tr("Tu próximo control", "Your next check-in") : "Próximo control"}</dt>
+            <dt className="label">{tr("Tu próximo control", "Your next check-in")}</dt>
             <dd className="fact">{control.fact}</dd>
             <dd className={control.warn ? "note note--warn" : "note"}>{control.note}</dd>
-            {you && (
-              <dd>
-                <Link className="link-arrow" href="/portal/turno">
-                  {appointment ? tr("Ver tu turno", "See your booking") : tr("Pedí tu turno", "Book your check-in")}
-                </Link>
-              </dd>
-            )}
+            <dd>
+              <Link className="link-arrow" href="/portal/turno">
+                {appointment ? tr("Ver tu turno", "See your booking") : tr("Pedí tu turno", "Book your check-in")}
+              </Link>
+            </dd>
           </div>
-          {(p || (you && pay)) && (
+          {(p || pay) && (
             <div>
-              <dt className="label">{you ? tr("Tu pase", "Your pass") : "Pase"}</dt>
+              <dt className="label">{tr("Tu pase", "Your pass")}</dt>
               <dd className="fact">{p?.fact ?? tr("Sin vencimiento", "No expiry date yet")}</dd>
               {p && <dd className={p.warn ? "note note--warn" : "note"}>{p.note}</dd>}
-              {you && pay && (
+              {pay && (
                 <dd className="pay">
                   {pay.processing && (
                     <p className="note">
@@ -216,15 +171,13 @@ export function Hero({ client, checkins, you, appointment, pay, lang = "es" }: {
             </div>
             <div className="coach__body">
               <p className="eyebrow">
-                <span className="num">{you ? tr("Tu coach", "Your coach") : "Coach"}</span>
+                <span className="num">{tr("Tu coach", "Your coach")}</span>
               </p>
               <p className="coach__name">{client.coach_name}</p>
               <p className="muted">Personal trainer · Zar del Fitness</p>
               {client.coach_phone && (
                 <a className="btn btn--ghost btn--sm" href={`https://wa.me/${client.coach_phone.replace(/\D/g, "")}`} target="_blank" rel="noopener">
-                  <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <use href="#i-wa" />
-                  </svg>
+                  <Icon name="wa" />
                   {tr("Escribile por WhatsApp", "Message on WhatsApp")}
                 </a>
               )}
@@ -233,9 +186,9 @@ export function Hero({ client, checkins, you, appointment, pay, lang = "es" }: {
         ) : (
           <div className="coach__body coach__body--empty">
             <p className="eyebrow">
-              <span className="num">{you ? tr("Tu coach", "Your coach") : "Coach"}</span>
+              <span className="num">{tr("Tu coach", "Your coach")}</span>
             </p>
-            <p className="muted">{you ? tr("Todavía no tenés coach asignado.", "You don't have a coach assigned yet.") : "Sin coach asignado."}</p>
+            <p className="muted">{tr("Todavía no tenés coach asignado.", "You don't have a coach assigned yet.")}</p>
           </div>
         )}
       </aside>
@@ -258,15 +211,8 @@ function Spark({ values }: { values: number[] }) {
   );
 }
 
-const STATS = [
-  { label: "Peso", en: "Weight", unit: "kg", of: (c: Checkin) => c.weight_kg, better: 0, delta: "kg" },
-  { label: "% Graso", en: "Body fat %", unit: "%", of: (c: Checkin) => c.body_fat_pct, better: -1, delta: "puntos" },
-  { label: "Masa magra", en: "Lean mass", unit: "kg", of: lean, better: 1, delta: "kg" },
-  { label: "Grasa", en: "Fat", unit: "kg", of: fat, better: -1, delta: "kg" },
-];
-
-/** El último control, la composición corporal y el historial. `manage`: lo ve el coach o el admin (puede borrar). */
-export function Results({ checkins, you, manage, number = "01", lang = "es" }: { checkins: Checkin[]; you: boolean; manage: boolean; number?: string; lang?: Lang }) {
+/** El último control, la composición corporal, la evolución y el historial. Las secciones van numeradas desde `number`. */
+export function Results({ checkins, number = "01", lang }: { checkins: Checkin[]; number?: string; lang: Lang }) {
   const tr = pick(lang);
   const n = (v: number) => num(v, 1, lang);
   const last = checkins[checkins.length - 1];
@@ -280,17 +226,14 @@ export function Results({ checkins, you, manage, number = "01", lang = "es" }: {
             <p className="eyebrow">
               <span className="num">{number}</span> {tr("Resultados", "Results")}
             </p>
-            <Title plain={you ? tr("Tus", "Your") : "Sus"} accent={tr("controles", "check-ins")} />
+            <Title plain={tr("Tus", "Your")} accent={tr("controles", "check-ins")} />
           </div>
         </div>
-        <div className="card empty" data-reveal>
-          <p className="fact">{tr("Todavía no hay controles", "No check-ins yet")}</p>
-          <p className="muted">
-            {you
-              ? tr("Tu coach los carga después de cada medición: acá vas a ver cómo cambia tu cuerpo.", "Your coach adds them after each measurement: this is where you'll see how your body changes.")
-              : "Cargá el primero con el formulario de arriba."}
-          </p>
-        </div>
+        <Empty
+          reveal
+          title={tr("Todavía no hay controles", "No check-ins yet")}
+          text={tr("Tu coach los carga después de cada medición: acá vas a ver cómo cambia tu cuerpo.", "Your coach adds them after each measurement: this is where you'll see how your body changes.")}
+        />
       </section>
     );
 
@@ -303,25 +246,25 @@ export function Results({ checkins, you, manage, number = "01", lang = "es" }: {
             <p className="eyebrow">
               <span className="num">{number}</span> {tr("Resultados", "Results")}
             </p>
-            <Title plain={you ? tr("Tu último", "Your latest") : "Último"} accent={tr("control", "check-in")} />
+            <Title plain={tr("Tu último", "Your latest")} accent={tr("control", "check-in")} />
             <p className="sub">
               {longDate(last.date, lang)} {prev ? tr("· comparado con el anterior", "· compared with the previous one") : tr("· el primero", "· your first")}
             </p>
           </div>
           <a className="btn btn--outline btn--sm" href="#controles">
-            {you ? tr("Ver todos mis controles", "See all my check-ins") : "Ver todos los controles"}
-            <ArrowIcon />
+            {tr("Ver todos mis controles", "See all my check-ins")}
+            <Icon name="arrow" />
           </a>
         </div>
 
         <div className="stats" data-reveal-stagger>
-          {STATS.map((s) => {
+          {BODY_STATS.map((s) => {
             const value = s.of(last);
             const d = prev ? value - s.of(prev) : null;
             const flat = d !== null && Math.abs(d) < 0.05;
             const good = d !== null && !flat && s.better !== 0 && Math.sign(d) === s.better;
             return (
-              <div className="card stat" key={s.label}>
+              <div className="card stat" key={s.key}>
                 <p className="label">{tr(s.label, s.en)}</p>
                 <p className="stat__val">
                   <span data-count={value.toFixed(1)} data-format="decimal">
@@ -356,25 +299,19 @@ export function Results({ checkins, you, manage, number = "01", lang = "es" }: {
               <span className="sw sw--lean" />
               <span className="muted">{tr("Masa magra", "Lean mass")}</span>
               <br />
-              <b>{n(lean(last))} kg</b> <span className="muted">· {n(leanPct)} %</span>
+              <b>{n(leanMass(last))} kg</b> <span className="muted">· {n(leanPct)} %</span>
             </p>
             <p>
               <span className="sw sw--fat" />
               <span className="muted">{tr("Grasa", "Fat")}</span>
               <br />
-              <b>{n(fat(last))} kg</b> <span className="muted">· {n(last.body_fat_pct)} %</span>
+              <b>{n(fatMass(last))} kg</b> <span className="muted">· {n(last.body_fat_pct)} %</span>
             </p>
           </div>
         </div>
 
         {/* La tendencia necesita al menos dos controles */}
-        {prev && (
-          <Evolution
-            you={you}
-            lang={lang}
-            points={checkins.map((c) => ({ date: c.date, weight: c.weight_kg, fatPct: c.body_fat_pct, lean: lean(c), fatKg: fat(c) }))}
-          />
-        )}
+        {prev && <Evolution you lang={lang} points={checkins.map(bodyPoint)} />}
       </section>
 
       <section id="controles">
@@ -383,43 +320,34 @@ export function Results({ checkins, you, manage, number = "01", lang = "es" }: {
             <p className="eyebrow">
               <span className="num">{String(Number(number) + 1).padStart(2, "0")}</span> {tr("Historial", "History")}
             </p>
-            <Title plain={you ? tr("Todos tus", "All your") : "Todos sus"} accent={tr("controles", "check-ins")} />
+            <Title plain={tr("Todos tus", "All your")} accent={tr("controles", "check-ins")} />
           </div>
-          {you && (
-            <a className="btn btn--outline btn--sm" href="/portal/mi-progreso/evaluaciones">
-              {tr("Ver todas mis medidas", "See all my measurements")}
-              <ArrowIcon />
-            </a>
-          )}
+          <a className="btn btn--outline btn--sm" href="/portal/mi-progreso/evaluaciones">
+            {tr("Ver todas mis medidas", "See all my measurements")}
+            <Icon name="arrow" />
+          </a>
         </div>
         <ScrollTable>
           <table className="table table--pin">
             <thead>
               <tr>
                 <th scope="col">{tr("Fecha", "Date")}</th>
-                {STATS.map((s) => (
-                  <th key={s.label} scope="col">
+                {BODY_STATS.map((s) => (
+                  <th key={s.key} scope="col">
                     {tr(s.label, s.en)}
                   </th>
                 ))}
-                {manage && <th scope="col"><span className="sr-only">Borrar</span></th>}
               </tr>
             </thead>
             <tbody>
               {checkins.toReversed().map((c, i) => (
                 <tr key={c.id} className={i === 0 ? "is-latest" : undefined}>
                   <td className="strong">{shortDate(c.date)}</td>
-                  <td>{n(c.weight_kg)} kg</td>
-                  <td>{n(c.body_fat_pct)} %</td>
-                  <td>{n(lean(c))} kg</td>
-                  <td>{n(fat(c))} kg</td>
-                  {manage && (
-                    <td className="right">
-                      <Form action={deleteCheckin} submit="Borrar" button="link-sm" confirm={{ title: "¿Borrar", accent: "el control?", text: `El del ${shortDate(c.date)}. No se puede deshacer.`, yes: "Borrar" }}>
-                        <input type="hidden" name="id" value={c.id} />
-                      </Form>
+                  {BODY_STATS.map((s) => (
+                    <td key={s.key}>
+                      {n(s.of(c))} {s.unit}
                     </td>
-                  )}
+                  ))}
                 </tr>
               ))}
             </tbody>

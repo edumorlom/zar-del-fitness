@@ -9,20 +9,18 @@ import { canHandlePayments } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { getClient } from "~/lib/data";
 import { db } from "~/lib/db";
+import { type FormState, text } from "~/lib/form";
 import { shortDate } from "~/lib/format";
+import { isLocalhost, requestHost } from "~/lib/host";
 import { getLang } from "~/lib/lang";
 import { createPreference, mpConfigured } from "~/lib/mercadopago";
 import { canPayOnline, IN_PERSON, isPayable, METHOD_LABEL, type Method } from "~/lib/payments";
 import { cancelPayment, planPrice, recordInPerson, setPreference, startMercadoPago } from "~/lib/payments-data";
-import type { FormState } from "./actions";
-
-const text = (form: FormData, key: string) => String(form.get(key) ?? "").trim();
 
 /** El portal en el dominio en que se está: Mercado Pago vuelve ahí. En desarrollo, localhost (sin https). */
 async function portalBase() {
-  const h = await headers();
-  const host = (h.get("x-forwarded-host") ?? h.get("host") ?? "").split(",")[0].trim().toLowerCase();
-  return /^(mi\.)?localhost(:\d+)?$/.test(host) ? `http://${host}/portal` : portalUrl;
+  const host = requestHost(await headers());
+  return isLocalhost(host) ? `http://${host}/portal` : portalUrl;
 }
 
 // ---------- El cliente ----------

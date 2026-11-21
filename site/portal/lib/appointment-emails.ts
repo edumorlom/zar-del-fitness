@@ -1,16 +1,18 @@
 // Los correos de los turnos: al Zar, cuando alguien pide uno (desde el portal o por Digui), y al cliente, cuando el
 // admin o su coach se lo confirma (o se lo mueve, que también lo deja confirmado).
-import { ANTON, box, buttonRow, esc, F, greeting, heading, heroRow, image, page, SITE, textRow } from "./email-layout.ts";
-import { dateOf, longDate, timeOf } from "./format.ts";
+import { ANTON, bandRow, box, buttonRow, esc, F, greeting, heading, heroRow, image, page, SITE, smallLabel, textRow } from "./email-layout.ts";
+import { dateOf, longDate, longDateTime, timeOf } from "./format.ts";
 
 /** "viernes 13 de noviembre a las 10:00 h", para ir a mitad de una frase. */
-const when = (d: Date) => `${longDate(dateOf(d)).toLowerCase()} a las ${timeOf(d)} h`;
+const when = (d: Date) => longDateTime(d).toLowerCase();
 
 /** El día y la hora, grandes, entre dos líneas. */
 const whenRow = (label: string, d: Date) =>
-  `<tr><td class="p" style="padding:32px 40px 0"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-top:1px solid #2a2a2a;border-bottom:1px solid #2a2a2a"><tr><td style="padding:24px 0">${box(
-    `<div style="${F};font-size:12px;line-height:18px;letter-spacing:2px;color:#8a8a8a;font-weight:700;text-transform:uppercase">${label}</div><div style="padding-top:6px;${ANTON};font-size:34px;line-height:42px;color:#ffffff;text-transform:uppercase">${longDate(dateOf(d))}</div><div class="nc" style="${ANTON};font-size:34px;line-height:42px;color:#e7c152">${timeOf(d)} h</div>`
-  )}</td></tr></table></td></tr>\n`;
+  bandRow(
+    box(
+      `${smallLabel(label)}<div style="padding-top:6px;${ANTON};font-size:34px;line-height:42px;color:#ffffff;text-transform:uppercase">${longDate(dateOf(d))}</div><div class="nc" style="${ANTON};font-size:34px;line-height:42px;color:#e7c152">${timeOf(d)} h</div>`
+    )
+  );
 
 /** Una línea "Dato: valor" chica, gris. */
 const fact = (label: string, value: string) =>

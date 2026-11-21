@@ -1,22 +1,23 @@
+// La página de un episodio usa el encabezado y las columnas de las notas del blog (BlogPost.module.css); lo suyo es el
+// video y el resumen (PodcastEpisode.module.css).
 import { notFound } from "next/navigation";
-import { PageShell } from "./PageShell";
 import { EpisodeCard, EpisodeGrid } from "./EpisodeCard";
 import { FinalCta } from "./FinalCta";
 import { JsonLd } from "./JsonLd";
+import { Crumbs } from "./PageHero";
+import { PageShell } from "./PageShell";
 import { Rich } from "./Rich";
 import { content } from "@/lib/content";
 import { fill, formatDate, otherLang, type Lang } from "@/lib/i18n";
-import { episodes, findEpisode, type Episode } from "@/lib/podcasts";
+import { episodeAlternates, episodes, findEpisode } from "@/lib/podcasts";
 import { breadcrumbLd, pageMetadata, videoLd, webPageLd } from "@/lib/seo";
+import post from "./BlogPost.module.css";
 import styles from "./PodcastEpisode.module.css";
-
-/** El mismo episodio en castellano y en inglés (tiene el mismo id en los dos). */
-const alternatesOf = (e: Episode) => ({ [e.lang]: e.path, [otherLang(e.lang)]: findEpisode(otherLang(e.lang), e.id)!.path }) as Record<Lang, string>;
 
 export function episodeMetadata(lang: Lang, id: string) {
   const episode = findEpisode(lang, id);
   if (!episode) return {};
-  return pageMetadata({ lang, title: episode.pageTitle, description: episode.description, path: episode.path, alternates: alternatesOf(episode) });
+  return pageMetadata({ lang, title: episode.pageTitle, description: episode.description, path: episode.path, alternates: episodeAlternates(episode) });
 }
 
 /**
@@ -30,7 +31,7 @@ export function PodcastEpisode({ lang, id }: { lang: Lang; id: string }) {
   const more = episodes[lang].filter((e) => e !== episode);
 
   return (
-    <PageShell lang={lang} alternate={alternatesOf(episode)[otherLang(lang)]}>
+    <PageShell lang={lang} alternate={episodeAlternates(episode)[otherLang(lang)]}>
       <JsonLd
         data={[
           // La página trata del video: Google y los buscadores con IA lo toman como lo principal.
@@ -44,32 +45,30 @@ export function PodcastEpisode({ lang, id }: { lang: Lang; id: string }) {
       />
 
       <article>
-        <header className={styles.head} id="top">
-          <div className={styles.glow} aria-hidden="true" />
-          <div className={styles.narrow}>
-            <nav aria-label={t.general.migasDePan} className={styles.crumbs}>
-              <ol>
-                <li>
-                  <a href={pages.home}>{t.general.inicio}</a>
-                </li>
-                <li>
-                  <a href={pages.podcasts}>{t.menu.podcasts}</a>
-                </li>
-                <li aria-current="page">{episode.title}</li>
-              </ol>
-            </nav>
-            <p className={styles.meta}>
+        <header className={post.head} id="top">
+          <div className={post.glow} aria-hidden="true" />
+          <div className={post.narrow}>
+            <Crumbs
+              home={{ name: t.general.inicio, path: pages.home }}
+              crumbs={[
+                { name: t.menu.podcasts, path: pages.podcasts },
+                { name: episode.title, path: episode.path },
+              ]}
+              label={t.general.migasDePan}
+              className={post.crumbs}
+            />
+            <p className={post.meta}>
               <span className="tag">{t.podcasts.antetitulo}</span>
               <time dateTime={episode.date}>{formatDate(episode.date, lang)}</time>
               <span>{fill(t.podcasts.duracion, { minutos: Math.round(episode.seconds / 60) })}</span>
               <span>{t.podcasts.idioma}</span>
             </p>
-            <h1 className={styles.title}>{episode.title}</h1>
+            <h1 className={post.title}>{episode.title}</h1>
             <p className={styles.guest}>{fill(t.podcasts.con, { invitado: episode.guest })}</p>
           </div>
         </header>
 
-        <div className={styles.wide}>
+        <div className={post.wide}>
           <div className={styles.video}>
             <iframe
               src={`https://www.youtube.com/embed/${episode.videoId}?rel=0`}
@@ -80,7 +79,7 @@ export function PodcastEpisode({ lang, id }: { lang: Lang; id: string }) {
           </div>
         </div>
 
-        <div className={`${styles.narrow} ${styles.summary}`}>
+        <div className={`${post.narrow} ${styles.summary}`}>
           {episode.summary.map((p) => (
             <p key={p}>{p}</p>
           ))}
@@ -90,7 +89,7 @@ export function PodcastEpisode({ lang, id }: { lang: Lang; id: string }) {
       {more.length > 0 && (
         <section className="section">
           <div className="container">
-            <h2 className={`h2 h2--sm ${styles.moreTitle}`}>
+            <h2 className={`h2 h2--sm ${post.moreTitle}`}>
               <Rich text={t.podcasts.masEpisodios} emClass="serif gold-text" />
             </h2>
             <EpisodeGrid>

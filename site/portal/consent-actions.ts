@@ -6,9 +6,9 @@ import { canManage, homeOf } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { CONSENT_KINDS, getConsents, needsConsent, recordConsents, verifyUnsubscribe, type ConsentKind } from "~/lib/consent";
 import { getClient } from "~/lib/data";
+import type { FormState } from "~/lib/form";
 import { getLang } from "~/lib/lang";
 import { pick } from "@/lib/i18n";
-import type { FormState } from "./actions";
 
 const answersOf = (form: FormData) =>
   Object.fromEntries(CONSENT_KINDS.map((k) => [k, form.get(k) === "on"])) as Record<ConsentKind, boolean>;

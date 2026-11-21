@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminShell, PageHead } from "~/components/AdminShell";
+import { Kpi } from "~/components/Cards";
+import { CoachSelect, PlanSelect } from "~/components/FilterFields";
 import { Filters } from "~/components/Filters";
 import { LineChart } from "~/components/LineChart";
-import { initials } from "~/components/Shell";
+import { Person } from "~/components/Person";
 import { homeOf, isTeam } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
-import { PLANS, STATUS_LABEL, type ControlStatus } from "~/lib/clients";
+import { LATE_DAYS, STATUS_LABEL, type ControlStatus } from "~/lib/clients";
 import { checkinDates, getCoaches, listClients } from "~/lib/data";
 import { todayISO } from "~/lib/format";
 import { dashboard } from "~/lib/stats";
@@ -54,39 +56,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     <AdminShell viewer={viewer}>
       <PageHead title="Dashboard" sub={`El seguimiento, al día de hoy · ${d.total} clientes activos en la selección`}>
         <Filters>
-          {admin && (
-            <select name="coach" defaultValue={sp.coach ?? ""} aria-label="Coach">
-              <option value="">Todos los coaches</option>
-              {coaches.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          )}
-          <select name="plan" defaultValue={plan} aria-label="Plan">
-            <option value="">Todos los planes</option>
-            {PLANS.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.label}
-              </option>
-            ))}
-            <option value="-">Sin plan</option>
-          </select>
+          {admin && <CoachSelect coaches={coaches} value={sp.coach} />}
+          <PlanSelect value={plan} />
         </Filters>
       </PageHead>
 
       <div className="kpis" data-reveal-stagger>
-        <section className="card kpi kpi--wide">
-          <p className="label">Cobertura de controles</p>
-          <p className="kpi__sub">Clientes con un control en los últimos 30 días</p>
-          <p className="kpi__big">
-            <span data-count={d.coverage}>{d.coverage}</span>
-            <small>%</small>
-            <span className="muted kpi__of">
-              {d.by["al-dia"]} de {d.total}
-            </span>
-          </p>
+        <Kpi wide label="Cobertura de controles" sub="Clientes con un control en los últimos 30 días" value={d.coverage} unit="%" of={`${d.by["al-dia"]} de ${d.total}`}>
           <div className="seg" aria-hidden="true">
             {STATUS_ORDER.map((s) => (d.by[s] ? <span key={s} className={`seg__part st--${s}`} style={{ flexGrow: d.by[s] }} /> : null))}
           </div>
@@ -103,46 +79,26 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             Midiendo a los {d.by["por-vencer"]} que están por vencer, la cobertura llega a <b>{d.coverageWithDue} %</b>. Los
             atrasados son la lista de llamados: <Link href="/portal/clientes?estado=atrasado">verlos</Link>.
           </p>
-        </section>
-        <section className="card kpi">
-          <p className="label">Controles</p>
-          <p className="kpi__sub">Últimos 30 días</p>
-          <p className="kpi__big">
-            <span data-count={d.last30}>{d.last30}</span>
-          </p>
-          <Delta now={d.last30} before={d.prev30} />
-        </section>
-        <section className="card kpi">
-          <p className="label">Clientes que mejoraron</p>
-          <p className="kpi__sub">Bajaron el % graso en su último control</p>
-          <p className="kpi__big">
-            <span data-count={d.comparable ? Math.round((d.improved / d.comparable) * 100) : 0}>
-              {d.comparable ? Math.round((d.improved / d.comparable) * 100) : 0}
-            </span>
-            <small>%</small>
-          </p>
-          <p className="kpi__foot">
-            {d.improved} de {d.comparable} con dos controles o más en el portal
-          </p>
-        </section>
-        <section className="card kpi">
-          <p className="label">Altas</p>
-          <p className="kpi__sub">Clientes nuevos, últimos 30 días</p>
-          <p className="kpi__big">
-            <span data-count={d.newLast}>{d.newLast}</span>
-          </p>
-          <Delta now={d.newLast} before={d.newPrev} />
-        </section>
-        <section className="card kpi">
-          <p className="label">Atrasados</p>
-          <p className="kpi__sub">Más de 45 días sin control</p>
-          <p className="kpi__big">
-            <span data-count={d.by.atrasado}>{d.by.atrasado}</span>
-          </p>
-          <p className="kpi__foot">
-            <Link href="/portal/clientes?estado=atrasado">Ver la lista</Link>
-          </p>
-        </section>
+        </Kpi>
+        <Kpi label="Controles" sub="Últimos 30 días" value={d.last30} foot={<Delta now={d.last30} before={d.prev30} />} />
+        <Kpi
+          label="Clientes que mejoraron"
+          sub="Bajaron el % graso en su último control"
+          value={d.comparable ? Math.round((d.improved / d.comparable) * 100) : 0}
+          unit="%"
+          foot={`${d.improved} de ${d.comparable} con dos controles o más en el portal`}
+        />
+        <Kpi label="Altas" sub="Clientes nuevos, últimos 30 días" value={d.newLast} foot={<Delta now={d.newLast} before={d.newPrev} />} />
+        <Kpi
+          label="Atrasados"
+          sub={`Más de ${LATE_DAYS} días sin control`}
+          value={d.by.atrasado}
+          foot={
+            <p className="kpi__foot">
+              <Link href="/portal/clientes?estado=atrasado">Ver la lista</Link>
+            </p>
+          }
+        />
       </div>
 
       <div className="dash-row">
@@ -193,10 +149,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               {d.perCoach.map((c) => (
                 <tr key={c.id ?? "-"}>
                   <td data-label="Coach">
-                    <Link className="person" href={c.id ? `/portal/clientes?coach=${c.id}` : "/portal/clientes"}>
-                      {c.photo ? <img className="person__img" src={c.photo} alt="" /> : <span className="avatar avatar--sm">{initials(c.name)}</span>}
-                      <span className="strong">{c.name}</span>
-                    </Link>
+                    <Person name={c.name} photo={c.photo} href={c.id ? `/portal/clientes?coach=${c.id}` : "/portal/clientes"} />
                   </td>
                   <td data-label="Clientes">{c.clients}</td>
                   <td data-label="Cobertura">

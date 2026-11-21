@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Icon } from "@/components/Icon";
 import { deleteClient } from "~/actions";
 import { AdminShell, PageHead } from "~/components/AdminShell";
+import { Empty } from "~/components/Cards";
+import { CoachSelect, PlanSelect, STATUSES, StatusSelect } from "~/components/FilterFields";
 import { Filters } from "~/components/Filters";
 import { Form } from "~/components/Form";
-import { initials } from "~/components/Shell";
+import { Person } from "~/components/Person";
 import { canCreate, homeOf, isTeam } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
-import { age, bmi, controlStatus, daysBetween, PLANS, STATUS_LABEL, type ControlStatus } from "~/lib/clients";
+import { age, bmi, controlStatus, daysBetween, STATUS_LABEL, type ControlStatus } from "~/lib/clients";
 import { getCoaches, listClients } from "~/lib/data";
 import { days, num, shortDate, todayISO } from "~/lib/format";
 
 export const metadata: Metadata = { title: "Clientes" };
-
-const STATUSES = Object.keys(STATUS_LABEL) as ControlStatus[];
 
 type Row = Awaited<ReturnType<typeof listClients>>[number];
 // Columnas que se pueden ordenar (?orden=columna, o ?orden=-columna para invertir)
@@ -85,9 +86,7 @@ export default async function ClientsPage({
         {canCreate(viewer) && (
           <Link className="btn btn--gold btn--sm" href="/portal/clientes/nuevo">
             Nuevo cliente
-            <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
-              <use href="#i-plus" />
-            </svg>
+            <Icon name="plus" />
           </Link>
         )}
       </PageHead>
@@ -96,40 +95,17 @@ export default async function ClientsPage({
         {inactive && <input type="hidden" name="bajas" value="1" />}
         {sp.orden && <input type="hidden" name="orden" value={sp.orden} />}
         <input className="filters__search" name="q" type="search" defaultValue={sp.q ?? ""} placeholder="Buscar por nombre, DNI o correo" aria-label="Buscar" />
-        {admin && (
-          <select name="coach" defaultValue={sp.coach ?? ""} aria-label="Coach">
-            <option value="">Todos los coaches</option>
-            {coaches.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        )}
-        <select name="plan" defaultValue={sp.plan ?? ""} aria-label="Plan">
-          <option value="">Todos los planes</option>
-          {PLANS.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.label}
-            </option>
-          ))}
-          <option value="-">Sin plan</option>
-        </select>
-        <select name="estado" defaultValue={estado ?? ""} aria-label="Seguimiento">
-          <option value="">Todo el seguimiento</option>
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {STATUS_LABEL[s]}
-            </option>
-          ))}
-        </select>
+        {admin && <CoachSelect coaches={coaches} value={sp.coach} />}
+        <PlanSelect value={sp.plan} />
+        <StatusSelect value={estado ?? undefined} />
       </Filters>
 
       {rows.length === 0 ? (
-        <div className="card empty" data-reveal>
-          <p className="fact">{filtered ? "No hay nadie con esos filtros" : inactive ? "No hay clientes dados de baja" : "Todavía no hay clientes"}</p>
-          <p className="muted">{filtered ? "Probá con otros." : admin ? "Creá el primero con “Nuevo cliente”." : "El admin te los asigna desde su cuenta."}</p>
-        </div>
+        <Empty
+          reveal
+          title={filtered ? "No hay nadie con esos filtros" : inactive ? "No hay clientes dados de baja" : "Todavía no hay clientes"}
+          text={filtered ? "Probá con otros." : admin ? "Creá el primero con “Nuevo cliente”." : "El admin te los asigna desde su cuenta."}
+        />
       ) : (
         <div className="card table-wrap" data-reveal>
           <table className="table table--cards">
@@ -153,43 +129,23 @@ export default async function ClientsPage({
                 return (
                   <tr key={r.id}>
                     <td data-label="Cliente">
-                      <Link className="person" href={`/portal/clientes/${r.id}`}>
-                        {r.photo_url ? (
-                          <img className="person__img" src={r.photo_url} alt="" />
-                        ) : (
-                          <span className="avatar avatar--sm" aria-hidden="true">
-                            {initials(r.name)}
+                      <Person
+                        name={r.name}
+                        photo={r.photo_url}
+                        href={`/portal/clientes/${r.id}`}
+                        sub={[r.dni, years !== null && `${years} años`].filter(Boolean).join(" · ") || r.email || "—"}
+                      >
+                        {r.plan === "Premium" && <span className="tag-star" title="Premium"> ★</span>}
+                        {r.conditions.length > 0 && (
+                          <span className="tag-alert" title={`Patologías: ${r.conditions.join(", ")}`}>
+                            {" "}
+                            ⚠<span className="sr-only">con patologías</span>
                           </span>
                         )}
-                        <span>
-                          <span className="strong">{r.name}</span>
-                          {r.plan === "Premium" && <span className="tag-star" title="Premium"> ★</span>}
-                          {r.conditions.length > 0 && (
-                            <span className="tag-alert" title={`Patologías: ${r.conditions.join(", ")}`}>
-                              {" "}
-                              ⚠<span className="sr-only">con patologías</span>
-                            </span>
-                          )}
-                          <span className="person__sub">
-                            {[r.dni, years !== null && `${years} años`].filter(Boolean).join(" · ") || r.email || "—"}
-                          </span>
-                        </span>
-                      </Link>
+                      </Person>
                     </td>
                     <td data-label="Coach · Plan">
-                      <span className="person person--quiet">
-                        {r.coach_photo ? (
-                          <img className="person__img" src={r.coach_photo} alt="" />
-                        ) : (
-                          <span className="avatar avatar--sm avatar--quiet" aria-hidden="true">
-                            {r.coach_name ? initials(r.coach_name) : "—"}
-                          </span>
-                        )}
-                        <span>
-                          <span>{r.coach_name ?? "Sin coach asignado"}</span>
-                          <span className="person__sub">{r.plan ?? "Sin plan"}</span>
-                        </span>
-                      </span>
+                      <Person quiet name={r.coach_name} label="Sin coach asignado" photo={r.coach_photo} sub={r.plan ?? "Sin plan"} />
                     </td>
                     <td data-label="Último control">
                       {r.last_date ? (
@@ -218,19 +174,12 @@ export default async function ClientsPage({
                     </td>
                     <td className="right actions">
                       <Link className="icon-btn icon-btn--sm" href={`/portal/clientes/${r.id}`} aria-label={`Ver a ${r.name}`} title="Ver ficha">
-                        <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
-                          <circle cx="12" cy="12" r="3" />
-                        </svg>
+                        <Icon name="eye" />
                       </Link>
                       {admin && (
                         <Form
                           action={deleteClient}
-                          submit={
-                            <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                              <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
-                            </svg>
-                          }
+                          submit={<Icon name="trash" />}
                           button="icon-btn icon-btn--sm icon-btn--danger"
                           label={`Borrar a ${r.name}`}
                           className="inline-form"

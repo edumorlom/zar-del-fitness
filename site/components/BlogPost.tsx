@@ -3,22 +3,17 @@
 
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { PageShell } from "./PageShell";
-import { PostCard, PostGrid } from "./PostCard";
 import { Icon } from "./Icon";
 import { JsonLd } from "./JsonLd";
+import { Crumbs } from "./PageHero";
+import { PageShell } from "./PageShell";
+import { PostCard, PostGrid } from "./PostCard";
 import { Rich } from "./Rich";
-import { findPost, posts, translationOf, type Post, type PostParams } from "@/lib/blog";
+import { findPost, postAlternates, posts, translationOf, type PostParams } from "@/lib/blog";
 import { content } from "@/lib/content";
 import { fill, formatDate, otherLang, type Lang } from "@/lib/i18n";
 import { articleLd, breadcrumbLd, pageMetadata, webPageLd } from "@/lib/seo";
 import styles from "./BlogPost.module.css";
-
-/** La nota en castellano y en inglés, si está traducida. */
-function alternatesOf(post: Post) {
-  const other = translationOf(post);
-  return other && ({ [post.lang]: post.path, [other.lang]: other.path } as Record<Lang, string>);
-}
 
 export function postMetadata(lang: Lang, params: PostParams) {
   const post = findPost(lang, params);
@@ -28,7 +23,7 @@ export function postMetadata(lang: Lang, params: PostParams) {
     title: post.title,
     description: post.description,
     path: post.path,
-    alternates: alternatesOf(post),
+    alternates: postAlternates(post),
     article: { publishedTime: post.date, authors: [post.author], section: post.category },
   });
 }
@@ -60,17 +55,15 @@ export function BlogPost({ lang, params }: { lang: Lang; params: PostParams }) {
         <header className={styles.head} id="top">
           <div className={styles.glow} aria-hidden="true" />
           <div className={styles.narrow}>
-            <nav aria-label={t.general.migasDePan} className={styles.crumbs}>
-              <ol>
-                <li>
-                  <a href={pages.home}>{t.general.inicio}</a>
-                </li>
-                <li>
-                  <a href={pages.blog}>{t.menu.blog}</a>
-                </li>
-                <li aria-current="page">{post.title}</li>
-              </ol>
-            </nav>
+            <Crumbs
+              home={{ name: t.general.inicio, path: pages.home }}
+              crumbs={[
+                { name: t.menu.blog, path: pages.blog },
+                { name: post.title, path: post.path },
+              ]}
+              label={t.general.migasDePan}
+              className={styles.crumbs}
+            />
             <p className={styles.meta}>
               <span className="tag">{post.category}</span>
               <time dateTime={post.date}>{formatDate(post.date, lang)}</time>

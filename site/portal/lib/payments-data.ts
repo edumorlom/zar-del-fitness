@@ -2,7 +2,7 @@ import "server-only";
 import type { PoolClient } from "pg";
 import planes from "@db/planes.json";
 import { PHOTO_URL } from "./data";
-import { db } from "./db";
+import { db, tx } from "./db";
 import { todayISO } from "./format";
 import { getPayment } from "./mercadopago";
 import { extendPass, isPayable, MP_IN_PROCESS, MP_REVERSED, mpMatches, PAYABLE_PLANS, type Method } from "./payments";
@@ -19,21 +19,6 @@ export function planPrice(plan: string | null) {
   const p = (planes as PlanJson[]).find((x) => x.id === PAYABLE_PLANS[plan]);
   const price = p?.precios[0];
   return p && price ? { amount: price.monto, currency: price.moneda, name: p.nombre.es } : null;
-}
-
-async function tx<T>(fn: (c: PoolClient) => Promise<T>): Promise<T> {
-  const c = await db.connect();
-  try {
-    await c.query("begin");
-    const value = await fn(c);
-    await c.query("commit");
-    return value;
-  } catch (e) {
-    await c.query("rollback");
-    throw e;
-  } finally {
-    c.release();
-  }
 }
 
 /** Aprueba el pago y le extiende el pase al cliente un mes. Devuelve el vencimiento nuevo. */

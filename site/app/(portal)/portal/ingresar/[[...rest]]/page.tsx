@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { DiguiChat } from "~/components/DiguiChat";
 import { LoginBackdrop } from "~/components/LoginBackdrop";
 import { SiteHeader } from "~/components/SiteHeader";
+import { Title } from "~/components/Title";
 import { getViewer } from "~/lib/auth";
 import { getLang } from "~/lib/lang";
 import { content } from "@/lib/content";
@@ -41,16 +42,7 @@ export default async function LoginPage() {
         <p className="eyebrow intro">
           <span className="dot" /> {tr("Mi progreso", "My progress")}
         </p>
-        <h1 className="h2 intro-lines">
-          <span className="ln">
-            <span>{tr("Bienvenido", "Welcome")}</span>
-          </span>{" "}
-          <span className="ln">
-            <span>
-              <em className="serif gold-text">{tr("de vuelta", "back")}</em>
-            </span>
-          </span>
-        </h1>
+        <Title as="h1" className="h2" intro plain={tr("Bienvenido", "Welcome")} accent={tr("de vuelta", "back")} />
         <p className="panel__lead intro">{tr("Entrá con Google o con tu correo.", "Sign in with Google or your email.")}</p>
         <div className="signin">
           <SignIn routing="path" path="/portal/ingresar" withSignUp fallbackRedirectUrl="/portal" signUpFallbackRedirectUrl="/portal" />

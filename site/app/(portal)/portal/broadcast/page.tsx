@@ -6,13 +6,12 @@ import { ClientPicker } from "~/components/ClientPicker";
 import { Form } from "~/components/Form";
 import { requireViewer } from "~/lib/auth";
 import { DEFAULT_TEMPLATE } from "~/lib/broadcast-email";
-import { countMarketingOptOuts } from "~/lib/consent";
 import { PLANS } from "~/lib/clients";
+import { countMarketingOptOuts } from "~/lib/consent";
 import { getBroadcastTemplate, listClients } from "~/lib/data";
+import { isEmail } from "~/lib/form";
 
 export const metadata: Metadata = { title: "Broadcast" };
-
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** Un correo a muchos clientes a la vez (sólo el admin): la plantilla, y a quiénes, por grupo o uno por uno. */
 export default async function BroadcastPage() {
@@ -20,7 +19,7 @@ export default async function BroadcastPage() {
   if (!viewer.scopes.includes("admin")) notFound();
   const [all, saved, optedOut] = await Promise.all([listClients(viewer, { active: true }), getBroadcastTemplate(), countMarketingOptOuts()]);
   const template = saved ?? DEFAULT_TEMPLATE;
-  const clients = all.filter((c) => EMAIL.test(c.email ?? ""));
+  const clients = all.filter((c) => isEmail(c.email));
   const noEmail = all.length - clients.length;
 
   const count = (f: (c: (typeof clients)[number]) => boolean) => clients.filter(f).length;

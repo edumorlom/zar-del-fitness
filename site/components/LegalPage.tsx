@@ -1,8 +1,9 @@
 // Una página legal (términos y condiciones, política de privacidad), de db/legal/: ver lib/legal.ts.
 // Usa el encabezado y el cuerpo de las notas del blog (BlogPost.module.css), con un índice de las secciones.
 
-import { PageShell } from "./PageShell";
 import { JsonLd } from "./JsonLd";
+import { Crumbs } from "./PageHero";
+import { PageShell } from "./PageShell";
 import { content } from "@/lib/content";
 import { formatDate, otherLang, type Lang } from "@/lib/i18n";
 import { LEGAL_IDS, legalDocs, legalPaths, type LegalId } from "@/lib/legal";
@@ -33,14 +34,7 @@ export function LegalPage({ lang, id }: { lang: Lang; id: LegalId }) {
         <header className={post.head} id="top">
           <div className={post.glow} aria-hidden="true" />
           <div className={post.narrow}>
-            <nav aria-label={t.general.migasDePan} className={post.crumbs}>
-              <ol>
-                <li>
-                  <a href={pages.home}>{t.general.inicio}</a>
-                </li>
-                <li aria-current="page">{doc.title}</li>
-              </ol>
-            </nav>
+            <Crumbs home={{ name: t.general.inicio, path: pages.home }} crumbs={[{ name: doc.title, path: doc.path }]} label={t.general.migasDePan} className={post.crumbs} />
             <p className={post.meta}>
               <span className="tag">{t.legal.antetitulo}</span>
               <span>

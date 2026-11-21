@@ -37,6 +37,14 @@ export const textRow = (html: string, top = 24) =>
 export const buttonRow = (href: string, alt: string, width: number) =>
   `<tr><td class="p" style="padding:30px 40px 0"><a href="${href}" style="display:inline-block;text-decoration:none"><img src="cid:boton" width="${width}" height="56" alt="${alt}" style="display:block;border:0;width:${width}px;height:56px;font-family:Arial,sans-serif;font-size:17px;font-weight:700;line-height:24px;color:#e7c152"></a></td></tr>\n`;
 
+/** Una etiqueta chica, gris y en mayúsculas arriba de un dato grande ("Peso", "Tu turno", "Tu objetivo"). */
+export const smallLabel = (text: string) =>
+  `<div style="${F};font-size:12px;line-height:18px;letter-spacing:2px;color:#8a8a8a;font-weight:700;text-transform:uppercase">${text}</div>`;
+
+/** Una franja entre dos líneas, a todo el ancho, con lo destacado del correo (los números, el día y la hora, el objetivo). */
+export const bandRow = (inner: string) =>
+  `<tr><td class="p" style="padding:32px 40px 0"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-top:1px solid #2a2a2a;border-bottom:1px solid #2a2a2a"><tr><td style="padding:24px 0">${inner}</td></tr></table></td></tr>\n`;
+
 /** Un título de sección, como "Cómo ingresar". */
 export const heading = (text: string) =>
   `<h2 style="margin:0;font-weight:400;${ANTON};font-size:30px;line-height:38px;color:#ffffff;text-transform:uppercase;">${text}</h2>`;
@@ -61,6 +69,10 @@ u + .body .nc{color:#ffffff!important;border-color:#ffffff!important}
 ${rows}<tr><td class="p" align="left" style="padding:56px 40px 40px;${F};font-size:13px;line-height:21px;color:#8a8a8a;">${box(`<div style="border-top:1px solid #2a2a2a;padding-top:28px">
 ${help ? `<a class="nc" href="https://wa.me/5491127336258" style="color:#e7c152;font-weight:700;text-decoration:underline">${help}</a><br>\n` : ""}The VIP by Zar del Fitness, Av. Álvarez Thomas 847, Colegiales, CABA.<br>Este correo es automático y no recibe respuestas.</div>`)}</td></tr></table>
 </td></tr></table></body></html>`;
+
+/** Resend acepta 2 correos por segundo en el plan común: entre uno y otro de una tanda (Broadcast, recordatorios), 600 ms. */
+export const RESEND_GAP_MS = 600;
+export const sleep = (ms: number) => new Promise<void>((ok) => setTimeout(ok, ms));
 
 /**
  * Manda un correo por Resend y dice si Resend lo aceptó. Sin RESEND_API_KEY no manda y lo deja en los logs; si Resend lo

@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useActionState, useEffect, useId, useRef } from "react";
-import type { FormState } from "~/actions";
+import type { FormState } from "~/lib/form";
 
 /** Lo que dice un cartel: el título (con la segunda parte en cursiva dorada), el texto y los dos botones. */
 export type Question = { title: string; accent: string; text: string; yes: string; no?: string };

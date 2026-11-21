@@ -1,10 +1,10 @@
 import type { MetadataRoute } from "next";
-import { posts, translationOf, type Post } from "@/lib/blog";
+import { postAlternates, posts, type Post } from "@/lib/blog";
 import { content, portalLogin } from "@/lib/content";
 import { lastCommit } from "@/lib/git";
-import { LANGS, otherLang } from "@/lib/i18n";
+import { LANGS } from "@/lib/i18n";
 import { LEGAL_IDS, legalDocs, legalPaths } from "@/lib/legal";
-import { episodes, findEpisode } from "@/lib/podcasts";
+import { episodeAlternates, episodes } from "@/lib/podcasts";
 import { abs, dateTime, languages, type Alternates } from "@/lib/seo";
 
 export const dynamic = "force-static";
@@ -56,11 +56,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       },
       // El blog cambia cuando cambia alguna de sus notas.
       { ...page(blog[lang], 0.7, blog), lastModified: updated.length ? latest(updated) : undefined, changeFrequency: "weekly" as const },
-      ...posts[lang].map((p, i) => {
-        const other = translationOf(p);
-        const alternates = other && ({ [p.lang]: p.path, [other.lang]: other.path } as Alternates);
-        return { ...page(p.path, 0.6, alternates, [p.image]), lastModified: updated[i], changeFrequency: "yearly" as const };
-      }),
+      ...posts[lang].map((p, i) => ({ ...page(p.path, 0.6, postAlternates(p), [p.image]), lastModified: updated[i], changeFrequency: "yearly" as const })),
       {
         ...page(podcasts[lang], 0.7, podcasts, episodes[lang].map((e) => e.image)),
         lastModified: podcastsUpdated,
@@ -68,7 +64,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       },
       // Cada episodio, con su video (sitemap de video de Google).
       ...episodes[lang].map((e) => ({
-        ...page(e.path, 0.6, { [lang]: e.path, [otherLang(lang)]: findEpisode(otherLang(lang), e.id)!.path } as Alternates, [e.image]),
+        ...page(e.path, 0.6, episodeAlternates(e), [e.image]),
         lastModified: podcastsUpdated,
         videos: [
           {

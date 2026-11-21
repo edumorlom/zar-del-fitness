@@ -4,7 +4,7 @@
 
 import podcasts from "@db/podcasts.json";
 import { content } from "./content";
-import { fill, localePath, text, type Lang } from "./i18n";
+import { fill, localePath, otherLang, text, type Lang } from "./i18n";
 import { youtubeId, youtubeImage } from "./youtube.mjs";
 
 export type Episode = {
@@ -70,6 +70,10 @@ function load(lang: Lang): Episode[] {
 export const episodes: Record<Lang, Episode[]> = { es: load("es"), en: load("en") };
 
 export const findEpisode = (lang: Lang, id: string) => episodes[lang].find((e) => e.id === id);
+
+/** El mismo episodio en castellano y en inglés (tiene el mismo id en los dos): los hreflang. */
+export const episodeAlternates = (e: Episode) =>
+  ({ [e.lang]: e.path, [otherLang(e.lang)]: findEpisode(otherLang(e.lang), e.id)!.path }) as Record<Lang, string>;
 
 /** Las URLs de los episodios, para el build (generateStaticParams). */
 export const episodeParams = () => podcasts.map((p) => ({ id: p.id }));

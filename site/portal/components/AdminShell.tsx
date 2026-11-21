@@ -2,9 +2,11 @@ import { Reveals } from "@/components/motion/Reveals";
 import { canHandlePayments, isTeam, SCOPE_LABEL } from "~/lib/access";
 import type { Viewer } from "~/lib/auth";
 import { DiguiChat } from "./DiguiChat";
-import { initials, SIGN_OUT, SignOut } from "./Shell";
+import { initials } from "./Person";
+import { SIGN_OUT, SignOut } from "./Shell";
 import { Sidebar, type NavItem } from "./Sidebar";
 import { SiteHeader } from "./SiteHeader";
+import { Title } from "./Title";
 
 /** El equipo usa el menú unificado en el celular y conserva el panel lateral en la compu. */
 export function AdminShell({ viewer, children }: { viewer: Viewer; children: React.ReactNode }) {
@@ -58,21 +60,7 @@ export function PageHead({ title, accent, sub, children }: { title: string; acce
   return (
     <header className="page-head">
       <div>
-        <h1 className="page-head__title intro-lines">
-          <span className="ln">
-            <span>{title}</span>
-          </span>
-          {accent && (
-            <>
-              {" "}
-              <span className="ln">
-                <span>
-                  <em className="serif gold-text">{accent}</em>
-                </span>
-              </span>
-            </>
-          )}
-        </h1>
+        <Title as="h1" plain={title} accent={accent} className="page-head__title" intro />
         {sub && <p className="page-head__sub intro">{sub}</p>}
       </div>
       {children && <div className="page-head__actions intro">{children}</div>}

@@ -1,18 +1,18 @@
 import { currentUser } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import gimnasio from "@db/gimnasio.json";
+import { Icon } from "@/components/Icon";
+import { whatsapp } from "@/lib/content";
+import { pick } from "@/lib/i18n";
 import { DiguiChat } from "~/components/DiguiChat";
 import { LoginBackdrop } from "~/components/LoginBackdrop";
-import { SiteHeader } from "~/components/SiteHeader";
 import { SIGN_OUT, SignOut } from "~/components/Shell";
+import { SiteHeader } from "~/components/SiteHeader";
+import { Title } from "~/components/Title";
 import { getViewer } from "~/lib/auth";
 import { getLang } from "~/lib/lang";
-import { pick } from "@/lib/i18n";
 
 export const generateMetadata = async (): Promise<Metadata> => ({ title: pick(await getLang())("Sin acceso", "No access") });
-
-const wa = (text: string) => `https://wa.me/${gimnasio.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`;
 
 // Entró con Clerk, pero su correo no está cargado en el portal.
 export default async function NoAccessPage() {
@@ -32,16 +32,7 @@ export default async function NoAccessPage() {
         <p className="eyebrow">
           <span className="dot" /> {tr("Mi progreso", "My progress")}
         </p>
-        <h1 className="h2 intro-lines">
-          <span className="ln">
-            <span>{tr("Todavía", "You're not")}</span>
-          </span>{" "}
-          <span className="ln">
-            <span>
-              <em className="serif gold-text">{tr("no estás", "in yet")}</em>
-            </span>
-          </span>
-        </h1>
+        <Title as="h1" className="h2" intro plain={tr("Todavía", "You're not")} accent={tr("no estás", "in yet")} />
         <p className="panel__lead">
           {tr(
             <>
@@ -55,10 +46,8 @@ export default async function NoAccessPage() {
           )}
         </p>
         <div className="panel__actions">
-          <a className="btn btn--gold" href={wa(tr("Hola! Quiero entrar a Mi progreso.", "Hi! I'd like to access the member portal."))} target="_blank" rel="noopener">
-            <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
-              <use href="#i-wa" />
-            </svg>
+          <a className="btn btn--gold" href={whatsapp(tr("Hola! Quiero entrar a Mi progreso.", "Hi! I'd like to access the member portal."))} target="_blank" rel="noopener">
+            <Icon name="wa" />
             {tr("Escribinos", "Message us")}
           </a>
           <SignOut label={tr("Salir", "Sign out")} />

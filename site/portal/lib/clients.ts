@@ -51,6 +51,36 @@ export const age = (birthYear: number | null, today: string) => (birthYear ? Num
 export const bmi = (weightKg: number | null, heightCm: number | null) =>
   weightKg && heightCm ? Math.round((weightKg / (heightCm / 100) ** 2) * 10) / 10 : null;
 
+// ---------- La composición corporal ----------
+
+/** Lo que trae toda evaluación: el peso y el % graso. */
+export type Measured = { weight_kg: number; body_fat_pct: number };
+export const leanMass = (c: Measured) => c.weight_kg * (1 - c.body_fat_pct / 100);
+export const fatMass = (c: Measured) => (c.weight_kg * c.body_fat_pct) / 100;
+
+/**
+ * Las cuatro medidas que se siguen (los resultados, la evolución y las tablas): la masa magra y la grasa en kg salen del
+ * peso y el % graso, como en el portal anterior. `better`: hacia dónde es mejorar (0: ni para un lado ni para el otro).
+ */
+export const BODY_STATS = [
+  { key: "weight", label: "Peso", en: "Weight", unit: "kg", better: 0, delta: "kg", of: (c: Measured) => c.weight_kg },
+  { key: "fatPct", label: "% Graso", en: "Body fat %", unit: "%", better: -1, delta: "puntos", of: (c: Measured) => c.body_fat_pct },
+  { key: "lean", label: "Masa magra", en: "Lean mass", unit: "kg", better: 1, delta: "kg", of: leanMass },
+  { key: "fatKg", label: "Grasa", en: "Fat", unit: "kg", better: -1, delta: "kg", of: fatMass },
+] as const;
+export type BodyStat = (typeof BODY_STATS)[number];
+export type BodyStatKey = BodyStat["key"];
+
+/** Una evaluación como punto de la evolución: las cuatro medidas, con su fecha. */
+export type BodyPoint = { date: string } & Record<BodyStatKey, number>;
+export const bodyPoint = (c: Measured & { date: string }): BodyPoint => ({
+  date: c.date,
+  weight: c.weight_kg,
+  fatPct: c.body_fat_pct,
+  lean: leanMass(c),
+  fatKg: fatMass(c),
+});
+
 /** Lo opcional de una evaluación, en el orden del detalle: perímetros (cm) y lo que da la balanza. */
 export const MEASURES = [
   { key: "chest_cm", label: "Pecho", en: "Chest", unit: "cm", group: "Perímetros", min: 40, max: 200, int: false },
@@ -75,4 +105,4 @@ export const MEALS = [
   { key: "dinner", label: "Cena", en: "Dinner" },
   { key: "supplements", label: "Suplementos", en: "Supplements" },
 ] as const;
-export type MeasureKey =(typeof MEASURES)[number]["key"];
+export type MeasureKey = (typeof MEASURES)[number]["key"];

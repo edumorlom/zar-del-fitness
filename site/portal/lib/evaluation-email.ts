@@ -2,7 +2,7 @@
 // y, si vino con uno, el plan de alimentación.
 import { MEALS } from "./clients.ts";
 import type { Diet } from "./data";
-import { ANTON, box, buttonRow, esc, F, greeting, heading, heroRow, image, page, SITE, textRow } from "./email-layout.ts";
+import { ANTON, bandRow, box, buttonRow, esc, F, greeting, heading, heroRow, image, page, SITE, smallLabel, textRow } from "./email-layout.ts";
 import { num } from "./format.ts";
 
 export { greeting };
@@ -36,7 +36,7 @@ export function change(now: number, before: number | undefined, unit: string, si
 
 const stat = (label: string, value: string, unit: string, diff: string) =>
   `<td width="50%" valign="top" style="padding:0 12px 0 0">${box(
-    `<div style="${F};font-size:12px;line-height:18px;letter-spacing:2px;color:#8a8a8a;font-weight:700;text-transform:uppercase">${label}</div><div style="padding-top:6px;${ANTON};font-size:40px;line-height:46px;color:#ffffff">${value}<span style="font-size:20px;color:#dcdcdc"> ${unit}</span></div>${diff ? `<div style="padding-top:4px;${F};font-size:14px;line-height:22px;color:#a3a3a3">${diff}</div>` : ""}`
+    `${smallLabel(label)}<div style="padding-top:6px;${ANTON};font-size:40px;line-height:46px;color:#ffffff">${value}<span style="font-size:20px;color:#dcdcdc"> ${unit}</span></div>${diff ? `<div style="padding-top:4px;${F};font-size:14px;line-height:22px;color:#a3a3a3">${diff}</div>` : ""}`
   )}</td>`;
 
 type Numbers = { weight: number | null; fat: number | null };
@@ -54,9 +54,7 @@ export function statsRow(now: Numbers, prev: Numbers | null, since: string | und
     now.fat !== null && stat("% graso", num(now.fat), "%", diff(now.fat, prev?.fat, "puntos")),
   ].filter(Boolean);
   if (!stats.length) return "";
-  return `<tr><td class="p" style="padding:32px 40px 0"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-top:1px solid #2a2a2a;border-bottom:1px solid #2a2a2a"><tr><td style="padding:24px 0"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr>
-${stats.join("\n")}
-</tr></table></td></tr></table></td></tr>\n`;
+  return bandRow(`<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr>\n${stats.join("\n")}\n</tr></table>`);
 }
 
 /** Las comidas del plan que tienen algo, una debajo de la otra (también las usa el correo del plan solo). */
