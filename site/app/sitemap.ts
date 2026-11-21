@@ -51,7 +51,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const updated = posts[lang].map(postUpdated);
     return [
       {
-        ...page(home[lang], lang === "es" ? 1 : 0.9, home, ["/img/ronald-hero.jpg", "/img/ronald-seated.webp", "/img/vip-gym.webp"]),
+        ...page(home[lang], lang === "es" ? 1 : 0.9, home, ["/img/ronald-hero.jpg", "/img/ronald-seated.webp"]),
         lastModified: homeUpdated,
       },
       // El blog cambia cuando cambia alguna de sus notas.
