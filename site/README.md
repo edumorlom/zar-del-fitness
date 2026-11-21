@@ -73,6 +73,8 @@ Google o un link compartido) se ve la página del episodio, con el video embebid
 Las páginas viejas cuyo contenido hoy es una sección del inicio redirigen ahí (301: por ejemplo
 `/entrenamiento-online/` → `/#programas`, `/sobre-ronald/` → `/#zar`); las que ya no existen (tienda, carrito,
 mi cuenta, guías, categorías, archivos por fecha) responden 410, para que Google las saque. Todo en `proxy.ts`.
+Un link con caracteres invisibles pegados (pasa al copiarlo o escribirlo en Instagram o WhatsApp) redirige a la misma
+URL sin ellos.
 
 Entre páginas se navega con `<a>` común y no con `<Link>`: cada página carga completa, así Lenis, GSAP y las
 secciones fijadas arrancan de cero. Los links del menú son `/#seccion` (`/en/#seccion`): desde otra página abren el inicio

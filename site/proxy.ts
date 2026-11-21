@@ -25,6 +25,26 @@ const PORTAL = /^\/(portal|archivos)(\/|$)/;
 // (/portal/api/mercadopago), también: los manda su servidor.
 const NO_SESSION = /^\/portal\/api\/(digui|mercadopago)(\/|$)/;
 
+// Caracteres invisibles que a veces se pegan a un link al copiarlo o escribirlo en Instagram, Facebook o WhatsApp (el
+// 2026-11-21, un U+2060 después de una nota del blog, que daba 404): espacios de ancho cero, unión de palabras, guion
+// blando, marcas de dirección del texto y el BOM.
+const INVISIBLE = /[\u00AD\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u2069\uFEFF]/g;
+
+/**
+ * La ruta sin los caracteres invisibles, o null si no tiene. Sin ellos pueden quedar dos barras seguidas (/nota/<invisible>/): van
+ * juntas, así tampoco queda una ruta "//otro-dominio" a la que redirigir. encodeURI codifica la "\".
+ */
+function withoutInvisible(pathname: string): string | null {
+  let path: string;
+  try {
+    path = decodeURIComponent(pathname);
+  } catch {
+    return null;
+  }
+  const visible = path.replace(INVISIBLE, "");
+  return visible === path ? null : encodeURI(visible.replace(/\/{2,}/g, "/"));
+}
+
 /** La ruta en app/(portal)/: /archivos/… lleva /portal adelante. */
 function toPortal(req: NextRequest) {
   const url = req.nextUrl.clone();
@@ -89,6 +109,9 @@ async function site(req: NextRequest) {
 
 export default function proxy(req: NextRequest, event: NextFetchEvent) {
   const { pathname, search } = req.nextUrl;
+  // Antes que todo: la misma URL sin los caracteres invisibles, que después pasa por las demás reglas.
+  const visible = withoutInvisible(pathname);
+  if (visible !== null) return NextResponse.redirect(new URL(visible + search, localOrigin(req) ?? siteUrl), 301);
   if (!PORTAL.test(pathname)) return site(req);
   if (NO_SESSION.test(pathname)) return NextResponse.next();
   // El portal también, en el dominio del sitio: la sesión de Clerk y la cookie del chat de Digui (portal/lib/digui-cookie.ts)
