@@ -2403,6 +2403,20 @@ a.person:hover .strong {
   gap: 10px;
   margin-top: 24px;
 }
+/* Mientras se manda el correo (Form con mailTo): en el lugar del botón, para que el cartel no salte al terminar */
+.ask__spinner {
+  width: 34px;
+  height: 34px;
+  margin-block: 5px; /* 44px, lo que mide el botón (.btn, min-height) */
+  border: 3px solid var(--line-gold);
+  border-top-color: var(--gold-bright);
+  border-radius: 50%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ask__spinner {
+    animation: spin 0.8s linear infinite;
+  }
+}
 
 /* El visor: la foto a pantalla completa sobre fondo negro */
 .viewer {

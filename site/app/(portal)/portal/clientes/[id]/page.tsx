@@ -56,6 +56,8 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
   const passLeft = client.pass_expires ? daysBetween(today, client.pass_expires) : null;
   const years = age(client.birth_year, today);
   const index = bmi(lastWeight, client.height_cm);
+  // A quién le llegan los correos de la evaluación y del plan (el cartel de Form dice "Enviando…" mientras salen).
+  const mailTo = client.active ? client.email : null;
 
   return (
     <AdminShell viewer={viewer}>
@@ -278,7 +280,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
       {last && (
         <section id="alimentacion" className="anchor">
           <h2 className="section-title">Plan de alimentación</h2>
-          <Form action={saveDiet} submit="Guardar plan" className="card form">
+          <Form action={saveDiet} submit="Guardar plan" className="card form" mailTo={mailTo}>
             <input type="hidden" name="client_id" value={client.id} />
             <p className="field__hint">
               {diet ? `Vigente desde la evaluación del ${shortDate(diet.date)}. ` : ""}
@@ -292,7 +294,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
 
       <section id="evaluar" className="anchor">
         <h2 className="section-title">Nueva evaluación</h2>
-        <Form action={addCheckin} submit="Guardar evaluación" reset className="card form" key={checkins.length}>
+        <Form action={addCheckin} submit="Guardar evaluación" reset className="card form" mailTo={mailTo}>
           <input type="hidden" name="client_id" value={client.id} />
           <CheckinFields diet={diet} today={today} sex={client.sex} />
           <p className="field__hint">La masa magra y la grasa en kg se calculan solas.</p>

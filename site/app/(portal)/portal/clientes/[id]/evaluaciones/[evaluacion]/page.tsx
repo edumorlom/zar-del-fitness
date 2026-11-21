@@ -32,6 +32,7 @@ export default async function EditCheckinPage({ params }: { params: Promise<{ id
         action={updateCheckin}
         submit="Guardar cambios"
         className="card form"
+        mailTo={client.active ? client.email : null}
         ask={
           client.active && client.email
             ? {

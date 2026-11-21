@@ -1,6 +1,7 @@
 "use client";
 
-import { startTransition, useActionState, useEffect, useId, useRef, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { startTransition, useActionState, useEffect, useId, useRef, useState, useTransition } from "react";
 import type { FormState } from "~/actions";
 import { shrinkPhotos } from "~/lib/shrink-photo";
 
@@ -48,9 +49,11 @@ export function Ask({
 
 /**
  * Un formulario que manda a una Server Action y muestra su error o su "ok". Los campos quedan como estaban si hay un
- * error (el <form action> de React los vaciaría); con `reset`, se vacían cuando sale bien. Si la acción le mandó un
- * correo al cliente (`sent`), lo dice en un cartel con el diseño del sitio. Las fotos van achicadas (shrinkPhotos): la
- * de un celular, entera, puede pasar el límite de Next.js y tirar la página.
+ * error (el <form action> de React los vaciaría); con `reset`, se vacían cuando sale bien. Las fotos van achicadas
+ * (shrinkPhotos): la de un celular, entera, puede pasar el límite de Next.js y tirar la página.
+ *
+ * Si la acción le manda un correo al cliente (`mailTo`), un cartel lo sigue desde que se aprieta el botón: "Enviando…",
+ * y después si salió, si no salió o si no hizo falta mandarlo (lo que dice la acción en `mail`).
  */
 export function Form({
   action,
@@ -58,6 +61,7 @@ export function Form({
   button = "btn btn--gold",
   confirm,
   ask,
+  mailTo,
   label,
   reset = false,
   className,
@@ -73,6 +77,8 @@ export function Form({
    * con `no` se manda igual sin eso. Esc o tocar afuera no mandan nada.
    */
   ask?: Question & { no: string };
+  /** A quién le manda un correo la acción cuando sale bien (con `ask`, sólo si se contesta que sí). */
+  mailTo?: string | null;
   /** Para un botón que es sólo un ícono: lo que dice el lector de pantalla. */
   label?: string;
   reset?: boolean;
@@ -82,20 +88,44 @@ export function Form({
   const [state, formAction, sending] = useActionState(action, null);
   const [shrinking, startShrinking] = useTransition();
   const pending = sending || shrinking;
-  const send = (data: FormData) =>
+  const router = useRouter();
+  const ref = useRef<HTMLFormElement>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const asked = useRef<FormData | null>(null);
+  const mailBox = useRef<HTMLDialogElement>(null);
+  const mailDone = useRef<HTMLButtonElement>(null);
+  const mailTitle = useId();
+  const [to, setTo] = useState<string | null>(null); // a quién se le está mandando, desde que se aprieta el botón
+
+  const send = (data: FormData, mailing: boolean) => {
+    if (mailing && mailTo) {
+      setTo(mailTo);
+      mailBox.current?.showModal();
+    }
     startShrinking(async () => {
       await shrinkPhotos(data);
       startTransition(() => formAction(data));
     });
-  const ref = useRef<HTMLFormElement>(null);
-  const dialog = useRef<HTMLDialogElement>(null);
-  const asked = useRef<FormData | null>(null);
-  const done = useRef<HTMLDialogElement>(null);
-  const doneTitle = useId();
+  };
+
   useEffect(() => {
     if (reset && state?.ok) ref.current?.reset();
-    if (state?.sent) done.current?.showModal();
+    // Con un error no se guardó ni se mandó nada: el cartel se va y el error queda abajo del botón.
+    if (state?.error) mailBox.current?.close();
+    else if (state?.mail && !mailBox.current?.open) mailBox.current?.showModal();
   }, [reset, state]);
+  // Cuando termina, el foco va a "Listo": Enter o Esp cierran el cartel.
+  useEffect(() => {
+    if (!pending && mailBox.current?.open) mailDone.current?.focus();
+  }, [pending, state]);
+
+  const phase = pending || !state || state.error ? "sending" : !state.mail ? "skipped" : state.mail.sent ? "sent" : "failed";
+  const close = () => !pending && mailBox.current?.close();
+  const mailNote = state?.mail
+    ? state.mail.sent
+      ? ` Se le mandó el correo a ${state.mail.to}.`
+      : ` El correo a ${state.mail.to} no salió: avisale por WhatsApp.`
+    : "";
 
   return (
     <form
@@ -105,7 +135,7 @@ export function Form({
       onSubmit={(e) => {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
-        if (!confirm && !ask) return send(data);
+        if (!confirm && !ask) return send(data, true);
         asked.current = data;
         dialog.current?.showModal();
       }}
@@ -119,31 +149,73 @@ export function Form({
             const data = asked.current;
             if (!data || (confirm && !yes)) return;
             if (ask && yes) data.set("notify", "1");
-            send(data);
+            send(data, !ask || yes);
           }}
         />
       )}
-      {state?.sent && (
-        <dialog ref={done} className="ask card" onClick={(e) => e.target === e.currentTarget && done.current?.close()} aria-labelledby={doneTitle}>
-          <h2 id={doneTitle} className="h2 h2--sm">
-            Correo <em className="serif gold-text">enviado</em>
-          </h2>
-          <p className="muted">
-            {state.ok} El correo se envió correctamente a <strong className="mono">{state.sent}</strong>.
-          </p>
-          <div className="ask__actions">
-            <button type="button" className="btn btn--gold btn--sm" onClick={() => done.current?.close()} autoFocus>
+      {/* Mientras se manda, no se cierra (ni con Esc ni tocando afuera). Al cerrarlo, la página va a `next`, si hay. */}
+      <dialog
+        ref={mailBox}
+        className="ask card"
+        aria-labelledby={mailTitle}
+        aria-busy={phase === "sending"}
+        onClick={(e) => e.target === e.currentTarget && close()}
+        onCancel={(e) => pending && e.preventDefault()}
+        onClose={() => !pending && state?.next && router.push(state.next)}
+      >
+        <h2 id={mailTitle} className="h2 h2--sm">
+          {phase === "sending" ? (
+            <>
+              Enviando <em className="serif gold-text">el correo…</em>
+            </>
+          ) : phase === "sent" ? (
+            <>
+              ¡Correo <em className="serif gold-text">enviado!</em>
+            </>
+          ) : phase === "failed" ? (
+            <>
+              No se pudo <em className="serif gold-text">enviar</em>
+            </>
+          ) : (
+            <>
+              Guardado, <em className="serif gold-text">sin correo</em>
+            </>
+          )}
+        </h2>
+        <p className="muted" role="status" aria-live="polite">
+          {phase === "sending" ? (
+            <>
+              Guardando y mandándole el correo a <strong className="mono">{to}</strong>.
+            </>
+          ) : phase === "sent" ? (
+            <>
+              {state?.ok} Se le mandó a <strong className="mono">{state?.mail?.to}</strong>.
+            </>
+          ) : phase === "failed" ? (
+            <>
+              {state?.ok} El correo a <strong className="mono">{state?.mail?.to}</strong> no salió (Resend no lo aceptó): avisale
+              por WhatsApp.
+            </>
+          ) : (
+            state?.ok
+          )}
+        </p>
+        <div className="ask__actions">
+          {phase === "sending" ? (
+            <span className="ask__spinner" aria-hidden="true" />
+          ) : (
+            <button ref={mailDone} type="button" className="btn btn--gold btn--sm" onClick={close}>
               Listo
             </button>
-          </div>
-        </dialog>
-      )}
+          )}
+        </div>
+      </dialog>
       <div className="form-foot">
         <button className={button} disabled={pending} aria-label={label} title={label}>
           {submit}
         </button>
-        <p className={state?.error ? "form-msg form-msg--error" : "form-msg"} role="status" aria-live="polite">
-          {state?.error ?? state?.ok}
+        <p className={state?.error || state?.mail?.sent === false ? "form-msg form-msg--error" : "form-msg"} role="status" aria-live="polite">
+          {state?.error ?? (state?.ok && state.ok + mailNote)}
         </p>
       </div>
     </form>

@@ -2,7 +2,6 @@
 
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
-import { after } from "next/server";
 import { canCreate, canManage, isTeam, scopesToSave } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { BODY_TYPES, CONDITIONS, MEALS, MEASURES, PLANS } from "~/lib/clients";
@@ -14,8 +13,14 @@ import { type EvaluationEmail, IMAGES, renderEvaluationEmail, SUBJECT } from "~/
 import { fromLocalInput, todayISO } from "~/lib/format";
 import { bucketFromEnv, deleteObject, imageType, PHOTO_MAX_MB, putObject } from "~/lib/storage";
 
-/** Lo que responde un formulario. `sent`: a quién le llegó el correo que mandó; el formulario lo muestra en un cartel. */
-export type FormState = { error?: string; ok?: string; sent?: string } | null;
+/** Un correo que mandó una acción: a quién, y si Resend lo aceptó. */
+export type Mail = { to: string; sent: boolean };
+
+/**
+ * Lo que responde un formulario. `mail`: el correo que mandó; el formulario lo muestra en un cartel (components/Form.tsx).
+ * `next`: adónde va la página al cerrar ese cartel.
+ */
+export type FormState = { error?: string; ok?: string; mail?: Mail; next?: string } | null;
 
 const text = (form: FormData, key: string) => String(form.get(key) ?? "").trim();
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -241,19 +246,16 @@ export async function saveDiet(_: FormState, form: FormData): Promise<FormState>
   // Como el de la evaluación: a quien está dado de baja o no tiene correo no le llega nada.
   if (!client.active || !EMAIL.test(client.email ?? "")) return mailed("Plan guardado.", null);
   const html = renderDietEmail({ name: client.name, diet: Object.fromEntries(DIET_COLS.map((k, i) => [k, diet[i]])) as DietEmail["diet"] });
-  const ok = await sendMail({ to: client.email!, subject: DIET_SUBJECT, html, attachments: DIET_IMAGES });
-  return mailed("Plan guardado.", ok ? client.email : false);
+  const sent = await sendMail({ to: client.email!, subject: DIET_SUBJECT, html, attachments: DIET_IMAGES });
+  return mailed("Plan guardado.", { to: client.email!, sent });
 }
 
 /**
- * La respuesta de un formulario que le manda un correo al cliente: con `sent`, el cartel de "correo enviado". Si no
- * salió, igual es un "ok" (lo guardado ya quedó, y el formulario se vacía: volver a mandarlo duplicaría la evaluación).
+ * La respuesta de un formulario que le manda un correo al cliente: con `mail`, el cartel dice si salió. Si no salió,
+ * igual es un "ok" (lo guardado ya quedó, y el formulario se vacía: volver a mandarlo duplicaría la evaluación).
  */
-function mailed(ok: string, to: string | null | false): FormState {
-  if (to) return { ok, sent: to };
-  return to === null
-    ? { ok: `${ok} No se le mandó correo: no tiene correo cargado o está dado de baja.` }
-    : { ok: `${ok} El correo no salió (Resend no lo aceptó): avisale por WhatsApp.` };
+function mailed(ok: string, mail: Mail | null, next?: string): FormState {
+  return mail ? { ok, mail, next } : { ok: `${ok} No se le mandó correo: no tiene correo cargado o está dado de baja.`, next };
 }
 
 export async function addCheckin(_: FormState, form: FormData): Promise<FormState> {
@@ -278,17 +280,17 @@ export async function addCheckin(_: FormState, form: FormData): Promise<FormStat
      select id from c`,
     [clientId, viewer.id, ...c.values, ...c.diet, c.hasDiet]
   );
-  const to = await mailEvaluation(created.rows[0].id);
+  const mail = await mailEvaluation(created.rows[0].id);
   refresh();
-  return mailed("Evaluación cargada.", to);
+  return mailed("Evaluación cargada.", mail);
 }
 
 /**
- * Le avisa al cliente por correo (Resend) que su evaluación ya está, con el resumen y el plan. Devuelve a quién se lo
- * mandó, null si no corresponde (dado de baja o sin correo) o false si Resend no lo aceptó: la evaluación ya quedó
- * guardada igual, y el error va a los logs.
+ * Le avisa al cliente por correo (Resend) que su evaluación ya está, con el resumen y el plan. Devuelve a quién y si
+ * Resend lo aceptó, o null si no corresponde (dado de baja o sin correo): la evaluación ya quedó guardada igual, y si
+ * Resend falla, el error va a los logs.
  */
-async function mailEvaluation(checkinId: number): Promise<string | null | false> {
+async function mailEvaluation(checkinId: number): Promise<Mail | null> {
   const { rows } = await db.query(
     `select u.name, u.email, u.active, c.date, c.weight_kg, c.body_fat_pct,
             p.date as prev_date, p.weight_kg as prev_weight, p.body_fat_pct as prev_fat,
@@ -312,7 +314,7 @@ async function mailEvaluation(checkinId: number): Promise<string | null | false>
     prev: r.prev_date ? { date: r.prev_date, weight: r.prev_weight, fat: r.prev_fat } : null,
     diet: r.has_diet ? (Object.fromEntries(DIET_COLS.map((k) => [k, r[k]])) as EvaluationEmail["diet"]) : null,
   });
-  return (await sendMail({ to: r.email, subject: SUBJECT, html, attachments: IMAGES })) ? (r.email as string) : false;
+  return { to: r.email, sent: await sendMail({ to: r.email, subject: SUBJECT, html, attachments: IMAGES }) };
 }
 
 export async function updateCheckin(_: FormState, form: FormData): Promise<FormState> {
@@ -336,10 +338,12 @@ export async function updateCheckin(_: FormState, form: FormData): Promise<FormS
      ${DIET_UPSERT}`,
     [id, ...c.values, ...c.diet, c.hasDiet]
   );
-  // El admin eligió en el popup volver a mandarle el correo (components/Form.tsx, `ask`). Va después de responder: la
-  // página vuelve a la ficha, sin el cartel.
-  if (form.get("notify") === "1") after(() => mailEvaluation(id));
-  redirect(`/portal/clientes/${rows[0].client_id}#historico`);
+  const back = `/portal/clientes/${rows[0].client_id}#historico`;
+  if (form.get("notify") !== "1") redirect(back);
+  // El admin eligió en el popup volver a mandarle el correo (components/Form.tsx, `ask`): se manda antes de responder,
+  // para que el cartel diga si salió, y al cerrarlo la página vuelve a la ficha (`next`).
+  refresh();
+  return mailed("Cambios guardados.", await mailEvaluation(id), back);
 }
 
 export async function deleteCheckin(_: FormState, form: FormData): Promise<FormState> {
