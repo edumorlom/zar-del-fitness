@@ -100,7 +100,7 @@ export function ClientForm({ viewer, client, coaches }: { viewer: Viewer; client
       </Field>
       <Field
         label="Foto"
-        hint={`JPG o PNG: se achica sola al guardar.${client?.photo_url ? " Ya tiene una: elegí otra sólo para cambiarla." : ""}`}
+        hint={`JPG o PNG: se achica sola al guardar. La de un cliente se suma también a sus fotos de progreso.${client?.photo_url ? " Ya tiene una: elegí otra sólo para cambiarla." : ""}`}
       >
         <input name="photo" type="file" accept="image/jpeg,image/png" />
       </Field>

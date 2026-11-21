@@ -119,9 +119,10 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
     return { error: "Revisá las patologías." };
 
   // La foto va al bucket antes de guardar: si no se pudo subir, no se guarda nada (y no queda un cliente repetido).
-  // Sin foto nueva queda la que tenía. De un cliente, la foto va a sus fotos de progreso (la última es la de perfil);
-  // la del equipo, a su ficha.
-  const client = !isTeam({ scopes });
+  // Sin foto nueva queda la que tenía. La de un cliente se suma a sus fotos de progreso (la última es la de perfil); la
+  // del equipo va a su ficha. Un coach o un admin que además es cliente: a las dos.
+  const ficha = isTeam({ scopes });
+  const progress = !ficha || scopes.includes("user");
   let photoUrl: string | null = null;
   let progressKey: string | null = null;
   let externalId: string | null = null;
@@ -130,12 +131,19 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
     const photo = await readPhoto(file);
     if ("error" in photo) return photo;
     externalId = id !== null ? await ensureExternalId(id) : randomUUID();
-    const key = client ? `alumnos/${externalId}/progreso/${randomUUID()}.${photo.type}` : `alumnos/${externalId}/foto.${photo.type}`;
-    const error = await uploadPhoto(key, photo);
-    if (error) return { error };
-    if (client) progressKey = key;
-    // ?v=: con la misma dirección, el navegador seguiría mostrando la foto anterior.
-    else photoUrl = `/archivos/${key}?v=${Date.now()}`;
+    if (progress) {
+      const key = `alumnos/${externalId}/progreso/${randomUUID()}.${photo.type}`;
+      const error = await uploadPhoto(key, photo);
+      if (error) return { error };
+      progressKey = key;
+    }
+    if (ficha) {
+      const key = `alumnos/${externalId}/foto.${photo.type}`;
+      const error = await uploadPhoto(key, photo);
+      if (error) return { error };
+      // ?v=: con la misma dirección, el navegador seguiría mostrando la foto anterior.
+      photoUrl = `/archivos/${key}?v=${Date.now()}`;
+    }
   }
 
   const fields = [name, email, scopes, coachId, text(form, "phone") || null, photoUrl, plan,
