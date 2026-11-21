@@ -7,7 +7,7 @@ import { ClientPicker } from "~/components/ClientPicker";
 import { Form } from "~/components/Form";
 import { Person } from "~/components/Person";
 import { recordPayment, voidPayment } from "~/payment-actions";
-import { canHandlePayments, homeOf } from "~/lib/access";
+import { canHandlePayments, homeOf, isTeam } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { daysBetween } from "~/lib/clients";
 import { dateOf, days, monthYear, shortDate, timeOf, todayISO } from "~/lib/format";
@@ -41,6 +41,8 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
   const viewer = await requireViewer();
   if (!canHandlePayments(viewer)) redirect(homeOf(viewer));
   const admin = viewer.scopes.includes("admin");
+  // La foto de un cliente es su última foto de progreso: recepción no la ve (canSeeFile), ve sus iniciales.
+  const photos = isTeam(viewer);
   const sp = await searchParams;
   const today = todayISO();
   const [passes, payments, totals] = await Promise.all([payablePasses(), listPayments(), totalsSince(`${today.slice(0, 7)}-01`)]);
@@ -194,7 +196,7 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
                     <tr key={p.id}>
                       <td data-label="Cliente">
                         {/* Recepción no abre fichas: ve el nombre, nada más. */}
-                        <Person name={p.name} photo={p.photo_url} sub={p.email ?? "sin correo"} href={admin ? `/portal/clientes/${p.id}` : undefined} />
+                        <Person name={p.name} photo={photos ? p.photo_url : null} sub={p.email ?? "sin correo"} href={admin ? `/portal/clientes/${p.id}` : undefined} />
                       </td>
                       <td data-label="Vence">
                         {p.pass_expires ? (

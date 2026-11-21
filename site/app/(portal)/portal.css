@@ -1184,9 +1184,6 @@ button:disabled {
   .admin__main {
     padding: 24px 16px 96px;
   }
-  .anchor {
-    scroll-margin-top: 84px;
-  }
 }
 
 .page-head {
@@ -1250,6 +1247,12 @@ button:disabled {
 }
 .anchor {
   scroll-margin-top: 24px;
+}
+/* En el celular, el encabezado queda fijo arriba: el título no tiene que quedar abajo de él */
+@media (max-width: 900px) {
+  .anchor {
+    scroll-margin-top: 84px;
+  }
 }
 .mono {
   font-variant-numeric: tabular-nums;

@@ -2,21 +2,46 @@ import { db } from "./db";
 
 // Las tablas. Corre al arrancar el servidor (instrumentation.ts): sólo crea lo que falta, nunca borra.
 // El ingreso lo maneja Clerk: acá no hay contraseñas, sólo el id de Clerk de cada cuenta (se enlaza por correo).
-const SCHEMA = `
--- Antes las columnas decían "member" (socio): las bases creadas con esos nombres se renombran a "client".
-do $$ begin
-  if exists (select 1 from information_schema.columns where table_name = 'users' and column_name = 'member_since') then
-    alter table users rename column member_since to client_since;
-  end if;
-  if exists (select 1 from information_schema.columns where table_name = 'checkins' and column_name = 'member_id') then
-    alter table checkins rename column member_id to client_id;
-  end if;
-end $$;
-drop index if exists checkins_member;
 
+/**
+ * Las columnas con una lista de valores (las de portal/lib/consent.ts, payments.ts y turnos.ts). `create table if not
+ * exists` no cambia el check de una tabla que ya estaba: si cambia una lista, fixCheck lo cambia en la base (a una
+ * base creada con db91f6c, siete minutos antes de 'transferencia', le faltaba ese valor).
+ */
+const CHECKS = {
+  "consents.kind": ["terminos", "transferencia", "salud", "huella", "imagen", "marketing"],
+  "consents.source": ["portal", "equipo"],
+  "appointments.status": ["requested", "confirmed", "cancelled", "rejected"],
+  "payments.method": ["mercadopago", "cash", "card"],
+  "payments.status": ["pending", "approved", "cancelled"],
+};
+type Checked = keyof typeof CHECKS;
+const quoted = (col: Checked) => CHECKS[col].map((v) => `'${v}'`).join(", ");
+const check = (col: Checked) => `check (${col.split(".")[1]} in (${quoted(col)}))`;
+
+/** Saca los checks de la columna que no aceptan alguno de sus valores y, si no le queda ninguno, le pone el de ahora. */
+function fixCheck(col: Checked) {
+  const [table, column] = col.split(".");
+  const ofColumn = `conrelid = '${table}'::regclass and contype = 'c'
+    and conkey = array[(select attnum from pg_attribute where attrelid = '${table}'::regclass and attname = '${column}')]`;
+  return `
+do $$ declare c record; begin
+  for c in select conname, pg_get_constraintdef(oid) as def from pg_constraint where ${ofColumn} loop
+    if exists (select 1 from unnest(array[${quoted(col)}]) v where c.def not like '%''' || v || '''%') then
+      execute format('alter table ${table} drop constraint %I', c.conname);
+    end if;
+  end loop;
+  if not exists (select 1 from pg_constraint where ${ofColumn}) then
+    alter table ${table} add constraint ${table}_${column}_check ${check(col)};
+  end if;
+end $$;`;
+}
+
+const SCHEMA = `
 create table if not exists users (
   id serial primary key,
-  role text not null default 'user' check (role in ('admin', 'coach', 'user')),
+  -- Una cuenta puede tener varios scopes (portal/lib/access.ts).
+  scopes text[] not null default '{user}' check (scopes <> '{}' and scopes <@ array['admin', 'coach', 'user', 'receptionist']),
   email text unique,
   clerk_id text unique,
   name text not null,
@@ -43,7 +68,6 @@ create table if not exists checkins (
 create index if not exists checkins_client on checkins(client_id, date);
 
 -- La ficha del cliente (importada del portal anterior o cargada por el admin). Lo de salud lo ve sólo el equipo.
-alter table users alter column email drop not null;
 alter table users add column if not exists external_id text unique;
 alter table users add column if not exists dni text;
 alter table users add column if not exists sex text check (sex in ('M', 'F'));
@@ -60,15 +84,6 @@ alter table users add column if not exists legacy_last_checkin date;
 alter table users add column if not exists legacy_last_weight numeric(5, 1);
 -- El certificado médico, en el bucket (/archivos/...): lo ve el cliente y quien lo maneja.
 alter table users add column if not exists certificate_url text;
-
--- Una cuenta puede tener varios scopes. La columna role ya no se usa: queda para no romper la versión anterior en el deploy.
-do $$ begin
-  if not exists (select 1 from information_schema.columns where table_name = 'users' and column_name = 'scopes') then
-    alter table users add column scopes text[] not null default '{user}'
-      check (scopes <> '{}' and scopes <@ array['admin', 'coach', 'user', 'receptionist']);
-    update users set scopes = array[role];
-  end if;
-end $$;
 
 -- Lo demás de una evaluación, todo opcional: perímetros (cm) y lo que da la balanza.
 alter table checkins add column if not exists chest_cm numeric(5, 1);
@@ -104,7 +119,7 @@ create table if not exists appointments (
   client_id int not null references users(id) on delete cascade,
   starts_at timestamptz not null,
   ends_at timestamptz not null,
-  status text not null default 'requested' check (status in ('requested', 'confirmed', 'cancelled', 'rejected')),
+  status text not null default 'requested' ${check("appointments.status")},
   requested_at timestamptz,
   google_event_id text,
   created_by int references users(id) on delete set null,
@@ -134,8 +149,8 @@ create index if not exists progress_photos_client on progress_photos(client_id, 
 create table if not exists payments (
   id serial primary key,
   client_id int not null references users(id) on delete cascade,
-  method text not null check (method in ('mercadopago', 'cash', 'card')),
-  status text not null default 'pending' check (status in ('pending', 'approved', 'cancelled')),
+  method text not null ${check("payments.method")},
+  status text not null default 'pending' ${check("payments.status")},
   plan text not null,
   amount numeric(12, 2) not null check (amount > 0),
   currency text not null default 'ARS',
@@ -167,42 +182,18 @@ create table if not exists broadcast_template (
 create table if not exists consents (
   id serial primary key,
   user_id int not null references users(id) on delete cascade,
-  kind text not null check (kind in ('terminos', 'transferencia', 'salud', 'huella', 'imagen', 'marketing')),
+  kind text not null ${check("consents.kind")},
   granted boolean not null,
   version text not null,
-  source text not null default 'portal' check (source in ('portal', 'equipo')),
+  source text not null default 'portal' ${check("consents.source")},
   recorded_by int references users(id) on delete set null,
   created_at timestamptz not null default now()
 );
 create index if not exists consents_user on consents(user_id, kind, created_at desc);
-
+${(Object.keys(CHECKS) as Checked[]).map(fixCheck).join("\n")}
 
 -- El día que se le mandó al cliente el último recordatorio de evaluación (portal/lib/reminders.ts): uno por evaluación.
 alter table users add column if not exists evaluation_reminder_on date;
-
--- "Hoy" es el día argentino, no el de la sesión (current_date, en UTC en Railway: de 21 a 24 h ya es mañana).
-alter table users alter column client_since set default (now() at time zone 'America/Argentina/Buenos_Aires')::date;
-alter table progress_photos alter column taken_on set default (now() at time zone 'America/Argentina/Buenos_Aires')::date;
-
--- Las fotos y certificados importados tenían https://mi.zardelfitness.com.ar/archivos/…, un dominio que ya no existe:
--- relativos, el portal los sirve en cualquier dominio.
-update users set photo_url = replace(photo_url, 'https://mi.zardelfitness.com.ar/', '/'),
-  certificate_url = replace(certificate_url, 'https://mi.zardelfitness.com.ar/', '/')
-  where photo_url like 'https://mi.zardelfitness.com.ar/%' or certificate_url like 'https://mi.zardelfitness.com.ar/%';
-
--- La foto de perfil de un cliente es su última foto de progreso: las de la ficha pasan a progreso, con la fecha de alta
--- (no se sabe cuándo se sacaron) para que no le ganen a las de verdad. Sólo las que están en su carpeta del bucket; las
--- del equipo quedan en su ficha.
-insert into progress_photos (client_id, key, taken_on)
-select id, k, client_since
-from (select id, external_id, client_since,
-             substring(photo_url from '^/archivos/(alumnos/[0-9a-f-]{36}/foto[.](?:jpg|jpeg|png))(?:[?].*)?$') as k
-      from users where photo_url is not null and not (scopes && array['admin', 'coach'])) f
-where split_part(k, '/', 2) = external_id
-on conflict (key) do nothing;
-update users u set photo_url = null
-  where photo_url is not null and not (scopes && array['admin', 'coach'])
-    and exists (select 1 from progress_photos p where p.client_id = u.id and '/archivos/' || p.key = split_part(u.photo_url, '?', 1));
 `;
 
 export async function migrate() {

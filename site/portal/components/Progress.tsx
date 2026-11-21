@@ -4,7 +4,7 @@ import { Icon } from "@/components/Icon";
 import { payWithMercadoPago } from "~/payment-actions";
 import { BODY_STATS, bodyPoint, fatMass, leanMass } from "~/lib/clients";
 import type { Appointment, Checkin, Client } from "~/lib/data";
-import { dateOf, days, daysUntil, longDate, monthYear, num, shortDate, timeOf, todayISO } from "~/lib/format";
+import { dateOf, days, daysUntil, longDate, monthYear, num, shortDate, timeOf, todayISO, waNumber } from "~/lib/format";
 import { Empty } from "./Cards";
 import { Evolution } from "./Evolution";
 import { Form } from "./Form";
@@ -174,9 +174,9 @@ export function Hero({ client, checkins, appointment, pay, lang }: { client: Cli
                 <span className="num">{tr("Tu coach", "Your coach")}</span>
               </p>
               <p className="coach__name">{client.coach_name}</p>
-              <p className="muted">Personal trainer · Zar del Fitness</p>
+              <p className="muted">{client.coach_title ?? "Personal trainer"} · Zar del Fitness</p>
               {client.coach_phone && (
-                <a className="btn btn--ghost btn--sm" href={`https://wa.me/${client.coach_phone.replace(/\D/g, "")}`} target="_blank" rel="noopener">
+                <a className="btn btn--ghost btn--sm" href={`https://wa.me/${waNumber(client.coach_phone)}`} target="_blank" rel="noopener">
                   <Icon name="wa" />
                   {tr("Escribile por WhatsApp", "Message on WhatsApp")}
                 </a>

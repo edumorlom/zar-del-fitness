@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useClerkSignedIn } from "@/components/Session";
-import { FORGET_VISITOR, readVisitor, sharedDomain, signedIn, visitorCookie } from "~/lib/digui-cookie";
+import { FORGET_VISITOR, readVisitor, signedIn, visitorCookie } from "~/lib/digui-cookie";
 
 type Chat = { identify: (params: Record<string, string>, exp: number, signature: string) => void };
 type Props = { params: Record<string, string>; exp: number; signature: string };
@@ -28,7 +28,7 @@ function identify(customerId: string, exp: number, signature: string) {
 export function DiguiIdentify({ params, exp, signature }: Props) {
   const customerId = params.customer_id;
   useEffect(() => {
-    document.cookie = visitorCookie(customerId, exp, signature) + (location.protocol === "https:" ? "; secure" : "") + sharedDomain(location.hostname);
+    document.cookie = visitorCookie(customerId, exp, signature) + (location.protocol === "https:" ? "; secure" : "");
     return identify(customerId, exp, signature);
   }, [customerId, exp, signature]);
   return null;
@@ -43,7 +43,7 @@ export function DiguiVisitor({ forget }: { forget?: boolean }) {
   const clerk = useClerkSignedIn();
   useEffect(() => {
     if (forget || !(clerk ?? signedIn(document.cookie))) {
-      for (const forget of FORGET_VISITOR) document.cookie = forget;
+      document.cookie = FORGET_VISITOR;
       return;
     }
     const saved = readVisitor(document.cookie);

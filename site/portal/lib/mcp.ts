@@ -143,7 +143,7 @@ export function portalMcp() {
       const [u] = ultimas;
       return reply({
         ok: true,
-        mensaje: `${all.length} evaluaciones. La última, el ${longDate(u.date!)}: ${num(u.weight_kg)} kg y ${num(u.body_fat_pct)} % graso.`,
+        mensaje: `${all.length === 1 ? "1 evaluación" : `${all.length} evaluaciones`}. La última, el ${longDate(u.date!)}: ${num(u.weight_kg)} kg y ${num(u.body_fat_pct)} % graso.`,
         total: all.length,
         evaluaciones: ultimas,
       });

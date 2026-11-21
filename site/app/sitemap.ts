@@ -26,9 +26,7 @@ const podcastsUpdated = lastCommit("../db/podcasts.json") ?? episodes.es[0]?.dat
 const portalUpdated = lastCommit("app/(portal)/portal/ingresar", "portal/components");
 
 // Todas las páginas del sitio, en los dos idiomas, para Google. Cada una dice cuál es su versión en el otro idioma
-// (como los links hreflang de la página). Una página nueva tiene que agregarse acá. Al final, el ingreso al portal: mientras el
-// portal esté en mi., un sitemap puede nombrar páginas de otro dominio porque el robots.txt de mi. nombra este
-// (app/(portal)/portal/robots.txt/route.ts).
+// (como los links hreflang de la página). Una página nueva tiene que agregarse acá. Al final, el ingreso al portal.
 export default function sitemap(): MetadataRoute.Sitemap {
   const page = (path: string, priority: number, alternates?: Alternates, images: string[] = []) => ({
     url: abs(path),

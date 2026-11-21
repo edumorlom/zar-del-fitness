@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { renderConfirmedEmail, renderRequestEmail, waNumber } from "./appointment-emails.ts";
+import { renderConfirmedEmail, renderRequestEmail } from "./appointment-emails.ts";
+import { waNumber } from "./format.ts";
 
 test("WhatsApp: a los números de acá sin país les pone 549", () => {
   assert.equal(waNumber("1161250214"), "5491161250214");

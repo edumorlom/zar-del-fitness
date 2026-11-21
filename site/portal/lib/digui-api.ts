@@ -10,12 +10,10 @@ export const BAD_DAY = "Ese día no se puede pedir: elegí un viernes entre mañ
 
 const sha = (s: string) => createHash("sha256").update(s).digest();
 
-// Dónde está el servidor MCP, para sus instrucciones: el dominio en que se pidieron (Railway lo pasa en Host). En mi. las URLs
-// no llevan /portal; en el dominio principal, sí.
+// Dónde está el servidor MCP, para sus instrucciones: el dominio en que se pidieron (Railway lo pasa en Host).
 export function apiBase(host: string): string {
   const name = hostOf(host, null);
-  const scheme = isLocalhost(name) ? "http" : "https";
-  return `${scheme}://${name}${name.startsWith("mi.") ? "" : "/portal"}/api/digui`;
+  return `${isLocalhost(name) ? "http" : "https"}://${name}/portal/api/digui`;
 }
 
 // Se hashean ambos lados para que timingSafeEqual compare largos iguales y no filtre el de la clave.
@@ -43,9 +41,5 @@ export function parseDay(v: string | null): string | null {
   return Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== v ? null : v;
 }
 
-// Sin offset es hora argentina; se valida la hora a mano porque fromLocalInput no lo hace.
-export function parseStart(v: unknown): Date | null {
-  if (typeof v !== "string") return null;
-  const m = /^(\d{4}-\d{2}-\d{2})T([01]\d|2[0-3]):[0-5]\d$/.exec(v);
-  return m && parseDay(m[1]) ? fromLocalInput(v) : null;
-}
+/** "AAAA-MM-DDTHH:MM", sin offset: hora argentina. */
+export const parseStart = (v: unknown) => (typeof v === "string" ? fromLocalInput(v) : null);

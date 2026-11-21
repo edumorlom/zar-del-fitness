@@ -80,7 +80,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
   if (!isTeam(viewer)) redirect(viewer.scopes.includes("user") ? "/portal/turno" : homeOf(viewer));
   const sp = await searchParams;
   const today = todayISO();
-  const month = /^\d{4}-\d{2}$/.test(sp.mes ?? "") ? sp.mes! : today.slice(0, 7);
+  const month = /^\d{4}-(0[1-9]|1[0-2])$/.test(sp.mes ?? "") ? sp.mes! : today.slice(0, 7);
   const day = DATE.test(sp.dia ?? "") ? sp.dia! : month === today.slice(0, 7) ? today : `${month}-01`;
   const grid = monthGrid(month);
   const from = new Date(`${grid[0]}T00:00:00-03:00`);

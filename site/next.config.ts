@@ -26,8 +26,6 @@ const nextConfig: NextConfig = {
   // servidor por las dudas. sharp sí va: lib/og.tsx lo usa y las imágenes para compartir se pueden generar en un pedido.
   outputFileTracingExcludes: { "*": ["site/public/**"] },
   poweredByHeader: false,
-  // En desarrollo, el portal es http://localhost:3000/portal (http://mi.localhost:3000 lleva ahí).
-  allowedDevOrigins: ["mi.localhost"],
   // Tres layouts raíz (app/(es), app/(en) y app/(portal)): la 404 va aparte, en app/global-not-found.tsx.
   // experimental.inlineCss no conviene: Next.js pone el CSS dos veces en el HTML (en <style> y en los datos de React),
   // la página pesa el doble comprimida y Lighthouse dio peor primera pintada (1,7 s contra 1,5 s) el 2026-10-12.

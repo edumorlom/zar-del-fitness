@@ -76,7 +76,7 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
   const goal = text(form, "goal") || null;
   const next = text(form, "next_control_at");
   const nextControl = fromLocalInput(next);
-  if (next && Number.isNaN(nextControl?.getTime())) return { error: "Revisá la fecha del próximo control." };
+  if (next && !nextControl) return { error: "Revisá la fecha del próximo control." };
 
   // Sin ser admin, de una cuenta que ya existe sólo se cambia el objetivo y el próximo control (el coach, de sus clientes).
   if (id !== null && !viewer.scopes.includes("admin")) {

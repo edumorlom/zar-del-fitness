@@ -96,12 +96,11 @@ build que el sitio; lo que lo separa es la ruta: [zardelfitness.com.ar/portal](h
 SSL "Full", delante de Railway:
 
 - `proxy.ts`: `/portal/…` y `/archivos/…` (las fotos y certificados, así guardados en la base) van al portal, con
-  Clerk, en cualquier dominio. `mi.` (o `mi.localhost` en desarrollo), el dominio de antes, sin `/portal` en las URLs,
-  lleva a `/portal/…` en `mi.` (`/clientes` → `/portal/clientes`), salvo `/api/digui/…`. El resto, las reglas del sitio (las
-  URLs viejas de WordPress, la `/` final, el `.com` y los `www`).
+  Clerk, en cualquier dominio. El resto, las reglas del sitio (las URLs viejas de WordPress, la `/` final, el `.com` y los
+  `www`).
 - Las páginas del portal están en `app/(portal)/portal/`, con su layout raíz en `app/(portal)/layout.tsx`. Adentro,
   los links y las redirecciones llevan `/portal` (`/portal/clientes`). Sus componentes, `lib/`, los
-  formularios (`actions.ts`, `agenda-actions.ts`) y los scripts de importación están en `portal/`, importados con `~/`.
+  formularios (`actions.ts`, `agenda-actions.ts`) están en `portal/`, importados con `~/`.
   Usa los estilos, el menú, las animaciones y los datos del sitio (`@/`, `@db/`). Lo que se repite entre páginas está en
   un solo lugar: lo que leen y responden los formularios (`portal/lib/form.ts`), el dominio del pedido
   (`portal/lib/host.ts`), las transacciones (`tx` en `portal/lib/db.ts`), las filas de los correos
@@ -153,14 +152,12 @@ SSL "Full", delante de Railway:
   aplicación → Credenciales de producción); sin él, el botón de pagar no aparece y los pagos se cargan en el local. Los
   avisos no se configuran en el panel de Mercado Pago: cada pago lleva su `notification_url`.
   `DIGUI_API_KEY`: la clave que Digui manda como `Authorization: Bearer …` al servidor MCP del portal,
-  `<portalUrl>/api/digui/mcp` (y `/api/digui/mcp` en `mi.`, sin Clerk: ver `proxy.ts`; Streamable HTTP, sin sesión;
+  `<portalUrl>/api/digui/mcp` (sin Clerk: ver `proxy.ts`; Streamable HTTP, sin sesión;
   `portal/lib/mcp.ts`); sin ella, responde 401. Es la única forma en que Digui u otro agente consulta horarios libres y
   pide, mueve o cancela el turno de quien chatea (`pedir_turno`, `mover_turno`, `cancelar_turno`), y ve su ficha (sin
   datos de salud ni DNI), sus evaluaciones, sus pagos y la información del gimnasio. Las instrucciones, sin clave, están
   en `<portalUrl>/api/digui`.
-- Sólo `/portal/ingresar` se indexa, y está en el `sitemap.xml` del sitio (`app/sitemap.ts`); el `robots.txt` del portal
-  (`app/(portal)/portal/robots.txt/route.ts`) nombra ese sitemap, que es lo que le permite nombrar una página de otro
-  dominio.
+- Sólo `/portal/ingresar` se indexa, y está en el `sitemap.xml` del sitio (`app/sitemap.ts`).
 
 ## Despliegue
 
@@ -174,7 +171,5 @@ En GitHub hacen falta `RAILWAY_TOKEN` (secret) y `NEXT_PUBLIC_CLERK_PUBLISHABLE_
 
 ## Pendientes
 
-- **Newsletter**: el formulario sólo valida y muestra un mensaje; conectarlo a un proveedor
-  (`components/Newsletter.tsx`).
 - **Inscripción**: los botones de inscripción abren WhatsApp con un mensaje prearmado (no hay checkout online).
 - Revisar que los precios en `db/planes.json` sigan vigentes.

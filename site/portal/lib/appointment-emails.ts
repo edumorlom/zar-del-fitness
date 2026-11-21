@@ -1,7 +1,7 @@
 // Los correos de los turnos: al Zar, cuando alguien pide uno (desde el portal o por Digui), y al cliente, cuando el
 // admin o su coach se lo confirma (o se lo mueve, que también lo deja confirmado).
 import { ANTON, bandRow, box, buttonRow, esc, F, greeting, heading, heroRow, image, page, SITE, smallLabel, textRow } from "./email-layout.ts";
-import { dateOf, longDate, longDateTime, timeOf } from "./format.ts";
+import { dateOf, longDate, longDateTime, timeOf, waNumber } from "./format.ts";
 
 /** "viernes 13 de noviembre a las 10:00 h", para ir a mitad de una frase. */
 const when = (d: Date) => longDateTime(d).toLowerCase();
@@ -17,14 +17,6 @@ const whenRow = (label: string, d: Date) =>
 /** Una línea "Dato: valor" chica, gris. */
 const fact = (label: string, value: string) =>
   `<div style="${F};font-size:15px;line-height:26px;color:#a3a3a3">${label}: <span style="color:#ffffff">${value}</span></div>`;
-
-/** El número para wa.me: los de acá se guardan sin país ("1161250214", "011…") y WhatsApp los quiere con 549. */
-export function waNumber(phone: string) {
-  const d = phone.replace(/\D/g, "").replace(/^0+/, "");
-  if (d.length === 10) return `549${d}`;
-  if (d.length === 12 && d.startsWith("54") && !d.startsWith("549")) return `549${d.slice(2)}`;
-  return d; // ya trae 549 o es de afuera
-}
 
 export type RequestEmail = { name: string; email: string | null; phone: string | null; coach: string | null; start: Date };
 

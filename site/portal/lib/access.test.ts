@@ -129,4 +129,6 @@ test("fechas y números en castellano, en hora de Buenos Aires", () => {
   const at = fromLocalInput("2026-11-09T19:00")!;
   assert.equal(at.toISOString(), "2026-11-09T22:00:00.000Z");
   assert.equal(toLocalInput(at), "2026-11-09T19:00");
+  // Lo que no es un momento que exista no es una fecha (V8 leería "pronto" como el 1 de enero de 2000)
+  for (const v of ["", "pronto", "2026-02-31T10:00", "2026-11-09T24:00", "2026-11-09"]) assert.equal(fromLocalInput(v), null, v);
 });

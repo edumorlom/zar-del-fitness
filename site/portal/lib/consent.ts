@@ -155,12 +155,12 @@ export async function recordConsents(
 export const NO_MARKETING_SQL = `coalesce((select c.granted from consents c where c.user_id = users.id and c.kind = 'marketing'
   order by c.created_at desc, c.id desc limit 1), true) = false`;
 
-/** Cuántos clientes activos con correo se dieron de baja de las promociones (para el Broadcast). */
-export async function countMarketingOptOuts() {
-  const { rows } = await db.query<{ n: number }>(
-    `select count(*)::int as n from users where 'user' = any(scopes) and active and email is not null and ${NO_MARKETING_SQL}`
+/** Los clientes activos con correo que se dieron de baja de las promociones (para el Broadcast). */
+export async function marketingOptOuts() {
+  const { rows } = await db.query<{ id: number }>(
+    `select id from users where 'user' = any(scopes) and active and email is not null and ${NO_MARKETING_SQL}`
   );
-  return rows[0]?.n ?? 0;
+  return new Set(rows.map((r) => r.id));
 }
 
 // ---------- La baja de los correos de promociones, sin iniciar sesión ----------

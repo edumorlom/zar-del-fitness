@@ -1,4 +1,4 @@
-// Lo común a los correos del portal, con el diseño de portal/scripts/email-cuenta-lista/correo.html: fondo negro, el
+// Lo común a los correos del portal, con el mismo diseño: fondo negro, el
 // encabezado y los botones como imágenes (public/correo/) porque Gmail y Outlook recolorean el HTML en modo oscuro, y
 // las clases gl/gs/gd/nc, que mantienen el negro en Gmail para iPhone (sólo sirven para texto blanco o gris).
 

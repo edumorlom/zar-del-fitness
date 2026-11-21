@@ -7,14 +7,11 @@ import { isLocalhost, requestHost } from "~/lib/host";
 // - /portal/… (en cualquier dominio): el portal, en app/(portal)/portal/. Clerk lee la sesión en cada pedido; qué puede
 //   ver cada uno se decide en las páginas y las acciones (portal/lib/auth.ts). /archivos/… también es del portal: así
 //   guarda la base las fotos y los certificados.
-// - mi.zardelfitness.com.ar (o mi.localhost en desarrollo), el dominio de antes del portal, sin /portal en las URLs:
-//   lleva a /portal/…, salvo la API de Digui.
 // - el resto: el sitio, con las reglas que tenía el .htaccess de cPanel antes de Railway (las URLs del WordPress
 //   anterior, la "/" final).
 
 /** El dominio que pidió el navegador, sin el puerto (portal/lib/host.ts). */
 const hostOf = (req: NextRequest) => requestHost(req.headers).replace(/:\d+$/, "");
-const isMi = (req: NextRequest) => hostOf(req).startsWith("mi.");
 /** El .com y los www: van al dominio principal (siteUrl), con la misma ruta. */
 const isAlias = (req: NextRequest) => /^(www\.)?zardelfitness\.com$/.test(hostOf(req)) || hostOf(req).startsWith("www.");
 /** En desarrollo (localhost) las redirecciones se quedan en localhost; en producción, a los dominios de verdad. */
@@ -23,13 +20,12 @@ const localOrigin = (req: NextRequest) => {
   return isLocalhost(host) ? `http://${host}` : null;
 };
 const PORTAL = /^\/(portal|archivos)(\/|$)/;
-// El servidor MCP de Digui (/api/digui/mcp) lo llama el servidor de Digui con su clave, no una persona con sesión: va al
-// portal sin Clerk, igual que sus instrucciones (/api/digui). Los
-// avisos de Mercado Pago (/portal/api/mercadopago), también: los manda su servidor.
-const DIGUI = /^(\/portal)?\/api\/digui(\/|$)/;
-const NO_SESSION = /^(\/portal)?\/api\/(digui|mercadopago)(\/|$)/;
+// El servidor MCP de Digui (/portal/api/digui/mcp) lo llama el servidor de Digui con su clave, no una persona con sesión:
+// va al portal sin Clerk, igual que sus instrucciones (/portal/api/digui). Los avisos de Mercado Pago
+// (/portal/api/mercadopago), también: los manda su servidor.
+const NO_SESSION = /^\/portal\/api\/(digui|mercadopago)(\/|$)/;
 
-/** La ruta en app/(portal)/: /archivos/… y /api/digui/… (en mi.) llevan /portal adelante. */
+/** La ruta en app/(portal)/: /archivos/… lleva /portal adelante. */
 function toPortal(req: NextRequest) {
   const url = req.nextUrl.clone();
   if (!url.pathname.startsWith("/portal")) url.pathname = `/portal${url.pathname}`;
@@ -93,19 +89,8 @@ async function site(req: NextRequest) {
 
 export default function proxy(req: NextRequest, event: NextFetchEvent) {
   const { pathname, search } = req.nextUrl;
-  if (!PORTAL.test(pathname)) {
-    if (!isMi(req)) return site(req);
-    // shortcut: a /portal/… en el mismo mi., porque el DNS viejo (cPanel, con NS de TTL 1.800.000 s) puede seguir
-    // mandando zardelfitness.com.ar a cPanel unos días desde el cambio a Cloudflare (2026-11-05). Desde ~2026-11-12, que
-    // todo mi. lleve a portalUrl, menos /archivos/… (la base tiene fotos con https://mi.…/archivos/, de portal/scripts/)
-    // y la API de Digui (su servidor la llama acá, y un POST no sigue una redirección).
-    if (!DIGUI.test(pathname))
-      return NextResponse.redirect(
-        `${localOrigin(req) ?? `https://${hostOf(req)}`}/portal${pathname === "/" ? "" : pathname}${search}`,
-        308
-      );
-  }
-  if (NO_SESSION.test(pathname)) return NextResponse.rewrite(toPortal(req));
+  if (!PORTAL.test(pathname)) return site(req);
+  if (NO_SESSION.test(pathname)) return NextResponse.next();
   // El portal también, en el dominio del sitio: la sesión de Clerk y la cookie del chat de Digui (portal/lib/digui-cookie.ts)
   // son de un dominio, y el sitio no vería las del .com.
   if (isAlias(req)) return NextResponse.redirect(new URL(pathname + search, siteUrl), 308);

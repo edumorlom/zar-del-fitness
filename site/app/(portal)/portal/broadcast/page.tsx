@@ -7,7 +7,7 @@ import { Form } from "~/components/Form";
 import { requireViewer } from "~/lib/auth";
 import { DEFAULT_TEMPLATE } from "~/lib/broadcast-email";
 import { PLANS } from "~/lib/clients";
-import { countMarketingOptOuts } from "~/lib/consent";
+import { marketingOptOuts } from "~/lib/consent";
 import { getBroadcastTemplate, listClients } from "~/lib/data";
 import { isEmail } from "~/lib/form";
 
@@ -17,21 +17,26 @@ export const metadata: Metadata = { title: "Broadcast" };
 export default async function BroadcastPage() {
   const viewer = await requireViewer();
   if (!viewer.scopes.includes("admin")) notFound();
-  const [all, saved, optedOut] = await Promise.all([listClients(viewer, { active: true }), getBroadcastTemplate(), countMarketingOptOuts()]);
+  const [all, saved, optedOut] = await Promise.all([listClients(viewer, { active: true }), getBroadcastTemplate(), marketingOptOuts()]);
   const template = saved ?? DEFAULT_TEMPLATE;
   const clients = all.filter((c) => isEmail(c.email));
   const noEmail = all.length - clients.length;
 
-  const count = (f: (c: (typeof clients)[number]) => boolean) => clients.filter(f).length;
+  // Cuántos hay en cada grupo y, de ellos, cuántos no reciben promociones (un aviso sí les llega).
+  const group = (value: string, label: string, f: (c: (typeof clients)[number]) => boolean) => {
+    const members = clients.filter(f);
+    return { value, label, n: members.length, out: members.filter((c) => optedOut.has(c.id)).length };
+  };
   const coaches = [...new Map(clients.filter((c) => c.coach_id).map((c) => [c.coach_id!, c.coach_name ?? "Coach"])).entries()].sort((a, b) =>
     a[1].localeCompare(b[1])
   );
   const groups = [
-    { value: "all", label: "Todos los clientes", n: clients.length },
-    ...PLANS.map((p) => ({ value: `plan:${p.id}`, label: `Plan ${p.label}`, n: count((c) => c.plan === p.id) })),
-    { value: "plan:-", label: "Sin plan", n: count((c) => !c.plan) },
-    ...coaches.map(([id, name]) => ({ value: `coach:${id}`, label: `Clientes de ${name}`, n: count((c) => c.coach_id === id) })),
+    group("all", "Todos los clientes", () => true),
+    ...PLANS.map((p) => group(`plan:${p.id}`, `Plan ${p.label}`, (c) => c.plan === p.id)),
+    group("plan:-", "Sin plan", (c) => !c.plan),
+    ...coaches.map(([id, name]) => group(`coach:${id}`, `Clientes de ${name}`, (c) => c.coach_id === id)),
   ];
+  const outAll = groups[0].out;
 
   return (
     <AdminShell viewer={viewer}>
@@ -72,7 +77,7 @@ export default async function BroadcastPage() {
                 <span className="strong">Novedades o promociones</span>
                 <span className="field__hint">
                   Lleva el link para darse de baja y no les llega a quienes se dieron de baja
-                  {optedOut > 0 && ` (${optedOut} ${optedOut === 1 ? "cliente" : "clientes"})`}.
+                  {outAll > 0 && ` (${outAll} ${outAll === 1 ? "cliente" : "clientes"})`}.
                 </span>
               </label>
               <label className="choice__card">
@@ -89,7 +94,7 @@ export default async function BroadcastPage() {
                 <label key={g.value} className="check">
                   <input type="checkbox" name="group" value={g.value} disabled={!g.n} />
                   <span>
-                    {g.label} <span className="muted">({g.n})</span>
+                    {g.label} <span className="muted">({g.out ? `${g.n}, ${g.out} sin promociones` : g.n})</span>
                   </span>
                 </label>
               ))}
