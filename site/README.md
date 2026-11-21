@@ -155,8 +155,8 @@ SSL "Full", delante de Railway:
   `<portalUrl>/api/digui/mcp` (sin Clerk: ver `proxy.ts`; Streamable HTTP, sin sesión;
   `portal/lib/mcp.ts`); sin ella, responde 401. Es la única forma en que Digui u otro agente consulta horarios libres y
   pide, mueve o cancela el turno de quien chatea (`pedir_turno`, `mover_turno`, `cancelar_turno`), y ve su ficha (sin
-  datos de salud ni DNI), sus evaluaciones, sus pagos y la información del gimnasio. Las instrucciones, sin clave, están
-  en `<portalUrl>/api/digui`.
+  datos de salud ni DNI), sus evaluaciones, su plan de alimentación (`ver_dieta`, el vigente), sus pagos y la
+  información del gimnasio. Las instrucciones, sin clave, están en `<portalUrl>/api/digui`.
 - Sólo `/portal/ingresar` se indexa, y está en el `sitemap.xml` del sitio (`app/sitemap.ts`).
 
 ## Despliegue

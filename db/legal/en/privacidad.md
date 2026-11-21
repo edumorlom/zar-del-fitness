@@ -72,7 +72,7 @@ To run the website, the portal and payments, we use these providers. Each one pr
 | Google | Website statistics (Google Analytics), Google sign-in if you choose it and the team's session calendar (Google Calendar) | United States and other countries |
 | Resend | Sending emails | United States |
 | Mercado Pago | Online payments. Mercado Pago is responsible for the data you give it to pay, under its own policy | Argentina |
-| Digui | The website chat, which is an artificial intelligence assistant, not a person (to talk to someone on the team, message us on WhatsApp). If you're signed in, it sees your name, sessions, evaluations and payments, to answer you. It doesn't see your health data or ID number | Its servers and the AI models it uses may be outside Argentina |
+| Digui | The website chat, which is an artificial intelligence assistant, not a person (to talk to someone on the team, message us on WhatsApp). If you're signed in, it sees your name, sessions, evaluations, nutrition plan and payments, to answer you. It doesn't see your health data or ID number | Its servers and the AI models it uses may be outside Argentina |
 | YouTube (Google) | The website videos. When you play one, Google may use its own cookies | United States and other countries |
 | WhatsApp (Meta) | The conversations you send us on WhatsApp | United States and other countries |
 

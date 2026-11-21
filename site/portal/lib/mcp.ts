@@ -5,14 +5,15 @@ import "server-only";
 //
 // Quién es la persona: customer_id o telefono, que tienen que salir del servidor del agente (lo que la persona ya tiene
 // registrado), nunca de lo que escribe en el chat. Por eso no hay herramienta para buscar o listar clientes, y la ficha
-// no trae datos de salud (condiciones, medicación, notas del coach) ni el DNI.
+// no trae datos de salud (condiciones, medicación, notas del coach) ni el DNI. El plan de alimentación sí (ver_dieta):
+// es el mismo que el cliente ve en Mi progreso y le llega por correo.
 import gimnasio from "@db/gimnasio.json";
 import horarios from "@db/horarios.json";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { content } from "@/lib/content";
-import { getCheckins, getClient } from "./data";
-import { BAD_DAY, customerId, NO_FILE_ID, NO_FILE_PHONE, parseDay, parseStart } from "./digui-api";
+import { getCheckins, getClient, getDiet } from "./data";
+import { BAD_DAY, customerId, dietReply, NO_FILE_ID, NO_FILE_PHONE, parseDay, parseStart } from "./digui-api";
 import { SITE } from "./email-layout";
 import { dateOf, longDate, num, todayISO } from "./format";
 import { mpConfigured } from "./mercadopago";
@@ -147,6 +148,22 @@ export function portalMcp() {
         total: all.length,
         evaluaciones: ultimas,
       });
+    }
+  );
+
+  server.registerTool(
+    "ver_dieta",
+    {
+      title: "Plan de alimentación del cliente",
+      description:
+        "El plan de alimentación vigente de la persona, el que le dio su coach en la última evaluación que trajo uno: el objetivo y qué comer en cada comida (desayuno, colaciones, almuerzo, cena) y los suplementos. Lo mismo que ve en Mi progreso.",
+      inputSchema: persona,
+      annotations: readOnly,
+    },
+    async (args) => {
+      const id = await who(args);
+      if (typeof id === "string") return fail(id);
+      return reply(dietReply(await getDiet(id)));
     }
   );
 

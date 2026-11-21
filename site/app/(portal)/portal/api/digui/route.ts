@@ -16,6 +16,7 @@ Herramientas:
   info_gimnasio         Dirección, días y horarios, contacto y planes con sus precios. No pide persona.
   ver_cliente           La ficha de la persona (sin datos de salud ni DNI).
   ver_evaluaciones      Sus últimas evaluaciones, la más nueva primero.
+  ver_dieta             Su plan de alimentación vigente: el objetivo, cada comida y los suplementos.
   ver_pagos             Su pase, el precio de su plan, si puede pagarlo online y sus últimos pagos.
   ver_horarios_libres   Los horarios libres de un viernes: {"dia": "AAAA-MM-DD"}.
   ver_turnos            Sus turnos pedidos o confirmados.

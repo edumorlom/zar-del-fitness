@@ -1,7 +1,9 @@
 // Ayudas puras del servidor MCP de Digui: sin db ni server-only, para probarlas con node --test.
 import { createHash, timingSafeEqual } from "node:crypto";
+import { MEALS } from "./clients.ts";
+import type { Diet } from "./data.ts";
 import { DATE } from "./form.ts";
-import { fromLocalInput } from "./format.ts";
+import { fromLocalInput, longDate } from "./format.ts";
 import { hostOf, isLocalhost } from "./host.ts";
 
 export const NO_FILE_PHONE = "No encontramos tu ficha con este número: pedí el turno desde el portal o escribile al Zar.";
@@ -43,3 +45,22 @@ export function parseDay(v: string | null): string | null {
 
 /** "AAAA-MM-DDTHH:MM", sin offset: hora argentina. */
 export const parseStart = (v: unknown) => (typeof v === "string" ? fromLocalInput(v) : null);
+
+const list = new Intl.ListFormat("es", { type: "conjunction" });
+
+/**
+ * La respuesta de ver_dieta: el plan vigente (getDiet en portal/lib/data.ts) con las comidas en el orden del portal y
+ * sólo las que se cargaron, como las ve el cliente en Mi progreso.
+ */
+export function dietReply(diet: Diet | null) {
+  if (!diet) return { ok: true, mensaje: "Todavía no tenés un plan de alimentación cargado: te lo da tu coach en la evaluación.", plan: null };
+  const comidas = MEALS.filter((m) => diet[m.key]?.trim()).map((m) => ({ comida: m.label, detalle: diet[m.key]!.trim() }));
+  const goal = diet.goal?.trim() || null;
+  return {
+    ok: true,
+    mensaje:
+      `Tu plan de alimentación es el de la evaluación del ${longDate(diet.date)}${goal ? ` (objetivo: ${goal})` : ""}.` +
+      (comidas.length ? ` Tiene ${list.format(comidas.map((c) => c.comida.toLowerCase()))}.` : " No tiene comidas cargadas."),
+    plan: { desde: diet.date, objetivo: goal, comidas },
+  };
+}
