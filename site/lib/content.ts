@@ -126,6 +126,7 @@ const shot = (n: string, w: number, h: number, alt: ShotAlt = "fotoAlumno") => (
 const gallery = [
   [
     shot("13", 900, 900),
+    shot("35", 1011, 900),
     shot("10", 600, 593, "fotoAlumna"),
     shot("02", 600, 599),
     shot("14", 897, 900),
