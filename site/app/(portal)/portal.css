@@ -797,9 +797,18 @@ th[aria-sort] .th-sort {
   outline: none;
   box-shadow: 0 0 0 4px rgba(152, 136, 88, 0.18);
 }
+/* Safari en el iPhone dibuja las fechas a su manera: más bajas que los otros campos, centradas y con un ancho propio que
+   las saca de la tarjeta. Sin ese estilo toman el de los demás campos. */
 .field input[type="date"],
 .field input[type="datetime-local"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
   color-scheme: dark;
+}
+.field input::-webkit-date-and-time-value {
+  margin: 0;
+  text-align: left;
 }
 /* La foto: el botón del navegador centrado en el alto del campo (7 + 32 + 7 + bordes = 48px) y con los colores del sitio */
 .field input[type="file"] {
@@ -842,6 +851,8 @@ th[aria-sort] .th-sort {
   display: grid;
   align-content: start;
   gap: 8px;
+  /* Que un campo con ancho propio (la fecha en el iPhone) no ensanche la columna */
+  min-width: 0;
 }
 .field--wide {
   grid-column: 1 / -1;
