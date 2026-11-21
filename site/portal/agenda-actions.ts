@@ -8,12 +8,12 @@ import { sendMail } from "~/lib/email-layout";
 import { requireViewer, type Viewer } from "~/lib/auth";
 import { db } from "~/lib/db";
 import { getAppointment, type Appointment } from "~/lib/data";
-import { dateOf, fromLocalInput, longDate, timeOf } from "~/lib/format";
+import type { FormState } from "~/lib/form";
+import { dateOf, fromLocalInput, longDate, longDateTime, timeOf } from "~/lib/format";
 import { createEvent, moveEvent } from "~/lib/google";
 import { getLang } from "~/lib/lang";
 import { DAILY_LIMIT_MESSAGE, ONLY_FRIDAYS, SLOT_MINUTES } from "~/lib/slots";
 import { appointmentDayError, cancelAppointmentRow, requestSlot, withAvailableSlot } from "~/lib/turnos";
-import type { FormState } from "./actions";
 
 const event = (a: Appointment, start: Date, end: Date) => ({
   start,
@@ -122,7 +122,7 @@ export async function moveAppointment(_: FormState, form: FormData): Promise<For
   if (!result.ok) return { error: result.mensaje };
   mailConfirmed(a.client_id, start, a.requested_at ?? a.starts_at);
   refresh();
-  return { ok: `Movido al ${longDate(dateOf(start))} a las ${timeOf(start)} h y confirmado.` };
+  return { ok: `Movido al ${longDateTime(start)} y confirmado.` };
 }
 
 export async function rejectAppointment(_: FormState, form: FormData): Promise<FormState> {

@@ -5,7 +5,7 @@ import { age, BODY_TYPES, CONDITIONS, PLANS } from "~/lib/clients";
 import type { Client, Coach } from "~/lib/data";
 import { todayISO, toLocalInput } from "~/lib/format";
 import { Form } from "./Form";
-import { initials } from "./Shell";
+import { Avatar } from "./Person";
 import { Steps } from "./Steps";
 
 function Field({ label, hint, wide, children }: { label: string; hint?: string; wide?: boolean; children: React.ReactNode }) {
@@ -140,7 +140,7 @@ export function ClientForm({ viewer, client, coaches }: { viewer: Viewer; client
             .map((c) => (
               <label key={c.id} className="choice__card choice__card--person">
                 <input type="radio" name="coach_id" value={c.id} defaultChecked={client?.coach_id === c.id} />
-                {c.photo_url ? <img className="person__img" src={c.photo_url} alt="" /> : <span className="avatar avatar--sm">{initials(c.name)}</span>}
+                <Avatar name={c.name} photo={c.photo_url} />
                 <span>
                   <span className="strong">{c.name}</span>
                   <span className="person__sub">{c.title ?? (c.scopes.includes("admin") ? "Coach master" : "Coach")}</span>

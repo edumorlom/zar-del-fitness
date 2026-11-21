@@ -2,11 +2,11 @@
 // db/legal/, y su traducción al inglés con el mismo nombre en db/legal/en/ (ver db/README.md). Se leen durante el build.
 // Las URLs están acá (legalPaths): cada una tiene su page.tsx en app/(es)/ y app/(en)/en/.
 
-import { readFileSync } from "node:fs";
 import path from "node:path";
 import { Marked, type Tokens } from "marked";
 import gimnasio from "@db/gimnasio.json";
 import { formatDate, LANGS, type Lang } from "./i18n";
+import { readFrontmatter } from "./markdown";
 
 // En el build, process.cwd() es site/.
 const DIR = path.join(process.cwd(), "..", "db", "legal");
@@ -76,17 +76,7 @@ function fillValues(text: string, where: string) {
 
 function read(id: LegalId, lang: Lang): LegalDoc {
   const where = `db/legal/${lang === "en" ? "en/" : ""}${id}.md`;
-  const raw = readFileSync(path.join(DIR, lang === "en" ? "en" : "", `${id}.md`), "utf-8").replace(/\r\n/g, "\n");
-  const match = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!match) throw new Error(`${where}: falta el encabezado entre "---"`);
-
-  const meta: Record<string, string> = {};
-  for (const line of match[1].split("\n")) {
-    const i = line.indexOf(":");
-    if (i > 0) meta[line.slice(0, i).trim()] = line.slice(i + 1).trim();
-  }
-  for (const key of KEYS) if (!meta[key]) throw new Error(`${where}: falta "${key}" en el encabezado`);
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(meta.actualizado)) throw new Error(`${where}: la fecha va como 2026-11-17`);
+  const { meta, body: raw } = readFrontmatter(path.join(DIR, lang === "en" ? "en" : "", `${id}.md`), where, KEYS, "actualizado");
 
   // Los subtítulos (##) con su ancla, para el índice y para poder enlazar una sección (/privacidad/#5-tus-derechos).
   const toc: LegalDoc["toc"] = [];
@@ -102,7 +92,7 @@ function read(id: LegalId, lang: Lang): LegalDoc {
       },
     },
   });
-  const body = fillValues(match[2], where);
+  const body = fillValues(raw, where);
   if (/^# /m.test(body)) throw new Error(`${where}: los subtítulos van con "##" (el título ya es el del encabezado)`);
 
   return {

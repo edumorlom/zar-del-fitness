@@ -2,19 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { cancelAppointment, confirmAppointment, moveAppointment, rejectAppointment } from "~/agenda-actions";
+import { capitalize } from "@/lib/i18n";
 import { AdminShell, PageHead } from "~/components/AdminShell";
+import { Notice } from "~/components/Cards";
 import { ConnectCalendar } from "~/components/ConnectCalendar";
 import { Form } from "~/components/Form";
 import { homeOf, isTeam } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { listAppointments, pendingRequests, type Appointment } from "~/lib/data";
-import { dateOf, longDate, shortDate, timeOf, todayISO, toLocalInput } from "~/lib/format";
+import { DATE } from "~/lib/form";
+import { dateOf, longDate, monthYear, shortDate, timeOf, todayISO, toLocalInput } from "~/lib/format";
 import { CALENDAR_OWNER, CALENDAR_SCOPES, calendarStatus } from "~/lib/google";
-import { monthGrid, shiftMonth } from "~/lib/slots";
+import { MAX_DAILY_APPOINTMENTS, monthGrid, shiftMonth } from "~/lib/slots";
 
 export const metadata: Metadata = { title: "Agenda" };
 
-const MONTH = new Intl.DateTimeFormat("es-AR", { month: "long", year: "numeric", timeZone: "UTC" });
 const WEEK = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const first = (name: string) => name.split(/\s+/)[0];
 
@@ -28,7 +30,7 @@ function Move({ a }: { a: Appointment }) {
         <label className="field">
           <span className="field__label">Nuevo horario</span>
           <input name="start" type="datetime-local" step={1800} defaultValue={toLocalInput(a.starts_at)} />
-          <span className="field__hint">Sólo los viernes, hasta 5 turnos por día, en el horario del gimnasio, a las y media o en punto.</span>
+          <span className="field__hint">Sólo los viernes, hasta {MAX_DAILY_APPOINTMENTS} turnos por día, en el horario del gimnasio, a las y media o en punto.</span>
         </label>
       </Form>
     </details>
@@ -79,32 +81,30 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
   const sp = await searchParams;
   const today = todayISO();
   const month = /^\d{4}-\d{2}$/.test(sp.mes ?? "") ? sp.mes! : today.slice(0, 7);
-  const day = /^\d{4}-\d{2}-\d{2}$/.test(sp.dia ?? "") ? sp.dia! : month === today.slice(0, 7) ? today : `${month}-01`;
+  const day = DATE.test(sp.dia ?? "") ? sp.dia! : month === today.slice(0, 7) ? today : `${month}-01`;
   const grid = monthGrid(month);
   const from = new Date(`${grid[0]}T00:00:00-03:00`);
   const to = new Date(new Date(`${grid[41]}T00:00:00-03:00`).getTime() + 86_400_000);
   const [appts, pending, status] = await Promise.all([listAppointments(viewer, from, to), pendingRequests(viewer), calendarStatus()]);
   const byDay = new Map<string, Appointment[]>();
   for (const a of appts) byDay.set(dateOf(a.starts_at), [...(byDay.get(dateOf(a.starts_at)) ?? []), a]);
-  const title = MONTH.format(new Date(`${month}-15T12:00:00Z`));
+  const title = monthYear(`${month}-15`);
   const href = (m: string, d?: string) => `/portal/agenda?mes=${m}${d ? `&dia=${d}` : ""}`;
 
   return (
     <AdminShell viewer={viewer}>
-      <PageHead title="Agenda" sub="Controles los viernes, con un máximo de 5 turnos por día. Van al Google Calendar del Zar." />
+      <PageHead title="Agenda" sub={`Controles los viernes, con un máximo de ${MAX_DAILY_APPOINTMENTS} turnos por día. Van al Google Calendar del Zar.`} />
 
       {status !== "connected" && (
-        <div className="card notice notice--row" data-reveal>
-          <div>
-            <p className="strong">El Google Calendar del Zar no está conectado</p>
-            <p className="muted">
-              {status === "not-signed-in"
-                ? `El Zar tiene que entrar al portal con ${CALENDAR_OWNER} y conectarlo acá. Mientras tanto se ofrecen los viernes, hasta 5 turnos por día, y los turnos no van al calendario.`
-                : "Falta darle permiso al portal para ver lo ocupado y crear los turnos en su calendario."}
-            </p>
-          </div>
-          {viewer.email === CALENDAR_OWNER && <ConnectCalendar scopes={CALENDAR_SCOPES} />}
-        </div>
+        <Notice
+          title="El Google Calendar del Zar no está conectado"
+          text={
+            status === "not-signed-in"
+              ? `El Zar tiene que entrar al portal con ${CALENDAR_OWNER} y conectarlo acá. Mientras tanto se ofrecen los viernes, hasta ${MAX_DAILY_APPOINTMENTS} turnos por día, y los turnos no van al calendario.`
+              : "Falta darle permiso al portal para ver lo ocupado y crear los turnos en su calendario."
+          }
+          aside={viewer.email === CALENDAR_OWNER ? <ConnectCalendar scopes={CALENDAR_SCOPES} /> : undefined}
+        />
       )}
 
       {pending.length > 0 && (
@@ -123,7 +123,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
       <div className="dash-row">
         <section className="card cal" data-reveal>
           <div className="cal__head">
-            <h2 className="card-title">{title[0].toUpperCase() + title.slice(1)}</h2>
+            <h2 className="card-title">{capitalize(title)}</h2>
             <div className="cal__nav">
               <Link className="btn btn--ghost btn--sm" href={href(today.slice(0, 7), today)}>
                 Hoy

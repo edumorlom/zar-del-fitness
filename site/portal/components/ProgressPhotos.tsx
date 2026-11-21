@@ -2,7 +2,10 @@
 
 import { unstable_rethrow } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { addProgressPhoto, deleteProgressPhoto, type FormState } from "~/actions";
+import { Icon } from "@/components/Icon";
+import { addProgressPhoto, deleteProgressPhoto } from "~/actions";
+import { Empty } from "./Cards";
+import type { FormState } from "~/lib/form";
 import { Ask } from "./Form";
 import type { ProgressPhoto } from "~/lib/data";
 import { shortDate, todayISO } from "~/lib/format";
@@ -102,14 +105,14 @@ export function ProgressPhotos({ clientId, photos, you, lang = "es" }: { clientI
       )}
 
       {photos.length === 0 ? (
-        <div className="card empty">
-          <p className="fact">{tr("Todavía no hay fotos", "No photos yet")}</p>
-          <p className="muted">
-            {you
+        <Empty
+          title={tr("Todavía no hay fotos", "No photos yet")}
+          text={
+            you
               ? tr("Tu coach las saca en los controles: acá vas a ver la primera al lado de la última.", "Your coach takes them at your check-ins: here you'll see the first one next to the latest.")
-              : "Subí la del día del control, siempre con la misma pose: acá se ve la primera al lado de la última."}
-          </p>
-        </div>
+              : "Subí la del día del control, siempre con la misma pose: acá se ve la primera al lado de la última."
+          }
+        />
       ) : (
         <>
           <ul className="photos__grid photos__grid--pair">
@@ -201,9 +204,7 @@ function Viewer({
           </button>
         )}
         <button type="button" className="icon-btn" onClick={onClose} aria-label={tr("Cerrar", "Close")} title={tr("Cerrar", "Close")}>
-          <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
+          <Icon name="close" />
         </button>
       </div>
       {canDelete && (

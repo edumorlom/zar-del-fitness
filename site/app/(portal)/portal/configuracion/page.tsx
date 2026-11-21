@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { portalUrl } from "@/lib/content";
 import { notFound } from "next/navigation";
+import { Icon } from "@/components/Icon";
+import { portalUrl } from "@/lib/content";
 import { AdminShell, PageHead } from "~/components/AdminShell";
+import { Notice } from "~/components/Cards";
 import { Filters } from "~/components/Filters";
-import { initials } from "~/components/Shell";
+import { Person } from "~/components/Person";
 import { SCOPE_LABEL, SCOPES, type Scope } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { listUsers } from "~/lib/data";
@@ -46,15 +48,15 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       </nav>
 
       {(waiting > 0 || noEmail > 0) && (
-        <div className="card notice" data-reveal>
-          <p className="strong">
-            {waiting} {waiting === 1 ? "cuenta todavía no entró" : "cuentas todavía no entraron"} al portal
-          </p>
-          <p className="muted">
-            Entran con Google o con el código que les llega a su correo, en {portalUrl.replace("https://", "")}: alcanza con avisarles.
-            {noEmail > 0 && ` ${noEmail} no ${noEmail === 1 ? "tiene" : "tienen"} correo: completalo en su ficha para que puedan entrar.`}
-          </p>
-        </div>
+        <Notice
+          title={`${waiting} ${waiting === 1 ? "cuenta todavía no entró" : "cuentas todavía no entraron"} al portal`}
+          text={
+            <>
+              Entran con Google o con el código que les llega a su correo, en {portalUrl.replace("https://", "")}: alcanza con avisarles.
+              {noEmail > 0 && ` ${noEmail} no ${noEmail === 1 ? "tiene" : "tienen"} correo: completalo en su ficha para que puedan entrar.`}
+            </>
+          }
+        />
       )}
 
       <div className="toolbar toolbar--wide">
@@ -64,9 +66,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         </Filters>
         <Link className="btn btn--gold btn--sm" href="/portal/clientes/nuevo">
           Nuevo usuario
-          <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
-            <use href="#i-plus" />
-          </svg>
+          <Icon name="plus" />
         </Link>
       </div>
 
@@ -87,13 +87,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             {users.map((u) => (
               <tr key={u.id} className={u.active ? undefined : "is-off"}>
                 <td data-label="Cuenta">
-                  <Link className="person" href={`/portal/clientes/${u.id}`}>
-                    {u.photo_url ? <img className="person__img" src={u.photo_url} alt="" /> : <span className="avatar avatar--sm">{initials(u.name)}</span>}
-                    <span>
-                      <span className="strong">{u.name}</span>
-                      <span className="person__sub mono">{u.email ?? "sin correo"}</span>
-                    </span>
-                  </Link>
+                  <Person name={u.name} photo={u.photo_url} href={`/portal/clientes/${u.id}`} sub={<span className="mono">{u.email ?? "sin correo"}</span>} />
                 </td>
                 <td data-label="Rol">
                   <span className="chips">
@@ -129,9 +123,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
                 </td>
                 <td className="right actions">
                   <Link className="icon-btn icon-btn--sm" href={`/portal/clientes/${u.id}#editar`} aria-label={`Editar a ${u.name}`} title="Editar">
-                    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" />
-                    </svg>
+                    <Icon name="edit" />
                   </Link>
                 </td>
               </tr>

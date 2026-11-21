@@ -53,6 +53,18 @@ export function signedUrl(bucket: Bucket, key: string, now = new Date(), expires
 /** Una foto del celular. Con el resto del formulario tiene que entrar en serverActions.bodySizeLimit (next.config.ts). */
 export const PHOTO_MAX_MB = 5;
 
+export type Photo = { bytes: Uint8Array<ArrayBuffer>; type: "jpg" | "png"; contentType: string };
+
+/** La foto que vino en un formulario, leída y revisada (JPG o PNG de verdad, hasta PHOTO_MAX_MB), o por qué no sirve. */
+export async function readPhoto(file: unknown): Promise<Photo | { error: string }> {
+  if (!(file instanceof File) || file.size === 0) return { error: "Elegí una foto." };
+  if (file.size > PHOTO_MAX_MB * 1024 * 1024) return { error: `La foto pesa más de ${PHOTO_MAX_MB} MB.` };
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const type = imageType(bytes);
+  if (!type) return { error: "La foto tiene que ser JPG o PNG." };
+  return { bytes, type, contentType: type === "png" ? "image/png" : "image/jpeg" };
+}
+
 /** JPG o PNG según los primeros bytes (lo que dice el navegador no alcanza); null si es otra cosa. */
 export function imageType(bytes: Uint8Array): "jpg" | "png" | null {
   if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return "jpg";

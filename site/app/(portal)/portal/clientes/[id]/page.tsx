@@ -1,27 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Icon } from "@/components/Icon";
 import { addCheckin, deleteCheckin, deleteClient, saveDiet } from "~/actions";
 import { saveClientConsents } from "~/consent-actions";
 import { AdminShell, PageHead } from "~/components/AdminShell";
+import { CheckinFields } from "~/components/CheckinFields";
 import { ClientForm } from "~/components/ClientForm";
+import { DietFields } from "~/components/Diet";
 import { Evolution } from "~/components/Evolution";
 import { Form } from "~/components/Form";
+import { initials } from "~/components/Person";
 import { ProgressPhotos } from "~/components/ProgressPhotos";
-import { initials } from "~/components/Shell";
 import { canManage } from "~/lib/access";
-import { CONSENT_KINDS, CONSENT_TEXT, getConsents, REQUIRED_CONSENTS } from "~/lib/consent";
 import { requireViewer } from "~/lib/auth";
-import { CheckinFields } from "~/components/CheckinFields";
-import { DietFields } from "~/components/Diet";
-import { age, bmi, controlStatus, daysBetween, STATUS_LABEL } from "~/lib/clients";
+import { age, bmi, bodyPoint, controlStatus, daysBetween, leanMass, STATUS_LABEL } from "~/lib/clients";
+import { CONSENT_KINDS, CONSENT_TEXT, getConsents, REQUIRED_CONSENTS } from "~/lib/consent";
 import { getCheckins, getClient, getCoaches, getDiet, getProgressPhotos } from "~/lib/data";
 import { days, num, shortDate, todayISO } from "~/lib/format";
-import { isPayable } from "~/lib/payments";
+import { isPayable, PASS_DUE_DAYS } from "~/lib/payments";
 
 export const metadata: Metadata = { title: "Cliente" };
-
-const lean = (w: number, f: number) => w * (1 - f / 100);
 
 function Fact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -70,7 +69,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
           <span className="chips">
             {!client.active && <span className="chip chip--warn">Dado de baja</span>}
             {passLeft !== null && (
-              <span className={passLeft < 0 ? "chip chip--warn" : passLeft <= 7 ? "chip chip--due" : "chip"}>
+              <span className={passLeft < 0 ? "chip chip--warn" : passLeft <= PASS_DUE_DAYS ? "chip chip--due" : "chip"}>
                 {passLeft < 0 ? `Pase vencido · hace ${days(-passLeft)}` : `Pase vence en ${days(passLeft)}`}
               </span>
             )}
@@ -198,10 +197,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
 
       <div className="dash-row dash-row--even">
         {checkins.length >= 2 ? (
-          <Evolution
-            you={false}
-            points={checkins.map((c) => ({ date: c.date, weight: c.weight_kg, fatPct: c.body_fat_pct, lean: lean(c.weight_kg, c.body_fat_pct), fatKg: (c.weight_kg * c.body_fat_pct) / 100 }))}
-          />
+          <Evolution you={false} points={checkins.map(bodyPoint)} />
         ) : (
           <section className="card panel-card">
             <h2 className="card-title">Evolución</h2>
@@ -240,21 +236,15 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
                         <td className="mono">{shortDate(c.date)}</td>
                         <td className="right mono">{num(c.weight_kg)} kg</td>
                         <td className="right mono">{num(c.body_fat_pct)} %</td>
-                        <td className="right mono">{num(lean(c.weight_kg, c.body_fat_pct))} kg</td>
+                        <td className="right mono">{num(leanMass(c))} kg</td>
                         <td className="right">
                           <span className="row-actions">
                           <Link className="icon-btn icon-btn--sm" href={`/portal/clientes/${client.id}/evaluaciones/${c.id}`} aria-label={`Editar la evaluación del ${shortDate(c.date)}`} title={`Editar la evaluación del ${shortDate(c.date)}`}>
-                            <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                              <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                            </svg>
+                            <Icon name="edit" />
                           </Link>
                           <Form
                             action={deleteCheckin}
-                            submit={
-                              <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
-                              </svg>
-                            }
+                            submit={<Icon name="trash" />}
                             button="icon-btn icon-btn--sm icon-btn--danger"
                             label={`Borrar la evaluación del ${shortDate(c.date)}`}
                             className="inline-form"

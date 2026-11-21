@@ -1,6 +1,8 @@
 import "server-only";
+import { LAST_CHECKINS_JOIN } from "./data";
 import { db } from "./db";
-import { sendMail } from "./email-layout";
+import { RESEND_GAP_MS, sendMail, sleep } from "./email-layout";
+import { isEmail } from "./form";
 import { todayISO } from "./format";
 import { inSendingHours, REMINDER_PLAN, reminderDue, renderReminderEmail } from "./reminder-email";
 
@@ -11,9 +13,6 @@ import { inSendingHours, REMINDER_PLAN, reminderDue, renderReminderEmail } from 
 // intentar a la hora siguiente.
 
 const EVERY_MS = 60 * 60 * 1000;
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-// Resend acepta 2 correos por segundo en el plan común: uno cada 600 ms para no pasarse (como Broadcast).
-const GAP_MS = 600;
 
 type Row = {
   id: number;
@@ -45,10 +44,7 @@ export async function sendEvaluationReminders() {
             l.body_fat_pct as last_fat,
             p.date as prev_date, p.weight_kg as prev_weight, p.body_fat_pct as prev_fat
      from users u
-     left join lateral (select date, weight_kg, body_fat_pct from checkins where client_id = u.id
-                        order by date desc, id desc limit 1) l on true
-     left join lateral (select date, weight_kg, body_fat_pct from checkins where client_id = u.id
-                        order by date desc, id desc offset 1 limit 1) p on true
+     ${LAST_CHECKINS_JOIN}
      where 'user' = any(u.scopes) and u.active and u.plan = $1`,
     [REMINDER_PLAN]
   );
@@ -56,14 +52,14 @@ export async function sendEvaluationReminders() {
   let sent = 0;
   for (const r of rows) {
     const due = reminderDue({ last: r.last_date, reminded: r.reminded, nextControl: r.next_control_at, booked: r.booked }, today, now);
-    if (!due || !EMAIL.test(r.email ?? "")) continue;
+    if (!due || !isEmail(r.email)) continue;
     // La marca, sólo si nadie la puso desde que se cumplió el mes: si otro servidor ya lo está mandando, no sale de nuevo.
     const claimed = await db.query(
       "update users set evaluation_reminder_on = $2 where id = $1 and (evaluation_reminder_on is null or evaluation_reminder_on < $3)",
       [r.id, today, due]
     );
     if (!claimed.rowCount) continue;
-    if (sent) await new Promise((ok) => setTimeout(ok, GAP_MS));
+    if (sent) await sleep(RESEND_GAP_MS);
     const mail = renderReminderEmail({
       name: r.name,
       today,

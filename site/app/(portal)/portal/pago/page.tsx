@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Form } from "~/components/Form";
-import { Title } from "~/components/Progress";
+import { Title } from "~/components/Title";
 import { Shell } from "~/components/Shell";
 import { payWithMercadoPago } from "~/payment-actions";
 import { homeOf } from "~/lib/access";

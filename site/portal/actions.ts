@@ -1,30 +1,69 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { refresh } from "next/cache";
 import { redirect } from "next/navigation";
 import { canCreate, canManage, isTeam, scopesToSave } from "~/lib/access";
-import { requireViewer } from "~/lib/auth";
+import { requireViewer, type Viewer } from "~/lib/auth";
 import { BODY_TYPES, CONDITIONS, MEALS, MEASURES, PLANS } from "~/lib/clients";
-import { randomUUID } from "node:crypto";
 import { db } from "~/lib/db";
-import { sendMail } from "~/lib/email-layout";
 import { DIET_IMAGES, DIET_SUBJECT, type DietEmail, renderDietEmail } from "~/lib/diet-email";
+import { sendMail } from "~/lib/email-layout";
 import { type EvaluationEmail, IMAGES, renderEvaluationEmail, SUBJECT } from "~/lib/evaluation-email";
+import { DATE, decimal, type FormState, isEmail, type Mail, text } from "~/lib/form";
 import { fromLocalInput, todayISO } from "~/lib/format";
-import { bucketFromEnv, deleteObject, imageType, PHOTO_MAX_MB, putObject } from "~/lib/storage";
+import { bucketFromEnv, deleteObject, type Photo, putObject, readPhoto } from "~/lib/storage";
 
-/** Un correo que mandó una acción: a quién, y si Resend lo aceptó. */
-export type Mail = { to: string; sent: boolean };
+export type { FormState, Mail };
 
-/**
- * Lo que responde un formulario. `mail`: el correo que mandó; el formulario lo muestra en un cartel (components/Form.tsx).
- * `next`: adónde va la página al cerrar ese cartel.
- */
-export type FormState = { error?: string; ok?: string; mail?: Mail; next?: string } | null;
+// ---------- Quién puede qué ----------
 
-const text = (form: FormData, key: string) => String(form.get(key) ?? "").trim();
-const DATE = /^\d{4}-\d{2}-\d{2}$/;
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+type Managed = { id: number; coach_id: number | null; external_id: string | null; name: string; email: string | null; active: boolean };
+
+/** El cliente, si quien entró puede cargarle datos (el admin, o su coach); null si no existe o no puede. */
+async function managedClient(viewer: Viewer, clientId: number): Promise<Managed | null> {
+  const { rows } = await db.query<Managed>("select id, coach_id, external_id, name, email, active from users where id = $1", [clientId]);
+  return rows[0] && canManage(viewer, rows[0]) ? rows[0] : null;
+}
+
+/** Una evaluación, si quien entró maneja a su cliente; null si no existe o no puede. */
+async function managedCheckin(viewer: Viewer, checkinId: number) {
+  const { rows } = await db.query<{ client_id: number; coach_id: number | null }>(
+    "select c.client_id, u.coach_id from checkins c join users u on u.id = c.client_id where c.id = $1",
+    [checkinId]
+  );
+  return rows[0] && canManage(viewer, rows[0]) ? rows[0] : null;
+}
+
+// ---------- Fotos ----------
+
+/** La carpeta del cliente en el bucket usa su external_id, como las fotos del portal anterior; quien no tiene, recibe uno. */
+async function ensureExternalId(clientId: number) {
+  const { rows } = await db.query<{ external_id: string }>(
+    "update users set external_id = coalesce(external_id, $1) where id = $2 returning external_id",
+    [randomUUID(), clientId]
+  );
+  return rows[0].external_id;
+}
+
+/** Sube la foto al bucket; si no se pudo, por qué (y no se guarda nada en la base). */
+async function uploadPhoto(key: string, photo: Photo): Promise<string | null> {
+  const bucket = bucketFromEnv();
+  if (!bucket) return "No se pueden subir fotos: faltan las variables del bucket.";
+  try {
+    await putObject(bucket, key, photo.bytes, photo.contentType);
+    return null;
+  } catch (e) {
+    console.error(e);
+    return "No se pudo subir la foto. Probá de nuevo.";
+  }
+}
+
+/** Borra archivos del bucket, si está; si falla, quedan sueltos (ya no aparecen en el portal) y el error va a los logs. */
+async function deleteFiles(keys: string[]) {
+  const bucket = bucketFromEnv();
+  if (bucket) await Promise.all(keys.map((k) => deleteObject(bucket, k).catch((e) => console.error(e))));
+}
 
 // ---------- Clientes ----------
 
@@ -32,10 +71,7 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
   const viewer = await requireViewer();
   const id = form.get("id") ? Number(form.get("id")) : null;
   if (id === null && !canCreate(viewer)) return { error: "No podés crear clientes." };
-  if (id !== null) {
-    const { rows } = await db.query<{ coach_id: number | null }>("select coach_id from users where id = $1", [id]);
-    if (!rows[0] || !canManage(viewer, rows[0])) return { error: "No podés editar este cliente." };
-  }
+  if (id !== null && !(await managedClient(viewer, id))) return { error: "No podés editar este cliente." };
 
   const goal = text(form, "goal") || null;
   const next = text(form, "next_control_at");
@@ -63,7 +99,7 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
   const conditions = form.getAll("conditions").map(String);
 
   if (!name) return { error: "Falta el nombre." };
-  if (email && !EMAIL.test(email)) return { error: "Revisá el correo: con él entra al portal." };
+  if (email && !isEmail(email)) return { error: "Revisá el correo: con él entra al portal." };
   if (!scopes) return { error: "Elegí al menos un rol." };
   if (id === viewer.id && !scopes.includes("admin")) return { error: "No podés quitarte el rol de admin." };
   if (coachId !== null && (!Number.isInteger(coachId) || coachId === id)) return { error: "Elegí otro coach." };
@@ -83,32 +119,20 @@ export async function saveClient(_: FormState, form: FormData): Promise<FormStat
     return { error: "Revisá las patologías." };
 
   // La foto va al bucket antes de guardar: si no se pudo subir, no se guarda nada (y no queda un cliente repetido).
-  // Sin foto nueva queda la que tenía. La clave usa external_id, como las del portal anterior; quien no tiene, recibe uno.
-  // De un cliente, la foto va a sus fotos de progreso (la última es la de perfil); la del equipo, a su ficha.
+  // Sin foto nueva queda la que tenía. De un cliente, la foto va a sus fotos de progreso (la última es la de perfil);
+  // la del equipo, a su ficha.
   const client = !isTeam({ scopes });
   let photoUrl: string | null = null;
   let progressKey: string | null = null;
   let externalId: string | null = null;
   const file = form.get("photo");
   if (file instanceof File && file.size > 0) {
-    if (file.size > PHOTO_MAX_MB * 1024 * 1024) return { error: `La foto pesa más de ${PHOTO_MAX_MB} MB.` };
-    const bytes = new Uint8Array(await file.arrayBuffer());
-    const type = imageType(bytes);
-    if (!type) return { error: "La foto tiene que ser JPG o PNG." };
-    const bucket = bucketFromEnv();
-    if (!bucket) return { error: "No se pueden subir fotos: faltan las variables del bucket." };
-    if (id !== null) {
-      const { rows } = await db.query<{ external_id: string | null }>("select external_id from users where id = $1", [id]);
-      externalId = rows[0]?.external_id ?? null;
-    }
-    externalId ??= randomUUID();
-    const key = client ? `alumnos/${externalId}/progreso/${randomUUID()}.${type}` : `alumnos/${externalId}/foto.${type}`;
-    try {
-      await putObject(bucket, key, bytes, type === "png" ? "image/png" : "image/jpeg");
-    } catch (e) {
-      console.error(e);
-      return { error: "No se pudo subir la foto. Probá de nuevo." };
-    }
+    const photo = await readPhoto(file);
+    if ("error" in photo) return photo;
+    externalId = id !== null ? await ensureExternalId(id) : randomUUID();
+    const key = client ? `alumnos/${externalId}/progreso/${randomUUID()}.${photo.type}` : `alumnos/${externalId}/foto.${photo.type}`;
+    const error = await uploadPhoto(key, photo);
+    if (error) return { error };
     if (client) progressKey = key;
     // ?v=: con la misma dirección, el navegador seguiría mostrando la foto anterior.
     else photoUrl = `/archivos/${key}?v=${Date.now()}`;
@@ -167,14 +191,11 @@ export async function deleteClient(_: FormState, form: FormData): Promise<FormSt
   const { rowCount } = await db.query("delete from users where id = $1", [id]);
   if (!rowCount) return { error: "Ese cliente ya no existe." };
   // Las fotos de progreso, también del bucket: no quedan fotos de alguien que ya no está en el portal.
-  const bucket = bucketFromEnv();
-  if (bucket) await Promise.all(photos.rows.map((p) => deleteObject(bucket, p.key).catch((e) => console.error(e))));
+  await deleteFiles(photos.rows.map((p) => p.key));
   redirect("/portal/clientes");
 }
 
 // ---------- Controles ----------
-
-const decimal = (form: FormData, key: string) => Number(text(form, key).replace(",", "."));
 
 const DIET_COLS = ["goal", ...MEALS.map((m) => m.key)];
 
@@ -214,13 +235,8 @@ const params = (from: number, n: number) => Array.from({ length: n }, (_, i) => 
  */
 export async function saveDiet(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();
-  const clientId = Number(form.get("client_id"));
-  const { rows } = await db.query<{ coach_id: number | null; name: string; email: string | null; active: boolean }>(
-    "select coach_id, name, email, active from users where id = $1",
-    [clientId]
-  );
-  const client = rows[0];
-  if (!client || !canManage(viewer, client)) return { error: "No podés cambiar el plan de este cliente." };
+  const client = await managedClient(viewer, Number(form.get("client_id")));
+  if (!client) return { error: "No podés cambiar el plan de este cliente." };
   const diet = readDiet(form);
   if (!diet.some(Boolean)) return { error: "Completá al menos un campo del plan." };
 
@@ -228,7 +244,7 @@ export async function saveDiet(_: FormState, form: FormData): Promise<FormState>
   const before = await db.query<Record<string, string | null>>(
     `select ${DIET_COLS.map((k) => `d.${k}`).join(", ")} from checkins c left join diets d on d.checkin_id = c.id
      where c.client_id = $1 order by c.date desc, c.id desc limit 1`,
-    [clientId]
+    [client.id]
   );
   // Sin contar espacios de más ni el \r\n con que el navegador manda los saltos de línea.
   const norm = (v: string | null | undefined) => v?.replace(/\r\n/g, "\n").trim() || null;
@@ -238,13 +254,13 @@ export async function saveDiet(_: FormState, form: FormData): Promise<FormState>
     `insert into diets (checkin_id, ${DIET_COLS.join(", ")})
      select id, ${params(2, diet.length)} from checkins where client_id = $1 order by date desc, id desc limit 1
      ${DIET_UPSERT}`,
-    [clientId, ...diet]
+    [client.id, ...diet]
   );
   if (!rowCount) return { error: "Cargá primero una evaluación: el plan va con ella." };
   refresh();
   if (!changed) return { ok: "Plan guardado. No cambió nada: no se le mandó otro correo." };
   // Como el de la evaluación: a quien está dado de baja o no tiene correo no le llega nada.
-  if (!client.active || !EMAIL.test(client.email ?? "")) return mailed("Plan guardado.", null);
+  if (!client.active || !isEmail(client.email)) return mailed("Plan guardado.", null);
   const html = renderDietEmail({ name: client.name, diet: Object.fromEntries(DIET_COLS.map((k, i) => [k, diet[i]])) as DietEmail["diet"] });
   const sent = await sendMail({ to: client.email!, subject: DIET_SUBJECT, html, attachments: DIET_IMAGES });
   return mailed("Plan guardado.", { to: client.email!, sent });
@@ -260,9 +276,8 @@ function mailed(ok: string, mail: Mail | null, next?: string): FormState {
 
 export async function addCheckin(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();
-  const clientId = Number(form.get("client_id"));
-  const { rows } = await db.query<{ coach_id: number | null }>("select coach_id from users where id = $1", [clientId]);
-  if (!rows[0] || !canManage(viewer, rows[0])) return { error: "No podés cargar controles de este cliente." };
+  const client = await managedClient(viewer, Number(form.get("client_id")));
+  if (!client) return { error: "No podés cargar controles de este cliente." };
   const c = readCheckin(form);
   if ("error" in c) return c;
 
@@ -278,7 +293,7 @@ export async function addCheckin(_: FormState, form: FormData): Promise<FormStat
        select id, ${params(n, c.diet.length)} from c where $${n + c.diet.length}
      )
      select id from c`,
-    [clientId, viewer.id, ...c.values, ...c.diet, c.hasDiet]
+    [client.id, viewer.id, ...c.values, ...c.diet, c.hasDiet]
   );
   const mail = await mailEvaluation(created.rows[0].id);
   refresh();
@@ -305,7 +320,7 @@ async function mailEvaluation(checkinId: number): Promise<Mail | null> {
     [checkinId]
   );
   const r = rows[0];
-  if (!r?.active || !EMAIL.test(r.email ?? "")) return null;
+  if (!r?.active || !isEmail(r.email)) return null;
   const html = renderEvaluationEmail({
     name: r.name,
     date: r.date,
@@ -320,11 +335,8 @@ async function mailEvaluation(checkinId: number): Promise<Mail | null> {
 export async function updateCheckin(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();
   const id = Number(form.get("id"));
-  const { rows } = await db.query<{ coach_id: number | null; client_id: number }>(
-    "select u.coach_id, c.client_id from checkins c join users u on u.id = c.client_id where c.id = $1",
-    [id]
-  );
-  if (!rows[0] || !canManage(viewer, rows[0])) return { error: "No podés editar esta evaluación." };
+  const checkin = await managedCheckin(viewer, id);
+  if (!checkin) return { error: "No podés editar esta evaluación." };
   const c = readCheckin(form);
   if ("error" in c) return c;
 
@@ -338,7 +350,7 @@ export async function updateCheckin(_: FormState, form: FormData): Promise<FormS
      ${DIET_UPSERT}`,
     [id, ...c.values, ...c.diet, c.hasDiet]
   );
-  const back = `/portal/clientes/${rows[0].client_id}#historico`;
+  const back = `/portal/clientes/${checkin.client_id}#historico`;
   if (form.get("notify") !== "1") redirect(back);
   // El admin eligió en el popup volver a mandarle el correo (components/Form.tsx, `ask`): se manda antes de responder,
   // para que el cartel diga si salió, y al cerrarlo la página vuelve a la ficha (`next`).
@@ -349,84 +361,49 @@ export async function updateCheckin(_: FormState, form: FormData): Promise<FormS
 export async function deleteCheckin(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();
   const id = Number(form.get("id"));
-  const { rows } = await db.query<{ coach_id: number | null }>(
-    "select u.coach_id from checkins c join users u on u.id = c.client_id where c.id = $1",
-    [id]
-  );
-  if (!rows[0] || !canManage(viewer, rows[0])) return { error: "No podés borrar este control." };
+  if (!(await managedCheckin(viewer, id))) return { error: "No podés borrar este control." };
   await db.query("delete from checkins where id = $1", [id]);
   refresh();
   return null;
 }
 
 // ---------- Fotos de progreso ----------
-
-/** Las suben y las borran sólo quienes manejan al cliente (su coach o el admin); el cliente sólo las ve. */
-async function photoOwner(clientId: number) {
-  const viewer = await requireViewer();
-  const { rows } = await db.query<{ id: number; coach_id: number | null; external_id: string | null }>(
-    "select id, coach_id, external_id from users where id = $1",
-    [clientId]
-  );
-  const client = rows[0];
-  return client && canManage(viewer, client) ? { viewer, client } : null;
-}
+// Las suben y las borran sólo quienes manejan al cliente (su coach o el admin); el cliente sólo las ve.
 
 /**
  * Una foto por llamada: el navegador ya la achicó (shrinkPhoto) y así cada una entra en serverActions.bodySizeLimit
  * aunque se elijan varias juntas.
  */
 export async function addProgressPhoto(_: FormState, form: FormData): Promise<FormState> {
-  const access = await photoOwner(Number(form.get("client_id")));
-  if (!access) return { error: "No podés subir fotos de este cliente." };
+  const viewer = await requireViewer();
+  const client = await managedClient(viewer, Number(form.get("client_id")));
+  if (!client) return { error: "No podés subir fotos de este cliente." };
   const takenOn = text(form, "taken_on") || todayISO();
   if (!DATE.test(takenOn) || takenOn > todayISO()) return { error: "Revisá la fecha: no puede ser futura." };
+  const photo = await readPhoto(form.get("photo"));
+  if ("error" in photo) return photo;
 
-  const file = form.get("photo");
-  if (!(file instanceof File) || file.size === 0) return { error: "Elegí una foto." };
-  if (file.size > PHOTO_MAX_MB * 1024 * 1024) return { error: `La foto pesa más de ${PHOTO_MAX_MB} MB.` };
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  const type = imageType(bytes);
-  if (!type) return { error: "La foto tiene que ser JPG o PNG." };
-  const bucket = bucketFromEnv();
-  if (!bucket) return { error: "No se pueden subir fotos: faltan las variables del bucket." };
-
-  // La carpeta del cliente usa su external_id, como la foto de la ficha; quien no tiene, recibe uno.
-  let externalId = access.client.external_id;
-  if (!externalId) {
-    const { rows } = await db.query<{ external_id: string }>(
-      "update users set external_id = coalesce(external_id, $1) where id = $2 returning external_id",
-      [randomUUID(), access.client.id]
-    );
-    externalId = rows[0].external_id;
-  }
-  const key = `alumnos/${externalId}/progreso/${randomUUID()}.${type}`;
-  try {
-    await putObject(bucket, key, bytes, type === "png" ? "image/png" : "image/jpeg");
-  } catch (e) {
-    console.error(e);
-    return { error: "No se pudo subir la foto. Probá de nuevo." };
-  }
+  const key = `alumnos/${client.external_id ?? (await ensureExternalId(client.id))}/progreso/${randomUUID()}.${photo.type}`;
+  const error = await uploadPhoto(key, photo);
+  if (error) return { error };
   await db.query("insert into progress_photos (client_id, key, taken_on, uploaded_by) values ($1, $2, $3, $4)", [
-    access.client.id,
+    client.id,
     key,
     takenOn,
-    access.viewer.id,
+    viewer.id,
   ]);
   refresh();
   return { ok: "Foto subida." };
 }
 
 export async function deleteProgressPhoto(_: FormState, form: FormData): Promise<FormState> {
-  const { rows } = await db.query<{ client_id: number; key: string }>("select client_id, key from progress_photos where id = $1", [
-    Number(form.get("id")),
-  ]);
+  const viewer = await requireViewer();
+  const id = Number(form.get("id"));
+  const { rows } = await db.query<{ client_id: number; key: string }>("select client_id, key from progress_photos where id = $1", [id]);
   const photo = rows[0];
-  if (!photo || !(await photoOwner(photo.client_id))) return { error: "No podés borrar esta foto." };
-  await db.query("delete from progress_photos where id = $1", [Number(form.get("id"))]);
-  // Si el bucket falla, la foto ya no aparece en el portal: queda un archivo suelto, nada más.
-  const bucket = bucketFromEnv();
-  if (bucket) await deleteObject(bucket, photo.key).catch((e) => console.error(e));
+  if (!photo || !(await managedClient(viewer, photo.client_id))) return { error: "No podés borrar esta foto." };
+  await db.query("delete from progress_photos where id = $1", [id]);
+  await deleteFiles([photo.key]);
   refresh();
   return null;
 }

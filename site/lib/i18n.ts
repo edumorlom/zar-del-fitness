@@ -11,6 +11,14 @@ export const locales = {
 
 export const otherLang = (lang: Lang): Lang => (lang === "es" ? "en" : "es");
 
+/** La misma ruta en los dos idiomas: ("/blog/") → { es: "/blog/", en: "/en/blog/" } (los hreflang y el botón ES/EN). */
+export const localeAlternates = (path: string) => Object.fromEntries(LANGS.map((l) => [l, localePath(l, path)])) as Record<Lang, string>;
+
+/** Los días como los cuenta Date.getDay(): 0 es domingo. Así van en db/horarios.json. */
+export const WEEKDAYS_ES = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+
+export const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1);
+
 /** La URL de una página en un idioma: ("en", "/blog/") → "/en/blog/". */
 export const localePath = (lang: Lang, path: string) => locales[lang].prefix + path;
 

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { startTransition, useActionState, useEffect, useId, useRef, useState, useTransition } from "react";
-import type { FormState } from "~/actions";
+import type { FormState } from "~/lib/form";
 import { shrinkPhotos } from "~/lib/shrink-photo";
 
 /** Lo que dice un cartel: el título (con la segunda parte en cursiva dorada), el texto y los dos botones. */

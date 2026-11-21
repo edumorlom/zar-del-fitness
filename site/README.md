@@ -102,7 +102,12 @@ SSL "Full", delante de Railway:
 - Las páginas del portal están en `app/(portal)/portal/`, con su layout raíz en `app/(portal)/layout.tsx`. Adentro,
   los links y las redirecciones llevan `/portal` (`/portal/clientes`). Sus componentes, `lib/`, los
   formularios (`actions.ts`, `agenda-actions.ts`) y los scripts de importación están en `portal/`, importados con `~/`.
-  Usa los estilos, el menú, las animaciones y los datos del sitio (`@/`, `@db/`).
+  Usa los estilos, el menú, las animaciones y los datos del sitio (`@/`, `@db/`). Lo que se repite entre páginas está en
+  un solo lugar: lo que leen y responden los formularios (`portal/lib/form.ts`), el dominio del pedido
+  (`portal/lib/host.ts`), las transacciones (`tx` en `portal/lib/db.ts`), las filas de los correos
+  (`portal/lib/email-layout.ts`), las medidas de la composición corporal (`BODY_STATS` en `portal/lib/clients.ts`) y las
+  piezas de las páginas del equipo (`portal/components/Person.tsx`, `Cards.tsx`, `Title.tsx`, `FilterFields.tsx`; los
+  íconos van en el sprite del sitio, `components/Icon.tsx`).
 - El sitio también sabe si hay sesión: el botón del menú dice "Mi Portal" o "Iniciar sesión" según Clerk, que se
   pregunta en el navegador al terminar la página (`components/Session.tsx`; el sitio es estático), lo mismo que vería
   el portal. Mientras Clerk no responde (o si falla), vale lo que dice su cookie `__client_uat`.

@@ -1,5 +1,6 @@
 import { portalUrl } from "@/lib/content";
-import { apiBase } from "@/portal/lib/digui-api";
+import { apiBase } from "~/lib/digui-api";
+import { requestHost } from "~/lib/host";
 
 // Las instrucciones del servidor MCP para Digui (sin clave: no dicen nada secreto).
 export const dynamic = "force-dynamic";
@@ -39,6 +40,6 @@ Horas: todas son de Argentina (sin zona horaria), en 24 h.
 `;
 
 export function GET(req: Request) {
-  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+  const host = requestHost(req.headers);
   return new Response(docs(host ? apiBase(host) : `${portalUrl}/api/digui`), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
 }

@@ -1,9 +1,9 @@
 import "server-only";
 import type { PoolClient } from "pg";
 import horarios from "@db/horarios.json";
-import { db } from "./db";
+import { db, tx } from "./db";
 import { takenIntervals } from "./data";
-import { dateOf, longDate, timeOf } from "./format";
+import { dateOf, longDateTime, timeOf } from "./format";
 import { after } from "next/server";
 import { renderRequestEmail } from "./appointment-emails";
 import { sendMail } from "./email-layout";
@@ -63,25 +63,18 @@ type Result = { ok: true; mensaje: string } | { ok: false; mensaje: string };
 export async function withAvailableSlot<T>(start: Date, exceptId: number | null, save: (connection: PoolClient) => Promise<T>): Promise<{ ok: true; value: T } | { ok: false; mensaje: string }> {
   const dayError = bookingDayError(start);
   if (dayError) return { ok: false, mensaje: dayError };
-  const connection = await db.connect();
   try {
-    await connection.query("begin");
-    // Espacio propio de la agenda y fecha argentina como entero: el bloqueo dura hasta commit/rollback.
-    await connection.query("select pg_advisory_xact_lock(1937076076, $1::int)", [Number(dateOf(start).replaceAll("-", ""))]);
-    const error = await slotError(start, exceptId, connection);
-    if (error) {
-      await connection.query("rollback");
-      return { ok: false, mensaje: error };
-    }
-    const value = await save(connection);
-    await connection.query("commit");
-    return { ok: true, value };
+    return await tx(async (connection) => {
+      // Espacio propio de la agenda y fecha argentina como entero: el bloqueo dura hasta el final de la transacción.
+      await connection.query("select pg_advisory_xact_lock(1937076076, $1::int)", [Number(dateOf(start).replaceAll("-", ""))]);
+      const error = await slotError(start, exceptId, connection);
+      // Hasta acá no se escribió nada: confirmar la transacción vacía suelta el bloqueo igual que deshacerla.
+      if (error) return { ok: false as const, mensaje: error };
+      return { ok: true as const, value: await save(connection) };
+    });
   } catch (e) {
-    await connection.query("rollback");
     if ((e as { code?: string }).code === "23505") return { ok: false, mensaje: "Ese horario ya está tomado: elegí otro." };
     throw e;
-  } finally {
-    connection.release();
   }
 }
 
@@ -101,7 +94,7 @@ export async function requestSlot(clientId: number, start: Date): Promise<Result
   });
   if (!result.ok) return result;
   mailRequest(clientId, start);
-  return { ok: true, mensaje: `Pedido: ${longDate(dateOf(start))} a las ${timeOf(start)} h. Te avisamos cuando esté confirmado.` };
+  return { ok: true, mensaje: `Pedido: ${longDateTime(start)}. Te avisamos cuando esté confirmado.` };
 }
 
 /** Al Zar le llega un correo con el pedido, venga del portal o de Digui. Después de responder: si falla, el turno ya quedó. */
@@ -134,14 +127,12 @@ async function nextAppointment(clientId: number) {
   return rows[0] ?? null;
 }
 
-const at = (d: Date) => `${longDate(dateOf(d))} a las ${timeOf(d)} h`;
-
 /** El cliente cancela su turno (desde Digui o MCP), como el botón del portal. */
 export async function cancelSlot(clientId: number): Promise<Result> {
   const a = await nextAppointment(clientId);
   if (!a) return { ok: false, mensaje: "No tenés turnos pedidos ni confirmados." };
   await cancelAppointmentRow(a, clientId);
-  return { ok: true, mensaje: `Cancelado tu turno del ${at(a.starts_at)}.` };
+  return { ok: true, mensaje: `Cancelado tu turno del ${longDateTime(a.starts_at)}.` };
 }
 
 /**
@@ -164,7 +155,7 @@ export async function moveSlot(clientId: number, start: Date): Promise<Result> {
   if (!result.ok) return result;
   if (a.google_event_id) await deleteEvent(a.google_event_id);
   mailRequest(clientId, start);
-  return { ok: true, mensaje: `Movido: ${at(start)}. Queda pedido hasta que el Zar lo confirme.` };
+  return { ok: true, mensaje: `Movido: ${longDateTime(start)}. Queda pedido hasta que el Zar lo confirme.` };
 }
 
 /** El único cliente cuyo teléfono termina igual (últimos 7 dígitos); null si no hay o hay varios. */

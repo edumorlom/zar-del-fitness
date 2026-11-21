@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { EvaluationsTable } from "~/components/EvaluationsTable";
-import { Title } from "~/components/Progress";
+import { Title } from "~/components/Title";
 import { Shell } from "~/components/Shell";
 import { homeOf } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";

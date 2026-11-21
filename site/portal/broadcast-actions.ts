@@ -6,12 +6,8 @@ import { requireViewer } from "~/lib/auth";
 import { BROADCAST_IMAGES, renderBroadcastEmail } from "~/lib/broadcast-email";
 import { NO_MARKETING_SQL, unsubscribeUrl } from "~/lib/consent";
 import { db } from "~/lib/db";
-import { sendMail } from "~/lib/email-layout";
-import type { FormState } from "./actions";
-
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-// Resend acepta 2 correos por segundo en el plan común: uno cada 600 ms para no pasarse.
-const GAP_MS = 600;
+import { RESEND_GAP_MS, sendMail, sleep } from "~/lib/email-layout";
+import { type FormState, isEmail, text } from "~/lib/form";
 
 /**
  * Broadcast (sólo el admin): guarda la plantilla y les manda el correo a los clientes elegidos, por grupo (todos, un
@@ -24,8 +20,8 @@ const GAP_MS = 600;
 export async function sendBroadcast(_: FormState, form: FormData): Promise<FormState> {
   const viewer = await requireViewer();
   if (!viewer.scopes.includes("admin")) return { error: "Sólo el admin manda correos masivos." };
-  const subject = String(form.get("subject") ?? "").trim();
-  const body = String(form.get("body") ?? "").trim();
+  const subject = text(form, "subject");
+  const body = text(form, "body");
   if (!subject || !body) return { error: "Completá el asunto y el mensaje." };
   if (subject.length > 200 || body.length > 10_000) return { error: "El asunto o el mensaje son demasiado largos." };
 
@@ -43,7 +39,7 @@ export async function sendBroadcast(_: FormState, form: FormData): Promise<FormS
     [groups.includes("all"), plans, groups.includes("plan:-"), coaches.filter(Number.isInteger), ids.filter(Number.isInteger), promo]
   );
   const seen = new Set<string>();
-  const to = rows.filter((r) => EMAIL.test(r.email) && !seen.has(r.email.toLowerCase()) && seen.add(r.email.toLowerCase()));
+  const to = rows.filter((r) => isEmail(r.email) && !seen.has(r.email.toLowerCase()) && seen.add(r.email.toLowerCase()));
   if (!to.length)
     return { error: `Elegí a quién mandarlo: ningún cliente activo con correo${promo ? " (que no se haya dado de baja de las promociones)" : ""} coincide.` };
 
@@ -56,12 +52,12 @@ export async function sendBroadcast(_: FormState, form: FormData): Promise<FormS
   after(async () => {
     let failed = 0;
     for (const [i, r] of to.entries()) {
-      if (i) await new Promise((ok) => setTimeout(ok, GAP_MS));
+      if (i) await sleep(RESEND_GAP_MS);
       const mail = renderBroadcastEmail({ name: r.name, subject, body, unsubscribe: promo ? unsubscribeUrl(r.id) : undefined });
       if (!(await sendMail({ to: r.email, ...mail, attachments: BROADCAST_IMAGES }))) failed++;
     }
     console.log(`Broadcast "${subject}": ${to.length - failed} de ${to.length} enviados.`);
   });
   const n = to.length;
-  return { ok: `Enviando a ${n} ${n === 1 ? "cliente" : "clientes"}. Tarda unos ${Math.ceil((n * GAP_MS) / 60_000)} min; la plantilla quedó guardada.` };
+  return { ok: `Enviando a ${n} ${n === 1 ? "cliente" : "clientes"}. Tarda unos ${Math.ceil((n * RESEND_GAP_MS) / 60_000)} min; la plantilla quedó guardada.` };
 }

@@ -1,6 +1,8 @@
 // Los turnos que se pueden pedir: sólo los viernes, en el horario del gimnasio (db/horarios.json), sin lo ocupado
 // (turnos del portal y lo que tenga el Zar en su Google Calendar). Sin base ni Google: se puede probar solo.
 
+import { WEEKDAYS_ES } from "../../lib/i18n.ts";
+
 export type Interval = { start: Date; end: Date };
 export type Hours = { days: number[]; windows: { from: string; to: string }[] };
 
@@ -12,11 +14,9 @@ export const DAILY_LIMIT_MESSAGE = `Ese viernes ya tiene ${MAX_DAILY_APPOINTMENT
 /** No se pide para dentro de menos de 12 horas: el turno lo tiene que confirmar alguien. */
 export const MIN_HOURS_AHEAD = 12;
 
-const WEEKDAYS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-
 /** Horarios de control: sólo el viernes, si el gimnasio abre, con sus mismos tramos. */
 export const hoursFrom = (h: { dias: string[]; turnos: { abre: string; cierra: string }[] }): Hours => ({
-  days: h.dias.map((d) => WEEKDAYS.indexOf(d)).filter((d) => d === 5),
+  days: h.dias.map((d) => WEEKDAYS_ES.indexOf(d)).filter((d) => d === 5),
   windows: h.turnos.map((t) => ({ from: t.abre, to: t.cierra })),
 });
 

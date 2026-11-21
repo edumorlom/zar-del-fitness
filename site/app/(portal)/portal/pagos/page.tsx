@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminShell, PageHead } from "~/components/AdminShell";
+import { Empty, Kpi, Notice } from "~/components/Cards";
 import { ClientPicker } from "~/components/ClientPicker";
 import { Form } from "~/components/Form";
-import { initials } from "~/components/Shell";
+import { Person } from "~/components/Person";
 import { recordPayment, voidPayment } from "~/payment-actions";
 import { canHandlePayments, homeOf } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
@@ -69,88 +70,70 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
       </PageHead>
 
       {admin && mp?.state === "error" && (
-        <div className="card notice" data-reveal>
-          <p className="strong">
-            <span className="chip chip--warn">{mp.status === 401 || mp.status === 403 ? "Token rechazado" : "Sin conexión"}</span>{" "}
-            {mp.status === 401 || mp.status === 403 ? "Mercado Pago no acepta el access token" : "Mercado Pago no respondió"}
-          </p>
-          <p className="muted">
-            Respuesta: {mp.status ? `${mp.status} · ` : ""}
-            {mp.message}. El token cargado en Railway (MP_ACCESS_TOKEN) es <span className="mono">{mp.hint}</span>. Un access token
-            completo mide unos 70 caracteres: copialo con el botón de copiar en Mercado Pago → Tus integraciones → Credenciales de
-            producción, pegalo en Railway y aplicá el cambio. Mientras tanto los clientes ven el botón, pero no pueden pagar.
-          </p>
-        </div>
+        <Notice
+          title={
+            <>
+              <span className="chip chip--warn">{mp.status === 401 || mp.status === 403 ? "Token rechazado" : "Sin conexión"}</span>{" "}
+              {mp.status === 401 || mp.status === 403 ? "Mercado Pago no acepta el access token" : "Mercado Pago no respondió"}
+            </>
+          }
+          text={
+            <>
+              Respuesta: {mp.status ? `${mp.status} · ` : ""}
+              {mp.message}. El token cargado en Railway (MP_ACCESS_TOKEN) es <span className="mono">{mp.hint}</span>. Un access token
+              completo mide unos 70 caracteres: copialo con el botón de copiar en Mercado Pago → Tus integraciones → Credenciales de
+              producción, pegalo en Railway y aplicá el cambio. Mientras tanto los clientes ven el botón, pero no pueden pagar.
+            </>
+          }
+        />
       )}
       {admin && mp?.state === "ok" && (
-        <div className="card notice" data-reveal>
-          <p className="strong">
-            <span className="st-dot st--al-dia" aria-hidden="true" /> Mercado Pago conectado: cuenta {mp.account.nickname}
-            {mp.account.email ? ` (${mp.account.email})` : ""}
-          </p>
-          <p className="muted">
-            Token <span className="mono">{mp.hint}</span>.
-            {lastError && !lastError.what.includes("/users/me") && (
-              <>
-                {" "}
-                Último error: {shortDate(dateOf(lastError.at))} {timeOf(lastError.at)} h, {lastError.what} →{" "}
-                {lastError.status ? `${lastError.status} · ` : ""}
-                {lastError.message}.
-              </>
-            )}
-          </p>
-        </div>
+        <Notice
+          title={
+            <>
+              <span className="st-dot st--al-dia" aria-hidden="true" /> Mercado Pago conectado: cuenta {mp.account.nickname}
+              {mp.account.email ? ` (${mp.account.email})` : ""}
+            </>
+          }
+          text={
+            <>
+              Token <span className="mono">{mp.hint}</span>.
+              {lastError && !lastError.what.includes("/users/me") && (
+                <>
+                  {" "}
+                  Último error: {shortDate(dateOf(lastError.at))} {timeOf(lastError.at)} h, {lastError.what} →{" "}
+                  {lastError.status ? `${lastError.status} · ` : ""}
+                  {lastError.message}.
+                </>
+              )}
+            </>
+          }
+        />
       )}
       {mp?.state === "missing" && (
-        <div className="card notice" data-reveal>
-          <p className="strong">Mercado Pago no está conectado</p>
-          <p className="muted">
-            Falta el access token de la cuenta de Mercado Pago (MP_ACCESS_TOKEN, en las variables de Railway). Mientras tanto los clientes no ven el
-            botón de pagar: los pagos se cargan acá.
-          </p>
-        </div>
+        <Notice
+          title="Mercado Pago no está conectado"
+          text="Falta el access token de la cuenta de Mercado Pago (MP_ACCESS_TOKEN, en las variables de Railway). Mientras tanto los clientes no ven el botón de pagar: los pagos se cargan acá."
+        />
       )}
 
       <div className="kpis kpis--4" data-reveal-stagger>
-        <section className="card kpi">
-          <p className="label">Clientes Premium</p>
-          <p className="kpi__sub">Activos</p>
-          <p className="kpi__big">
-            <span data-count={passes.length}>{passes.length}</span>
-          </p>
-          <p className="kpi__foot">{by["al-dia"]} con el pase al día</p>
-        </section>
-        <section className="card kpi">
-          <p className="label">Por vencer</p>
-          <p className="kpi__sub">En {PASS_DUE_DAYS} días o menos</p>
-          <p className="kpi__big">
-            <span data-count={by["por-vencer"]}>{by["por-vencer"]}</span>
-          </p>
-          <p className="kpi__foot">Lo ven en su perfil, con el botón de pagar</p>
-        </section>
-        <section className="card kpi">
-          <p className="label">Vencidos</p>
-          <p className="kpi__sub">El pase ya pasó</p>
-          <p className="kpi__big">
-            <span data-count={by.vencido}>{by.vencido}</span>
-          </p>
-          <p className="kpi__foot">{by["sin-fecha"] ? `${by["sin-fecha"]} sin vencimiento cargado` : "Todos tienen vencimiento"}</p>
-        </section>
-        <section className="card kpi">
-          <p className="label">Cobrado</p>
-          <p className="kpi__sub">En {monthYear(today)}</p>
-          <p className="kpi__big kpi__big--money">{money(total)}</p>
-          <p className="kpi__foot">{perMethod.length ? perMethod.map((x) => `${METHOD_LABEL[x.m].es}: ${money(x.total)}`).join(" · ") : "Todavía nada este mes"}</p>
-        </section>
+        <Kpi label="Clientes Premium" sub="Activos" value={passes.length} foot={`${by["al-dia"]} con el pase al día`} />
+        <Kpi label="Por vencer" sub={`En ${PASS_DUE_DAYS} días o menos`} value={by["por-vencer"]} foot="Lo ven en su perfil, con el botón de pagar" />
+        <Kpi label="Vencidos" sub="El pase ya pasó" value={by.vencido} foot={by["sin-fecha"] ? `${by["sin-fecha"]} sin vencimiento cargado` : "Todos tienen vencimiento"} />
+        <Kpi
+          label="Cobrado"
+          sub={`En ${monthYear(today)}`}
+          value={money(total)}
+          money
+          foot={perMethod.length ? perMethod.map((x) => `${METHOD_LABEL[x.m].es}: ${money(x.total)}`).join(" · ") : "Todavía nada este mes"}
+        />
       </div>
 
       <section id="registrar" className="anchor">
         <h2 className="section-title">Registrar un pago en el local</h2>
         {passes.length === 0 ? (
-          <div className="card empty">
-            <p className="fact">No hay clientes Premium activos</p>
-            <p className="muted">El plan se elige en la ficha de cada cliente.</p>
-          </div>
+          <Empty title="No hay clientes Premium activos" text="El plan se elige en la ficha de cada cliente." />
         ) : (
           <Form action={recordPayment} submit="Registrar pago" reset className="card form">
             <div className="fields">
@@ -207,32 +190,11 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
               <tbody>
                 {passes.map((p) => {
                   const st = passStatus(p.pass_expires, today);
-                  const person = (
-                    <>
-                      {p.photo_url ? (
-                        <img className="person__img" src={p.photo_url} alt="" />
-                      ) : (
-                        <span className="avatar avatar--sm" aria-hidden="true">
-                          {initials(p.name)}
-                        </span>
-                      )}
-                      <span>
-                        <span className="strong">{p.name}</span>
-                        <span className="person__sub">{p.email ?? "sin correo"}</span>
-                      </span>
-                    </>
-                  );
                   return (
                     <tr key={p.id}>
                       <td data-label="Cliente">
                         {/* Recepción no abre fichas: ve el nombre, nada más. */}
-                        {admin ? (
-                          <Link className="person" href={`/portal/clientes/${p.id}`}>
-                            {person}
-                          </Link>
-                        ) : (
-                          <span className="person">{person}</span>
-                        )}
+                        <Person name={p.name} photo={p.photo_url} sub={p.email ?? "sin correo"} href={admin ? `/portal/clientes/${p.id}` : undefined} />
                       </td>
                       <td data-label="Vence">
                         {p.pass_expires ? (
@@ -274,10 +236,7 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
       <section className="anchor">
         <h2 className="section-title">Últimos pagos</h2>
         {payments.length === 0 ? (
-          <div className="card empty">
-            <p className="fact">Todavía no hay pagos</p>
-            <p className="muted">Aparecen acá los de Mercado Pago y los que se carguen en el local.</p>
-          </div>
+          <Empty title="Todavía no hay pagos" text="Aparecen acá los de Mercado Pago y los que se carguen en el local." />
         ) : (
           <div className="card table-wrap" data-reveal>
             <table className="table table--cards">

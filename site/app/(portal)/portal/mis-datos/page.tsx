@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { saveMyConsents } from "~/consent-actions";
-import { Title } from "~/components/Progress";
+import { Title } from "~/components/Title";
 import { Form } from "~/components/Form";
 import { Shell } from "~/components/Shell";
 import { homeOf } from "~/lib/access";
@@ -9,7 +9,7 @@ import { requireViewer } from "~/lib/auth";
 import { CONSENT_KINDS, CONSENT_TEXT, getConsents, needsConsent, REQUIRED_CONSENTS } from "~/lib/consent";
 import { getClient } from "~/lib/data";
 import { getLang } from "~/lib/lang";
-import { content } from "@/lib/content";
+import { whatsapp } from "@/lib/content";
 import { formatDate, pick } from "@/lib/i18n";
 import { legalDocs, legalVersion } from "@/lib/legal";
 
@@ -28,10 +28,8 @@ export default async function MyDataPage() {
   const [state, client] = await Promise.all([getConsents(viewer.id), getClient(viewer.id)]);
   const first = needsConsent(state);
   const changed = first && state.terminos?.granted && state.terminos.version !== legalVersion;
-  const { contact } = content(lang);
   const terms = legalDocs.terminos[lang];
   const privacy = legalDocs.privacidad[lang];
-  const wa = (text: string) => `${contact.phoneHref}?text=${encodeURIComponent(text)}`;
   const who = `${client?.name ?? viewer.name}${client?.dni ? ` (DNI ${client.dni})` : ""}`;
 
   return (
@@ -117,13 +115,13 @@ export default async function MyDataPage() {
             </a>
           </p>
           <div className="consent__actions">
-            <a className="btn btn--ghost btn--sm" href={wa(tr(`Hola, soy ${who}. Quiero una copia de mis datos personales.`, `Hi, I'm ${who}. I'd like a copy of my personal data.`))}>
+            <a className="btn btn--ghost btn--sm" href={whatsapp(tr(`Hola, soy ${who}. Quiero una copia de mis datos personales.`, `Hi, I'm ${who}. I'd like a copy of my personal data.`))}>
               {tr("Pedir mis datos", "Request my data")}
             </a>
-            <a className="btn btn--ghost btn--sm" href={wa(tr(`Hola, soy ${who}. Quiero corregir estos datos: `, `Hi, I'm ${who}. I'd like to correct this data: `))}>
+            <a className="btn btn--ghost btn--sm" href={whatsapp(tr(`Hola, soy ${who}. Quiero corregir estos datos: `, `Hi, I'm ${who}. I'd like to correct this data: `))}>
               {tr("Corregir un dato", "Correct my data")}
             </a>
-            <a className="btn btn--ghost btn--sm" href={wa(tr(`Hola, soy ${who}. Quiero que borren mis datos personales.`, `Hi, I'm ${who}. I'd like my personal data deleted.`))}>
+            <a className="btn btn--ghost btn--sm" href={whatsapp(tr(`Hola, soy ${who}. Quiero que borren mis datos personales.`, `Hi, I'm ${who}. I'd like my personal data deleted.`))}>
               {tr("Borrar mis datos", "Delete my data")}
             </a>
           </div>

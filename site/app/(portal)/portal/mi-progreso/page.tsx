@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Hero, Results, Title, type PayOffer } from "~/components/Progress";
+import { Hero, Results, type PayOffer } from "~/components/Progress";
+import { Title } from "~/components/Title";
 import { ProgressPhotos } from "~/components/ProgressPhotos";
 import { Shell } from "~/components/Shell";
 import { homeOf } from "~/lib/access";
@@ -45,8 +46,8 @@ export default async function MyProgressPage() {
   const next = (checkins.length ? 3 : 2) + (diet ? 1 : 0);
   return (
     <Shell viewer={viewer}>
-      <Hero client={client} checkins={checkins} you appointment={appointment} pay={pay} lang={lang} />
-      <Results checkins={checkins} you manage={false} lang={lang} />
+      <Hero client={client} checkins={checkins} appointment={appointment} pay={pay} lang={lang} />
+      <Results checkins={checkins} lang={lang} />
       {diet && (
         <section id="alimentacion">
           <div className="block__head">

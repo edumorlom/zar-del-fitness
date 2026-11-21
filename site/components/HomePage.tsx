@@ -13,10 +13,10 @@ import { Faq } from "./Faq";
 import { FinalCta } from "./FinalCta";
 import { JsonLd } from "./JsonLd";
 import { content, videos } from "@/lib/content";
-import { homePath, otherLang, type Lang } from "@/lib/i18n";
+import { homePath, localeAlternates, otherLang, type Lang } from "@/lib/i18n";
 import { faqLd, pageMetadata, webPageLd } from "@/lib/seo";
 
-const alternates = { es: homePath("es"), en: homePath("en") };
+const alternates = localeAlternates("/");
 
 /** El título, la descripción y la URL del inicio en un idioma (app/(es)/page.tsx y app/(en)/en/page.tsx). */
 export function homeMetadata(lang: Lang) {

@@ -5,10 +5,10 @@ import { FinalCta } from "./FinalCta";
 import { JsonLd } from "./JsonLd";
 import { posts } from "@/lib/blog";
 import { content } from "@/lib/content";
-import { localePath, otherLang, type Lang } from "@/lib/i18n";
+import { localeAlternates, otherLang, type Lang } from "@/lib/i18n";
 import { abs, breadcrumbLd, pageMetadata, webPageLd } from "@/lib/seo";
 
-const alternates = { es: localePath("es", "/blog/"), en: localePath("en", "/blog/") };
+const alternates = localeAlternates("/blog/");
 
 /** El título, la descripción y la URL del blog en un idioma. */
 export function blogMetadata(lang: Lang) {

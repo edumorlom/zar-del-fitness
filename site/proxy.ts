@@ -1,6 +1,7 @@
 import { clerkMiddleware } from "@clerk/nextjs/server";
 import { type NextFetchEvent, type NextRequest, NextResponse } from "next/server";
 import { siteUrl } from "@/lib/content";
+import { isLocalhost, requestHost } from "~/lib/host";
 
 // Un solo servidor para el sitio y el portal:
 // - /portal/… (en cualquier dominio): el portal, en app/(portal)/portal/. Clerk lee la sesión en cada pedido; qué puede
@@ -11,16 +12,15 @@ import { siteUrl } from "@/lib/content";
 // - el resto: el sitio, con las reglas que tenía el .htaccess de cPanel antes de Railway (las URLs del WordPress
 //   anterior, la "/" final).
 
-/** El dominio que pidió el navegador (Railway lo pasa en Host; req.nextUrl tiene el del servidor). */
-const hostOf = (req: NextRequest) =>
-  (req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? "").split(",")[0].trim().replace(/:\d+$/, "").toLowerCase();
+/** El dominio que pidió el navegador, sin el puerto (portal/lib/host.ts). */
+const hostOf = (req: NextRequest) => requestHost(req.headers).replace(/:\d+$/, "");
 const isMi = (req: NextRequest) => hostOf(req).startsWith("mi.");
 /** El .com y los www: van al dominio principal (siteUrl), con la misma ruta. */
 const isAlias = (req: NextRequest) => /^(www\.)?zardelfitness\.com$/.test(hostOf(req)) || hostOf(req).startsWith("www.");
 /** En desarrollo (localhost) las redirecciones se quedan en localhost; en producción, a los dominios de verdad. */
 const localOrigin = (req: NextRequest) => {
-  const host = req.headers.get("host") ?? "";
-  return /^(mi\.)?localhost(:\d+)?$/.test(host) ? `http://${host}` : null;
+  const host = requestHost(req.headers);
+  return isLocalhost(host) ? `http://${host}` : null;
 };
 const PORTAL = /^\/(portal|archivos)(\/|$)/;
 // El servidor MCP de Digui (/api/digui/mcp) lo llama el servidor de Digui con su clave, no una persona con sesión: va al

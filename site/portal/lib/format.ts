@@ -1,4 +1,4 @@
-import { locales, type Lang } from "../../lib/i18n.ts";
+import { capitalize, locales, type Lang } from "../../lib/i18n.ts";
 
 // Todo en la hora de Buenos Aires, también en el servidor (Railway corre en UTC). Lo que dice palabras, en los dos
 // idiomas del portal (portal/lib/lang.ts); el castellano, si no se dice.
@@ -18,7 +18,7 @@ export const daysUntil = (date: string) => Math.round((Date.parse(date) - Date.p
 /** "AAAA-MM-DD" → "Lunes 9 de noviembre" ("Monday, November 9"). */
 export const longDate = (date: string, lang: Lang = "es") => {
   const s = long(lang).format(new Date(`${date}T00:00:00Z`));
-  return lang === "en" ? s : s[0].toUpperCase() + s.slice(1).replace(",", "");
+  return lang === "en" ? s : capitalize(s).replace(",", "");
 };
 
 /** "AAAA-MM-DD" → "09/11/2026". */
@@ -39,6 +39,9 @@ export const fromLocalInput = (v: string) => (v ? new Date(`${v}:00-03:00`) : nu
 export const dateOf = (d: Date) => iso.format(d);
 
 export const timeOf = (d: Date) => time.format(d);
+
+/** Fecha y hora → "Viernes 13 de noviembre a las 10:00 h" (en castellano: lo que leen el equipo, Digui y los correos). */
+export const longDateTime = (d: Date) => `${longDate(dateOf(d))} a las ${timeOf(d)} h`;
 
 /** "AAAA-MM-DD" → "julio de 2026" ("July 2026"). */
 export const monthYear = (date: string, lang: Lang = "es") =>

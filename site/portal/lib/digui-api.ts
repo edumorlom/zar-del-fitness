@@ -1,6 +1,8 @@
 // Ayudas puras del servidor MCP de Digui: sin db ni server-only, para probarlas con node --test.
 import { createHash, timingSafeEqual } from "node:crypto";
+import { DATE } from "./form.ts";
 import { fromLocalInput } from "./format.ts";
+import { hostOf, isLocalhost } from "./host.ts";
 
 export const NO_FILE_PHONE = "No encontramos tu ficha con este número: pedí el turno desde el portal o escribile al Zar.";
 export const NO_FILE_ID = "No encontramos tu ficha: pedí el turno desde el portal o escribile al Zar.";
@@ -11,8 +13,8 @@ const sha = (s: string) => createHash("sha256").update(s).digest();
 // Dónde está el servidor MCP, para sus instrucciones: el dominio en que se pidieron (Railway lo pasa en Host). En mi. las URLs
 // no llevan /portal; en el dominio principal, sí.
 export function apiBase(host: string): string {
-  const name = host.split(",")[0].trim().toLowerCase();
-  const scheme = /^(mi\.)?localhost(:\d+)?$/.test(name) ? "http" : "https";
+  const name = hostOf(host, null);
+  const scheme = isLocalhost(name) ? "http" : "https";
   return `${scheme}://${name}${name.startsWith("mi.") ? "" : "/portal"}/api/digui`;
 }
 
@@ -36,7 +38,7 @@ export function customerId(v: unknown): number | null {
 
 // El regex solo mira la forma; el viaje de ida y vuelta por Date descarta días que no existen (30 de febrero).
 export function parseDay(v: string | null): string | null {
-  if (!v || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return null;
+  if (!v || !DATE.test(v)) return null;
   const d = new Date(`${v}T00:00:00Z`);
   return Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== v ? null : v;
 }

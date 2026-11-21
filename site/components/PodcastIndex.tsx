@@ -4,11 +4,11 @@ import { EpisodeCard, EpisodeGrid } from "./EpisodeCard";
 import { FinalCta } from "./FinalCta";
 import { JsonLd } from "./JsonLd";
 import { content } from "@/lib/content";
-import { localePath, otherLang, type Lang } from "@/lib/i18n";
+import { localeAlternates, otherLang, type Lang } from "@/lib/i18n";
 import { episodes } from "@/lib/podcasts";
 import { abs, breadcrumbLd, pageMetadata, webPageLd } from "@/lib/seo";
 
-const alternates = { es: localePath("es", "/podcasts/"), en: localePath("en", "/podcasts/") };
+const alternates = localeAlternates("/podcasts/");
 
 /** El título, la descripción y la URL de los podcasts en un idioma. */
 export function podcastsMetadata(lang: Lang) {

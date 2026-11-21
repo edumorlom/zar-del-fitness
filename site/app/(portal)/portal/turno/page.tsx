@@ -3,14 +3,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { cancelAppointment, requestAppointment } from "~/agenda-actions";
 import { Form } from "~/components/Form";
-import { Title } from "~/components/Progress";
+import { Title } from "~/components/Title";
 import { Shell } from "~/components/Shell";
 import { homeOf, isTeam } from "~/lib/access";
 import { requireViewer } from "~/lib/auth";
 import { requireConsent } from "~/lib/consent";
 import { getOpenAppointment } from "~/lib/data";
 import { dateOf, longDate, timeOf, todayISO } from "~/lib/format";
-import { bookableDays } from "~/lib/slots";
+import { bookableDays, MAX_DAILY_APPOINTMENTS } from "~/lib/slots";
 import { availableSlots, HOURS } from "~/lib/turnos";
 import { getLang } from "~/lib/lang";
 import { locales, pick } from "@/lib/i18n";
@@ -111,8 +111,8 @@ export default async function BookingPage({ searchParams }: { searchParams: Prom
             <Title as="h1" plain={tr("Pedí tu", "Book your")} accent={tr("turno", "check-in")} className="h2" />
             <p className="sub">
               {tr(
-                "Los controles se agendan los viernes, con un máximo de 5 turnos por día. Elegí un horario; lo confirma el Zar y te llega la invitación a tu correo.",
-                "Check-ins are booked on Fridays, with up to 5 per day. Pick a time; the Zar confirms it and you get the invite by email."
+                `Los controles se agendan los viernes, con un máximo de ${MAX_DAILY_APPOINTMENTS} turnos por día. Elegí un horario; lo confirma el Zar y te llega la invitación a tu correo.`,
+                `Check-ins are booked on Fridays, with up to ${MAX_DAILY_APPOINTMENTS} per day. Pick a time; the Zar confirms it and you get the invite by email.`
               )}
             </p>
           </div>

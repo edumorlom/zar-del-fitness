@@ -10,12 +10,13 @@ import preguntas from "@db/preguntas.json";
 import textos from "@db/textos.json";
 import trayectoria from "@db/trayectoria.json";
 import type { IconName } from "@/components/Icon";
-import { checkTranslated, fill, homePath, localePath, localize, locales, text, type Lang } from "./i18n";
+import { capitalize, checkTranslated, fill, homePath, localePath, localize, locales, text, WEEKDAYS_ES, type Lang } from "./i18n";
 import { legalPaths } from "./legal";
 
 const WA_NUMBER = gimnasio.whatsapp.replace(/\D/g, "");
 
-const wa = (message: string) => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(message)}`;
+/** El WhatsApp del gimnasio, con un mensaje prearmado si se pasa. */
+export const whatsapp = (message?: string) => `https://wa.me/${WA_NUMBER}${message ? `?text=${encodeURIComponent(message)}` : ""}`;
 
 // 100000 → "100.000" en castellano, "100,000" en inglés
 const thousands = (n: number, lang: Lang) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, lang === "es" ? "." : ",");
@@ -23,8 +24,6 @@ const thousands = (n: number, lang: Lang) => String(n).replace(/\B(?=(\d{3})+(?!
 // ["lunes", "miércoles", "viernes"] → "lunes, miércoles y viernes"
 const list = (items: string[], and: string) =>
   items.length > 1 ? `${items.slice(0, -1).join(", ")} ${and} ${items[items.length - 1]}` : items[0];
-
-const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1);
 
 const { calle, barrio, ciudad, codigoPostal } = gimnasio.direccion;
 const mapsQuery = encodeURIComponent(`${calle}, ${barrio}, Buenos Aires`);
@@ -167,11 +166,9 @@ const teamPhotos: Record<string, { src: string; w: number; h: number }> = {
   edwards: { src: "/img/edwards-chacin.jpg", w: 1320, h: 1447 },
 };
 
-// Los días como los cuenta Date.getDay(): 0 es domingo. En db/horarios.json van en castellano.
-const WEEKDAYS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-// En inglés salen de Intl ("Monday"); el 1/1/2023 fue domingo.
+// En inglés los días salen de Intl ("Monday"); el 1/1/2023 fue domingo.
 const weekdayEn = new Intl.DateTimeFormat("en-US", { weekday: "long", timeZone: "UTC" });
-const dayName = (n: number, lang: Lang) => (lang === "es" ? WEEKDAYS[n] : weekdayEn.format(new Date(Date.UTC(2023, 0, 1 + n))));
+const dayName = (n: number, lang: Lang) => (lang === "es" ? WEEKDAYS_ES[n] : weekdayEn.format(new Date(Date.UTC(2023, 0, 1 + n))));
 
 // "14:30" → 14.5
 const hours = (time: string) => {
@@ -198,7 +195,7 @@ const slots = horarios.turnos.map((t) => ({
   opens24: t.abre,
   closes24: t.cierra,
 }));
-const openDays = horarios.dias.map((d) => WEEKDAYS.indexOf(d));
+const openDays = horarios.dias.map((d) => WEEKDAYS_ES.indexOf(d));
 
 export const stats = { peopleEvaluated: gimnasio.personasEvaluadas };
 
@@ -224,16 +221,16 @@ function build(lang: Lang) {
   };
 
   const links = {
-    retoOnline: wa(t.whatsapp.retoOnline),
+    retoOnline: whatsapp(t.whatsapp.retoOnline),
     hashtag: `https://www.instagram.com/explore/tags/${gimnasio.hashtag.replace(/^#/, "").toLowerCase()}/`,
     directions: `https://www.google.com/maps/dir/?api=1&destination=${mapsQuery}`,
     // Centrado en las coordenadas y sin el marcador de Google: el pin dorado del centro marca el gimnasio.
     mapEmbed: `https://www.google.com/maps?ll=${business.lat},${business.lng}&z=15&output=embed`,
     /** La ficha del gimnasio en Google Maps: se abre al tocar el mapa. */
     googleMaps: gimnasio.googleMaps,
-    waInfo: wa(t.whatsapp.informacion),
-    waPresencial: wa(t.whatsapp.presencial),
-    waDudas: wa(t.whatsapp.dudas),
+    waInfo: whatsapp(t.whatsapp.informacion),
+    waPresencial: whatsapp(t.whatsapp.presencial),
+    waDudas: whatsapp(t.whatsapp.dudas),
     // Por /idioma/: el portal queda en el idioma de la página de donde se entró (app/(portal)/portal/idioma/[lang]).
     portal: `${portalUrl}/idioma/${lang}`,
     // El formulario de reclamos de la Ventanilla Única Federal (Res. 274/2021) y Defensa al Consumidor de la Ciudad (Ley 2244).
@@ -245,7 +242,7 @@ function build(lang: Lang) {
 
   const contact = {
     phone: gimnasio.whatsapp,
-    phoneHref: `https://wa.me/${WA_NUMBER}`,
+    phoneHref: whatsapp(),
     street: `${calle}, ${barrio}`,
     address: `${calle}, ${barrio}, ${ciudad}`,
     gym: `${gimnasio.gimnasio} · ${t.general.gimnasioExclusivo}`,
@@ -285,7 +282,7 @@ function build(lang: Lang) {
       desc: text(p.resumen, lang, where(p, "resumen")),
       features: p.destacados ? text(p.destacados, lang, where(p, "destacados")) : [],
       art: { variant: art, label: t.programas.ilustraciones[art] },
-      cta: { label: t.programas[cta], href: wa(t.whatsapp[message]) },
+      cta: { label: t.programas[cta], href: whatsapp(t.whatsapp[message]) },
       featured,
     };
   });

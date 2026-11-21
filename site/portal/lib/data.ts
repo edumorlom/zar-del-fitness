@@ -8,6 +8,15 @@ import type { Scope } from "./access";
 export const PHOTO_URL = `coalesce((select '/archivos/' || pp.key from progress_photos pp where pp.client_id = u.id
   order by pp.taken_on desc, pp.id desc limit 1), u.photo_url) as photo_url`;
 
+/**
+ * La última evaluación (`l`) y la anterior (`p`) de cada cliente `u`: la fecha, el peso y el % graso. Para la lista, el
+ * dashboard y el recordatorio de evaluación.
+ */
+export const LAST_CHECKINS_JOIN = `left join lateral (select date, weight_kg, body_fat_pct from checkins where client_id = u.id
+                                                      order by date desc, id desc limit 1) l on true
+  left join lateral (select date, weight_kg, body_fat_pct from checkins where client_id = u.id
+                     order by date desc, id desc offset 1 limit 1) p on true`;
+
 export type Client = {
   id: number;
   scopes: Scope[];
@@ -165,10 +174,7 @@ export async function listClients(viewer: { id: number; scopes: Scope[] }, f: Cl
             (select count(*)::int from checkins where client_id = u.id) as checkins
      from users u
      left join users c on c.id = u.coach_id
-     left join lateral (select date, weight_kg, body_fat_pct from checkins where client_id = u.id
-                        order by date desc, id desc limit 1) l on true
-     left join lateral (select body_fat_pct from checkins where client_id = u.id
-                        order by date desc, id desc offset 1 limit 1) p on true
+     ${LAST_CHECKINS_JOIN}
      where 'user' = any(u.scopes)
        and ($1::int is null or u.coach_id = $1)
        and ($2::text = '' or u.name ilike '%' || $2 || '%' or u.dni ilike $2 || '%' or u.email ilike '%' || $2 || '%')

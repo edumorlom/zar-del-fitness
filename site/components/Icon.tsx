@@ -41,6 +41,46 @@ const paths = {
   yt: <path fill="currentColor" d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.75 15.02V8.98L15.5 12z" />,
   tt: <path fill="currentColor" d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5c-1.42 0-2.6-1.16-2.6-2.6 0-1.72 1.66-3.01 3.37-2.48V9.66c-3.45-.46-6.47 2.22-6.47 5.64 0 3.33 2.76 5.7 5.69 5.7 3.14 0 5.69-2.55 5.69-5.7V9.01a7.35 7.35 0 0 0 4.3 1.38V7.3s-1.88.09-3.24-1.48z" />,
   x: <path fill="currentColor" d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.65l-5.21-6.82-5.97 6.82H1.68l7.73-8.84L1.25 2.25h6.83l4.71 6.23zm-1.16 17.52h1.83L7.08 4.13H5.12z" />,
+  // Los del portal (portal/): las acciones de las tablas y el menú lateral del equipo.
+  trash: <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" {...stroke} />,
+  edit: <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" {...stroke} />,
+  eye: (
+    <>
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" {...stroke} />
+      <circle cx="12" cy="12" r="3" {...stroke} />
+    </>
+  ),
+  logout: <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H3" {...stroke} />,
+  trophy: <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3" {...stroke} />,
+  dashboard: (
+    <>
+      <rect x="3" y="3" width="7" height="9" rx="1.5" {...stroke} strokeWidth={1.8} />
+      <rect x="14" y="3" width="7" height="5" rx="1.5" {...stroke} strokeWidth={1.8} />
+      <rect x="14" y="12" width="7" height="9" rx="1.5" {...stroke} strokeWidth={1.8} />
+      <rect x="3" y="16" width="7" height="5" rx="1.5" {...stroke} strokeWidth={1.8} />
+    </>
+  ),
+  clients: (
+    <>
+      <circle cx="9" cy="8" r="3.5" {...stroke} strokeWidth={1.8} />
+      <path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5M16 4.8a3.5 3.5 0 0 1 0 6.4M18.5 14.8c1.7.7 2.8 2.4 3 5.2" {...stroke} strokeWidth={1.8} />
+    </>
+  ),
+  agenda: (
+    <>
+      <rect x="3" y="5" width="18" height="16" rx="2" {...stroke} strokeWidth={1.8} />
+      <path d="M3 10h18M8 3v4M16 3v4" {...stroke} strokeWidth={1.8} />
+    </>
+  ),
+  settings: <path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M16 4v4M10 10v4M18 16v4" {...stroke} strokeWidth={1.8} />,
+  progress: <path d="M3 18l6-7 4 4 8-9" {...stroke} strokeWidth={1.8} />,
+  broadcast: <path d="M3 10v4h3l6 4V6L6 10H3zM16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11" {...stroke} strokeWidth={1.8} />,
+  payments: (
+    <>
+      <rect x="2.5" y="5" width="19" height="14" rx="2" {...stroke} strokeWidth={1.8} />
+      <path d="M2.5 10h19M6.5 15h4" {...stroke} strokeWidth={1.8} />
+    </>
+  ),
 };
 
 export type IconName = keyof typeof paths;
