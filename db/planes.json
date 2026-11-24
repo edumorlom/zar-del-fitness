@@ -20,6 +20,7 @@
       "es": [
         "Consulta antropométrica y evaluación física",
         "Plan personalizado con el Zar + 2 asistentes",
+        "Plan de alimentación y suplementación a medida",
         "Gimnasio The VIP incluido y exclusivo",
         "Bebidas premium e hidratación libre",
         "Médico traumatólogo exclusivo",
@@ -28,6 +29,7 @@
       "en": [
         "Body composition consultation and physical assessment",
         "Personalized plan with the Zar + 2 assistants",
+        "Tailored nutrition and supplementation plan",
         "The VIP gym, included and exclusive",
         "Premium drinks and free hydration",
         "Exclusive orthopedic doctor",
@@ -47,10 +49,10 @@
         "texto": { "es": "A disponibilidad de Zar del Fitness, sin restricciones.", "en": "Whenever Zar del Fitness is available, with no restrictions." }
       },
       {
-        "titulo": { "es": "Sugerencia alimentaria y suplementaria", "en": "Nutrition and supplement guidance" },
+        "titulo": { "es": "Plan de alimentación y suplementación", "en": "Nutrition and supplementation plan" },
         "texto": {
-          "es": "Orientación para comer más sano y enfocado en tu objetivo. Si querés un seguimiento nutricional más profesional, te recomendamos sumar un nutricionista.",
-          "en": "Guidance to eat healthier and stay focused on your goal. For more professional nutrition follow-up, we recommend adding a nutritionist."
+          "es": "Tu plan de alimentación, armado para tu objetivo, y la suplementación que haga falta. Lo ajustamos en cada evaluación.",
+          "en": "Your nutrition plan, built around your goal, plus any supplements you need. We adjust it at every assessment."
         }
       },
       {
@@ -117,6 +119,7 @@
         "Consulta inicial: % de grasa, peso y estatura",
         "Controles mensuales con cita previa",
         "Plan de entrenamiento con los asistentes del Zar",
+        "Plan de alimentación individual",
         "Entrenamiento supervisado y compartido",
         "Gimnasio The VIP incluido",
         "Lunes a viernes, clases de 1 h 20 min"
@@ -125,6 +128,7 @@
         "Initial consultation: body fat %, weight and height",
         "Monthly check-ins by appointment",
         "Training plan with the Zar's assistants",
+        "Individual nutrition plan",
         "Supervised, shared training",
         "The VIP gym included",
         "Monday to Friday, 1 h 20 min classes"
