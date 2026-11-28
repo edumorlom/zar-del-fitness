@@ -1,6 +1,7 @@
 "use client";
 
 import { unstable_rethrow } from "next/navigation";
+import posthog from "posthog-js";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { Icon } from "@/components/Icon";
 import { addProgressPhoto, deleteProgressPhoto } from "~/actions";
@@ -37,6 +38,7 @@ export function ProgressPhotos({ clientId, photos, you, lang = "es" }: { clientI
   const input = useRef<HTMLInputElement>(null);
 
   function upload(files: File[]) {
+    if (posthog.__loaded) posthog.capture("progress_photo_upload_started", { photo_count: files.length });
     startUpload(async () => {
       let done = 0;
       const failed: string[] = [];

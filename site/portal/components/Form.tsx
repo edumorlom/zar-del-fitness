@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { startTransition, useActionState, useEffect, useId, useRef, useState, useTransition } from "react";
 import type { FormState } from "~/lib/form";
 import { shrinkPhotos } from "~/lib/shrink-photo";
@@ -64,6 +65,7 @@ export function Form({
   mailTo,
   label,
   reset = false,
+  event,
   className,
   children,
 }: {
@@ -82,6 +84,7 @@ export function Form({
   /** Para un botón que es sólo un ícono: lo que dice el lector de pantalla. */
   label?: string;
   reset?: boolean;
+  event?: string;
   className?: string;
   children?: React.ReactNode;
 }) {
@@ -98,6 +101,7 @@ export function Form({
   const [to, setTo] = useState<string | null>(null); // a quién se le está mandando, desde que se aprieta el botón
 
   const send = (data: FormData, mailing: boolean) => {
+    if (event && posthog.__loaded) posthog.capture(event);
     if (mailing && mailTo) {
       setTo(mailTo);
       mailBox.current?.showModal();

@@ -73,6 +73,7 @@ export default async function BookingPage({ searchParams }: { searchParams: Prom
               action={cancelAppointment}
               submit={tr("Cancelar turno", "Cancel booking")}
               button="btn btn--ghost btn--sm"
+              event="booking_cancelled"
               confirm={{
                 title: tr("¿Cancelar", "Cancel"),
                 accent: tr("el turno?", "this booking?"),
@@ -141,6 +142,7 @@ export default async function BookingPage({ searchParams }: { searchParams: Prom
                       action={requestAppointment}
                       submit={`${timeOf(s.start)} h`}
                       button="slot"
+                      event="booking_requested"
                       className="inline-form"
                       confirm={{
                         title: tr("¿Pedir", "Book"),

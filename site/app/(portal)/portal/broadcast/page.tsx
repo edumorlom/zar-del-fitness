@@ -50,7 +50,7 @@ export default async function BroadcastPage() {
         }
       />
 
-      <Form action={sendBroadcast} submit="Enviar correo" confirm={{
+      <Form action={sendBroadcast} submit="Enviar correo" event="broadcast_sent" confirm={{
           title: "¿Enviar",
           accent: "el correo?",
           text: "Les llega a todos los clientes elegidos, en los grupos y uno por uno. No se puede deshacer.",

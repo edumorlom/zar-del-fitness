@@ -87,7 +87,7 @@ export default async function PaymentReturnPage({ searchParams }: { searchParams
           <p className="fact">{view.text}</p>
           {view.note && <p className="muted">{view.note}</p>}
           {retry && (
-            <Form action={payWithMercadoPago} submit={tr("Probar de nuevo", "Try again")} button="btn btn--gold btn--sm" />
+            <Form action={payWithMercadoPago} submit={tr("Probar de nuevo", "Try again")} button="btn btn--gold btn--sm" event="payment_checkout_started" />
           )}
         </div>
         <Link className="back" href="/portal/mi-progreso">

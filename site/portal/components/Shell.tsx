@@ -1,6 +1,4 @@
-import { SignOutButton } from "@clerk/nextjs";
 import Link from "next/link";
-import { Icon } from "@/components/Icon";
 import { Reveals } from "@/components/motion/Reveals";
 import { homeOf } from "~/lib/access";
 import type { Viewer } from "~/lib/auth";
@@ -8,15 +6,10 @@ import { getLang } from "~/lib/lang";
 import { content } from "@/lib/content";
 import { pick } from "@/lib/i18n";
 import { DiguiChat } from "./DiguiChat";
+import { PostHogIdentify, PostHogSignOut } from "./DiguiIdentify";
 import { SiteHeader } from "./SiteHeader";
 
-export const SignOut = ({ label = "Salir" }: { label?: string }) => (
-  <SignOutButton redirectUrl="/portal/ingresar">
-    <button className="icon-btn" aria-label={label} title={label}>
-      <Icon name="logout" />
-    </button>
-  </SignOutButton>
-);
+export const SignOut = PostHogSignOut;
 
 /** El botón dorado del menú del sitio, con la sesión iniciada (app/(portal)/portal/salir). */
 export const SIGN_OUT = { label: "Cerrar sesión", href: "/portal/salir" };
@@ -29,6 +22,7 @@ export async function Shell({ viewer, children }: { viewer: Viewer; children: Re
   const { t, pages } = content(lang);
   return (
     <>
+      <PostHogIdentify userId={viewer.id} name={viewer.name} email={viewer.email} role={viewer.scopes.join(", ")} />
       <SiteHeader login={{ ...SIGN_OUT, label: tr(SIGN_OUT.label, "Sign out") }} lang={lang} />
       <main id="main" className="container portal">
         <div className="portal-bar">

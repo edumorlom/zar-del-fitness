@@ -40,7 +40,7 @@ export function ClientForm({ viewer, client, coaches }: { viewer: Viewer; client
   const admin = viewer.scopes.includes("admin");
   if (client && !admin)
     return (
-      <Form action={saveClient} submit="Guardar cambios" className="card form">
+      <Form action={saveClient} submit="Guardar cambios" event="client_updated" className="card form">
         {client && <input type="hidden" name="id" value={client.id} />}
         <div className="fields">
           <Plan client={client} />
@@ -200,7 +200,7 @@ export function ClientForm({ viewer, client, coaches }: { viewer: Viewer; client
   );
 
   return (
-    <Form action={saveClient} submit={client ? "Guardar cambios" : "Crear cliente"} className="card form form--steps">
+    <Form action={saveClient} submit={client ? "Guardar cambios" : "Crear cliente"} event={client ? "client_updated" : "client_created"} className="card form form--steps">
       {client && <input type="hidden" name="id" value={client.id} />}
       <Steps
         steps={[
