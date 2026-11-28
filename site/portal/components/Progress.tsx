@@ -144,7 +144,7 @@ export function Hero({ client, checkins, appointment, pay, lang }: { client: Cli
                     <a href={content(lang).pages.terminos}>{content(lang).t.legal.terminos}</a>
                     {tr(". Sin débitos automáticos.", ". No automatic debits.")}
                   </p>
-                  <Form action={payWithMercadoPago} submit={tr(`Pagar ${pay.amount}`, `Pay ${pay.amount}`)} button="btn btn--gold btn--sm" className="inline-form" />
+                  <Form action={payWithMercadoPago} submit={tr(`Pagar ${pay.amount}`, `Pay ${pay.amount}`)} button="btn btn--gold btn--sm" event="payment_checkout_started" className="inline-form" />
                   <p className="note">
                     {pay.early
                       ? tr("Si pagás antes, el mes se suma a tu vencimiento: no perdés días.", "Paying early adds the month to your current expiry: you don't lose any days.")

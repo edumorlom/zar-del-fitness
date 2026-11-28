@@ -137,7 +137,7 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
         {passes.length === 0 ? (
           <Empty title="No hay clientes Premium activos" text="El plan se elige en la ficha de cada cliente." />
         ) : (
-          <Form action={recordPayment} submit="Registrar pago" reset className="card form">
+          <Form action={recordPayment} submit="Registrar pago" event="in_person_payment_recorded" reset className="card form">
             <div className="fields">
               <label className="field field--wide">
                 <span className="field__label">Cliente</span>
@@ -292,6 +292,7 @@ export default async function PaymentsPage({ searchParams }: { searchParams: Pro
                               action={voidPayment}
                               submit="Anular"
                               button="link-sm"
+                              event="payment_voided"
                               className="inline-form"
                               confirm={{
                                 title: "¿Anular",

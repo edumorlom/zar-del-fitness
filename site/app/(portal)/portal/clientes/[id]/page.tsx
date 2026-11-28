@@ -270,7 +270,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
       {last && (
         <section id="alimentacion" className="anchor">
           <h2 className="section-title">Plan de alimentación</h2>
-          <Form action={saveDiet} submit="Guardar plan" className="card form" mailTo={mailTo}>
+          <Form action={saveDiet} submit="Guardar plan" event="diet_updated" className="card form" mailTo={mailTo}>
             <input type="hidden" name="client_id" value={client.id} />
             <p className="field__hint">
               {diet ? `Vigente desde la evaluación del ${shortDate(diet.date)}. ` : ""}
@@ -284,7 +284,7 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
 
       <section id="evaluar" className="anchor">
         <h2 className="section-title">Nueva evaluación</h2>
-        <Form action={addCheckin} submit="Guardar evaluación" reset className="card form" mailTo={mailTo}>
+        <Form action={addCheckin} submit="Guardar evaluación" event="checkin_created" reset className="card form" mailTo={mailTo}>
           <input type="hidden" name="client_id" value={client.id} />
           <CheckinFields diet={diet} today={today} sex={client.sex} />
           <p className="field__hint">La masa magra y la grasa en kg se calculan solas.</p>

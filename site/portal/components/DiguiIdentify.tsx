@@ -1,6 +1,9 @@
 "use client";
 
+import { useClerk } from "@clerk/nextjs";
 import { useEffect } from "react";
+import posthog from "posthog-js";
+import { Icon } from "@/components/Icon";
 import { useClerkSignedIn } from "@/components/Session";
 import { FORGET_VISITOR, readVisitor, signedIn, visitorCookie } from "~/lib/digui-cookie";
 
@@ -32,6 +35,27 @@ export function DiguiIdentify({ params, exp, signature }: Props) {
     return identify(customerId, exp, signature);
   }, [customerId, exp, signature]);
   return null;
+}
+
+export function PostHogIdentify({ userId, name, email, role }: { userId: number; name: string; email: string; role: string }) {
+  useEffect(() => {
+    if (posthog.__loaded) posthog.identify(String(userId), { name, email, role });
+  }, [userId, name, email, role]);
+  return null;
+}
+
+export function PostHogSignOut({ label = "Salir" }: { label?: string }) {
+  const { signOut } = useClerk();
+  const handleSignOut = () => {
+    if (posthog.__loaded) posthog.reset();
+    void signOut({ redirectUrl: "/portal/ingresar" });
+  };
+
+  return (
+    <button className="icon-btn" aria-label={label} title={label} onClick={handleSignOut}>
+      <Icon name="logout" />
+    </button>
+  );
 }
 
 /**

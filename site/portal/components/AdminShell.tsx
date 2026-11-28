@@ -2,6 +2,7 @@ import { Reveals } from "@/components/motion/Reveals";
 import { canHandlePayments, isTeam, SCOPE_LABEL } from "~/lib/access";
 import type { Viewer } from "~/lib/auth";
 import { DiguiChat } from "./DiguiChat";
+import { PostHogIdentify } from "./DiguiIdentify";
 import { initials } from "./Person";
 import { SIGN_OUT, SignOut } from "./Shell";
 import { Sidebar, type NavItem } from "./Sidebar";
@@ -25,6 +26,7 @@ export function AdminShell({ viewer, children }: { viewer: Viewer; children: Rea
   const role = viewer.scopes.map((s) => SCOPE_LABEL[s]).join(" · ");
   return (
     <>
+      <PostHogIdentify userId={viewer.id} name={viewer.name} email={viewer.email} role={role} />
       <div className="admin-header">
         <SiteHeader login={SIGN_OUT} portal={{ items, name: viewer.name, role }} />
       </div>

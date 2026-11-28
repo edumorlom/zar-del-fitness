@@ -25,7 +25,7 @@ function Move({ a }: { a: Appointment }) {
   return (
     <details className="move">
       <summary className="btn btn--ghost btn--sm">Mover</summary>
-      <Form action={moveAppointment} submit="Mover y confirmar" button="btn btn--outline btn--sm" className="move__form">
+      <Form action={moveAppointment} submit="Mover y confirmar" button="btn btn--outline btn--sm" event="appointment_rescheduled" className="move__form">
         <input type="hidden" name="id" value={a.id} />
         <label className="field">
           <span className="field__label">Nuevo horario</span>
@@ -56,17 +56,17 @@ function Row({ a, pending }: { a: Appointment; pending?: boolean }) {
       </div>
       <div className="appt__actions">
         {a.status === "requested" && (
-          <Form action={confirmAppointment} submit="Confirmar" button="btn btn--gold btn--sm" className="inline-form">
+          <Form action={confirmAppointment} submit="Confirmar" button="btn btn--gold btn--sm" event="appointment_confirmed" className="inline-form">
             <input type="hidden" name="id" value={a.id} />
           </Form>
         )}
         <Move a={a} />
         {a.status === "requested" ? (
-          <Form action={rejectAppointment} submit="Rechazar" button="link-sm" className="inline-form" confirm={{ title: "¿Rechazar", accent: "el pedido?", text: `El pedido de turno de ${a.client_name}.`, yes: "Rechazar", no: "Volver" }}>
+          <Form action={rejectAppointment} submit="Rechazar" button="link-sm" event="appointment_rejected" className="inline-form" confirm={{ title: "¿Rechazar", accent: "el pedido?", text: `El pedido de turno de ${a.client_name}.`, yes: "Rechazar", no: "Volver" }}>
             <input type="hidden" name="id" value={a.id} />
           </Form>
         ) : (
-          <Form action={cancelAppointment} submit="Cancelar" button="link-sm" className="inline-form" confirm={{ title: "¿Cancelar", accent: "el turno?", text: `El turno de ${a.client_name}. Le llega el aviso.`, yes: "Sí, cancelar", no: "Volver" }}>
+          <Form action={cancelAppointment} submit="Cancelar" button="link-sm" event="appointment_cancelled" className="inline-form" confirm={{ title: "¿Cancelar", accent: "el turno?", text: `El turno de ${a.client_name}. Le llega el aviso.`, yes: "Sí, cancelar", no: "Volver" }}>
             <input type="hidden" name="id" value={a.id} />
           </Form>
         )}
